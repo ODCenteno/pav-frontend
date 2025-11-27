@@ -1,0 +1,31 @@
+---
+import './categories.css';
+
+---
+
+<section class="destinations section-padding">
+  <div class="container">
+    <div class="section-header" style="flex-direction: column; align-items: flex-start;">
+      <h2 data-key="gallery_title">Organiza tu viaje</h2>
+      <p data-key="gallery_desc" style="margin-bottom: 1.5rem; color: var(--secondary-text);">Explora actividades, lugares y servicios disponibles en el puerto y el rancho.</p>
+      <div class="filter-chips">
+        <button class="chip active" data-key="cat_all" data-category="all">Todo</button>
+        <button class="chip" data-key="cat_experiences" data-category="experiences">Experiencias</button>
+        <button class="chip" data-key="cat_sites" data-category="sites">Sitios de Interés</button>
+        <button class="chip" data-key="cat_accommodation" data-category="accommodation">Alojamiento</button>
+        <button class="chip" data-key="cat_restaurants" data-category="restaurants">Restaurantes</button>
+        <button class="chip" data-key="cat_services" data-category="services">Servicios</button>
+      </div>
+
+      <!-- Dynamic Category Content -->
+      <div class="category-content">
+        <div id="category-carousel-container" class="carousel-container">
+          <!-- Cards will be injected here by JS -->
+        </div>
+        <div class="view-all-container">
+          <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">Ver todo <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

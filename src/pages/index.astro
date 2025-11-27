@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/main/hero/Hero.astro';
-console.log('This runs in your terminal, not the browser!');
+import Categories from '../components/main/categories/Categories.astro';
+import initConfig from '../utils/utils.js';
 ---
 
 <BaseLayout
@@ -11,4 +12,11 @@ console.log('This runs in your terminal, not the browser!');
   ogDescription="Descubre tu aventura perfecta en Puerto Agua Verde y Rancho San Cosme con nuestra guía de servicios y turismo. Actividades, alojamientos y más."
 >
   <Hero slot="Hero"></Hero>
+  <Categories slot="categories"></Categories>
+  <script type="module">
+    document.addEventListener("DOMContentLoaded", () => {
+      initConfig();
+    });
+  </script>
 </BaseLayout>
+

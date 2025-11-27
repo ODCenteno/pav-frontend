@@ -16,6 +16,12 @@
     margin-right: auto;
 }
 
+.highlight-text {
+    color: var(--accent-color);
+    font-style: italic;
+    font-size: 3rem;
+}
+
 .hero-images {
     position: relative;
     height: 300px;

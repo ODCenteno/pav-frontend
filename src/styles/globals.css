@@ -86,10 +86,12 @@ h3 {
     margin-bottom: 0.5rem;
 }
 
-.highlight-text {
-    color: var(--accent-color);
-    font-style: italic;
+p {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
 }
+
 
 /* Buttons */
 .btn {
