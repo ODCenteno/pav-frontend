@@ -1,0 +1,258 @@
+---
+import "../styles/globals.css";
+const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
+
+---
+
+<!DOCTYPE html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{siteTitle}</title>
+    <!-- -->
+    <meta name="author" content="ODCenteno" />
+    <meta name="title" content={siteTitle} />
+    <meta name="description" content={siteDescription} />
+    <meta name="keywords" content="BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios"/>
+    <meta name="robots" content="index, follow" />
+    <!--link rel="canonical" href="https://puertoaguaverde-rsc.com" /-->
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="theme-color" content="#COLOR"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <!-- Global Metadata -->
+    <link rel="icon" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/images/icon/192x192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="google" content="notranslate" />
+
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/android-icon-192x192.png"
+    />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="theme-color" content="#ffffff" />
+
+  <!-- Open Graph / Facebook -->
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={ogTitle}>
+    <meta property="og:description" content={ogDescription}>
+    <meta property="og:image" content="/some-image.png">
+    <meta property="og:url" content="/this-page.html">
+    <meta property="og:site_name" content="Your Site Name">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content="" />
+    <meta name="twitter:image:alt" content={ogTitle} />
+    <!-- meta name="twitter:site" content="" />
+    <meta name="twitter:creator" content="@gndx" /-->
+  </head>
+  <body>
+      <header class="site-header">
+          <div class="container header-container">
+              <a href="#" class="logo">
+                  <span class="logo-icon">⚓</span><span class="logo-text"> Puerto Agua Verde</span>
+              </a>
+              <div class="header-right">
+                  <button id="lang-toggle" class="btn btn-outline btn-sm">EN</button>
+                  <button class="mobile-menu-btn" aria-label="Toggle menu">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                  </button>
+              </div>
+              <nav class="main-nav">
+                  <ul>
+                      <li><a href="#" data-key="nav_experiences">Experiencias</a></li>
+                      <li><a href="#" data-key="nav_sites">Sitios</a></li>
+                      <li><a href="#" data-key="nav_accommodation">Alojamiento</a></li>
+                      <li><a href="#" data-key="nav_restaurants">Restaurantes</a></li>
+                      <li><a href="#" data-key="nav_services">Servicios</a></li>
+                      <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">Iniciar Sesión</a></li>
+                  </ul>
+              </nav>
+              <div class="header-actions">
+                  <a href="#" class="btn btn-primary btn-sm" data-key="sign_in">Iniciar Sesión</a>
+              </div>
+          </div>
+      </header>
+
+      <main>
+          <!-- Hero Section -->
+          <section class="hero">
+              <div class="container hero-container">
+                  <div class="hero-content">
+                      <h1 data-key="hero_title">Puerto Agua Verde & <span class="highlight-text">Rancho San Cosme</span></h1>
+                      <p data-key="hero_desc">Un destino natural en Baja California Sur donde la tranquilidad, la tradición y los paisajes espectaculares se encuentran con la auténtica vida costera. Explora playas, experiencias locales, senderos y servicios para planear tu visita.</p>
+                      <a href="#" class="btn btn-accent" data-key="hero_cta">Explorar el destino</a>
+                  </div>
+                  <div class="hero-images">
+                      <!-- Reusing existing images as placeholders for now -->
+                      <div class="hero-img-card img-1">
+                          <img src="imagenes-mocks/pav-01.jpg" alt="Landscape">
+                      </div>
+                      <div class="hero-img-card img-2">
+                          <img src="imagenes-mocks/pav-02.jpg" alt="Nature">
+                      </div>
+                      <div class="hero-img-card img-3">
+                          <img src="imagenes-mocks/pav-03.jpg" alt="Coast">
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          <!-- Categories / Gallery Header -->
+          <section class="destinations section-padding">
+              <div class="container">
+                  <div class="section-header" style="flex-direction: column; align-items: flex-start;">
+                      <h2 data-key="gallery_title">Encuentra lo que estás buscando</h2>
+                      <p data-key="gallery_desc" style="margin-bottom: 1.5rem; color: var(--secondary-text);">Explora actividades, lugares y servicios disponibles en el puerto y el rancho.</p>
+                      <div class="filter-chips">
+                          <button class="chip active" data-key="cat_all" data-category="all">Todo</button>
+                          <button class="chip" data-key="cat_experiences" data-category="experiences">Experiencias</button>
+                          <button class="chip" data-key="cat_sites" data-category="sites">Sitios de Interés</button>
+                          <button class="chip" data-key="cat_accommodation" data-category="accommodation">Alojamiento</button>
+                          <button class="chip" data-key="cat_restaurants" data-category="restaurants">Restaurantes</button>
+                          <button class="chip" data-key="cat_services" data-category="services">Servicios</button>
+                      </div>
+
+                      <!-- Dynamic Category Content -->
+                      <div class="category-content">
+                          <div id="category-carousel-container" class="carousel-container">
+                              <!-- Cards will be injected here by JS -->
+                          </div>
+                          <div class="view-all-container">
+                              <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">Ver todo <i class="fas fa-arrow-right"></i></a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          <!-- About Sections -->
+          <section class="stories section-padding" style="background-color: #f9f9f9;">
+              <div class="container">
+                  <div class="section-header">
+                      <h2 data-key="stories_title">Conoce el destino</h2>
+                      <p data-key="stories_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre la historia y cultura de estos lugares únicos</p>
+                  </div>
+                  <div class="stories-layout">
+                      <article class="featured-story">
+                          <div class="story-img">
+                              <img src="imagenes-mocks/pav-04.jpg" alt="Puerto Agua Verde">
+                          </div>
+                          <div class="story-content">
+                              <h3 data-key="about_puerto_title">Puerto Agua Verde</h3>
+                              <p class="excerpt" data-key="about_puerto_text">Puerto Agua Verde es un pequeño rincón de Baja California Sur...</p>
+                          </div>
+                      </article>
+
+                      <article class="featured-story">
+                          <div class="story-img">
+                              <img src="imagenes-mocks/pav-05.jpg" alt="Rancho San Cosme">
+                          </div>
+                          <div class="story-content">
+                              <h3 data-key="about_rancho_title">Rancho San Cosme</h3>
+                              <p class="excerpt" data-key="about_rancho_text">Rancho San Cosme es un espacio histórico y cultural...</p>
+                          </div>
+                      </article>
+                  </div>
+              </div>
+          </section>
+
+          <!-- Featured Sections Grid -->
+          <section class="highlights section-padding">
+              <div class="container">
+                  <div class="section-header">
+                      <h2 data-key="highlights_title">Lo más destacado</h2>
+                      <p data-key="highlights_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre las mejores opciones para tu visita</p>
+                  </div>
+                  <div class="highlights-layout" style="grid-template-columns: 1fr 1fr 1fr; gap: 2rem; display: grid;">
+                      <!-- Experiences -->
+                      <div class="review-card" style="height: auto;">
+                          <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+                              <img src="imagenes-mocks/pav-06.png" alt="Experiences">
+                          </div>
+                          <h3 data-key="feat_exp_title">Experiencias para disfrutar</h3>
+                          <p data-key="feat_exp_desc">Descubre actividades únicas para conectar con la naturaleza...</p>
+                      </div>
+
+                      <!-- Accommodation -->
+                      <div class="review-card" style="height: auto;">
+                          <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+                              <img src="imagenes-mocks/pav-07.jpg" alt="Accommodation">
+                          </div>
+                          <h3 data-key="feat_acc_title">Hospédate con nosotros</h3>
+                          <p data-key="feat_acc_desc">Encuentra opciones de alojamiento que combinan comodidad...</p>
+                      </div>
+
+                      <!-- Restaurants -->
+                      <div class="review-card" style="height: auto;">
+                          <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+                              <img src="imagenes-mocks/pav-08.jpg" alt="Restaurants">
+                          </div>
+                          <h3 data-key="feat_rest_title">Sabores de la región</h3>
+                          <p data-key="feat_rest_desc">Desde mariscos frescos hasta cocina tradicional...</p>
+                      </div>
+                  </div>
+              </div>
+          </section>
+
+          <!-- Map Section -->
+          <section class="newsletter">
+              <div class="newsletter-bg">
+                  <img src="imagenes-mocks/pav-09.jpg" alt="Map Background">
+              </div>
+              <div class="container newsletter-content">
+                  <h2 data-key="map_title">Mapa del Destino</h2>
+                  <p class="disclaimer" data-key="map_desc" style="font-size: 1.1rem; margin-bottom: 2rem;">Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme.</p>
+                  <button class="btn btn-accent">Ver Mapa</button>
+              </div>
+          </section>
+
+          <!-- Final CTA -->
+          <section class="section-padding text-center" style="text-align: center;">
+              <div class="container">
+                  <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
+                  <br>
+                  <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
+              </div>
+          </section>
+
+      </main>
+
+      <footer class="site-footer">
+          <div class="container footer-grid" style="grid-template-columns: 1fr;">
+              <div class="footer-brand" style="text-align: center;">
+                  <a href="#" class="logo" style="justify-content: center;">
+                      <span class="logo-icon">⚓</span> Puerto Agua Verde
+                  </a>
+                  <p data-key="footer_desc">Puerto Agua Verde & Rancho San Cosme – Sitio turístico informativo.</p>
+                  <p data-key="footer_rights">Todos los derechos reservados.</p>
+                  <p><a href="#" data-key="footer_legal" style="font-size: 0.8rem; text-decoration: underline;">Aviso de Privacidad · Términos y Condiciones</a></p>
+              </div>
+          </div>
+      </footer>
+      <!--script src="script.js"></!--script-->
+  </body>
+</html>

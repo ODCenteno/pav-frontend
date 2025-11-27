@@ -1,17 +1,11 @@
 ---
-// Welcome to Astro! Everything between these triple-dash code fences
-// is your "component frontmatter". It never runs in the browser.
+import Base from '../layouts/base.layout.astro';
 console.log('This runs in your terminal, not the browser!');
 ---
-<!-- Below is your "component template." It's just HTML, but with
-    some magic sprinkled in to help you build great templates. -->
-<html>
-  <body>
-    <h1>Hello, World!</h1>
-  </body>
-</html>
-<style>
-  h1 {
-    color: orange;
-  }
-</style>
+
+<Base
+  siteTitle="Puerto Agua Verde - Directorio de Servicios y Turismo en Rancho San Cosme"
+  ogTitle="Puerto Agua Verde - Directorio de Servicios y Turismo en Rancho San Cosme"
+  siteDescription="Descubre los mejores servicios y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable."
+  ogDescription="Explora Puerto Agua Verde en Rancho San Cosme con nuestra guía de servicios y turismo. Encuentra actividades, alojamientos y más para tu aventura perfecta."
+>
