@@ -19,6 +19,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-size: 62.5%;
 }
 
 body {
@@ -26,7 +27,13 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
+	  -webkit-text-size-adjust: 100%;
+	  -ms-text-size-adjust: 100%;
+	  -moz-text-size-adjust: 100%;
+	  text-rendering: optimizeLegibility;
 }
 
 img {
@@ -65,17 +72,17 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 4.2rem;
     margin-bottom: 1rem;
 }
 
 h2 {
-    font-size: 2rem;
+    font-size: 2.8rem;
     margin-bottom: 1.5rem;
 }
 
 h3 {
-    font-size: 1.25rem;
+    font-size: 2.4rem;
     margin-bottom: 0.5rem;
 }
 
@@ -93,7 +100,7 @@ h3 {
     cursor: pointer;
     transition: all 0.3s ease;
     border: 1px solid transparent;
-    font-size: 0.9rem;
+    font-size: 1.4rem;
 }
 
 .btn-primary {
@@ -127,129 +134,7 @@ h3 {
 
 .btn-sm {
     padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-}
-
-/* Header */
-.site-header {
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    background-color: var(--bg-color);
-    z-index: 100;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.3s ease;
-}
-
-.site-header.scrolled {
-    border-color: var(--border-color);
-}
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-}
-
-.logo {
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 1.1rem;
-    letter-spacing: 1px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.logo-icon {
-    color: var(--accent-color);
-}
-
-/* Header right container - groups language button and menu */
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-left: auto;
-}
-
-.main-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: var(--bg-color);
-    z-index: 99;
-    padding: 6rem 2rem 2rem;
-    transform: translateX(100%);
-    transition: transform 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-.main-nav.active {
-    transform: translateX(0);
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-}
-
-.main-nav ul {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    text-align: center;
-    width: 100%;
-}
-
-.main-nav a {
-    font-size: 1.25rem;
-    font-weight: 600;
-    display: block;
-    padding: 0.5rem;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.search-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
-}
-
-.mobile-menu-btn {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.mobile-menu-btn span {
-    width: 24px;
-    height: 2px;
-    background-color: var(--text-color);
-    transition: all 0.3s ease;
-}
-
-.mobile-menu-btn.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
-}
-
-.mobile-menu-btn.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.mobile-menu-btn.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(5px, -5px);
+    font-size: 1.3rem;
 }
 
 /* Hero Section */
@@ -304,7 +189,7 @@ h3 {
     position: absolute;
     bottom: -10px;
     right: 20px;
-    font-size: 2rem;
+    font-size: 2.4rem;
     color: var(--accent-color);
     transform: rotate(-45deg);
 }
@@ -339,7 +224,7 @@ h3 {
     background: transparent;
     white-space: nowrap;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: var(--secondary-text);
 }
 
@@ -380,13 +265,13 @@ h3 {
 }
 
 .card-content h3 {
-    font-size: 1.1rem;
+    font-size: 1.8rem;
     margin-bottom: 0.25rem;
 }
 
 .card-content p {
     color: var(--secondary-text);
-    font-size: 0.9rem;
+    font-size: 1.4rem;
 }
 
 .desktop-only {
@@ -395,11 +280,6 @@ h3 {
 
 .mobile-only {
     display: block;
-}
-
-/* Hide logo text on mobile */
-.logo-text {
-    display: none;
 }
 
 /* Hide sign-in button on mobile (it's in the menu) */
@@ -446,7 +326,7 @@ h3 {
 
 .category {
     color: var(--accent-color);
-    font-size: 0.8rem;
+    font-size: 1.6rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -456,7 +336,7 @@ h3 {
 
 .meta {
     color: var(--secondary-text);
-    font-size: 0.85rem;
+    font-size: 1.4rem;
     margin-bottom: 1rem;
 }
 
@@ -496,7 +376,7 @@ h3 {
 .small-story-content h4 {
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.3rem;
     margin-bottom: 0.5rem;
 }
 
@@ -535,12 +415,12 @@ h3 {
 
 .user-profile h4 {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 1.6rem;
     margin: 0;
 }
 
 .user-profile p {
-    font-size: 0.8rem;
+    font-size: 1.4rem;
     color: var(--secondary-text);
 }
 
@@ -640,7 +520,7 @@ h3 {
 }
 
 .disclaimer {
-    font-size: 0.8rem;
+    font-size: 1.4rem;
     opacity: 0.8;
 }
 
@@ -677,7 +557,7 @@ h3 {
     align-items: center;
     justify-content: center;
     color: var(--text-color);
-    font-size: 0.9rem;
+    font-size: 1.4rem;
 }
 
 .footer-links h4 {
@@ -691,13 +571,13 @@ h3 {
 
 .footer-links ul li a {
     color: var(--secondary-text);
-    font-size: 0.9rem;
+    font-size: 1.4rem;
 }
 
 .footer-bottom {
     text-align: center;
     color: var(--secondary-text);
-    font-size: 0.8rem;
+    font-size: 1.6rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border-color);
 }
@@ -705,46 +585,6 @@ h3 {
 /* Responsive Media Queries */
 @media (min-width: 768px) {
     h1 { font-size: 3.5rem; }
-
-    /* Hide mobile header-right container on desktop */
-    .header-right { display: none; }
-
-    /* Show desktop navigation and actions */
-    .mobile-menu-btn { display: none; }
-
-    .main-nav {
-        display: block;
-        position: static;
-        height: auto;
-        padding: 0;
-        background-color: transparent;
-        transform: none;
-        width: auto;
-        box-shadow: none;
-    }
-
-    .main-nav ul {
-        display: flex;
-        flex-direction: row;
-        gap: 2rem;
-        text-align: left;
-    }
-
-    .main-nav a {
-        font-weight: 500;
-        font-size: 0.95rem;
-    }
-
-    /* Show header-actions on desktop with language button */
-    .header-actions {
-        display: flex;
-        margin-left: auto;
-    }
-
-    #lang-toggle {
-        display: inline-block;
-        margin-right: 0.5rem;
-    }
 
     .hero-content {
         text-align: left;
@@ -795,10 +635,6 @@ h3 {
     .desktop-only { display: inline-block; }
     .mobile-only { display: none !important; }
 
-    /* Show logo text on desktop */
-    .logo-text {
-        display: inline;
-    }
 
     /* Show sign-in button on desktop */
     .header-actions .btn-primary {
@@ -963,7 +799,7 @@ h3 {
     background-color: rgba(232, 122, 93, 0.1);
     color: var(--accent-color);
     border-radius: var(--radius-full);
-    font-size: 0.75rem;
+    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
     align-self: flex-start;
@@ -971,13 +807,13 @@ h3 {
 
 .listing-title {
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: 1.8rem;
     margin-bottom: 0.5rem;
     color: var(--text-color);
 }
 
 .listing-desc {
-    font-size: 0.9rem;
+    font-size: 1.8rem;
     color: var(--secondary-text);
     margin-bottom: 1rem;
     line-height: 1.5;
@@ -999,7 +835,7 @@ h3 {
 .listing-price {
     font-weight: 600;
     color: var(--text-color);
-    font-size: 0.95rem;
+    font-size: 1.8rem;
 }
 
 .view-all-container {
@@ -1012,7 +848,7 @@ h3 {
 .view-all-link {
     color: var(--accent-color);
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 1.6rem;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -1040,11 +876,11 @@ h3 {
     }
 
     h1 {
-        font-size: 2rem;
+        font-size: 3.2rem;
     }
 
     h2 {
-        font-size: 1.75rem;
+        font-size: 2.4rem;
     }
 
     .listing-card {
@@ -1058,7 +894,7 @@ h3 {
 
     .btn {
         padding: 0.6rem 1.2rem;
-        font-size: 0.85rem;
+        font-size: 1.4rem;
     }
 
     .hero-images {

@@ -5,7 +5,10 @@ import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import markdoc from "@astrojs/markdoc";
 
-// https://astro.build/config
 export default defineConfig({
   integrations: [react(), partytown(), sitemap(), markdoc()],
+  i18n: {
+    locales: ["es-MX", "en-US"],
+    defaultLocale: "es-MX",
+  },
 });
