@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/main/hero/Hero.astro';
 console.log('This runs in your terminal, not the browser!');
 ---
 
@@ -9,3 +10,5 @@ console.log('This runs in your terminal, not the browser!');
   siteDescription="Actividades, alojamientos y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable."
   ogDescription="Descubre tu aventura perfecta en Puerto Agua Verde y Rancho San Cosme con nuestra guía de servicios y turismo. Actividades, alojamientos y más."
 >
+  <Hero slot="Hero"></Hero>
+</BaseLayout>
