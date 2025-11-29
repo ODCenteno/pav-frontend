@@ -1,8 +1,12 @@
 ---
 import "../styles/globals.css";
+import { ClientRouter } from 'astro:transitions';
+import { Image } from "astro:assets";
 import Header from "../components/header/Header.astro";
 const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
-
+import img04 from "../images/pav-04.jpg";
+import img05 from "../images/pav-05.jpg";
+import img06 from "../images/pav-06.png";
 ---
 
 <!DOCTYPE html>
@@ -22,17 +26,17 @@ const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
 
     <link rel="icon" href="../../public/favicon.ico" type="image/x-icon" />
     <meta name="theme-color" content="#COLOR"/>
+    <ClientRouter />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
 
     <!-- Global Metadata -->
     <link rel="icon" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/images/icon/192x192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- <link rel="manifest" href="/manifest.webmanifest" /> -->
     <meta name="google" content="notranslate" />
 
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
@@ -72,98 +76,67 @@ const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
     <Header></Header>
 
     <main>
-      <slot></slot>
       <slot name="Hero"></slot>
       <slot name="categories"></slot>
-
-        <!-- About Sections -->
-        <section class="stories section-padding" style="background-color: #f9f9f9;">
-            <div class="container">
-                <div class="section-header">
-                    <h2 data-key="stories_title">Conoce el destino</h2>
-                    <p data-key="stories_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre la historia y cultura de estos lugares únicos</p>
-                </div>
-                <div class="stories-layout">
-                    <article class="featured-story">
-                        <div class="story-img">
-                            <img src="imagenes-mocks/pav-04.jpg" alt="Puerto Agua Verde">
-                        </div>
-                        <div class="story-content">
-                            <h3 data-key="about_puerto_title">Puerto Agua Verde</h3>
-                            <p class="excerpt" data-key="about_puerto_text">Puerto Agua Verde es un pequeño rincón de Baja California Sur...</p>
-                        </div>
-                    </article>
-
-                    <article class="featured-story">
-                        <div class="story-img">
-                            <img src="imagenes-mocks/pav-05.jpg" alt="Rancho San Cosme">
-                        </div>
-                        <div class="story-content">
-                            <h3 data-key="about_rancho_title">Rancho San Cosme</h3>
-                            <p class="excerpt" data-key="about_rancho_text">Rancho San Cosme es un espacio histórico y cultural...</p>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </section>
+      <slot></slot>
 
         <!-- Featured Sections Grid -->
         <section class="highlights section-padding">
-            <div class="container">
-                <div class="section-header">
-                    <h2 data-key="highlights_title">Lo más destacado</h2>
-                    <p data-key="highlights_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre las mejores opciones para tu visita</p>
-                </div>
-                <div class="highlights-layout" style="grid-template-columns: 1fr 1fr 1fr; gap: 2rem; display: grid;">
-                    <!-- Experiences -->
-                    <div class="review-card" style="height: auto;">
-                        <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
-                            <img src="imagenes-mocks/pav-06.png" alt="Experiences">
-                        </div>
-                        <h3 data-key="feat_exp_title">Experiencias para disfrutar</h3>
-                        <p data-key="feat_exp_desc">Descubre actividades únicas para conectar con la naturaleza...</p>
-                    </div>
+          <div class="container">
+              <div class="section-header">
+                  <h2 data-key="highlights_title">Lo más destacado</h2>
+                  <p data-key="highlights_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre las mejores opciones para tu visita</p>
+              </div>
+              <div class="highlights-layout" style="grid-template-columns: 1fr 1fr 1fr; gap: 2rem; display: grid;">
+                  <!-- Experiences -->
+                  <div class="review-card" style="height: auto;">
+                      <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+                          <Image src={img06} alt="Experiences">
+                      </div>
+                      <h3 data-key="feat_exp_title">Experiencias para disfrutar</h3>
+                      <p data-key="feat_exp_desc">Descubre actividades únicas para conectar con la naturaleza...</p>
+                  </div>
 
-                    <!-- Accommodation -->
-                    <div class="review-card" style="height: auto;">
-                        <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
-                            <img src="imagenes-mocks/pav-07.jpg" alt="Accommodation">
-                        </div>
-                        <h3 data-key="feat_acc_title">Hospédate con nosotros</h3>
-                        <p data-key="feat_acc_desc">Encuentra opciones de alojamiento que combinan comodidad...</p>
-                    </div>
+                  <!-- Accommodation -->
+                  <div class="review-card" style="height: auto;">
+                      <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+                          <img src="../../images/pav-07.jpg" alt="Accommodation">
+                      </div>
+                      <h3 data-key="feat_acc_title">Hospédate con nosotros</h3>
+                      <p data-key="feat_acc_desc">Encuentra opciones de alojamiento que combinan comodidad...</p>
+                  </div>
 
-                    <!-- Restaurants -->
-                    <div class="review-card" style="height: auto;">
-                        <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
-                            <img src="imagenes-mocks/pav-08.jpg" alt="Restaurants">
-                        </div>
-                        <h3 data-key="feat_rest_title">Sabores de la región</h3>
-                        <p data-key="feat_rest_desc">Desde mariscos frescos hasta cocina tradicional...</p>
-                    </div>
-                </div>
-            </div>
+                  <!-- Restaurants -->
+                  <div class="review-card" style="height: auto;">
+                      <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+                          <img src="../../images/pav-08.jpg" alt="Restaurants">
+                      </div>
+                      <h3 data-key="feat_rest_title">Sabores de la región</h3>
+                      <p data-key="feat_rest_desc">Desde mariscos frescos hasta cocina tradicional...</p>
+                  </div>
+              </div>
+          </div>
         </section>
 
         <!-- Map Section -->
         <section class="newsletter">
-            <div class="newsletter-bg">
-                <img src="imagenes-mocks/pav-09.jpg" alt="Map Background">
-            </div>
-            <div class="container newsletter-content">
-                <h2 data-key="map_title">Mapa del Destino</h2>
-                <p class="disclaimer" data-key="map_desc" style="font-size: 1.1rem; margin-bottom: 2rem;">Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme.</p>
-                <button class="btn btn-accent">Ver Mapa</button>
-            </div>
+          <div class="newsletter-bg">
+              <img src="../../images/pav-09.jpg" alt="Map Background">
+          </div>
+          <div class="container newsletter-content">
+              <h2 data-key="map_title">Mapa del Destino</h2>
+              <p class="disclaimer" data-key="map_desc" style="font-size: 1.1rem; margin-bottom: 2rem;">Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme.</p>
+              <button class="btn btn-accent">Ver Mapa</button>
+          </div>
         </section>
 
         <!-- Final CTA -->
         <section class="section-padding text-center" style="text-align: center;">
-            <div class="container">
-                <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
-                <br>
-                <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
-            </div>
+          <div class="container">
+            <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
+            <br>
+            <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
+          </div>
         </section>
 
     </main>

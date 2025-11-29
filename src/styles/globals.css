@@ -142,11 +142,11 @@ p {
 /* Destinations */
 .section-header {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+    align-items: initial;
+    margin-bottom: 1.2rem;
     flex-wrap: wrap;
-    gap: 1rem;
 }
 
 .filter-chips {
@@ -238,8 +238,8 @@ p {
 }
 
 .stories .section-header {
-    margin-bottom: 3rem;
-    text-align: center;
+    margin-bottom: 1.2rem;
+    text-align: left;
 }
 
 .stories .section-header h2 {

@@ -1,3 +1,5 @@
+import { translations } from "./translations.js";
+
 export const initConfig = () => {
   const langToggleBtn = document.getElementById("lang-toggle");
   let currentLang = "es";
@@ -12,7 +14,7 @@ export const initConfig = () => {
         es: "Explora las islas cercanas y disfruta de la vida marina.",
         en: "Explore nearby islands and enjoy marine life.",
       },
-      image: "imagenes-mocks/pav-06.png",
+      image: "images/pav-06.png",
       price: "$$",
       tag: { es: "Aventura", en: "Adventure" },
     },
@@ -24,7 +26,7 @@ export const initConfig = () => {
         es: "Despierta con el sonido de las olas en nuestras cómodas cabañas.",
         en: "Wake up to the sound of waves in our comfortable cabins.",
       },
-      image: "imagenes-mocks/pav-07.jpg",
+      image: "images/pav-07.jpg",
       price: "$$$",
       tag: { es: "Hospedaje", en: "Lodging" },
     },
@@ -36,7 +38,7 @@ export const initConfig = () => {
         es: "Los mariscos más frescos de la región, del mar a tu mesa.",
         en: "The freshest seafood in the region, from sea to table.",
       },
-      image: "imagenes-mocks/pav-08.jpg",
+      image: "images/pav-08.jpg",
       price: "$$",
       tag: { es: "Gastronomía", en: "Gastronomy" },
     },
@@ -48,7 +50,7 @@ export const initConfig = () => {
         es: "Un paraíso secreto accesible solo por sendero o lancha.",
         en: "A secret paradise accessible only by trail or boat.",
       },
-      image: "imagenes-mocks/pav-01.jpg",
+      image: "images/pav-01.jpg",
       price: "Gratis",
       tag: { es: "Playa", en: "Beach" },
     },
@@ -60,7 +62,7 @@ export const initConfig = () => {
         es: "Renta tu equipo y explora la costa a tu propio ritmo.",
         en: "Rent your gear and explore the coast at your own pace.",
       },
-      image: "imagenes-mocks/pav-02.jpg",
+      image: "images/pav-02.jpg",
       price: "$",
       tag: { es: "Servicio", en: "Service" },
     },
@@ -72,7 +74,7 @@ export const initConfig = () => {
         es: "Rutas escénicas por los cerros con guías locales.",
         en: "Scenic routes through the hills with local guides.",
       },
-      image: "imagenes-mocks/pav-03.jpg",
+      image: "images/pav-03.jpg",
       price: "$",
       tag: { es: "Naturaleza", en: "Nature" },
     },

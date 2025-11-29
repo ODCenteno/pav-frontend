@@ -2,8 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/main/hero/Hero.astro';
 import Categories from '../components/main/categories/Categories.astro';
-import initConfig from '../utils/utils.js';
+import Destinations from '../components/main/destinations/Destinations.astro';
 ---
+
 
 <BaseLayout
   siteTitle="Puerto Agua Verde | Rancho San Cosme | Directorio de Servicios y Turismo"
@@ -13,10 +14,14 @@ import initConfig from '../utils/utils.js';
 >
   <Hero slot="Hero"></Hero>
   <Categories slot="categories"></Categories>
-  <script type="module">
-    document.addEventListener("DOMContentLoaded", () => {
-      initConfig();
-    });
-  </script>
+  <Destinations ></Destinations>
 </BaseLayout>
 
+
+<script type="module">
+  console.log("Initializing site scripts...");
+  import initConfig from '../utils/utils.js';
+  document.addEventListener("DOMContentLoaded", () => {
+    initConfig();
+  });
+</script>
