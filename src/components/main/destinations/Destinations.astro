@@ -1,10 +1,8 @@
 ---
-import './destinations.css';
+import "./destinations.css";
 import { Image } from "astro:assets";
-import img04 from "../../../images/pav-04.jpg";
-import img05 from "../../../images/pav-05.jpg";
-
-
+import img04 from "@/images/pav-04.jpg";
+import img05 from "@/images/pav-05.jpg";
 ---
 
 <section class="stories section-padding" style="background-color: #f9f9f9;">
@@ -15,23 +13,23 @@ import img05 from "../../../images/pav-05.jpg";
     </div>
     <div class="stories-layout">
       <article class="featured-story">
-          <div class="story-img">
-              <Image src={img04} alt="Puerto Agua Verde">
-          </div>
-          <div class="story-content">
-              <h3 data-key="about_puerto_title">Puerto Agua Verde</h3>
-              <p class="excerpt" data-key="about_puerto_text">Puerto Agua Verde es un pequeño rincón de Baja California Sur...</p>
-          </div>
+        <div class="story-img">
+          <Image src={img04} alt="Puerto Agua Verde" />
+        </div>
+        <div class="story-content">
+          <h3 data-key="about_puerto_title">Puerto Agua Verde</h3>
+          <p class="excerpt" data-key="about_puerto_text">Puerto Agua Verde es un pequeño rincón de Baja California Sur...</p>
+        </div>
       </article>
 
       <article class="featured-story">
-          <div class="story-img">
-              <Image src={img05} alt="Rancho San Cosme">
-          </div>
-          <div class="story-content">
-              <h3 data-key="about_rancho_title">Rancho San Cosme</h3>
-              <p class="excerpt" data-key="about_rancho_text">Rancho San Cosme es un espacio histórico y cultural...</p>
-          </div>
+        <div class="story-img">
+          <Image src={img05} alt="Rancho San Cosme" />
+        </div>
+        <div class="story-content">
+          <h3 data-key="about_rancho_title">Rancho San Cosme</h3>
+          <p class="excerpt" data-key="about_rancho_text">Rancho San Cosme es un espacio histórico y cultural...</p>
+        </div>
       </article>
     </div>
   </div>

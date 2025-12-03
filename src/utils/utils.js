@@ -1,4 +1,4 @@
-import { translations } from "./translations.js";
+import { translations } from "../i18n/translations.js";
 
 export const initConfig = () => {
   const langToggleBtn = document.getElementById("lang-toggle");

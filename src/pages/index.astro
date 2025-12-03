@@ -1,26 +1,23 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/main/hero/Hero.astro';
-import Categories from '../components/main/categories/Categories.astro';
-import Destinations from '../components/main/destinations/Destinations.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/main/hero/Hero.astro";
+import Categories from "../components/main/categories/Categories.astro";
+import Destinations from "../components/main/destinations/Destinations.astro";
+import Highlights from "@components/main/highlights/Highlights.astro";
+import MapSection from "@/components/main/mapSection/MapSection.astro";
 ---
 
-
-<BaseLayout
-  siteTitle="Puerto Agua Verde | Rancho San Cosme | Directorio de Servicios y Turismo"
-  ogTitle="Descubre Puerto Agua Verde y Rancho San Cosme"
-  siteDescription="Actividades, alojamientos y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable."
-  ogDescription="Descubre tu aventura perfecta en Puerto Agua Verde y Rancho San Cosme con nuestra guía de servicios y turismo. Actividades, alojamientos y más."
->
-  <Hero slot="Hero"></Hero>
-  <Categories slot="categories"></Categories>
-  <Destinations ></Destinations>
+<BaseLayout siteTitle="Puerto Agua Verde | Rancho San Cosme | Directorio de Servicios y Turismo" ogTitle="Descubre Puerto Agua Verde y Rancho San Cosme" siteDescription="Actividades, alojamientos y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable." ogDescription="Descubre tu aventura perfecta en Puerto Agua Verde y Rancho San Cosme con nuestra guía de servicios y turismo. Actividades, alojamientos y más.">
+  <Hero slot="Hero" />
+  <Categories slot="categories" />
+  <Destinations />
+  <Highlights />
+  <MapSection />
 </BaseLayout>
-
 
 <script type="module">
   console.log("Initializing site scripts...");
-  import initConfig from '../utils/utils.js';
+  import initConfig from "../utils/utils.js";
   document.addEventListener("DOMContentLoaded", () => {
     initConfig();
   });

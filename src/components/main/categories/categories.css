@@ -1,0 +1,77 @@
+.filter-chips {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    width: 100%;
+    scrollbar-width: none; /* Firefox */
+}
+
+.filter-chips::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.chip {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    background: transparent;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--secondary-text);
+}
+
+.chip.active, .chip:hover {
+    background-color: var(--text-color);
+    color: var(--white);
+    border-color: var(--text-color);
+}
+
+.destinations-grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scroll-snap-type: x mandatory;
+}
+
+.destination-card {
+    min-width: 280px;
+    scroll-snap-align: start;
+}
+
+.card-img {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    height: 350px;
+    margin-bottom: 1rem;
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+}
+
+.destination-card:hover .card-img img {
+    transform: scale(1.05);
+}
+
+.card-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.card-content p {
+    color: var(--secondary-text);
+    font-size: 1.4rem;
+}
+
+.desktop-only {
+    display: none;
+}
+
+.mobile-only {
+    display: block;
+}

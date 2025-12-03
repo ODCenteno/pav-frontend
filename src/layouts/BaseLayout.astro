@@ -1,36 +1,33 @@
 ---
 import "../styles/globals.css";
-import { ClientRouter } from 'astro:transitions';
-import { Image } from "astro:assets";
-import Header from "../components/header/Header.astro";
+import { ClientRouter } from "astro:transitions";
+import Header from "@components/header/Header.astro";
+import Footer from "@components/footer/Footer.astro";
 const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
-import img04 from "../images/pav-04.jpg";
-import img05 from "../images/pav-05.jpg";
-import img06 from "../images/pav-06.png";
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es-MX">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{siteTitle}</title>
     <!-- -->
     <meta name="author" content="ODCenteno" />
     <meta name="title" content={siteTitle} />
     <meta name="description" content={siteDescription} />
-    <meta name="keywords" content="BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios"/>
+    <meta name="keywords" content="BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios" />
     <meta name="robots" content="index, follow" />
     <!--link rel="canonical" href="https://puertoaguaverde-rsc.com" /-->
 
     <link rel="icon" href="../../public/favicon.ico" type="image/x-icon" />
-    <meta name="theme-color" content="#COLOR"/>
+    <meta name="theme-color" content="#COLOR" />
     <ClientRouter />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
     <!-- <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> -->
 
     <!-- Global Metadata -->
@@ -42,26 +39,21 @@ import img06 from "../images/pav-06.png";
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="/android-icon-192x192.png"
-    />
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <meta name="msapplication-TileColor" content="#2b5797" />
     <meta name="theme-color" content="#ffffff" />
 
-  <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook -->
     <meta property="og:locale" content="es_ES" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={ogTitle}>
-    <meta property="og:description" content={ogDescription}>
-    <meta property="og:image" content="/some-image.png">
-    <meta property="og:url" content="/this-page.html">
-    <meta property="og:site_name" content="Your Site Name">
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content="/some-image.png" />
+    <meta property="og:url" content="/this-page.html" />
+    <meta property="og:site_name" content="Your Site Name" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -73,86 +65,23 @@ import img06 from "../images/pav-06.png";
     <meta name="twitter:creator" content="@gndx" /-->
   </head>
   <body>
-    <Header></Header>
+    <Header />
 
     <main>
-      <slot name="Hero"></slot>
-      <slot name="categories"></slot>
-      <slot></slot>
+      <slot name="Hero" />
+      <slot name="categories" />
+      <slot />
 
-        <!-- Featured Sections Grid -->
-        <section class="highlights section-padding">
-          <div class="container">
-              <div class="section-header">
-                  <h2 data-key="highlights_title">Lo más destacado</h2>
-                  <p data-key="highlights_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre las mejores opciones para tu visita</p>
-              </div>
-              <div class="highlights-layout" style="grid-template-columns: 1fr 1fr 1fr; gap: 2rem; display: grid;">
-                  <!-- Experiences -->
-                  <div class="review-card" style="height: auto;">
-                      <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
-                          <Image src={img06} alt="Experiences">
-                      </div>
-                      <h3 data-key="feat_exp_title">Experiencias para disfrutar</h3>
-                      <p data-key="feat_exp_desc">Descubre actividades únicas para conectar con la naturaleza...</p>
-                  </div>
-
-                  <!-- Accommodation -->
-                  <div class="review-card" style="height: auto;">
-                      <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
-                          <img src="../../images/pav-07.jpg" alt="Accommodation">
-                      </div>
-                      <h3 data-key="feat_acc_title">Hospédate con nosotros</h3>
-                      <p data-key="feat_acc_desc">Encuentra opciones de alojamiento que combinan comodidad...</p>
-                  </div>
-
-                  <!-- Restaurants -->
-                  <div class="review-card" style="height: auto;">
-                      <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
-                          <img src="../../images/pav-08.jpg" alt="Restaurants">
-                      </div>
-                      <h3 data-key="feat_rest_title">Sabores de la región</h3>
-                      <p data-key="feat_rest_desc">Desde mariscos frescos hasta cocina tradicional...</p>
-                  </div>
-              </div>
-          </div>
-        </section>
-
-        <!-- Map Section -->
-        <section class="newsletter">
-          <div class="newsletter-bg">
-              <img src="../../images/pav-09.jpg" alt="Map Background">
-          </div>
-          <div class="container newsletter-content">
-              <h2 data-key="map_title">Mapa del Destino</h2>
-              <p class="disclaimer" data-key="map_desc" style="font-size: 1.1rem; margin-bottom: 2rem;">Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme.</p>
-              <button class="btn btn-accent">Ver Mapa</button>
-          </div>
-        </section>
-
-        <!-- Final CTA -->
-        <section class="section-padding text-center" style="text-align: center;">
-          <div class="container">
-            <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
-            <br>
-            <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
-          </div>
-        </section>
-
-    </main>
-
-    <footer class="site-footer">
-        <div class="container footer-grid" style="grid-template-columns: 1fr;">
-            <div class="footer-brand" style="text-align: center;">
-                <a href="#" class="logo" style="justify-content: center;">
-                    <span class="logo-icon">⚓</span> Puerto Agua Verde
-                </a>
-                <p data-key="footer_desc">Puerto Agua Verde & Rancho San Cosme – Sitio turístico informativo.</p>
-                <p data-key="footer_rights">Todos los derechos reservados.</p>
-                <p><a href="#" data-key="footer_legal" style="font-size: 0.8rem; text-decoration: underline;">Aviso de Privacidad · Términos y Condiciones</a></p>
-            </div>
+      <!-- Final CTA -->
+      <section class="section-padding text-center" style="text-align: center;">
+        <div class="container">
+          <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
+          <br />
+          <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
         </div>
-    </footer>
+      </section>
+    </main>
+    <Footer />
     <!--script src="script.js"></!--script-->
   </body>
 </html>
