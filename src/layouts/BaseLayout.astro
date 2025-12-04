@@ -66,20 +66,10 @@ const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
   </head>
   <body>
     <Header />
-
     <main>
       <slot name="Hero" />
       <slot name="categories" />
       <slot />
-
-      <!-- Final CTA -->
-      <section class="section-padding text-center" style="text-align: center;">
-        <div class="container">
-          <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
-          <br />
-          <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
-        </div>
-      </section>
     </main>
     <Footer />
     <!--script src="script.js"></!--script-->

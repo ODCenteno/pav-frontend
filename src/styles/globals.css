@@ -23,17 +23,17 @@
 }
 
 body {
-    font-family: var(--font-body);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-	  -moz-osx-font-smoothing: grayscale;
-	  -webkit-text-size-adjust: 100%;
-	  -ms-text-size-adjust: 100%;
-	  -moz-text-size-adjust: 100%;
-	  text-rendering: optimizeLegibility;
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
 }
 
 img {

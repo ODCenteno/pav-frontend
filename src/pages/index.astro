@@ -5,6 +5,7 @@ import Categories from "../components/main/categories/Categories.astro";
 import Destinations from "../components/main/destinations/Destinations.astro";
 import Highlights from "@components/main/highlights/Highlights.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
+import CtaSection from "@/components/main/CTA/CtaSection.astro";
 ---
 
 <BaseLayout siteTitle="Puerto Agua Verde | Rancho San Cosme | Directorio de Servicios y Turismo" ogTitle="Descubre Puerto Agua Verde y Rancho San Cosme" siteDescription="Actividades, alojamientos y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable." ogDescription="Descubre tu aventura perfecta en Puerto Agua Verde y Rancho San Cosme con nuestra guía de servicios y turismo. Actividades, alojamientos y más.">
@@ -13,6 +14,7 @@ import MapSection from "@/components/main/mapSection/MapSection.astro";
   <Destinations />
   <Highlights />
   <MapSection />
+  <CtaSection />
 </BaseLayout>
 
 <script type="module">
@@ -20,5 +22,56 @@ import MapSection from "@/components/main/mapSection/MapSection.astro";
   import initConfig from "../utils/utils.js";
   document.addEventListener("DOMContentLoaded", () => {
     initConfig();
+  });
+
+  function renderCards(category) {
+    const container = document.getElementById("category-carousel-container");
+    container.innerHTML = ""; // Clear existing
+
+    const filteredData = category === "all" ? categoryData : categoryData.filter((item) => item.category === category);
+
+    if (filteredData.length === 0) {
+      container.innerHTML = `<p style="width: 100%; text-align: center; color: var(--secondary-text);">No hay resultados para esta categoría.</p>`;
+      return;
+    }
+
+    filteredData.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "listing-card";
+      card.innerHTML = `
+            <div class="listing-image-container">
+                <img src="${item.image}" alt="${item.title[currentLang]}">
+                <button class="fav-btn" aria-label="Add to favorites">
+                    <i class="far fa-bookmark"></i>
+                </button>
+            </div>
+            <div class="listing-content">
+                <span class="listing-tag">${item.tag[currentLang]}</span>
+                <h3 class="listing-title">${item.title[currentLang]}</h3>
+                <p class="listing-desc">${item.desc[currentLang]}</p>
+                <div class="listing-footer">
+                    <span class="listing-price">${item.price}</span>
+                </div>
+            </div>
+        `;
+      container.appendChild(card);
+    });
+
+    // Update View All link visibility/text based on category if needed
+    // For now, it just stays as "Ver todo" / "View all"
+  }
+
+  // Category Chips
+  const chips = document.querySelectorAll(".chip");
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      // Remove active class from all
+      chips.forEach((c) => c.classList.remove("active"));
+      // Add active class to clicked
+      chip.classList.add("active");
+      // Render cards
+      const category = chip.getAttribute("data-category");
+      renderCards(category);
+    });
   });
 </script>
