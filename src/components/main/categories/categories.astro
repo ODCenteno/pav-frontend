@@ -1,5 +1,7 @@
 ---
 import "./categories.css";
+import { categoryData } from "@/data/categoryData.js";
+import CardMain from "@/components/cards/CardMain.astro";
 ---
 
 <section class="destinations section-padding">
@@ -20,6 +22,8 @@ import "./categories.css";
       <div class="category-content">
         <div id="category-carousel-container" class="carousel-container">
           <!-- Cards will be injected here by JS -->
+          {console.log("Rendering initial cards...")}
+          {categoryData.slice(0, 6).map((item) => <CardMain item={item} currentLang={"es"} />)}
         </div>
         <div class="view-all-container">
           <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">Ver todo <i class="fas fa-arrow-right"></i></a>
@@ -28,3 +32,41 @@ import "./categories.css";
     </div>
   </div>
 </section>
+
+<script type="module">
+  import { categoryData } from "../data/categoryData.js";
+  import CardMain from "@/components/cards/CardMain.astro";
+
+  function renderCards(category) {
+    const container = document.getElementById("category-carousel-container");
+    container.innerHTML = ""; // Clear existing
+
+    const filteredData = category === "all" ? categoryData : categoryData.filter((item) => item.category === category);
+
+    if (filteredData.length === 0) {
+      container.innerHTML = `<p style="width: 100%; text-align: center; color: var(--secondary-text);">No hay resultados para esta categoría.</p>`;
+      return;
+    }
+
+    filteredData.forEach((item) => {
+      const card = <CardMain item={item} currentLang={(currentLang = "es")} />;
+      container.appendChild(card);
+    });
+
+    // Update View All link visibility/text based on category if needed
+    // For now, it just stays as "Ver todo" / "View all"
+  }
+
+  // Category Chips
+  const chips = document.querySelectorAll(".chip");
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      chips.forEach((c) => c.classList.remove("active"));
+      // Add active class to clicked
+      chip.classList.add("active");
+      // Render cards
+      const category = chip.getAttribute("data-category");
+      renderCards(category);
+    });
+  });
+</script>

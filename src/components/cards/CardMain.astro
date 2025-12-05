@@ -1,0 +1,22 @@
+---
+import "./cardsMain.css";
+const { item, currentLang } = Astro.props;
+import { Image } from "astro:assets";
+---
+
+<article class="listing-card">
+  <div class="listing-image-container">
+    <img src={item.image} alt={item.title[currentLang]} />
+    <button class="fav-btn" aria-label="Add to favorites">
+      <i class="far fa-bookmark"></i>
+    </button>
+  </div>
+  <div class="listing-content">
+    <span class="listing-tag">{item.tag[currentLang]}</span>
+    <h3 class="listing-title">{item.title[currentLang]}</h3>
+    <p class="listing-desc">{item.desc[currentLang]}</p>
+    <div class="listing-footer">
+      <span class="listing-price">{item.price}</span>
+    </div>
+  </div>
+</article>
