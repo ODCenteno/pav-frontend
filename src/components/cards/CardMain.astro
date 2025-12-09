@@ -2,21 +2,32 @@
 import "./cardsMain.css";
 const { item, currentLang } = Astro.props;
 import { Image } from "astro:assets";
+import BookmarkIcon from "../../images/bookmark-filled.svg";
+import BookmarkOutline from "../../images/bookmark-outline.svg";
 ---
 
 <article class="listing-card">
   <div class="listing-image-container">
     <img src={item.image} alt={item.title[currentLang]} />
-    <button class="fav-btn" aria-label="Add to favorites">
-      <i class="far fa-bookmark"></i>
-    </button>
+    <div class="fav-btn" aria-label="Add to favorites">
+      <BookmarkOutline class="far fa-bookmark bookmark-icon" />
+    </div>
   </div>
   <div class="listing-content">
-    <span class="listing-tag">{item.tag[currentLang]}</span>
+    <div class="listing-content__tag-price">
+      <span class="listing-tag">{item.tag[currentLang]}</span>
+      {item.price ? <span class="listing-price">{item.price}</span> : null}
+    </div>
     <h3 class="listing-title">{item.title[currentLang]}</h3>
     <p class="listing-desc">{item.desc[currentLang]}</p>
     <div class="listing-footer">
-      <span class="listing-price">{item.price}</span>
+      <button class="btn btn-outline btn-sm">Leer más</button>
+      <div class="listing-socials">
+        {
+          item.socials.map((social) => (
+            <a href={social 
+        }
+      </div>
     </div>
   </div>
 </article>
