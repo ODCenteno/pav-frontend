@@ -1,0 +1,93 @@
+---
+import type { ContactInfo } from "@/types/common.type";
+import { SOCIAL_CONFIG } from "@/utils/socialConfig.ts";
+interface Props {
+  socialInfo: {
+    [key: string]: string | undefined | null;
+  };
+}
+const { socialInfo } = Astro.props;
+
+const activeLinks = Object.entries(socialInfo)
+  .filter(([key, value]) => {
+    const strValue = String(value || "");
+    return strValue.trim() !== "" && SOCIAL_CONFIG[key];
+  })
+  .map(([key, value]) => {
+    const config = SOCIAL_CONFIG[key];
+    const strValue = String(value || "").trim();
+
+    let finalHref = strValue;
+
+    if (config.urlPrefix && !strValue.startsWith("http") && !strValue.startsWith(config.urlPrefix)) {
+      finalHref = `${config.urlPrefix}${strValue}`;
+    }
+
+    return {
+      key,
+      href: finalHref,
+      ...config,
+    };
+  });
+---
+
+{
+  activeLinks.length > 0 && (
+    <div class="social-container">
+      {activeLinks.map((link) => (
+        <a href={link.href} class={`social-link ${link.key}`} aria-label={link.label} target={link.key === "phone" || link.key === "email" ? "_self" : "_blank"} title={link.label} rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="20" height="20" class="icon-svg" set:html={link.icon} />
+        </a>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .social-container {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    padding-top: 0.5rem;
+  }
+
+  .social-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .social-link:hover {
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+
+  .social-link.whatsapp:hover {
+    background-color: #25d366;
+    color: white;
+  }
+  .social-link.facebook:hover {
+    background-color: #1877f2;
+    color: white;
+  }
+  .social-link.instagram:hover {
+    background-color: #e1306c;
+    color: white;
+  }
+  .social-link.phone:hover,
+  .social-link.email:hover {
+    background-color: #333;
+    color: white;
+  }
+
+  .icon-svg {
+    fill: currentColor;
+  }
+</style>

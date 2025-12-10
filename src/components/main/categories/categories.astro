@@ -1,7 +1,12 @@
 ---
 import "./categories.css";
-import { categoryData } from "@/data/categoryData.js";
+// import { categoryData } from "@/data/categoryData.js";
 import CardMain from "@/components/cards/CardMain.astro";
+import type { Listing } from "../../../types/listing.type";
+
+const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
+const listingData = await listingAPI.json();
+const categoryData = listingData.data;
 ---
 
 <section class="destinations section-padding">
@@ -22,8 +27,8 @@ import CardMain from "@/components/cards/CardMain.astro";
       <div class="category-content">
         <div id="category-carousel-container" class="carousel-container">
           <!-- Cards will be injected here by JS -->
-          {console.log("Rendering initial cards...")}
-          {categoryData.slice(0, 6).map((item) => <CardMain item={item} currentLang={"es"} />)}
+          {console.log("Rendering initial cards...", categoryData)}
+          {categoryData.map((item: Listing) => <CardMain item={item} currentLang={"es"} />)}
         </div>
         <div class="view-all-container">
           <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">Ver todo <i class="fas fa-arrow-right"></i></a>

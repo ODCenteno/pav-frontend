@@ -1,32 +1,42 @@
 ---
 import "./cardsMain.css";
+import type { Listing } from "../../types/listing.type";
 const { item, currentLang } = Astro.props;
 import { Image } from "astro:assets";
+import Socials from "./Socials.astro";
 import BookmarkIcon from "../../images/bookmark-filled.svg";
 import BookmarkOutline from "../../images/bookmark-outline.svg";
+const altText = currentLang === "es" ? item.short_desc_es : item.short_desc_en;
+const listingTags = currentLang === "es" ? item.tags_es : item.tags_en;
+const listingTitle = currentLang === "es" ? item.name_es : item.name_en;
+const listingDesc = currentLang === "es" ? item.long_desc_es : item.long_desc_en;
+const socialInfo = {
+  whatsapp: item.whatsapp || "",
+  instagram: item.instagram || "",
+  facebook: item.facebook || "",
+  phone: item.phone || "",
+  email: item.email || "",
+};
 ---
 
-<article class="listing-card">
+<article class="listing-card" data-listing-type={item.type} data-category={item.category_id} data-is-featured={item.is_featured}>
   <div class="listing-image-container">
-    <img src={item.image} alt={item.title[currentLang]} />
-    <div class="fav-btn" aria-label="Add to favorites">
+    <img src={item.main_image_url} alt={altText} />
+    <div class="fav-btn" aria-label="Add to favorites" title={currentLang === "es" ? "Agregar a favoritos" : "Add to favorites"}>
       <BookmarkOutline class="far fa-bookmark bookmark-icon" />
     </div>
   </div>
   <div class="listing-content">
     <div class="listing-content__tag-price">
-      <span class="listing-tag">{item.tag[currentLang]}</span>
+      <span class="listing-tag">{listingTags}</span>
       {item.price ? <span class="listing-price">{item.price}</span> : null}
     </div>
-    <h3 class="listing-title">{item.title[currentLang]}</h3>
-    <p class="listing-desc">{item.desc[currentLang]}</p>
+    <h3 class="listing-title">{listingTitle}</h3>
+    <p class="listing-desc">{listingDesc}</p>
     <div class="listing-footer">
       <button class="btn btn-outline btn-sm">Leer más</button>
       <div class="listing-socials">
-        {
-          item.socials.map((social) => (
-            <a href={social 
-        }
+        <Socials socialInfo={socialInfo} />
       </div>
     </div>
   </div>
