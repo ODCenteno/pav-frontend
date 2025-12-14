@@ -3,6 +3,9 @@ import "./categories.css";
 // import { categoryData } from "@/data/categoryData.js";
 import CardMain from "@/components/cards/CardMain.astro";
 import type { Listing } from "../../../types/listing.type";
+import { useTranslations } from "../../../i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
 
 const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
 const listingData = await listingAPI.json();
@@ -12,26 +15,26 @@ const categoryData = listingData.data;
 <section class="destinations section-padding">
   <div class="container">
     <div class="section-header" style="flex-direction: column; align-items: flex-start;">
-      <h2 data-key="gallery_title">Organiza tu viaje</h2>
-      <p data-key="gallery_desc" style="margin-bottom: 1.5rem; color: var(--secondary-text);">Explora actividades, lugares y servicios disponibles en el puerto y el rancho.</p>
+      <h2 data-key="gallery_title">{t('gallery.title')}</h2>
+      <p data-key="gallery_desc" style="margin-bottom: 1.5rem; color: var(--secondary-text);">{t('gallery.desc')}</p>
       <div class="filter-chips">
-        <button class="chip active" data-key="cat_all" data-category="all">Todo</button>
-        <button class="chip" data-key="cat_experiences" data-category="experiences">Experiencias</button>
-        <button class="chip" data-key="cat_sites" data-category="sites">Sitios de Interés</button>
-        <button class="chip" data-key="cat_accommodation" data-category="accommodation">Alojamiento</button>
-        <button class="chip" data-key="cat_restaurants" data-category="restaurants">Restaurantes</button>
-        <button class="chip" data-key="cat_services" data-category="services">Servicios</button>
+        <button class="chip active" data-key="cat_all" data-category="all">{t('categories.all')}</button>
+        <button class="chip" data-key="cat_experiences" data-category="experiences">{t('categories.experiences')}</button>
+        <button class="chip" data-key="cat_sites" data-category="sites">{t('categories.sites')}</button>
+        <button class="chip" data-key="cat_accommodation" data-category="accommodation">{t('categories.accommodation')}</button>
+        <button class="chip" data-key="cat_restaurants" data-category="restaurants">{t('categories.restaurants')}</button>
+        <button class="chip" data-key="cat_services" data-category="services">{t('categories.services')}</button>
       </div>
 
       <!-- Dynamic Category Content -->
       <div class="category-content">
-        <div id="category-carousel-container" class="carousel-container">
+        <div id="category-carousel-container" class="carousel-container" data-no-results-text={t('gallery.noResults')}>
           <!-- Cards will be injected here by JS -->
           {console.log("Rendering initial cards...", categoryData)}
-          {categoryData.map((item: Listing) => <CardMain item={item} currentLang={"es"} />)}
+          {categoryData.map((item: Listing) => <CardMain item={item} currentLang={Astro.currentLocale} />)}
         </div>
         <div class="view-all-container">
-          <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">Ver todo <i class="fas fa-arrow-right"></i></a>
+          <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">{t('gallery.view_all')} <i class="fas fa-arrow-right"></i></a>
         </div>
       </div>
     </div>
@@ -44,12 +47,13 @@ const categoryData = listingData.data;
 
   function renderCards(category) {
     const container = document.getElementById("category-carousel-container");
+    const noResultsText = container.dataset.noResultsText;
     container.innerHTML = ""; // Clear existing
 
     const filteredData = category === "all" ? categoryData : categoryData.filter((item) => item.category === category);
 
     if (filteredData.length === 0) {
-      container.innerHTML = `<p style="width: 100%; text-align: center; color: var(--secondary-text);">No hay resultados para esta categoría.</p>`;
+      container.innerHTML = `<p style="width: 100%; text-align: center; color: var(--secondary-text);">${noResultsText}</p>`;
       return;
     }
 

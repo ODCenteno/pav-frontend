@@ -4,17 +4,17 @@ import { Image } from 'astro:assets';
 import img1 from "../../../images/pav-01.jpg";
 import img2 from "../../../images/pav-10.jpg";
 import img3 from "../../../images/pav-11.jpg";
+import { useTranslations } from '../../../i18n/utils';
 
+const t = useTranslations(Astro.currentLocale);
 ---
 
 <section class="hero">
   <div class="container hero-container">
     <div class="hero-content">
-      <h1 data-key="hero_title">Puerto Agua Verde & <span class="highlight-text">Rancho San Cosme</span></h1>
-      <p data-key="hero_desc">Un destino natural en Baja California Sur donde la tranquilidad, la tradición y los paisajes espectaculares se encuentran con la auténtica vida costera.
-        <br>Explora playas, experiencias locales, senderos y servicios para planear tu visita.<br/>
-      </p>
-      <a href="#" class="btn btn-accent" data-key="hero_cta">Explorar destino</a>
+      <h1 data-key="hero_title" set:html={t('hero.title')}></h1>
+      <p data-key="hero_desc">{t('hero.desc')}</p>
+      <a href="#" class="btn btn-accent" data-key="hero_cta">{t('hero.cta')}</a>
     </div>
     <div class="hero-images">
       <div class="hero-img-card img-1">

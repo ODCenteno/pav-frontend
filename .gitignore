@@ -6,7 +6,7 @@
 # $ git config --global mergetool.keepBackup false
 *.orig
 .astro/
-
+agents/
 # Created by git when using merge tools for conflicts
 *.BACKUP.*
 *.BASE.*

@@ -2,7 +2,12 @@
 import './header.css';
 import Image from "astro/components/Image.astro"
 import favicon from "../../../public/favicon.ico"
+import { useTranslations } from '../../i18n/utils';
+import { getAbsoluteLocaleUrlList } from 'astro:i18n';
 
+const t = useTranslations(Astro.currentLocale);
+const languageUrls = await getAbsoluteLocaleUrlList();
+const alternateLang = languageUrls.find(lang => !lang.isCurrent);
 ---
 
 <header class="site-header">
@@ -14,13 +19,17 @@ import favicon from "../../../public/favicon.ico"
     </a>
     <nav class="main-nav">
         <ul>
-            <li><a href="/experiencias" data-key="nav_experiences">Experiencias</a></li>
-            <li><a href="#" data-key="nav_sites">Sitios</a></li>
-            <li><a href="#" data-key="nav_accommodation">Hospedaje</a></li>
-            <li><a href="#" data-key="nav_restaurants">Restaurantes</a></li>
-            <li><a href="#" data-key="nav_services">Servicios</a></li>
-            <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">Iniciar Sesión</a></li>
-            <button id="lang-toggle" class="btn btn-outline btn-sm">EN</button>
+            <li><a href="/experiencias" data-key="nav_experiences">{t('nav.experiences')}</a></li>
+            <li><a href="#" data-key="nav_sites">{t('nav.sites')}</a></li>
+            <li><a href="#" data-key="nav_accommodation">{t('nav.accommodation')}</a></li>
+            <li><a href="#" data-key="nav_restaurants">{t('nav.restaurants')}</a></li>
+            <li><a href="#" data-key="nav_services">{t('nav.services')}</a></li>
+            <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t('nav.signIn')}</a></li>
+            {alternateLang && (
+              <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
+                {alternateLang.locale.substring(0, 2).toUpperCase()}
+              </a>
+            )}
         </ul>
     </nav>
     <div class="header-right">
@@ -36,4 +45,20 @@ import favicon from "../../../public/favicon.ico"
   </div>
 </header>
 
+<script>
+  import { navigate } from 'astro:transitions/client';
 
+  document.addEventListener('astro:page-load', () => {
+    const i18nToggle = document.getElementById('i18n-toggle');
+    if (i18nToggle) {
+      i18nToggle.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent default browser navigation
+        
+        const href = (e.currentTarget as HTMLAnchorElement).href;
+        
+        // Use Astro's API for smooth navigation
+        navigate(href);
+      });
+    }
+  });
+</script>

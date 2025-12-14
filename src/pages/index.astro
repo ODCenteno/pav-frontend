@@ -6,9 +6,17 @@ import Destinations from "../components/main/destinations/Destinations.astro";
 import Highlights from "@components/main/highlights/Highlights.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import { useTranslations } from "../i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
 ---
 
-<BaseLayout siteTitle="Puerto Agua Verde | Rancho San Cosme | Directorio de Servicios y Turismo" ogTitle="Descubre Puerto Agua Verde y Rancho San Cosme" siteDescription="Actividades, alojamientos y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable." ogDescription="Descubre tu aventura perfecta en Puerto Agua Verde y Rancho San Cosme con nuestra guía de servicios y turismo. Actividades, alojamientos y más.">
+<BaseLayout 
+  siteTitle={t('page.index.siteTitle')}
+  ogTitle={t('page.index.ogTitle')}
+  siteDescription={t('page.index.siteDescription')}
+  ogDescription={t('page.index.ogDescription')}
+>
   <Hero slot="Hero" />
   <Categories slot="categories" />
   <Destinations />

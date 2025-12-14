@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "home": "Home",
+    "experiences": "Experiences",
+    "sites": "Points of Interest",
+    "accommodation": "Accommodation",
+    "restaurants": "Restaurants",
+    "services": "Services",
+    "connectivity": "Internet",
+    "signIn": "Sign In"
+  },
+  "hero": {
+    "title": "Puerto Agua Verde & <span class=\"highlight-text\">Rancho San Cosme</span>",
+    "desc": "A natural destination in Baja California Sur where tranquility, tradition, and spectacular landscapes meet authentic coastal life. Explore beaches, local experiences, trails, and services to plan your visit.",
+    "cta": "Explore the destination"
+  },
+  "categories": {
+    "all": "All",
+    "experiences": "Experiences",
+    "sites": "Points of Interest",
+    "accommodation": "Accommodation",
+    "restaurants": "Restaurants",
+    "services": "Services",
+    "connectivity": "Internet & Connectivity"
+  },
+  "gallery": {
+    "title": "Organize your trip",
+    "desc": "Explore activities, places, and services available at the port and the ranch. Filter by category or select a card to see more details.",
+    "view_all": "View all",
+    "noResults": "No results for this category."
+  },
+  "about": {
+    "puerto": {
+      "title": "Puerto Agua Verde",
+      "text": "Puerto Agua Verde is a small corner of Baja California Sur known for its turquoise waters, community atmosphere, and untouched nature. Here, traditional fishing, quiet beaches, and outdoor activities combine to attract travelers in search of authenticity and peace."
+    },
+    "rancho": {
+      "title": "Rancho San Cosme",
+      "text": "Rancho San Cosme is a historical and cultural space where rural life remains alive. Surrounded by mountains and desert vegetation, it is a meeting point for visitors seeking local experiences, trails, guided activities, and connection with nature."
+    }
+  },
+  "stories": {
+    "title": "Discover the destination",
+    "subtitle": "Learn about the history and culture of these unique places"
+  },
+  "featured": {
+    "experiences": {
+      "title": "Experiences to enjoy",
+      "desc": "Discover unique activities to connect with nature, local culture, and community hospitality."
+    },
+    "accommodation": {
+      "title": "Stay with us",
+      "desc": "Find accommodation options that combine comfort, nature, and a privileged view of the landscape."
+    },
+    "restaurants": {
+      "title": "Flavors of the region",
+      "desc": "From fresh seafood to traditional cuisine, discover the places where you can enjoy local gastronomy."
+    }
+  },
+  "highlights": {
+    "title": "Highlights",
+    "subtitle": "Discover the best options for your visit"
+  },
+  "map": {
+    "title": "Destination Map",
+    "desc": "Explore key points of Puerto Agua Verde and Rancho San Cosme. Find routes, services, beaches, and activities near you."
+  },
+  "finalCta": {
+    "title": "Ready to discover more?",
+    "btn": "Plan my visit"
+  },
+  "footer": {
+    "desc": "Puerto Agua Verde & Rancho San Cosme – Informative tourist site.",
+    "rights": "All rights reserved.",
+    "legal": "Privacy Notice · Terms and Conditions"
+  },
+  "page": {
+    "index": {
+      "siteTitle": "Puerto Agua Verde | Rancho San Cosme | Service and Tourism Directory",
+      "ogTitle": "Discover Puerto Agua Verde and Rancho San Cosme",
+      "siteDescription": "Activities, accommodations, and tourist options in Puerto Agua Verde, Rancho San Cosme. Your complete guide for an unforgettable experience.",
+      "ogDescription": "Discover your perfect adventure in Puerto Agua Verde and Rancho San Cosme with our guide to services and tourism. Activities, accommodations, and more."
+    }
+  }
+}
