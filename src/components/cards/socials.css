@@ -1,0 +1,45 @@
+.social-container {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .social-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .social-link:hover {
+    transform: translateY(-2px);
+    cursor: pointer;
+  }
+
+  .social-link.whatsapp:hover {
+    background-color: #25d366;
+    color: white;
+  }
+  .social-link.facebook:hover {
+    background-color: #1877f2;
+    color: white;
+  }
+  .social-link.instagram:hover {
+    background-color: #e1306c;
+    color: white;
+  }
+  .social-link.phone:hover,
+  .social-link.email:hover {
+    background-color: #333;
+    color: white;
+  }
+
+  .icon-svg {
+    fill: currentColor;
+  }

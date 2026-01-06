@@ -1,40 +1,100 @@
 ---
 import "./cardsMain.css";
 import type { Listing } from "../../types/listing.type";
-const { item, currentLang } = Astro.props;
-import { Image } from "astro:assets";
+import type { LocalizedString } from "../../types/i18n.type";
 import Socials from "./Socials.astro";
-import BookmarkIcon from "../../images/bookmark-filled.svg";
-import BookmarkOutline from "../../images/bookmark-outline.svg";
-const altText = currentLang === "es" ? item.short_desc_es : item.short_desc_en;
-const listingTags = currentLang === "es" ? item.tags_es : item.tags_en;
-const listingTitle = currentLang === "es" ? item.name_es : item.name_en;
-const listingDesc = currentLang === "es" ? item.long_desc_es : item.long_desc_en;
+import SvgIcon from "../icons/SvgIcon.astro";
+
+// Props
+const { item, currentLang } = Astro.props as { item: Listing; currentLang: string };
+
+// Locale -> key interno ("en" | "es") para LocalizedString
+const langKey = String(currentLang).toLowerCase().startsWith("en") ? "en" : "es";
+
+// Helper local (SSR) para leer LocalizedString de forma segura
+function getLocalizedText(value?: LocalizedString, key: "es" | "en" = "es"): string {
+  if (!value) return "";
+  // Caso común: { es: "...", en: "..." }
+  if (typeof value === "object") {
+    const v = (value as any)[key] ?? (value as any).es ?? (value as any).en;
+    return typeof v === "string" ? v : "";
+  }
+  // Por si en algún momento llega como string directo
+  return typeof value === "string" ? value : "";
+}
+
+// Textos principales
+const title = getLocalizedText(item.name, langKey);
+const shortDesc = getLocalizedText(item.shortDescription, langKey);
+const desc = getLocalizedText(item.description, langKey);
+
+// Alt text: preferimos shortDescription, si no, title
+const altText = shortDesc || title || "";
+
+// Tags (LocalizedString[])
+const tags = (item.tags ?? []).map((t) => getLocalizedText(t, langKey).trim()).filter(Boolean);
+
+// Media: intentamos varias formas (modelo nuevo y legacy) para no romper MVP
+const mainImageUrl =
+  // modelo nuevo (si existe)
+  (item.media as any)?.mainImageUrl ||
+  (item.media as any)?.mainImage?.url ||
+  (item.media as any)?.images?.[0]?.url ||
+  // legacy (por compatibilidad temporal)
+  (item as any).main_image_url ||
+  (item as any).mainImageUrl ||
+  "";
+
+// Pricing: intenta modelo nuevo y legacy
+const price = (item.pricing as any)?.price ?? (item.pricing as any)?.amount ?? (item as any).price ?? null;
+
+// Contacto: modelo nuevo + fallback legacy
+const contact = item.contact ?? ({} as any);
 const socialInfo = {
-  whatsapp: item.whatsapp || "",
-  instagram: item.instagram || "",
-  facebook: item.facebook || "",
-  phone: item.phone || "",
-  email: item.email || "",
+  whatsapp: contact.whatsapp || (item as any).whatsapp || "",
+  instagram: contact.instagram || (item as any).instagram || "",
+  facebook: contact.facebook || (item as any).facebook || "",
+  phone: contact.phone || (item as any).phone || "",
+  email: contact.email || (item as any).email || "",
 };
+
+const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
+
+// Labels UI (idealmente se moverán a translations, pero quedan correctos por locale)
+const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
+const readMoreLabel = langKey === "en" ? "Read more" : "Leer más";
 ---
 
-<article class="listing-card" data-listing-type={item.type} data-category={item.category_id} data-is-featured={item.is_featured}>
+<article class="listing-card" data-listing-type={item.type} data-category={item.categoryId} data-is-featured={isFeatured}>
   <div class="listing-image-container">
-    <img src={item.main_image_url} alt={altText} />
-    <div class="fav-btn" aria-label="Add to favorites" title={currentLang === "es" ? "Agregar a favoritos" : "Add to favorites"}>
-      <BookmarkOutline class="far fa-bookmark bookmark-icon" />
-    </div>
+    {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
+
+    <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel}>
+      <!-- SVG inline robusto (SSR-first, sin SVGR) -->
+      <SvgIcon name="bookmark-outline" class="bookmark-icon" />
+    </button>
   </div>
+
   <div class="listing-content">
     <div class="listing-content__tag-price">
-      <span class="listing-tag">{listingTags}</span>
-      {item.price ? <span class="listing-price">{item.price}</span> : null}
+      {
+        tags.length > 0 && (
+          <div class="listing-tags" aria-label={langKey === "en" ? "Tags" : "Etiquetas"}>
+            {tags.slice(0, 3).map((tag) => (
+              <span class="listing-tag">{tag}</span>
+            ))}
+          </div>
+        )
+      }
+
+      {price ? <span class="listing-price">{price}</span> : null}
     </div>
-    <h3 class="listing-title">{listingTitle}</h3>
-    <p class="listing-desc">{listingDesc}</p>
+
+    <h3 class="listing-title">{title}</h3>
+    <p class="listing-desc">{desc}</p>
+
     <div class="listing-footer">
-      <button class="btn btn-outline btn-sm">Leer más</button>
+      <button type="button" class="btn btn-outline btn-sm">{readMoreLabel}</button>
       <Socials socialInfo={socialInfo} />
     </div>
   </div>

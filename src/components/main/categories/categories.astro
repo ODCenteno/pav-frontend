@@ -1,81 +1,81 @@
 ---
 import "./categories.css";
-// import { categoryData } from "@/data/categoryData.js";
-import CardMain from "@/components/cards/CardMain.astro";
 import type { Listing } from "../../../types/listing.type";
+import type { LocalizedString } from "../../../types/i18n.type";
 import { useTranslations } from "../../../i18n/utils";
 
-const t = useTranslations(Astro.currentLocale);
+import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
+import CardMain from "@/components/cards/CardMain.astro";
 
-const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
-const listingData = await listingAPI.json();
-const categoryData = listingData.data;
+// 1) Locale seguro (Astro.currentLocale puede ser undefined en tipos)
+const locale = Astro.currentLocale ?? Astro.defaultLocale ?? "es";
+
+// 2) Traductor SSR
+const t = useTranslations(locale);
+
+// Helper local para LocalizedString (por si category.name existe)
+function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
+  if (!value) return "";
+  const isEn = loc.toLowerCase().startsWith("en");
+  const key = isEn ? "en" : "es";
+  const v = (value as any)?.[key] ?? (value as any)?.es ?? (value as any)?.en;
+  return typeof v === "string" ? v : "";
+}
+
+// 3) Fetch SSR (defensivo)
+let categoryData: Listing[] = [];
+try {
+  const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
+  const listingJson = listingAPI.ok ? await listingAPI.json() : { data: [] };
+  categoryData = Array.isArray(listingJson?.data) ? listingJson.data : [];
+} catch {
+  categoryData = [];
+}
+
+// 4) Construir categorías dinámicas (id + label traducible)
+// - Si viene `item.category?.name` úsalo (mejor UX)
+// - Si no, fallback a usar el id tal cual (y luego lo mapeamos)
+const categoryMap = new Map<string, string>();
+
+for (const item of categoryData) {
+  const id = item.categoryId;
+  if (!id) continue;
+
+  const labelFromJoin = item.category?.name ? getLocalizedText(item.category.name as any, locale) : "";
+  const label = labelFromJoin || id; // fallback mínimo
+
+  if (!categoryMap.has(id)) categoryMap.set(id, label);
+}
+
+// Ordenar alfabéticamente por label para UI estable
+const categories = Array.from(categoryMap.entries())
+  .map(([id, label]) => ({ id, label }))
+  .sort((a, b) => a.label.localeCompare(b.label, locale));
+
+// 5) Strings UI (SSR)
+const translations = {
+  noResults: t("gallery.noResults"),
+  viewAll: t("gallery.viewAll"),
+  all: t("categories.all"),
+};
+
+// 6) viewAllHref seguro por locale (sin error de undefined)
+const isEnglish = locale.toLowerCase().startsWith("en");
+const viewAllHref = isEnglish ? "/en-US/explore" : "/explorar";
 ---
 
 <section class="destinations section-padding">
   <div class="container">
     <div class="section-header" style="flex-direction: column; align-items: flex-start;">
-      <h2 data-key="gallery_title">{t('gallery.title')}</h2>
-      <p data-key="gallery_desc" style="margin-bottom: 1.5rem; color: var(--secondary-text);">{t('gallery.desc')}</p>
-      <div class="filter-chips">
-        <button class="chip active" data-key="cat_all" data-category="all">{t('categories.all')}</button>
-        <button class="chip" data-key="cat_experiences" data-category="experiences">{t('categories.experiences')}</button>
-        <button class="chip" data-key="cat_sites" data-category="sites">{t('categories.sites')}</button>
-        <button class="chip" data-key="cat_accommodation" data-category="accommodation">{t('categories.accommodation')}</button>
-        <button class="chip" data-key="cat_restaurants" data-category="restaurants">{t('categories.restaurants')}</button>
-        <button class="chip" data-key="cat_services" data-category="services">{t('categories.services')}</button>
-      </div>
+      <h2>{t("gallery.title")}</h2>
+      <p style="margin-bottom: 1.5rem; color: var(--secondary-text);">{t("gallery.desc")}</p>
 
-      <!-- Dynamic Category Content -->
-      <div class="category-content">
-        <div id="category-carousel-container" class="carousel-container" data-no-results-text={t('gallery.noResults')}>
-          <!-- Cards will be injected here by JS -->
-          {console.log("Rendering initial cards...", categoryData)}
-          {categoryData.map((item: Listing) => <CardMain item={item} currentLang={Astro.currentLocale} />)}
-        </div>
-        <div class="view-all-container">
-          <a href="#" class="view-all-link" id="view-all-link" data-key="view_all">{t('gallery.view_all')} <i class="fas fa-arrow-right"></i></a>
-        </div>
+      <CategoryFilter client:visible locale={locale} translations={translations} categories={categories} viewAllHref={viewAllHref} containerSelector="#category-carousel-container" itemSelector="[data-category]" />
+
+      <!-- SSR-first: cards renderizadas en servidor -->
+      <div id="category-carousel-container" class="carousel-container">
+        {categoryData.map((item) => <CardMain item={item} currentLang={locale} />)}
       </div>
     </div>
   </div>
 </section>
-
-<script type="module">
-  import { categoryData } from "../data/categoryData.js";
-  import CardMain from "@/components/cards/CardMain.astro";
-
-  function renderCards(category) {
-    const container = document.getElementById("category-carousel-container");
-    const noResultsText = container.dataset.noResultsText;
-    container.innerHTML = ""; // Clear existing
-
-    const filteredData = category === "all" ? categoryData : categoryData.filter((item) => item.category === category);
-
-    if (filteredData.length === 0) {
-      container.innerHTML = `<p style="width: 100%; text-align: center; color: var(--secondary-text);">${noResultsText}</p>`;
-      return;
-    }
-
-    filteredData.forEach((item) => {
-      const card = <CardMain item={item} currentLang={(currentLang = "es")} />;
-      container.appendChild(card);
-    });
-
-    // Update View All link visibility/text based on category if needed
-    // For now, it just stays as "Ver todo" / "View all"
-  }
-
-  // Category Chips
-  const chips = document.querySelectorAll(".chip");
-  chips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-      chips.forEach((c) => c.classList.remove("active"));
-      // Add active class to clicked
-      chip.classList.add("active");
-      // Render cards
-      const category = chip.getAttribute("data-category");
-      renderCards(category);
-    });
-  });
-</script>

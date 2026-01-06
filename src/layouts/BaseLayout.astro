@@ -1,11 +1,24 @@
 ---
-import "../styles/globals.css";
+import { getAbsoluteLocaleUrl, getAbsoluteLocaleUrlList } from "astro:i18n";
 import { ClientRouter } from "astro:transitions";
-import Header from "@components/header/Header.astro";
-import Footer from "@components/footer/Footer.astro";
-import { getAbsoluteLocaleUrlList, getAbsoluteLocaleUrl } from "astro:i18n";
+import Header from "@/components/header/Header.astro";
+import Footer from "@/components/footer/Footer.astro";
 const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
-const defaultLocaleUrl = await getAbsoluteLocaleUrl(import.meta.env.PUBLIC_DEFAULT_LOCALE || "es-MX");
+
+const LOCALES = ["es", "en"] as const;
+const defaultLocale = "es";
+
+const pathname = Astro.url.pathname;
+
+const localePrefix = `/${Astro.currentLocale}`;
+const pathnameNoLocale = pathname === localePrefix ? "/" : pathname.startsWith(localePrefix + "/") ? pathname.slice(localePrefix.length) : pathname;
+
+const path = pathnameNoLocale.replace(/^\/+/, "");
+
+const hrefs = getAbsoluteLocaleUrlList(path);
+
+// x-default apuntando al defaultLocale para ESTA misma página
+const defaultLocaleUrl = getAbsoluteLocaleUrl(defaultLocale, path);
 ---
 
 <!doctype html>
@@ -15,7 +28,8 @@ const defaultLocaleUrl = await getAbsoluteLocaleUrl(import.meta.env.PUBLIC_DEFAU
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{siteTitle}</title>
-    {Astro.i18n.locales.map((locale) => <link rel="alternate" hreflang={locale.code} href={getAbsoluteLocaleUrl(locale.code)} />)}
+    {LOCALES.map((locale, i) => <link rel="alternate" hreflang={locale} href={hrefs[i]} />)}
+
     <link rel="alternate" hreflang="x-default" href={defaultLocaleUrl} />
     <!-- -->
     <meta name="author" content="ODCenteno" />

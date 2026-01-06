@@ -8,7 +8,8 @@ import markdoc from "@astrojs/markdoc";
 export default defineConfig({
   integrations: [react(), partytown(), sitemap(), markdoc()],
   i18n: {
-    locales: ["es-MX", "en-US"],
-    defaultLocale: "es-MX",
+    locales: ["es", "en"],
+    defaultLocale: "es",
+    routing: { prefixDefaultLocale: false },
   },
 });

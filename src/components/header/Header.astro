@@ -1,36 +1,47 @@
 ---
-import './header.css';
-import Image from "astro/components/Image.astro"
-import favicon from "../../../public/favicon.ico"
-import { useTranslations } from '../../i18n/utils';
-import { getAbsoluteLocaleUrlList } from 'astro:i18n';
+import "./header.css";
+import Image from "astro/components/Image.astro";
+import favicon from "../../../public/favicon.ico";
+import { useTranslations } from "../../i18n/utils";
+import { getAbsoluteLocaleUrl } from "astro:i18n";
 
 const t = useTranslations(Astro.currentLocale);
-const languageUrls = await getAbsoluteLocaleUrlList();
-const alternateLang = languageUrls.find(lang => !lang.isCurrent);
+
+const locales = ["en", "es"];
+const alternateLocaleCode = locales.find((l) => l !== Astro.currentLocale);
+
+let alternateLang;
+if (alternateLocaleCode) {
+  alternateLang = {
+    locale: alternateLocaleCode,
+    url: getAbsoluteLocaleUrl(alternateLocaleCode),
+  };
+}
 ---
 
 <header class="site-header">
   <div class="container header-container">
     <a href="/" class="logo">
-        <span class="logo-icon">
-          <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32}></Image>
-        </span><span class="logo-text"> Agua Verde</span>
+      <span class="logo-icon">
+        <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32} />
+      </span><span class="logo-text"> Agua Verde</span>
     </a>
     <nav class="main-nav">
-        <ul>
-            <li><a href="/experiencias" data-key="nav_experiences">{t('nav.experiences')}</a></li>
-            <li><a href="#" data-key="nav_sites">{t('nav.sites')}</a></li>
-            <li><a href="#" data-key="nav_accommodation">{t('nav.accommodation')}</a></li>
-            <li><a href="#" data-key="nav_restaurants">{t('nav.restaurants')}</a></li>
-            <li><a href="#" data-key="nav_services">{t('nav.services')}</a></li>
-            <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t('nav.signIn')}</a></li>
-            {alternateLang && (
-              <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
-                {alternateLang.locale.substring(0, 2).toUpperCase()}
-              </a>
-            )}
-        </ul>
+      <ul>
+        <li><a href="/experiencias" data-key="nav_experiences">{t("nav.experiences")}</a></li>
+        <li><a href="#" data-key="nav_sites">{t("nav.sites")}</a></li>
+        <li><a href="#" data-key="nav_accommodation">{t("nav.accommodation")}</a></li>
+        <li><a href="#" data-key="nav_restaurants">{t("nav.restaurants")}</a></li>
+        <li><a href="#" data-key="nav_services">{t("nav.services")}</a></li>
+        <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t("nav.signIn")}</a></li>
+        {
+          alternateLang && (
+            <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
+              {alternateLang.locale.substring(0, 2).toUpperCase()}
+            </a>
+          )
+        }
+      </ul>
     </nav>
     <div class="header-right">
       <button class="mobile-menu-btn" aria-label="Toggle menu">
@@ -46,16 +57,16 @@ const alternateLang = languageUrls.find(lang => !lang.isCurrent);
 </header>
 
 <script>
-  import { navigate } from 'astro:transitions/client';
+  import { navigate } from "astro:transitions/client";
 
-  document.addEventListener('astro:page-load', () => {
-    const i18nToggle = document.getElementById('i18n-toggle');
+  document.addEventListener("astro:page-load", () => {
+    const i18nToggle = document.getElementById("i18n-toggle");
     if (i18nToggle) {
-      i18nToggle.addEventListener('click', (e) => {
+      i18nToggle.addEventListener("click", (e) => {
         e.preventDefault(); // Prevent default browser navigation
-        
+
         const href = (e.currentTarget as HTMLAnchorElement).href;
-        
+
         // Use Astro's API for smooth navigation
         navigate(href);
       });

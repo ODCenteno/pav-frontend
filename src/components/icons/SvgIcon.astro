@@ -1,0 +1,51 @@
+---
+/**
+ * SvgIcon.astro
+ * Render de SVG inline sin SVGR.
+ * - SSR-first
+ * - Robusto en build/dev
+ * - Permite class/aria-label
+ */
+
+export interface Props {
+  name: "bookmark-outline" | "bookmark-filled";
+  class?: string;
+  title?: string;
+  ariaLabel?: string;
+}
+
+const { name, class: className = "", title, ariaLabel } = Astro.props;
+
+// Mapa de iconos inline (puedes agregar más aquí)
+const ICONS: Record<string, string> = {
+  "bookmark-outline": `
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M7 3.5H17C18.1046 3.5 19 4.39543 19 5.5V21L12 17.25L5 21V5.5C5 4.39543 5.89543 3.5 7 3.5Z"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linejoin="round"
+      />
+    </svg>
+  `,
+  "bookmark-filled": `
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 3.5H17C18.1046 3.5 19 4.39543 19 5.5V21L12 17.25L5 21V5.5C5 4.39543 5.89543 3.5 7 3.5Z"/>
+    </svg>
+  `,
+};
+
+const svg = ICONS[name];
+if (!svg) {
+  throw new Error(`SvgIcon: icon "${name}" not found`);
+}
+
+const a11yAttrs = ariaLabel ? `role="img" aria-label="${ariaLabel}"` : `aria-hidden="true"`;
+---
+
+<span class={className} set:html={svg} {...title ? { title } : {}} {...a11yAttrs ? {} : {}} />
+
+<!-- Nota:
+  - El <span> envuelve el svg inline.
+  - El svg usa currentColor: controla color desde CSS (.bookmark-icon { color: ... }).
+-->
