@@ -63,7 +63,8 @@
   },
   "map": {
     "title": "Destination Map",
-    "desc": "Explore key points of Puerto Agua Verde and Rancho San Cosme. Find routes, services, beaches, and activities near you."
+    "desc": "Explore key points of Puerto Agua Verde and Rancho San Cosme. Find routes, services, beaches, and activities near you.",
+    "btn": "View Map"
   },
   "finalCta": {
     "title": "Ready to discover more?",

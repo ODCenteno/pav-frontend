@@ -75,3 +75,13 @@
 .mobile-only {
     display: block;
 }
+
+.categories-header {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.categories-subtitle {
+     margin-bottom: 1.5rem;
+     color: var(--secondary-text);
+}

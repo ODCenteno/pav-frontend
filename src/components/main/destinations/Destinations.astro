@@ -3,13 +3,16 @@ import "./destinations.css";
 import { Image } from "astro:assets";
 import img04 from "@/images/pav-04.jpg";
 import img05 from "@/images/pav-05.jpg";
+import { useTranslations } from "../../../i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
 ---
 
-<section class="stories section-padding" style="background-color: #f9f9f9;">
+<section class="stories section-padding">
   <div class="container">
     <div class="section-header">
-      <h2 data-key="stories_title">Conoce el destino</h2>
-      <p data-key="stories_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre la historia y cultura de estos lugares únicos</p>
+      <h2 data-key="stories_title">{t("stories.title")}</h2>
+      <p class="stories-subtitle" data-key="stories_subtitle">{t("stories.subtitle")}</p>
     </div>
     <div class="stories-layout">
       <article class="featured-story">
@@ -17,8 +20,8 @@ import img05 from "@/images/pav-05.jpg";
           <Image src={img04} alt="Puerto Agua Verde" />
         </div>
         <div class="story-content">
-          <h3 data-key="about_puerto_title">Puerto Agua Verde</h3>
-          <p class="excerpt" data-key="about_puerto_text">Puerto Agua Verde es un pequeño rincón de Baja California Sur...</p>
+          <h3 data-key="about_puerto_title">{t("about.puerto.title")}</h3>
+          <p class="excerpt" data-key="about_puerto_text">{t("about.puerto.text")}</p>
         </div>
       </article>
 
@@ -27,8 +30,8 @@ import img05 from "@/images/pav-05.jpg";
           <Image src={img05} alt="Rancho San Cosme" />
         </div>
         <div class="story-content">
-          <h3 data-key="about_rancho_title">Rancho San Cosme</h3>
-          <p class="excerpt" data-key="about_rancho_text">Rancho San Cosme es un espacio histórico y cultural...</p>
+          <h3 data-key="about_rancho_title">{t("about.rancho.title")}</h3>
+          <p class="excerpt" data-key="about_rancho_text">{t("about.rancho.text")}</p>
         </div>
       </article>
     </div>

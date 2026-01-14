@@ -1,60 +1,38 @@
+/* Footer */
 .site-footer {
-    background-color: var(--accent-color);
-    padding: 4rem 0 2rem;
+    background-color: var(--white);
+    padding: 3rem 0;
     border-top: 1px solid var(--border-color);
 }
 
 .footer-grid {
     display: grid;
+    gap: 3rem;
     grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-bottom: 3rem;
+}
+
+.footer-brand {
+    text-align: center;
+}
+
+.footer-brand .logo {
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+    text-decoration: none;
 }
 
 .footer-brand p {
-    color: var(--font-body);
-    margin: 1rem 0;
-}
-
-.social-icons {
-    display: flex;
-    gap: 1rem;
-}
-
-.social-icons a {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-color);
-    font-size: 1.4rem;
-}
-
-.footer-links h4 {
-    font-family: var(--font-body);
-    margin-bottom: 1.5rem;
-}
-
-.footer-links ul li {
-    margin-bottom: 0.75rem;
-}
-
-.footer-links ul li a {
     color: var(--secondary-text);
     font-size: 1.4rem;
-}
-
-.footer-bottom {
-    text-align: center;
-    color: var(--secondary-text);
-    font-size: 1.6rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
+    margin-bottom: 1rem;
 }
 
 .footer__rights {
+    margin-top: 1rem;
     font-size: 1.2rem;
 }

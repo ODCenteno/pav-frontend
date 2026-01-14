@@ -1,11 +1,14 @@
 ---
+import "./ctaSection.css";
+import { useTranslations } from "../../../i18n/utils";
 
+const t = useTranslations(Astro.currentLocale);
 ---
 
-<section class="section-padding text-center" style="text-align: center;">
+<section class="section-padding text-center">
   <div class="container">
-    <h2 data-key="final_cta_title">¿Listo para descubrir más?</h2>
+    <h2 data-key="final_cta_title">{t("finalCta.title")}</h2>
     <br />
-    <a href="#" class="btn btn-primary" data-key="final_cta_btn">Planear mi visita</a>
+    <a href="#" class="btn btn-primary" data-key="final_cta_btn">{t("finalCta.btn")}</a>
   </div>
 </section>

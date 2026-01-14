@@ -2,6 +2,9 @@
 import { Image } from "astro:assets";
 import "./mapSection.css";
 import mapImage from "@/images/pav-landscape-12.webp";
+import { useTranslations } from "../../../i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
 ---
 
 <section class="newsletter">
@@ -9,8 +12,8 @@ import mapImage from "@/images/pav-landscape-12.webp";
     <Image src={mapImage} alt="Mapa de Puerto Agua Verde y Rancho San Cosme" quality={80} />
   </div>
   <div class="container newsletter-content">
-    <h2 data-key="map_title">Mapa del Destino</h2>
-    <p class="disclaimer" data-key="map_desc" style="font-size: 1.1rem; margin-bottom: 2rem;">Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme.</p>
-    <button class="btn btn-accent">Ver Mapa</button>
+    <h2 data-key="map_title">{t("map.title")}</h2>
+    <p class="disclaimer map-description" data-key="map_desc">{t("map.desc")}</p>
+    <button class="btn btn-accent">{t("map.btn")}</button>
   </div>
 </section>

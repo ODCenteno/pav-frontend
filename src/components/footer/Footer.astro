@@ -1,15 +1,18 @@
 ---
 import "@/components/footer/footer.css";
+import { useTranslations } from "../../i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
 ---
 
 <footer class="site-footer">
-  <div class="container footer-grid" style="grid-template-columns: 1fr;">
-    <div class="footer-brand" style="text-align: center;">
-      <a href="#" class="logo" style="justify-content: center;">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="#" class="logo">
         <span class="logo-icon">⚓</span> Puerto Agua Verde
       </a>
-      <p data-key="footer_desc">Puerto Agua Verde & Rancho San Cosme – Sitio turístico informativo.</p>
-      <p data-key="footer_rights" class="footer__rights">Todos los derechos reservados.</p>
+      <p data-key="footer_desc">{t("footer.desc")}</p>
+      <p data-key="footer_rights" class="footer__rights">{t("footer.rights")}</p>
     </div>
   </div>
 </footer>

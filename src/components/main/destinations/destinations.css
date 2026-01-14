@@ -1,6 +1,7 @@
 /* Stories */
 .stories {
     padding: 5rem 0;
+    background-color: #f9f9f9;
 }
 
 .stories .section-header {
@@ -10,6 +11,11 @@
 
 .stories .section-header h2 {
     margin-bottom: 1rem;
+}
+
+.stories-subtitle {
+     color: var(--secondary-text);
+     margin-bottom: 2rem;
 }
 
 .stories-layout {

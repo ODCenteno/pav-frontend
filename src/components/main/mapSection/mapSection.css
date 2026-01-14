@@ -53,5 +53,10 @@
 .disclaimer {
     font-size: 1.4rem;
     opacity: 0.8;
-    color: var(--white)
+    color: var(--white);
+}
+
+.map-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
 }

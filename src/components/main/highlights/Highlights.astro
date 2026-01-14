@@ -4,40 +4,43 @@ import { Image } from "astro:assets";
 import img06 from "@/images/pav-06.png";
 import img07 from "@/images/pav-07.jpg";
 import img08 from "@/images/pav-aloja-01.webp";
+import { useTranslations } from "../../../i18n/utils";
+
+const t = useTranslations(Astro.currentLocale);
 ---
 
 <section class="highlights section-padding">
   <div class="container">
     <div class="section-header">
-      <h2 data-key="highlights_title">Lo más destacado</h2>
-      <p data-key="highlights_subtitle" style="color: var(--secondary-text); margin-bottom: 2rem;">Descubre las mejores opciones para tu visita</p>
+      <h2 data-key="highlights_title">{t("highlights.title")}</h2>
+      <p class="highlights-subtitle" data-key="highlights_subtitle">{t("highlights.subtitle")}</p>
     </div>
     <div class="highlights-layout">
       <!-- Experiences -->
-      <div class="review-card" style="height: auto;">
-        <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+      <div class="review-card">
+        <div class="card-img-container">
           <Image src={img06} alt="Experiences" />
         </div>
-        <h3 data-key="feat_exp_title">Experiencias para disfrutar</h3>
-        <p data-key="feat_exp_desc">Descubre actividades únicas para conectar con la naturaleza...</p>
+        <h3 data-key="feat_exp_title">{t("featured.experiences.title")}</h3>
+        <p data-key="feat_exp_desc">{t("featured.experiences.desc")}</p>
       </div>
 
       <!-- Accommodation -->
-      <div class="review-card" style="height: auto;">
-        <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+      <div class="review-card">
+        <div class="card-img-container">
           <Image src={img07} alt="Accommodation" />
         </div>
-        <h3 data-key="feat_acc_title">Hospédate con nosotros</h3>
-        <p data-key="feat_acc_desc">Encuentra opciones de alojamiento que combinan comodidad...</p>
+        <h3 data-key="feat_acc_title">{t("featured.accommodation.title")}</h3>
+        <p data-key="feat_acc_desc">{t("featured.accommodation.desc")}</p>
       </div>
 
       <!-- Restaurants -->
-      <div class="review-card" style="height: auto;">
-        <div class="highlight-img" style="height: 200px; margin-bottom: 1rem;">
+      <div class="review-card">
+        <div class="card-img-container">
           <Image src={img08} alt="Restaurants" />
         </div>
-        <h3 data-key="feat_rest_title">Sabores de la región</h3>
-        <p data-key="feat_rest_desc">Desde mariscos frescos hasta cocina tradicional...</p>
+        <h3 data-key="feat_rest_title">{t("featured.restaurants.title")}</h3>
+        <p data-key="feat_rest_desc">{t("featured.restaurants.desc")}</p>
       </div>
     </div>
   </div>
