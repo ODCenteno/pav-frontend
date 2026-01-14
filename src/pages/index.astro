@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/main/hero/Hero.astro";
-import Categories from "../components/main/categories/Categories.astro";
+import Categories from "../components/main/categories/categories.astro";
 import Destinations from "../components/main/destinations/Destinations.astro";
 import Highlights from "@components/main/highlights/Highlights.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
@@ -11,12 +11,7 @@ import { useTranslations } from "../i18n/utils";
 const t = useTranslations(Astro.currentLocale);
 ---
 
-<BaseLayout 
-  siteTitle={t('page.index.siteTitle')}
-  ogTitle={t('page.index.ogTitle')}
-  siteDescription={t('page.index.siteDescription')}
-  ogDescription={t('page.index.ogDescription')}
->
+<BaseLayout siteTitle={t("page.index.siteTitle")} ogTitle={t("page.index.ogTitle")} siteDescription={t("page.index.siteDescription")} ogDescription={t("page.index.ogDescription")}>
   <Hero slot="Hero" />
   <Categories slot="categories" />
   <Destinations />
