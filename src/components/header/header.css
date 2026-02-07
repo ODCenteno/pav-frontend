@@ -22,7 +22,7 @@
 .logo {
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 12px;
   letter-spacing: 1px;
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@
 
 .logo-text {
     display: inline;
-    font-size: 1.6rem;
+    font-size: 16px;
   }
 
 .header-right {
@@ -67,19 +67,25 @@
   box-shadow: -5px 0 15px rgba(0,0,0,0.1);
 }
 
-.main-nav ul {
+.main-nav--ul {
   display: flex;
+  align-items: center;
   flex-direction: column;
   gap: 2rem;
   text-align: center;
   width: 100%;
 }
 
-.main-nav a {
-  font-size: 1.65rem;
+.main-nav--link {
+  font-size: 16px;
   font-weight: 600;
   display: block;
   padding: 0.5rem;
+}
+
+.main-nav--link:hover {
+  transform: translateX(0);
+  color: var(--accent-color);
 }
 
 .header-actions {
@@ -123,7 +129,7 @@
   transform: rotate(-45deg) translate(5px, -5px);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 968px) {
   .header-right { display: none; }
 
   .main-nav {
@@ -144,9 +150,9 @@
     text-align: left;
   }
 
-  .main-nav a {
+  .main-nav--link {
     font-weight: 500;
-    font-size: 1.2rem;
+    font-size: 14px;
   }
 
   /* Show header-actions on desktop with language button */

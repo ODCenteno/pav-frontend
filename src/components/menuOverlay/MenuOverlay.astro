@@ -1,0 +1,67 @@
+---
+import "./menuOverlay.css";
+import CloseIcon from "@/images/icons/close.svg";
+import { useTranslations } from "@/i18n/utils";
+import { getAbsoluteLocaleUrl } from "astro:i18n";
+
+const t = useTranslations(Astro.currentLocale);
+
+const locales = ["en", "es"];
+const alternateLocaleCode = locales.find((l) => l !== Astro.currentLocale);
+
+let alternateLang;
+if (alternateLocaleCode) {
+  alternateLang = {
+    locale: alternateLocaleCode,
+    url: getAbsoluteLocaleUrl(alternateLocaleCode),
+  };
+}
+---
+
+<div class="mobile-menu__overlay menu-overlay--hidden">
+  <button class="mobile-menu__close-btn" aria-label="Close menu">
+    <CloseIcon />
+  </button>
+  <nav class="mobile-nav">
+    <ul class="mobile-nav--ul">
+      <li><a class="mobile-nav--link" href="/" data-key="nav_home">{t("nav.home")}</a></li>
+      <li><a class="mobile-nav--link" href="/experiencias" data-key="nav_experiences">{t("nav.experiences")}</a></li>
+      <li><a class="mobile-nav--link" href="#" data-key="nav_sites">{t("nav.sites")}</a></li>
+      <li><a class="mobile-nav--link" href="#" data-key="nav_accommodation">{t("nav.accommodation")}</a></li>
+      <li><a class="mobile-nav--link" href="#" data-key="nav_restaurants">{t("nav.restaurants")}</a></li>
+      <li><a class="mobile-nav--link" href="#" data-key="nav_services">{t("nav.services")}</a></li>
+      <!-- <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t("nav.signIn")}</a></li> -->
+      {
+        alternateLang && (
+          <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
+            {alternateLang.locale.substring(0, 2).toUpperCase()}
+          </a>
+        )
+      }
+    </ul>
+  </nav>
+</div>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
+    const menuOverlay = document.querySelector(".mobile-menu__overlay");
+    const mobileMenuCloseBtn = document.querySelector(".mobile-menu__close-btn");
+
+    const abrirMenu = () => menuOverlay.classList.remove("menu-overlay--hidden");
+    const cerrarMenu = () => menuOverlay.classList.add("menu-overlay--hidden");
+
+    mobileMenuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      abrirMenu();
+    });
+
+    mobileMenuCloseBtn.addEventListener("click", cerrarMenu); // Nuevo
+
+    menuOverlay.addEventListener("click", (e) => {
+      if (e.target === menuOverlay) {
+        cerrarMenu();
+      }
+    });
+  });
+</script>

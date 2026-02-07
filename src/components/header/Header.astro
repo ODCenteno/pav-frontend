@@ -2,6 +2,7 @@
 import "./header.css";
 import Image from "astro/components/Image.astro";
 import favicon from "../../../public/favicon.ico";
+import HamburgerIcon from "@/images/icons/menu-icon.svg";
 import { useTranslations } from "../../i18n/utils";
 import { getAbsoluteLocaleUrl } from "astro:i18n";
 
@@ -17,7 +18,6 @@ if (alternateLocaleCode) {
     url: getAbsoluteLocaleUrl(alternateLocaleCode),
   };
 }
-
 ---
 
 <header class="site-header">
@@ -25,16 +25,16 @@ if (alternateLocaleCode) {
     <a href="/" class="logo">
       <span class="logo-icon">
         <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32} />
-      </span><span class="logo-text"> Agua Verde</span>
+      </span><span class="logo-text">Agua Verde</span>
     </a>
     <nav class="main-nav">
-      <ul>
-        <li><a href="/experiencias" data-key="nav_experiences">{t("nav.experiences")}</a></li>
-        <li><a href="#" data-key="nav_sites">{t("nav.sites")}</a></li>
-        <li><a href="#" data-key="nav_accommodation">{t("nav.accommodation")}</a></li>
-        <li><a href="#" data-key="nav_restaurants">{t("nav.restaurants")}</a></li>
-        <li><a href="#" data-key="nav_services">{t("nav.services")}</a></li>
-        <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t("nav.signIn")}</a></li>
+      <ul class="main-nav--ul">
+        <li><a class="main-nav--link" href="/experiencias" data-key="nav_experiences">{t("nav.experiences")}</a></li>
+        <li><a class="main-nav--link" href="#" data-key="nav_sites">{t("nav.sites")}</a></li>
+        <li><a class="main-nav--link" href="#" data-key="nav_accommodation">{t("nav.accommodation")}</a></li>
+        <li><a class="main-nav--link" href="#" data-key="nav_restaurants">{t("nav.restaurants")}</a></li>
+        <li><a class="main-nav--link" href="#" data-key="nav_services">{t("nav.services")}</a></li>
+        <!-- <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t("nav.signIn")}</a></li> -->
         {
           alternateLang && (
             <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
@@ -42,19 +42,13 @@ if (alternateLocaleCode) {
             </a>
           )
         }
-
       </ul>
     </nav>
     <div class="header-right">
       <button class="mobile-menu-btn" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
+        <HamburgerIcon />
       </button>
     </div>
-    <!-- <div class="header-actions">
-        <a href="#" class="btn btn-primary btn-sm" data-key="sign_in">Iniciar Sesión</a>
-    </div> -->
   </div>
 </header>
 
