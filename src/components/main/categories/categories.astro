@@ -3,6 +3,7 @@ import "./categories.css";
 import type { Listing } from "../../../types/listing.type";
 import type { LocalizedString } from "../../../types/i18n.type";
 import { useTranslations } from "../../../i18n/utils";
+import { categoryData as rawCategoryData } from "../../../data/categoryData"; // New import
 
 import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
 import CardMain from "@/components/cards/CardMain.astro";
@@ -23,34 +24,91 @@ function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
 }
 
 // 3) Fetch SSR (defensivo)
-let categoryData: Listing[] = [];
-try {
-  const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
-  const listingJson = listingAPI.ok ? await listingAPI.json() : { data: [] };
-  categoryData = Array.isArray(listingJson?.data) ? listingJson.data : [];
-} catch {
-  categoryData = [];
+let listingData: Listing[] = [];
+const useLocalData = import.meta.env.USE_LOCAL_CATEGORY_DATA === 'true';
+
+if (useLocalData) {
+  listingData = rawCategoryData.map(cat => ({
+    id: cat.id,
+    type: cat.type,
+    slug: cat.slug,
+    name: { es: cat.name_es, en: cat.name_en },
+    categoryId: cat.id,
+    category: {
+      id: cat.id,
+      slug: cat.slug,
+      type: cat.type,
+      name: { es: cat.name_es, en: cat.name_en },
+      description: { es: cat.description_es, en: cat.description_en },
+      icon: cat.icon,
+      color: cat.color,
+      order: cat.order,
+    }
+  })) as Listing[];
+} else {
+  try {
+    const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
+    const listingJson = listingAPI.ok ? await listingAPI.json() : { data: [] };
+    listingData = Array.isArray(listingJson?.data) ? listingJson.data : [];
+  } catch (e) {
+    console.error("Error fetching categories from API:", e);
+    listingData = [];
+  }
 }
 
-// 4) Construir categorías dinámicas (id + label traducible)
-// - Si viene `item.category?.name` úsalo (mejor UX)
-// - Si no, fallback a usar el id tal cual (y luego lo mapeamos)
-const categoryMap = new Map<string, string>();
+// 4) Construir categorías dinámicas (id + label traducible + orden)
+// - Soporta estructura anidada (name: {es, en}) y plana (name_es, name_en)
+// - Respeta el campo 'order' si existe
+const categoryMap = new Map<string, { label: string; order: number }>();
 
-for (const item of categoryData) {
+for (const item of listingData) {
   const id = item.categoryId;
   if (!id) continue;
 
-  const labelFromJoin = item.category?.name ? getLocalizedText(item.category.name as any, locale) : "";
-  const label = labelFromJoin || id; // fallback mínimo
+  let label = "";
+  let order = 999; // Default al final si no tiene orden
 
-  if (!categoryMap.has(id)) categoryMap.set(id, label);
+  const cat = item.category as any;
+  if (cat) {
+    // 1. Label Extraction
+    if (cat.name && typeof cat.name === 'object') {
+       // Nested LocalizedString
+       label = getLocalizedText(cat.name, locale);
+    } else {
+       // Flat structure (fallback)
+       const isEn = locale.toLowerCase().startsWith("en");
+       label = isEn ? cat.name_en : cat.name_es;
+    }
+
+    // 2. Order Extraction
+    if (typeof cat.order === 'number') {
+      order = cat.order;
+    }
+  }
+
+  // Fallback label si falló lo anterior
+  if (!label) label = id;
+
+  // Store logic: Preferir datos completos si ya existe una entrada parcial
+  if (!categoryMap.has(id)) {
+    categoryMap.set(id, { label, order });
+  } else {
+    // Si la entrada existente no tiene orden válido y la actual sí, actualizamos
+    const current = categoryMap.get(id)!;
+    if (current.order === 999 && order !== 999) {
+      categoryMap.set(id, { label, order });
+    }
+    // (Opcional) Si la actual tiene mejor label, también podríamos actualizar
+  }
 }
 
-// Ordenar alfabéticamente por label para UI estable
+// Ordenar: Primero por 'order' (asc), luego alfabético
 const categories = Array.from(categoryMap.entries())
-  .map(([id, label]) => ({ id, label }))
-  .sort((a, b) => a.label.localeCompare(b.label, locale));
+  .map(([id, data]) => ({ id, label: data.label, order: data.order }))
+  .sort((a, b) => {
+    if (a.order !== b.order) return a.order - b.order;
+    return a.label.localeCompare(b.label, locale);
+  });
 
 // 5) Strings UI (SSR)
 const translations = {
@@ -75,7 +133,7 @@ const viewAllHref = isEnglish ? "/en-US/explore" : "/explorar";
 
     <!-- SSR-first: cards renderizadas en servidor -->
     <div id="category-carousel-container" class="carousel-container">
-      {categoryData.map((item) => <CardMain item={item} currentLang={locale} />)}
+      {listingData.map((item) => <CardMain item={item} currentLang={locale} />)}
     </div>
   </div>
 </section>
