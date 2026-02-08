@@ -69,13 +69,13 @@ const viewAllHref = isEnglish ? "/en-US/explore" : "/explorar";
     <div class="section-header categories-header">
       <h2>{t("gallery.title")}</h2>
       <p class="categories-subtitle">{t("gallery.desc")}</p>
+    </div>
 
-      <CategoryFilter client:visible locale={locale} translations={translations} categories={categories} viewAllHref={viewAllHref} containerSelector="#category-carousel-container" itemSelector="[data-category]" />
+    <CategoryFilter client:visible locale={locale} translations={translations} categories={categories} viewAllHref={viewAllHref} containerSelector="#category-carousel-container" itemSelector="[data-category]" />
 
-      <!-- SSR-first: cards renderizadas en servidor -->
-      <div id="category-carousel-container" class="carousel-container">
-        {categoryData.map((item) => <CardMain item={item} currentLang={locale} />)}
-      </div>
+    <!-- SSR-first: cards renderizadas en servidor -->
+    <div id="category-carousel-container" class="carousel-container">
+      {categoryData.map((item) => <CardMain item={item} currentLang={locale} />)}
     </div>
   </div>
 </section>

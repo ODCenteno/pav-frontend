@@ -53,6 +53,9 @@ export default function CategoryFilter({ locale, categories, translations, conta
     const container = document.querySelector<HTMLElement>(containerSelector);
     if (!container) return;
 
+    // Scroll to start when category changes
+    container.scrollTo({ left: 0, behavior: "smooth" });
+
     const items = Array.from(container.querySelectorAll<HTMLElement>(itemSelector));
     if (items.length === 0) return;
 
@@ -74,9 +77,7 @@ export default function CategoryFilter({ locale, categories, translations, conta
       if (!emptyEl) {
         emptyEl = document.createElement("p");
         emptyEl.id = emptyId;
-        emptyEl.style.width = "100%";
-        emptyEl.style.textAlign = "center";
-        emptyEl.style.color = "var(--secondary-text)";
+        // Styles handled in CSS
         container.appendChild(emptyEl);
       }
       emptyEl.textContent = translations.noResults;
