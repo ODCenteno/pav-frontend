@@ -44,9 +44,14 @@ if (alternateLocaleCode) {
 
 <script>
   document.addEventListener("astro:page-load", () => {
-    const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
-    const menuOverlay = document.querySelector(".mobile-menu__overlay");
-    const mobileMenuCloseBtn = document.querySelector(".mobile-menu__close-btn");
+    const mobileMenuBtn = document.querySelector<HTMLButtonElement>(".mobile-menu-btn");
+    const menuOverlay = document.querySelector<HTMLButtonElement>(".mobile-menu__overlay");
+    const mobileMenuCloseBtn = document.querySelector<HTMLButtonElement>(".mobile-menu__close-btn");
+
+    if (!mobileMenuBtn || !menuOverlay || !mobileMenuCloseBtn) {
+      console.error("Uno o más elementos del menú móvil no se encontraron en el DOM.");
+      return;
+    }
 
     const abrirMenu = () => menuOverlay.classList.remove("menu-overlay--hidden");
     const cerrarMenu = () => menuOverlay.classList.add("menu-overlay--hidden");
