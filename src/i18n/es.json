@@ -64,7 +64,7 @@
   "map": {
     "title": "Mapa del Destino",
     "desc": "Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme. Encuentra rutas, servicios, playas y actividades cerca de ti.",
-    "btn": "Ver Mapa"
+    "btn": "Ver Mapa en OpenStreetMap"
   },
   "finalCta": {
     "title": "¿Listo para descubrir más?",
