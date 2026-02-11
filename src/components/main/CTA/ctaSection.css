@@ -1,3 +1,8 @@
 .section-padding.text-center {
     text-align: center;
 }
+
+.map-description {
+    font-size: 18px;
+    margin-bottom: 2rem;
+}
