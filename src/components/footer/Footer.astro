@@ -1,18 +1,79 @@
 ---
 import "@/components/footer/footer.css";
+import Image from "astro/components/Image.astro";
+import favicon from "@/images/icons/favicon-32x32.png";
 import { useTranslations } from "../../i18n/utils";
 
 const t = useTranslations(Astro.currentLocale);
 ---
 
-<footer class="site-footer">
+<footer class="footer-main">
   <div class="container footer-grid">
-    <div class="footer-brand">
-      <a href="#" class="logo">
-        <span class="logo-icon">⚓</span> Puerto Agua Verde
-      </a>
-      <p data-key="footer_desc">{t("footer.desc")}</p>
-      <p data-key="footer_rights" class="footer__rights">{t("footer.rights")}</p>
+    <div class="footer-col" aria-label="Quick links">
+      <h3 data-key="footer_title">{t("footer.title")}</h3>
+      <ul class="footer__list">
+        <li><a class="footer-link" href="/experiences" data-key="footer_link_home">{t("footer.experiences")}</a></li>
+        <li><a class="footer-link" href="#categories" data-key="footer_link_categories">{t("footer.categories")}</a></li>
+        <li><a class="footer-link" href="#destinations" data-key="footer_link_destinations">{t("footer.destinations")}</a></li>
+        <li><a class="footer-link" href="#highlights" data-key="footer_link_highlights">{t("footer.highlights")}</a></li>
+        <li><a class="footer-link" href="#map" data-key="footer_link_map">{t("footer.map")}</a></li>
+      </ul>
     </div>
+    <div class="footer-col footer-about" aria-label="About the site">
+      <h3 class="footer__about-title" data-key="footer_about_title">
+        {t("footer.aboutTitle")}
+      </h3>
+      <p data-key="footer_desc">{t("footer.desc")}</p>
+      <p data-key="footer_thanks">{t("footer.thanks")}</p>
+    </div>
+
+    <section class="footer-col" aria-label="Contact and social">
+      <h3 class="footer-heading" data-key="footer_contact_title">{t("footer.contactTitle")}</h3>
+
+      <ul class="footer-social">
+        <li>
+          <a class="footer-link" href="https://instagram.com/" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">📷</span>
+            <span data-key="footer_instagram">Instagram</span>
+          </a>
+        </li>
+        <li>
+          <a class="footer-link" href="https://facebook.com/" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">📘</span>
+            <span data-key="footer_facebook">Facebook</span>
+          </a>
+        </li>
+        <li>
+          <a class="footer-link" href="https://maps.google.com/" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">📍</span>
+            <span data-key="footer_location">Location</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="footer-contact">
+        <a class="footer-contactItem footer-link" href="mailto:info@puertoaguaverde.mx">
+          <span aria-hidden="true">✉️</span>
+          <span>info@puertoaguaverde.mx</span>
+        </a>
+
+        <a class="footer-contactItem footer-link" href="tel:+526141234567">
+          <span aria-hidden="true">📞</span>
+          <span>+52 614 123 4567</span>
+        </a>
+
+        <a class="footer-contactItem footer-link" href="https://wa.me/526141234567" target="_blank" rel="noopener noreferrer">
+          <span aria-hidden="true">💬</span>
+          <span data-key="footer_whatsapp">WhatsApp</span>
+        </a>
+      </div>
+
+      <p class="footer-note" data-key="footer_note">{t("footer.note")}</p>
+    </section>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-rights" data-key="footer_rights">© 2026 Puerto Agua Verde &amp; Rancho San Cosme. All rights reserved.</p>
+
+    <a class="footer-legal footer-link" href="/legal" data-key="footer_legal"> Privacy Notice · Terms &amp; Conditions </a>
   </div>
 </footer>

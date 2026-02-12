@@ -67,12 +67,22 @@
     "btn": "Ver Mapa en OpenStreetMap"
   },
   "finalCta": {
-    "title": "¿Listo para descubrir más?",
-    "desc": "Planifica tu visita a Puerto Agua Verde y Rancho San Cosme. Explora actividades, alojamientos y servicios para crear una experiencia inolvidable.",
-    "btn": "Explorar sitios y servicios"
+    "title": "Tu viaje comienza aquí",
+    "desc": "Puerto Agua Verde y Rancho San Cosme no son solo puntos en el mapa — son paisajes vivos de mar, desierto y tradición. Planea tu estancia, explora experiencias locales y descubre el ritmo auténtico de la vida en Baja.",
+    "btn": "Comenzar a planear mi visita"
   },
   "footer": {
-    "desc": "Puerto Agua Verde & Rancho San Cosme – Sitio turístico informativo.",
+    "title": "Enlaces Rápidos",
+    "experiences": "Experiencias",
+    "categories": "Categorías",
+    "destinations": "Destinos",
+    "highlights": "Lo más destacado",
+    "map": "Mapa",
+    "aboutTitle": "Puerto Agua Verde y Rancho San Cosme",
+    "desc": "Guía comunitaria oficial de Puerto Agua Verde y Rancho San Cosme, Baja California Sur. Descubre, explora y vive el destino de manera responsable.",
+    "thanks": "Gracias por visitar y por ayudar a mantener este lugar especial. Viaja con respeto, apoya lo local y deja solo huellas.",
+    "contactTitle": "Contáctanos",
+    "note": "Para avisos sobre clima, caminos y novedades locales, síguenos en redes sociales.",
     "rights": "Todos los derechos reservados.",
     "legal": "Aviso de Privacidad · Términos y Condiciones"
   },

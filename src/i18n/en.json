@@ -67,12 +67,22 @@
     "btn": "View Map on OpenStreetMap"
   },
   "finalCta": {
-    "title": "Ready to discover more?",
-    "desc": "Plan your visit to Puerto Agua Verde and Rancho San Cosme. Explore activities, accommodations, and services to create an unforgettable experience.",
-    "btn": "Explore sites and services"
+    "title": "Your journey begins here",
+    "desc": "Puerto Agua Verde and Rancho San Cosme are more than places on the map — they are living landscapes of sea, desert, and tradition. Plan your stay, explore local experiences, and discover the rhythm of authentic Baja life.",
+    "btn": "Start planning your visit"
   },
   "footer": {
-    "desc": "Puerto Agua Verde & Rancho San Cosme – Informative tourist site.",
+    "title": "Quick Links",
+    "experiences": "Experiences",
+    "categories": "Categories",
+    "destinations": "Destinations",
+    "highlights": "Highlights",
+    "map": "Map",
+    "aboutTitle": "Puerto Agua Verde y Rancho San Cosme",
+    "desc": "An official community guide to Puerto Agua Verde & Rancho San Cosme, Baja California Sur. Discover, explore, and experience responsibly.",
+    "thanks": "Thank you for visiting and for helping keep this place special. Travel with care, support local, and leave only footprints.",
+    "note": "For updates on weather, road conditions, and local notices, follow our social channels.",
+    "contactTitle": "Contact Us",
     "rights": "All rights reserved.",
     "legal": "Privacy Notice · Terms and Conditions"
   },
