@@ -65,12 +65,17 @@ const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
 const readMoreLabel = langKey === "en" ? "Read more" : "Leer más";
 ---
 
-<article class="listing-card" data-listing-type={item.type} data-category={item.categoryId} data-is-featured={isFeatured}>
+<article
+  class="listing-card"
+  data-listing-type={item.type}
+  data-category={item.categoryId}
+  data-is-featured={isFeatured}
+  data-card-item={JSON.stringify(item)}
+>
   <div class="listing-image-container">
     {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
     <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel}>
-      <!-- SVG inline robusto (SSR-first, sin SVGR) -->
       <SvgIcon name="bookmark-outline" class="bookmark-icon" />
     </button>
   </div>
@@ -94,7 +99,13 @@ const readMoreLabel = langKey === "en" ? "Read more" : "Leer más";
     <p class="listing-desc">{desc}</p>
 
     <div class="listing-footer">
-      <button type="button" class="btn btn-outline btn-sm">{readMoreLabel}</button>
+      <button
+        type="button"
+        class="btn btn-outline btn-sm"
+        onclick="this.closest('article').dispatchEvent(new CustomEvent('cardclick', { bubbles: true, detail: JSON.parse(this.closest('article').dataset.cardItem) }))"
+      >
+        {readMoreLabel}
+      </button>
       <Socials socialInfo={socialInfo} />
     </div>
   </div>

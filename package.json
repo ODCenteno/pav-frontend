@@ -25,7 +25,8 @@
     "leaflet": "^1.9.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "eslint": "^9.39.1",
