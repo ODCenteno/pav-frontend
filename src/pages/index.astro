@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/main/hero/Hero.astro";
-import PopupManager from "../components/PopupManager.astro"; // Import PopupManager
+import PopupManager from "../components/popup/PopupManager.astro"; // Import PopupManager
 import Destinations from "../components/main/destinations/Destinations.astro";
 import Highlights from "@components/main/highlights/Highlights.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
@@ -14,8 +14,6 @@ const t = useTranslations(Astro.currentLocale);
 <BaseLayout siteTitle={t("page.index.siteTitle")} ogTitle={t("page.index.ogTitle")} siteDescription={t("page.index.siteDescription")} ogDescription={t("page.index.ogDescription")}>
   <Hero slot="Hero" />
   <PopupManager slot="categories" />
-  {/* Use PopupManager here */}
-
   <Destinations />
   <Highlights />
   <MapSection />

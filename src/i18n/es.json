@@ -84,10 +84,15 @@
     "contactTitle": "Contáctanos",
     "note": "Para avisos sobre clima, caminos y novedades locales, síguenos en redes sociales.",
     "rights": "Todos los derechos reservados.",
-    "legal": "Aviso de Privacidad · Términos y Condiciones"
-  },
-  "page": {
-    "index": {
+          "legal": "Aviso de Privacidad · Términos y Condiciones"
+        },
+        "modal": {
+          "dummyTitle": "Detalles de la Experiencia",
+          "dummyDesc": "Descubre la belleza e historia de este lugar único. Nuestras visitas guiadas ofrecen una mirada auténtica a la vida local, la cultura y los impresionantes paisajes naturales de la región.",
+          "dummyPrice": "Desde $25 USD",
+          "close": "Cerrar"
+        },
+        "page": {    "index": {
       "siteTitle": "Puerto Agua Verde | Rancho San Cosme | Directorio de Servicios y Turismo",
       "ogTitle": "Descubre Puerto Agua Verde y Rancho San Cosme",
       "siteDescription": "Actividades, alojamientos y opciones turísticas en Puerto Agua Verde, Rancho San Cosme. Tu guía completa para una experiencia inolvidable.",

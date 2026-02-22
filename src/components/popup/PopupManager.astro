@@ -1,0 +1,137 @@
+---
+import Categories from "../main/categories/categories.astro";
+import Popup from "./Popup.astro";
+import type { Listing } from "../../types/listing.type"; // Import the Listing type
+
+interface Props {
+  // Define any props this component might take, e.g., locale, translations
+}
+
+const {} = Astro.props; // No props needed for now, but good to keep structure
+---
+
+<div id="popup-manager-root">
+  <Categories />
+
+  {/* Popup will be rendered here. Its visibility is controlled by client-side JS */}
+  <Popup popupId="category-detail-popup" isOpen={false} title="">
+    <div id="popup-content-area"></div>
+  </Popup>
+</div>
+
+<script is:inline>
+  // This script runs on the client and manages the popup state
+  let isPopupOpen = false;
+  let selectedCardData = null;
+
+  // Function to initialize popup management when DOM is ready
+  function initPopupManager() {
+    const popupElement = document.getElementById("category-detail-popup");
+    const popupContentArea = document.getElementById("popup-content-area");
+    const popupManagerRoot = document.getElementById("popup-manager-root");
+
+    // Function to render content into the popup
+    function renderPopupContent(data) {
+      if (!popupContentArea) return;
+
+      // Clear previous content
+      popupContentArea.innerHTML = "";
+
+      // Use dummy data as fallback
+      const content = data || {
+        name: { es: "Detalles de la Experiencia", en: "Experience Details" },
+        description: {
+          es: "Descubre la belleza e historia de este lugar único. Nuestras visitas guiadas ofrecen una mirada auténtica a la vida local, la cultura y los impresionantes paisajes naturales de la región.",
+          en: "Discover the beauty and history of this unique location. Our guided tours offer an authentic look at local life, culture, and the stunning natural landscapes of the region.",
+        },
+        pricing: { price: "$25 USD" },
+        mainImageUrl: "/src/images/pav-01.jpg", // Using an existing image as placeholder
+      };
+
+      const isSpanish = document.documentElement.lang === "es";
+      const lang = isSpanish ? "es" : "en";
+
+      // Create and append HTML elements
+      const titleEl = document.createElement("h3");
+      titleEl.textContent = content.name?.[lang] || "Details";
+      popupContentArea.appendChild(titleEl);
+
+      const descEl = document.createElement("p");
+      descEl.textContent = content.description?.[lang] || "";
+      popupContentArea.appendChild(descEl);
+
+      if (content.mainImageUrl) {
+        const imgEl = document.createElement("img");
+        imgEl.src = content.mainImageUrl;
+        imgEl.alt = content.name?.[lang] || "";
+        imgEl.style.maxWidth = "100%";
+        imgEl.style.height = "auto";
+        imgEl.style.borderRadius = "8px";
+        imgEl.style.marginTop = "15px";
+        popupContentArea.appendChild(imgEl);
+      }
+
+      if (content.pricing?.price) {
+        const priceEl = document.createElement("p");
+        priceEl.style.fontWeight = "bold";
+        priceEl.style.marginTop = "15px";
+        priceEl.textContent = isSpanish ? `Precio: ${content.pricing.price}` : `Price: ${content.pricing.price}`;
+        popupContentArea.appendChild(priceEl);
+      }
+    }
+
+    // Function to update the popup's visibility and content
+    function updatePopupState(open, data = null) {
+      isPopupOpen = open;
+      selectedCardData = data;
+
+      if (popupElement) {
+        if (isPopupOpen) {
+          popupElement.classList.remove("popup_hidden");
+          document.body.style.overflow = "hidden"; // Prevent scroll when open
+          renderPopupContent(selectedCardData);
+
+          // Update popup title if available
+          const popupTitleEl = popupElement.querySelector(".popup__title");
+          if (popupTitleEl) {
+            const isSpanish = document.documentElement.lang === "es";
+            const lang = isSpanish ? "es" : "en";
+            popupTitleEl.textContent = selectedCardData?.name?.[lang] || (isSpanish ? "Detalles" : "Details");
+          }
+        } else {
+          popupElement.classList.add("popup_hidden");
+          document.body.style.overflow = ""; // Restore scroll
+          if (popupContentArea) popupContentArea.innerHTML = "";
+        }
+      }
+    }
+
+    // Event listener for card clicks
+    if (popupManagerRoot) {
+      popupManagerRoot.addEventListener("cardclick", (event) => {
+        event.stopPropagation();
+        updatePopupState(true, event.detail);
+      });
+    }
+
+    // Event listeners for closing the popup
+    if (popupElement) {
+      popupElement.addEventListener("popup:close", () => {
+        updatePopupState(false);
+      });
+      popupElement.addEventListener("popup:outer-click", () => {
+        updatePopupState(false);
+      });
+    }
+
+    // Initial state setup (ensure popup is hidden on load)
+    updatePopupState(false);
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPopupManager);
+  } else {
+    initPopupManager();
+  }
+</script>

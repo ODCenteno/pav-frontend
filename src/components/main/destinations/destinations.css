@@ -1,64 +1,65 @@
-/* Stories */
+/* Stories / Destinations */
 .stories {
-    padding: 3rem 0;
-    background-color: #f9f9f9;
+    padding: var(--space-2xl) 0;
+    background-color: var(--color-surface);
 }
 
 .stories .section-header {
-    margin-bottom: 1.2rem;
+    margin-bottom: var(--space-md);
     text-align: left;
-}
-
-.stories .section-header h2 {
-    margin-bottom: 1rem;
 }
 
 .stories-subtitle {
      color: var(--secondary-text);
-     margin-bottom: 2rem;
+     margin-bottom: var(--space-md);
+     font-size: var(--text-base);
 }
 
 .stories-layout {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: var(--space-lg);
 }
 
 .featured-story {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--space-sm);
 }
 
 .story-img {
     border-radius: var(--radius-md);
     overflow: hidden;
     height: 250px;
+    position: relative;
 }
 
 .story-img img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
 .category {
     color: var(--accent-color);
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-size: var(--text-xs);
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-3xs);
     display: block;
 }
 
 .meta {
     color: var(--secondary-text);
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-xs);
 }
 
 .excerpt {
     color: var(--secondary-text);
+    font-size: var(--text-base);
+    line-height: 1.6;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -68,18 +69,25 @@
 .stories-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: var(--space-sm);
 }
 
 .small-story {
     display: flex;
-    gap: 1rem;
+    gap: var(--space-sm);
     align-items: center;
+    padding: var(--space-xs);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.small-story:hover {
+    background-color: rgba(0,0,0,0.02);
 }
 
 .small-story-img {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: var(--radius-sm);
     overflow: hidden;
     flex-shrink: 0;
@@ -88,11 +96,30 @@
 .small-story-img img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
 .small-story-content h4 {
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+    font-size: var(--text-base);
+    margin-bottom: var(--space-3xs);
+    color: var(--color-on-surface);
+}
+
+@media (min-width: 768px) {
+    .stories-layout {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: var(--space-xl);
+    }
+
+    .story-img {
+        height: 400px;
+    }
+
+    .small-story-img {
+        width: 100px;
+        height: 100px;
+    }
 }

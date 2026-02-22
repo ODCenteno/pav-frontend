@@ -14,17 +14,19 @@ const t = useTranslations(Astro.currentLocale);
     <div class="hero-content">
       <h1 data-key="hero_title" set:html={t('hero.title')}></h1>
       <p data-key="hero_desc">{t('hero.desc')}</p>
-      <a href="#" class="btn btn-accent" data-key="hero_cta">{t('hero.cta')}</a>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-accent" data-key="hero_cta">{t('hero.cta')}</a>
+      </div>
     </div>
     <div class="hero-images">
       <div class="hero-img-card img-1">
-        <Image src={img1} alt="Coast">
+        <Image src={img1} alt="Coast" loading="eager">
       </div>
       <div class="hero-img-card img-2">
-        <Image src={img2} alt="Nature">
+        <Image src={img2} alt="Nature" loading="eager">
       </div>
       <div class="hero-img-card img-3">
-        <Image src={img3} alt="Landscape">
+        <Image src={img3} alt="Landscape" loading="eager">
       </div>
     </div>
   </div>

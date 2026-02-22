@@ -63,50 +63,68 @@ const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
 // Labels UI (idealmente se moverán a translations, pero quedan correctos por locale)
 const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
 const readMoreLabel = langKey === "en" ? "Read more" : "Leer más";
+
+// Create a clean data object for the popup (avoid complex nested objects in data attributes)
+const cardData = {
+  id: item.id,
+  name: item.name,
+  description: item.description,
+  shortDescription: item.shortDescription,
+  mainImageUrl: mainImageUrl,
+  pricing: { price: price },
+  categoryId: item.categoryId,
+  category: item.category,
+  type: item.type,
+  slug: item.slug,
+};
+// Escape JSON for safe HTML attribute usage
+const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<article
-  class="listing-card"
-  data-listing-type={item.type}
-  data-category={item.categoryId}
-  data-is-featured={isFeatured}
-  data-card-item={JSON.stringify(item)}
->
-  <div class="listing-image-container">
-    {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
+<div class="listing-card-container">
+  <article
+    class="listing-card"
+    data-listing-type={item.type}
+    data-category={item.categoryId}
+    data-is-featured={isFeatured}
+    data-card-item={cardDataJson}
+  >
+    <div class="listing-image-container">
+      {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
-    <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel}>
-      <SvgIcon name="bookmark-outline" class="bookmark-icon" />
-    </button>
-  </div>
-
-  <div class="listing-content">
-    <div class="listing-content__tag-price">
-      {
-        tags.length > 0 && (
-          <div class="listing-tags" aria-label={langKey === "en" ? "Tags" : "Etiquetas"}>
-            {tags.slice(0, 3).map((tag) => (
-              <span class="listing-tag">{tag}</span>
-            ))}
-          </div>
-        )
-      }
-
-      {price ? <span class="listing-price">{price}</span> : null}
-    </div>
-
-    <h3 class="listing-title">{title}</h3>
-    <p class="listing-desc">{desc}</p>
-
-    <div class="listing-footer">
-      <button
-        type="button"
-        class="btn btn-outline btn-sm"
-        onclick="this.closest('article').dispatchEvent(new CustomEvent('cardclick', { bubbles: true, detail: JSON.parse(this.closest('article').dataset.cardItem) }))"
-      >
-        {readMoreLabel}
+      <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel}>
+        <SvgIcon name="bookmark-outline" class="bookmark-icon" />
       </button>
-      <Socials socialInfo={socialInfo} />
     </div>
-  </div>
-</article>
+
+    <div class="listing-content">
+      <div class="listing-content__tag-price">
+        {
+          tags.length > 0 && (
+            <div class="listing-tags" aria-label={langKey === "en" ? "Tags" : "Etiquetas"}>
+              {tags.slice(0, 3).map((tag) => (
+                <span class="listing-tag">{tag}</span>
+              ))}
+            </div>
+          )
+        }
+
+        {price ? <span class="listing-price">{price}</span> : null}
+      </div>
+
+      <h3 class="listing-title">{title}</h3>
+      <p class="listing-desc">{desc}</p>
+
+      <div class="listing-footer">
+        <button
+          type="button"
+          class="btn btn-outline btn-sm"
+          onclick={`this.closest('article').dispatchEvent(new CustomEvent('cardclick', { bubbles: true, detail: JSON.parse(this.closest('article').dataset.cardItem.replace(/&quot;/g, '"').replace(/&#39;/g, "'")) }))`}
+        >
+          {readMoreLabel}
+        </button>
+        <Socials socialInfo={socialInfo} />
+      </div>
+    </div>
+  </article>
+</div>

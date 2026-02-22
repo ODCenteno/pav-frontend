@@ -3,6 +3,7 @@ import "@/components/footer/footer.css";
 import Image from "astro/components/Image.astro";
 import favicon from "@/images/icons/favicon-32x32.png";
 import { useTranslations } from "../../i18n/utils";
+import SvgIcon from "../icons/SvgIcon.astro";
 
 const t = useTranslations(Astro.currentLocale);
 ---
@@ -33,19 +34,19 @@ const t = useTranslations(Astro.currentLocale);
       <ul class="footer-social">
         <li>
           <a class="footer-link" href="https://instagram.com/" target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">📷</span>
+            <SvgIcon name="instagram" class="footer-icon" />
             <span data-key="footer_instagram">Instagram</span>
           </a>
         </li>
         <li>
           <a class="footer-link" href="https://facebook.com/" target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">📘</span>
+            <SvgIcon name="facebook" class="footer-icon" />
             <span data-key="footer_facebook">Facebook</span>
           </a>
         </li>
         <li>
           <a class="footer-link" href="https://maps.google.com/" target="_blank" rel="noopener noreferrer">
-            <span aria-hidden="true">📍</span>
+            <SvgIcon name="location" class="footer-icon" />
             <span data-key="footer_location">Location</span>
           </a>
         </li>
@@ -53,17 +54,17 @@ const t = useTranslations(Astro.currentLocale);
 
       <div class="footer-contact">
         <a class="footer-contactItem footer-link" href="mailto:info@puertoaguaverde.mx">
-          <span aria-hidden="true">✉️</span>
+          <SvgIcon name="mail" class="footer-icon" />
           <span>info@puertoaguaverde.mx</span>
         </a>
 
         <a class="footer-contactItem footer-link" href="tel:+526141234567">
-          <span aria-hidden="true">📞</span>
+          <SvgIcon name="phone" class="footer-icon" />
           <span>+52 614 123 4567</span>
         </a>
 
         <a class="footer-contactItem footer-link" href="https://wa.me/526141234567" target="_blank" rel="noopener noreferrer">
-          <span aria-hidden="true">💬</span>
+          <SvgIcon name="whatsapp" class="footer-icon" />
           <span data-key="footer_whatsapp">WhatsApp</span>
         </a>
       </div>

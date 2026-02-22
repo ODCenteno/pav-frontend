@@ -1,62 +1,74 @@
 .highlights-layout {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
+    flex-direction: column;
+    gap: var(--space-md);
 }
 
 .highlights-subtitle {
      color: var(--secondary-text);
-     margin-bottom: 2rem;
+     margin-bottom: var(--space-md);
+     font-size: var(--text-base);
 }
 
 .review-card {
     background-color: var(--white);
-    padding: 2rem;
+    padding: var(--space-md);
     border-radius: var(--radius-md);
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    flex-basis: 300px;
-    flex-grow: 1;
+    flex: 1;
+    min-width: 280px;
     height: auto;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    will-change: transform;
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
 }
 
 .user-profile {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
 }
 
 .avatar {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background-color: #eee;
+    background-color: var(--color-outline);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     color: var(--secondary-text);
+    flex-shrink: 0;
 }
 
 .user-profile h4 {
     font-family: var(--font-body);
-    font-size: 1.6rem;
+    font-size: var(--text-base);
     margin: 0;
+    color: var(--color-on-surface);
 }
 
 .user-profile p {
-    font-size: 1.4rem;
+    font-size: var(--text-xs);
     color: var(--secondary-text);
+    margin: 0;
 }
 
 .rating {
     color: #FFB400;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-xs);
+    font-size: var(--text-sm);
 }
 
 .card-img-container {
-    height: 200px;
-    margin-bottom: 1rem;
+    height: 180px;
+    margin-bottom: var(--space-sm);
     border-radius: var(--radius-md);
     overflow: hidden;
 }
@@ -67,41 +79,34 @@
     object-fit: cover;
 }
 
-/* Original grid styles kept if needed for other layouts, though current ASTRO uses cards */
-.highlight-images {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    height: 300px;
-}
-
 .highlight-img {
     border-radius: var(--radius-md);
     overflow: hidden;
     height: 100%;
 }
 
-.highlight-img.large {
-    grid-column: 1 / -1;
-    height: 200px;
-}
-
-.highlight-img.small {
-    display: none;
-}
-
 .see-more-card {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #333;
+    background-color: var(--color-on-surface);
     border-radius: var(--radius-md);
     color: white;
-    grid-column: 1 / -1;
-    height: 60px;
+    padding: var(--space-md);
 }
 
-.btn-white {
-    border-color: white;
-    color: white;
+@media (min-width: 768px) {
+    .highlights-layout {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: var(--space-lg);
+    }
+
+    .review-card {
+        padding: var(--space-lg);
+    }
+
+    .card-img-container {
+        height: 220px;
+    }
 }

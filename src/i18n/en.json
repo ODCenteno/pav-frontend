@@ -84,10 +84,15 @@
     "note": "For updates on weather, road conditions, and local notices, follow our social channels.",
     "contactTitle": "Contact Us",
     "rights": "All rights reserved.",
-    "legal": "Privacy Notice · Terms and Conditions"
-  },
-  "page": {
-    "index": {
+          "legal": "Privacy Notice · Terms and Conditions"
+        },
+        "modal": {
+          "dummyTitle": "Experience Details",
+          "dummyDesc": "Discover the beauty and history of this unique location. Our guided tours offer an authentic look at local life, culture, and the stunning natural landscapes of the region.",
+          "dummyPrice": "From $25 USD",
+          "close": "Close"
+        },
+        "page": {    "index": {
       "siteTitle": "Puerto Agua Verde | Rancho San Cosme | Service and Tourism Directory",
       "ogTitle": "Discover Puerto Agua Verde and Rancho San Cosme",
       "siteDescription": "Activities, accommodations, and tourist options in Puerto Agua Verde, Rancho San Cosme. Your complete guide for an unforgettable experience.",
