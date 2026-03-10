@@ -10,8 +10,15 @@ const t = useTranslations(Astro.currentLocale);
 
 <footer class="footer-main">
   <div class="container footer-grid">
+    <div class="footer-col footer-about" aria-label="About the site">
+      <h3 class="footer__about-title" data-key="footer_about_title">
+        {t("footer.aboutTitle")}
+      </h3>
+      <p data-key="footer_desc">{t("footer.desc")}</p>
+      <p data-key="footer_thanks">{t("footer.thanks")}</p>
+    </div>
     <div class="footer-col" aria-label="Quick links">
-      <h3 data-key="footer_title">{t("footer.title")}</h3>
+      <h3 class="footer_title" data-key="footer_title">{t("footer.title")}</h3>
       <ul class="footer__list">
         <li><a class="footer-link" href="/experiences" data-key="footer_link_home">{t("footer.experiences")}</a></li>
         <li><a class="footer-link" href="#categories" data-key="footer_link_categories">{t("footer.categories")}</a></li>
@@ -19,13 +26,6 @@ const t = useTranslations(Astro.currentLocale);
         <li><a class="footer-link" href="#highlights" data-key="footer_link_highlights">{t("footer.highlights")}</a></li>
         <li><a class="footer-link" href="#map" data-key="footer_link_map">{t("footer.map")}</a></li>
       </ul>
-    </div>
-    <div class="footer-col footer-about" aria-label="About the site">
-      <h3 class="footer__about-title" data-key="footer_about_title">
-        {t("footer.aboutTitle")}
-      </h3>
-      <p data-key="footer_desc">{t("footer.desc")}</p>
-      <p data-key="footer_thanks">{t("footer.thanks")}</p>
     </div>
 
     <section class="footer-col" aria-label="Contact and social">

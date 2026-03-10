@@ -5,9 +5,8 @@
 }
 
 .highlights-subtitle {
-     color: var(--secondary-text);
-     margin-bottom: var(--space-md);
-     font-size: var(--text-base);
+    color: var(--secondary-text);
+    font-size: var(--text-base);
 }
 
 .review-card {
@@ -103,7 +102,7 @@
     }
 
     .review-card {
-        padding: var(--space-lg);
+        padding: var(--space-md);
     }
 
     .card-img-container {

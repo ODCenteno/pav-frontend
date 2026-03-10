@@ -1,6 +1,5 @@
 /* Stories / Destinations */
 .stories {
-    padding: var(--space-2xl) 0;
     background-color: var(--color-surface);
 }
 
@@ -10,9 +9,8 @@
 }
 
 .stories-subtitle {
-     color: var(--secondary-text);
-     margin-bottom: var(--space-md);
-     font-size: var(--text-base);
+    color: var(--secondary-text);
+    font-size: var(--text-base);
 }
 
 .stories-layout {
@@ -110,7 +108,7 @@
 @media (min-width: 768px) {
     .stories-layout {
         display: grid;
-        grid-template-columns: 1.5fr 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: var(--space-xl);
     }
 

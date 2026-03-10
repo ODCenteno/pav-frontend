@@ -30,7 +30,7 @@
 
 .logo-text {
     display: inline;
-    font-size: var(--text-lg);
+    font-size: var(--text-md);
     letter-spacing: 0.5px;
 }
 

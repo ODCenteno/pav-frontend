@@ -1,35 +1,33 @@
 ---
-import './hero.css';
-import { Image } from 'astro:assets';
+import "./hero.css";
+import { Image } from "astro:assets";
 import img1 from "../../../images/pav-01.jpg";
 import img2 from "../../../images/pav-10.jpg";
 import img3 from "../../../images/pav-11.jpg";
-import { useTranslations } from '../../../i18n/utils';
+import { useTranslations } from "../../../i18n/utils";
 
 const t = useTranslations(Astro.currentLocale);
 ---
 
-<section class="hero">
+<section class="hero section-padding">
   <div class="container hero-container">
     <div class="hero-content">
-      <h1 data-key="hero_title" set:html={t('hero.title')}></h1>
-      <p data-key="hero_desc">{t('hero.desc')}</p>
+      <h1 data-key="hero_title" set:html={t("hero.title")} />
+      <p data-key="hero_desc">{t("hero.desc")}</p>
       <div class="hero-actions">
-        <a href="#" class="btn btn-accent" data-key="hero_cta">{t('hero.cta')}</a>
+        <a href="#" class="btn btn-accent" data-key="hero_cta">{t("hero.cta")}</a>
       </div>
     </div>
     <div class="hero-images">
       <div class="hero-img-card img-1">
-        <Image src={img1} alt="Coast" loading="eager">
+        <Image src={img1} alt="Coast" loading="eager" />
       </div>
       <div class="hero-img-card img-2">
-        <Image src={img2} alt="Nature" loading="eager">
+        <Image src={img2} alt="Nature" loading="eager" />
       </div>
       <div class="hero-img-card img-3">
-        <Image src={img3} alt="Landscape" loading="eager">
+        <Image src={img3} alt="Landscape" loading="eager" />
       </div>
     </div>
   </div>
 </section>
-
-

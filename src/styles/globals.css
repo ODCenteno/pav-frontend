@@ -114,7 +114,7 @@ ul {
 }
 
 .section-padding {
-    padding: var(--space-2xl) 0;
+    padding: var(--space-lg) 0;
 }
 
 /* Typography */
@@ -142,7 +142,6 @@ h3 {
 
 p {
     font-size: var(--text-base);
-    margin-bottom: var(--space-md);
     color: var(--color-on-surface);
 }
 
@@ -204,8 +203,9 @@ p {
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
     flex-wrap: wrap;
+    gap: var(--space-3sm);
 }
 
 /* Reduced Motion Support */
@@ -234,7 +234,7 @@ p {
 
 .highlights-layout .review-card {
     min-width: 280px;
-    max-width: 280px;
+    max-width: fit-content;
     flex-shrink: 0;
     scroll-snap-align: start;
 }
@@ -244,11 +244,6 @@ p {
     .container {
         width: 90%;
         padding: 0 var(--space-md);
-    }
-
-    .section-header {
-        flex-direction: row;
-        align-items: center;
     }
 
     .header-actions .btn-primary {
@@ -263,12 +258,6 @@ p {
 
     .destination-card {
         min-width: auto;
-    }
-
-    .stories-layout {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr;
-        gap: var(--space-xl);
     }
 
     .featured-story .story-img {

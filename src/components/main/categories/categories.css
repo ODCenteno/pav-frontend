@@ -43,9 +43,9 @@
 }
 
 .categories-subtitle {
-     margin-bottom: var(--space-sm);
-     color: var(--secondary-text);
-     font-size: var(--text-base);
+    margin-bottom: var(--space-sm);
+    color: var(--secondary-text);
+    font-size: var(--text-base);
 }
 
 /* Carousel Styles */
