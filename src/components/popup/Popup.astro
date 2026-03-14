@@ -4,28 +4,17 @@ import SvgIcon from "../icons/SvgIcon.astro";
 const { popupId, title, children, isOpen } = Astro.props;
 ---
 
-<aside 
-  id={popupId} 
-  class="popup" 
-  class:list={{"popup_hidden": !isOpen}}
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby={title ? `${popupId}-title` : undefined}
->
-  <div class={!title && popupId !== "successAuth-popup" ? "popup__zoom-container" : "popup__container"}>
+<aside id={popupId} class="popup" class:list={{ popup_hidden: !isOpen }} role="dialog" aria-modal="true" aria-labelledby={`${popupId}-title`}>
+  <div class={popupId === "image-zoom-popup" ? "popup__zoom-container" : "popup__container"}>
     <div class="popup__header">
-      {title && <h2 class="popup__title" id={`${popupId}-title`}>{title}</h2>}
-      <button 
-        type="button" 
-        class="popup__button-close" 
-        id={`${popupId}-close`} 
-        aria-label="Close"
-        onclick={`document.getElementById('${popupId}').dispatchEvent(new CustomEvent('popup:close', { bubbles: true }))`}
-      >
+      <h2 class="popup__title" id={`${popupId}-title`} style={!title ? "display: none;" : ""}>
+        {title || "Example title"}
+      </h2>
+      <button type="button" class="popup__button-close" id={`${popupId}-close`} aria-label="Close" onclick={`document.getElementById('${popupId}').dispatchEvent(new CustomEvent('popup:close', { bubbles: true }))`}>
         <SvgIcon name="close" class="popup__close-icon" />
       </button>
     </div>
-    
+
     <div class="popup__content">
       <slot />
       {children}
@@ -40,7 +29,7 @@ const { popupId, title, children, isOpen } = Astro.props;
     popupElement.addEventListener("click", (event) => {
       // Check if click was on the backdrop (the aside element itself)
       if (event.target === popupElement) {
-        popupElement.dispatchEvent(new CustomEvent('popup:outer-click', { bubbles: true }));
+        popupElement.dispatchEvent(new CustomEvent("popup:outer-click", { bubbles: true }));
       }
     });
   }

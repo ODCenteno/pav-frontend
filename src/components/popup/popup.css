@@ -58,10 +58,21 @@
 
 .popup__header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: flex-start;
     margin-bottom: var(--space-md);
     gap: var(--space-sm);
+    min-height: 24px;
+}
+
+.popup__title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  color: var(--color-on-surface);
+  margin: 0;
+  flex: 1;
+  text-align: left;
 }
 
 .popup__button-close {
@@ -78,6 +89,7 @@
   flex-shrink: 0;
   margin-top: -10px;
   margin-right: -10px;
+  z-index: 10;
 }
 
 .popup__button-close:hover {
@@ -89,21 +101,34 @@
     height: 24px;
 }
 
-.popup__title {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--text-xl);
-  color: var(--color-on-surface);
-  margin: 0;
-  flex: 1;
-}
-
 .popup__content {
   flex: 1;
   overflow-y: auto;
 }
 
 /* Specific styling for the content rendered inside */
+.popup-featured-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+}
+
+.popup-price {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: var(--text-lg);
+  margin-top: var(--space-md);
+}
+
+/* Success Popup Style (if ever used) */
+#successAuth-popup .popup__container {
+    border-top: 4px solid #4CAF50;
+    text-align: center;
+}
+
 #popup-content-area h3 {
   margin-top: 0;
   color: var(--color-on-surface);

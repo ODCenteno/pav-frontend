@@ -24,11 +24,16 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
   let isPopupOpen = false;
   let selectedCardData = null;
 
-  // Function to initialize popup management when DOM is ready
+  // Function to initialize popup management when DOM is ready or after View Transitions navigation
   function initPopupManager() {
     const popupElement = document.getElementById("category-detail-popup");
+    if (!popupElement) return; // Defensive check for other pages
+
     const popupContentArea = document.getElementById("popup-content-area");
     const popupManagerRoot = document.getElementById("popup-manager-root");
+
+    // Helper for safe language detection
+    const getLang = () => document.documentElement.lang.startsWith("es") ? "es" : "en";
 
     // Function to render content into the popup
     function renderPopupContent(data) {
@@ -37,45 +42,33 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
       // Clear previous content
       popupContentArea.innerHTML = "";
 
-      // Use dummy data as fallback
+      // Fallback dummy data
       const content = data || {
-        name: { es: "Detalles de la Experiencia", en: "Experience Details" },
-        description: {
-          es: "Descubre la belleza e historia de este lugar único. Nuestras visitas guiadas ofrecen una mirada auténtica a la vida local, la cultura y los impresionantes paisajes naturales de la región.",
-          en: "Discover the beauty and history of this unique location. Our guided tours offer an authentic look at local life, culture, and the stunning natural landscapes of the region.",
-        },
-        pricing: { price: "$25 USD" },
-        mainImageUrl: "/src/images/pav-01.jpg", // Using an existing image as placeholder
+        name: { es: "Detalles", en: "Details" },
+        description: { es: "Cargando información...", en: "Loading info..." },
       };
 
-      const isSpanish = document.documentElement.lang === "es";
-      const lang = isSpanish ? "es" : "en";
+      const lang = getLang();
 
-      // Create and append HTML elements
-      const titleEl = document.createElement("h3");
-      titleEl.textContent = content.name?.[lang] || "Details";
-      popupContentArea.appendChild(titleEl);
-
-      const descEl = document.createElement("p");
-      descEl.textContent = content.description?.[lang] || "";
-      popupContentArea.appendChild(descEl);
-
+      // Image
       if (content.mainImageUrl) {
         const imgEl = document.createElement("img");
         imgEl.src = content.mainImageUrl;
         imgEl.alt = content.name?.[lang] || "";
-        imgEl.style.maxWidth = "100%";
-        imgEl.style.height = "auto";
-        imgEl.style.borderRadius = "8px";
-        imgEl.style.marginTop = "15px";
+        imgEl.className = "popup-featured-image";
         popupContentArea.appendChild(imgEl);
       }
 
+      // Description
+      const descEl = document.createElement("p");
+      descEl.textContent = content.description?.[lang] || "";
+      popupContentArea.appendChild(descEl);
+
+      // Price
       if (content.pricing?.price) {
         const priceEl = document.createElement("p");
-        priceEl.style.fontWeight = "bold";
-        priceEl.style.marginTop = "15px";
-        priceEl.textContent = isSpanish ? `Precio: ${content.pricing.price}` : `Price: ${content.pricing.price}`;
+        priceEl.className = "popup-price";
+        priceEl.textContent = getLang() === "es" ? `Precio: ${content.pricing.price}` : `Price: ${content.pricing.price}`;
         popupContentArea.appendChild(priceEl);
       }
     }
@@ -89,15 +82,18 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
         if (isPopupOpen) {
           popupElement.classList.remove("popup_hidden");
           document.body.style.overflow = "hidden"; // Prevent scroll when open
-          renderPopupContent(selectedCardData);
+          
+          const lang = getLang();
+          const title = selectedCardData?.name?.[lang] || (lang === "es" ? "Detalles" : "Details");
 
-          // Update popup title if available
+          // Update popup header title
           const popupTitleEl = popupElement.querySelector(".popup__title");
           if (popupTitleEl) {
-            const isSpanish = document.documentElement.lang === "es";
-            const lang = isSpanish ? "es" : "en";
-            popupTitleEl.textContent = selectedCardData?.name?.[lang] || (isSpanish ? "Detalles" : "Details");
+            popupTitleEl.textContent = title;
+            popupTitleEl.style.display = "block"; // Show if it was hidden
           }
+
+          renderPopupContent(selectedCardData);
         } else {
           popupElement.classList.add("popup_hidden");
           document.body.style.overflow = ""; // Restore scroll
@@ -115,23 +111,14 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
     }
 
     // Event listeners for closing the popup
-    if (popupElement) {
-      popupElement.addEventListener("popup:close", () => {
-        updatePopupState(false);
-      });
-      popupElement.addEventListener("popup:outer-click", () => {
-        updatePopupState(false);
-      });
-    }
+    popupElement.addEventListener("popup:close", () => updatePopupState(false));
+    popupElement.addEventListener("popup:outer-click", () => updatePopupState(false));
 
-    // Initial state setup (ensure popup is hidden on load)
+    // Ensure hidden state on load
     updatePopupState(false);
   }
 
-  // Initialize when DOM is ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initPopupManager);
-  } else {
-    initPopupManager();
-  }
+  // Handle both initial load and View Transitions
+  document.addEventListener("DOMContentLoaded", initPopupManager);
+  document.addEventListener("astro:page-load", initPopupManager);
 </script>
