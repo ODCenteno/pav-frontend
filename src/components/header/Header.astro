@@ -11,30 +11,35 @@ const t = useTranslations(Astro.currentLocale);
 const locales = ["en", "es"];
 const alternateLocaleCode = locales.find((l) => l !== Astro.currentLocale);
 
+// Calculate current path without locale prefix
+const pathname = Astro.url.pathname;
+const currentLocale = Astro.currentLocale;
+const prefix = `/${currentLocale}/`;
+const relativePath = pathname.startsWith(prefix) 
+  ? pathname.slice(prefix.length) 
+  : (pathname === `/${currentLocale}` ? "" : pathname.replace(/^\//, ""));
+
 let alternateLang;
 if (alternateLocaleCode) {
   alternateLang = {
     locale: alternateLocaleCode,
-    url: getAbsoluteLocaleUrl(alternateLocaleCode),
+    url: getAbsoluteLocaleUrl(alternateLocaleCode, relativePath),
   };
 }
 ---
 
 <header class="site-header">
   <div class="container header-container">
-    <a href="/" class="logo">
+    <a href={getAbsoluteLocaleUrl(Astro.currentLocale, "")} class="logo">
       <span class="logo-icon">
         <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32} />
       </span><span class="logo-text">Agua Verde</span>
     </a>
     <nav class="main-nav" id="main-navigation">
       <ul class="main-nav--ul">
-        <li><a class="main-nav--link" href="/experiencias" data-key="nav_experiences">{t("nav.experiences")}</a></li>
-        <li><a class="main-nav--link" href="#" data-key="nav_sites">{t("nav.sites")}</a></li>
-        <li><a class="main-nav--link" href="#" data-key="nav_accommodation">{t("nav.accommodation")}</a></li>
-        <li><a class="main-nav--link" href="#" data-key="nav_restaurants">{t("nav.restaurants")}</a></li>
-        <li><a class="main-nav--link" href="#" data-key="nav_services">{t("nav.services")}</a></li>
-        <!-- <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t("nav.signIn")}</a></li> -->
+        <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "experiencias")} data-key="nav_experiences">{t("nav.experiences")}</a></li>
+        <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "sitios")} data-key="nav_sites">{t("nav.sites")}</a></li>
+        <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "acerca")} data-key="nav_about">{t("nav.about")}</a></li>
         {
           alternateLang && (
             <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
@@ -45,12 +50,7 @@ if (alternateLocaleCode) {
       </ul>
     </nav>
     <div class="header-right">
-      <button 
-        class="mobile-menu-btn" 
-        aria-label="Toggle menu" 
-        aria-expanded="false" 
-        aria-controls="main-navigation"
-      >
+      <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-navigation">
         <SvgIcon name="menu" class="menu-icon-svg" />
         <SvgIcon name="close" class="close-icon-svg" />
       </button>
@@ -65,7 +65,7 @@ if (alternateLocaleCode) {
     const i18nToggle = document.getElementById("i18n-toggle");
     if (i18nToggle) {
       i18nToggle.addEventListener("click", (e) => {
-        e.preventDefault(); // Prevent default browser navigation
+        e.preventDefault();
 
         const href = (e.currentTarget as HTMLAnchorElement).href;
 
@@ -74,16 +74,15 @@ if (alternateLocaleCode) {
       });
     }
 
-    // Mobile menu logic with ARIA updates
-    const menuBtn = document.querySelector('.mobile-menu-btn');
-    const mainNav = document.querySelector('.main-nav');
+    const menuBtn = document.querySelector(".mobile-menu-btn");
+    const mainNav = document.querySelector(".main-nav");
 
     if (menuBtn && mainNav) {
-      menuBtn.addEventListener('click', () => {
-        const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
-        menuBtn.setAttribute('aria-expanded', (!isExpanded).toString());
-        menuBtn.classList.toggle('active');
-        mainNav.classList.toggle('active');
+      menuBtn.addEventListener("click", () => {
+        const isExpanded = menuBtn.getAttribute("aria-expanded") === "true";
+        menuBtn.setAttribute("aria-expanded", (!isExpanded).toString());
+        menuBtn.classList.toggle("active");
+        mainNav.classList.toggle("active");
       });
     }
   });

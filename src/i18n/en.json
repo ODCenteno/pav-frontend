@@ -4,6 +4,7 @@
     "experiences": "Experiences",
     "sites": "Points of Interest",
     "accommodation": "Accommodation",
+    "about": "About us",
     "restaurants": "Restaurants",
     "services": "Services",
     "connectivity": "Internet",
@@ -84,19 +85,38 @@
     "note": "For updates on weather, road conditions, and local notices, follow our social channels.",
     "contactTitle": "Contact Us",
     "rights": "All rights reserved.",
-          "legal": "Privacy Notice · Terms and Conditions"
-        },
-        "modal": {
-          "dummyTitle": "Experience Details",
-          "dummyDesc": "Discover the beauty and history of this unique location. Our guided tours offer an authentic look at local life, culture, and the stunning natural landscapes of the region.",
-          "dummyPrice": "From $25 USD",
-          "close": "Close"
-        },
-        "page": {    "index": {
+    "legal": "Privacy Notice · Terms and Conditions"
+  },
+  "modal": {
+    "dummyTitle": "Experience Details",
+    "dummyDesc": "Discover the beauty and history of this unique location. Our guided tours offer an authentic look at local life, culture, and the stunning natural landscapes of the region.",
+    "dummyPrice": "From $25 USD",
+    "close": "Close"
+  },
+  "page": {
+    "index": {
       "siteTitle": "Puerto Agua Verde | Rancho San Cosme | Service and Tourism Directory",
       "ogTitle": "Discover Puerto Agua Verde and Rancho San Cosme",
       "siteDescription": "Activities, accommodations, and tourist options in Puerto Agua Verde, Rancho San Cosme. Your complete guide for an unforgettable experience.",
       "ogDescription": "Discover your perfect adventure in Puerto Agua Verde and Rancho San Cosme with our guide to services and tourism. Activities, accommodations, and more."
+    },
+    "experiences": {
+      "siteTitle": "Experiences in Puerto Agua Verde | Rancho San Cosme",
+      "ogTitle": "Explore the Unique Experiences in Puerto Agua Verde and Rancho San Cosme",
+      "siteDescription": "Discover the best experiences in Puerto Agua Verde and Rancho San Cosme.",
+      "ogDescription": "Immerse yourself in the unforgettable experiences that Puerto Agua Verde and Rancho San Cosme have to offer."
+    },
+    "about": {
+      "siteTitle": "About Puerto Agua Verde and Rancho San Cosme | Destination Guide",
+      "ogTitle": "Learn about Puerto Agua Verde and Rancho San Cosme",
+      "siteDescription": "Discover the history, culture, and unique characteristics of Puerto Agua Verde and Rancho San Cosme. Your guide to understanding these special places.",
+      "ogDescription": "Explore the rich history and culture of Puerto Agua Verde and Rancho San Cosme. Learn about their origins, traditions, and what makes them unique."
+    },
+    "sites": {
+      "siteTitle": "Points of Interest in Puerto Agua Verde and Rancho San Cosme | Destination Guide",
+      "ogTitle": "Explore the Points of Interest in Puerto Agua Verde and Rancho San Cosme",
+      "siteDescription": "Discover the must-see points of interest in Puerto Agua Verde and Rancho San Cosme. Beaches, trails, cultural sites, and more.",
+      "ogDescription": "Explore the key points of interest in Puerto Agua Verde and Rancho San Cosme. From stunning beaches to cultural landmarks, find out what to see and do."
     }
   }
 }
