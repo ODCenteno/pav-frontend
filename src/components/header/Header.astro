@@ -35,7 +35,9 @@ if (alternateLocaleCode) {
         <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32} />
       </span><span class="logo-text">Agua Verde</span>
     </a>
-    <nav class="main-nav" id="main-navigation">
+    
+    <!-- Desktop Navigation Only -->
+    <nav class="main-nav desktop-only" id="main-navigation">
       <ul class="main-nav--ul">
         <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "experiencias")} data-key="nav_experiences">{t("nav.experiences")}</a></li>
         <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "sitios")} data-key="nav_sites">{t("nav.sites")}</a></li>
@@ -49,10 +51,10 @@ if (alternateLocaleCode) {
         }
       </ul>
     </nav>
+
     <div class="header-right">
-      <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" aria-controls="main-navigation">
+      <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu-overlay">
         <SvgIcon name="menu" class="menu-icon-svg" />
-        <SvgIcon name="close" class="close-icon-svg" />
       </button>
     </div>
   </div>
@@ -62,27 +64,13 @@ if (alternateLocaleCode) {
   import { navigate } from "astro:transitions/client";
 
   document.addEventListener("astro:page-load", () => {
+    // Basic i18n toggle navigation
     const i18nToggle = document.getElementById("i18n-toggle");
     if (i18nToggle) {
       i18nToggle.addEventListener("click", (e) => {
         e.preventDefault();
-
         const href = (e.currentTarget as HTMLAnchorElement).href;
-
-        // Use Astro's API for smooth navigation
         navigate(href);
-      });
-    }
-
-    const menuBtn = document.querySelector(".mobile-menu-btn");
-    const mainNav = document.querySelector(".main-nav");
-
-    if (menuBtn && mainNav) {
-      menuBtn.addEventListener("click", () => {
-        const isExpanded = menuBtn.getAttribute("aria-expanded") === "true";
-        menuBtn.setAttribute("aria-expanded", (!isExpanded).toString());
-        menuBtn.classList.toggle("active");
-        mainNav.classList.toggle("active");
       });
     }
   });

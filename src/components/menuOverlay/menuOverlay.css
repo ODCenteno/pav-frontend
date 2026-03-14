@@ -43,6 +43,10 @@
   width: 100%;
 }
 
+.mobile-nav--i18n {
+  margin-top: 1.5rem;
+}
+
 .menu-overlay--hidden {
   display: none;
 }

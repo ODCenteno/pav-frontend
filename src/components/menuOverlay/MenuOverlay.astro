@@ -1,41 +1,49 @@
 ---
 import "./menuOverlay.css";
-import CloseIcon from "@/images/icons/close.svg";
 import { useTranslations } from "@/i18n/utils";
 import { getAbsoluteLocaleUrl } from "astro:i18n";
+import SvgIcon from "../icons/SvgIcon.astro";
 
 const t = useTranslations(Astro.currentLocale);
 
 const locales = ["en", "es"];
 const alternateLocaleCode = locales.find((l) => l !== Astro.currentLocale);
 
+// Calculate current path without locale prefix for the toggle
+const pathname = Astro.url.pathname;
+const currentLocale = Astro.currentLocale;
+const prefix = `/${currentLocale}/`;
+const relativePath = pathname.startsWith(prefix) 
+  ? pathname.slice(prefix.length) 
+  : (pathname === `/${currentLocale}` ? "" : pathname.replace(/^\//, ""));
+
 let alternateLang;
 if (alternateLocaleCode) {
   alternateLang = {
     locale: alternateLocaleCode,
-    url: getAbsoluteLocaleUrl(alternateLocaleCode),
+    url: getAbsoluteLocaleUrl(alternateLocaleCode, relativePath),
   };
 }
 ---
 
-<div class="mobile-menu__overlay menu-overlay--hidden">
+<div id="mobile-menu-overlay" class="mobile-menu__overlay menu-overlay--hidden" role="dialog" aria-modal="true" aria-label="Mobile Menu">
   <button class="mobile-menu__close-btn" aria-label="Close menu">
-    <CloseIcon />
+    <SvgIcon name="close" class="close-icon-svg" />
   </button>
   <nav class="mobile-nav">
     <ul class="mobile-nav--ul">
-      <li><a class="mobile-nav--link" href="/" data-key="nav_home">{t("nav.home")}</a></li>
-      <li><a class="mobile-nav--link" href="/experiencias" data-key="nav_experiences">{t("nav.experiences")}</a></li>
-      <li><a class="mobile-nav--link" href="#" data-key="nav_sites">{t("nav.sites")}</a></li>
-      <li><a class="mobile-nav--link" href="#" data-key="nav_accommodation">{t("nav.accommodation")}</a></li>
-      <li><a class="mobile-nav--link" href="#" data-key="nav_restaurants">{t("nav.restaurants")}</a></li>
-      <li><a class="mobile-nav--link" href="#" data-key="nav_services">{t("nav.services")}</a></li>
-      <!-- <li class="mobile-only"><a href="#" class="btn btn-primary btn-sm" data-key="sign_in">{t("nav.signIn")}</a></li> -->
+      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "")} data-key="nav_home">{t("nav.home")}</a></li>
+      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "experiencias")} data-key="nav_experiences">{t("nav.experiences")}</a></li>
+      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "sitios")} data-key="nav_sites">{t("nav.sites")}</a></li>
+      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "acerca")} data-key="nav_about">{t("nav.about")}</a></li>
+      
       {
         alternateLang && (
-          <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
-            {alternateLang.locale.substring(0, 2).toUpperCase()}
-          </a>
+          <li class="mobile-nav--i18n">
+            <a id="i18n-toggle-mobile" href={alternateLang.url} class="btn btn-outline btn-sm">
+              {alternateLang.locale.substring(0, 2).toUpperCase()}
+            </a>
+          </li>
         )
       }
     </ul>
@@ -43,30 +51,60 @@ if (alternateLocaleCode) {
 </div>
 
 <script>
-  document.addEventListener("astro:page-load", () => {
+  import { navigate } from "astro:transitions/client";
+
+  function initMenuOverlay() {
     const mobileMenuBtn = document.querySelector<HTMLButtonElement>(".mobile-menu-btn");
-    const menuOverlay = document.querySelector<HTMLButtonElement>(".mobile-menu__overlay");
-    const mobileMenuCloseBtn = document.querySelector<HTMLButtonElement>(".mobile-menu__close-btn");
+    const menuOverlay = document.getElementById("mobile-menu-overlay");
+    const closeBtn = document.querySelector<HTMLButtonElement>(".mobile-menu__close-btn");
+    const i18nToggleMobile = document.getElementById("i18n-toggle-mobile");
 
-    if (!mobileMenuBtn || !menuOverlay || !mobileMenuCloseBtn) {
-      console.error("Uno o más elementos del menú móvil no se encontraron en el DOM.");
-      return;
-    }
+    if (!mobileMenuBtn || !menuOverlay || !closeBtn) return;
 
-    const abrirMenu = () => menuOverlay.classList.remove("menu-overlay--hidden");
-    const cerrarMenu = () => menuOverlay.classList.add("menu-overlay--hidden");
+    const toggleMenu = (show: boolean) => {
+      if (show) {
+        menuOverlay.classList.remove("menu-overlay--hidden");
+        document.body.style.overflow = "hidden";
+        mobileMenuBtn.setAttribute("aria-expanded", "true");
+      } else {
+        menuOverlay.classList.add("menu-overlay--hidden");
+        document.body.style.overflow = "";
+        mobileMenuBtn.setAttribute("aria-expanded", "false");
+      }
+    };
 
+    // Open menu
     mobileMenuBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      abrirMenu();
+      const isExpanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+      toggleMenu(!isExpanded);
     });
 
-    mobileMenuCloseBtn.addEventListener("click", cerrarMenu); // Nuevo
+    // Close menu
+    closeBtn.addEventListener("click", () => toggleMenu(false));
 
+    // Close on backdrop click
     menuOverlay.addEventListener("click", (e) => {
-      if (e.target === menuOverlay) {
-        cerrarMenu();
-      }
+      if (e.target === menuOverlay) toggleMenu(false);
     });
-  });
+
+    // Close on link click
+    const navLinks = menuOverlay.querySelectorAll(".mobile-nav--link");
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => toggleMenu(false));
+    });
+
+    // i18n toggle mobile
+    if (i18nToggleMobile) {
+      i18nToggleMobile.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleMenu(false);
+        const href = (e.currentTarget as HTMLAnchorElement).href;
+        navigate(href);
+      });
+    }
+  }
+
+  // Handle transitions
+  document.addEventListener("astro:page-load", initMenuOverlay);
 </script>
