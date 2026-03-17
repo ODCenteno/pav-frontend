@@ -34,7 +34,7 @@ const activeLinks = Object.entries(socialInfo)
   activeLinks.length > 0 && (
     <div class="social-container">
       {activeLinks.map((link) => (
-        <a href={link.href} class={`social-link ${link.key}`} aria-label={link.label} target={link.key === "phone" || link.key === "email" ? "_self" : "_blank"} title={link.label} rel="noopener noreferrer">
+        <a href={link.href} class={`social-link ${link.key}`} aria-label={link.label} target={link.key === "phone" || link.key === "email" ? "_self" : "_blank"} title={link.label} rel="noopener noreferrer" onclick="event.stopPropagation()">
           <svg viewBox="0 0 24 24" width="20" height="20" class="icon-svg" set:html={link.icon} />
         </a>
       ))}

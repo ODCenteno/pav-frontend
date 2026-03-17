@@ -10,7 +10,6 @@ interface CategoryFilterProps {
   /** Textos UI ya traducidos desde Astro (SSR) */
   translations: {
     noResults: string;
-    viewAll: string;
     all: string;
   };
 
@@ -25,9 +24,6 @@ interface CategoryFilterProps {
 
   /** Categoría inicial (default: "all") */
   initialCategory?: string;
-
-  /** Link SSR para “Ver todo / View all”. Si no se pasa, no se renderiza. */
-  viewAllHref?: string;
 }
 
 /**
@@ -35,7 +31,7 @@ interface CategoryFilterProps {
  * - React NO renderiza cards
  * - Solo filtra mostrando/ocultando elementos SSR por data-category
  */
-export default function CategoryFilter({ locale, categories, translations, containerSelector = "#category-carousel-container", itemSelector = "[data-category]", initialCategory = "all", viewAllHref }: CategoryFilterProps) {
+export default function CategoryFilter({ locale, categories, translations, containerSelector = "#category-carousel-container", itemSelector = "[data-category]", initialCategory = "all" }: CategoryFilterProps) {
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
 
   const isEnglish = useMemo(() => String(locale).toLowerCase().startsWith("en"), [locale]);
@@ -102,14 +98,6 @@ export default function CategoryFilter({ locale, categories, translations, conta
           </button>
         ))}
       </div>
-
-      {viewAllHref ? (
-        <div className="view-all-container">
-          <a href={viewAllHref} className="view-all-link" id="view-all-link">
-            {translations.viewAll} <i className="fas fa-arrow-right" aria-hidden="true"></i>
-          </a>
-        </div>
-      ) : null}
     </>
   );
 }

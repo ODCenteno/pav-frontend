@@ -29,7 +29,7 @@ const useLocalData = true; // Forzamos local para verificar, o usa import.meta.e
 
 if (useLocalData) {
   listingData = rawCategoryData
-    .filter(cat => cat.isFeatured === true) // Filtrar solo destacados para el carrusel
+    .filter((cat) => cat.isFeatured === true) // Filtrar solo destacados para el carrusel
     .map((cat) => ({
       id: cat.id,
       type: cat.type,
@@ -121,13 +121,12 @@ const categories = Array.from(categoryMap.entries())
 // 5) Strings UI (SSR)
 const translations = {
   noResults: t("gallery.noResults"),
-  viewAll: t("gallery.viewAll"),
   all: t("categories.all"),
 };
 
 // 6) viewAllHref seguro por locale (sin error de undefined)
 const isEnglish = locale.toLowerCase().startsWith("en");
-const viewAllHref = isEnglish ? "/en-US/explore" : "/explorar";
+const viewAllHref = isEnglish ? "/en/sitios" : "/sitios";
 ---
 
 <section class="destinations section-padding">
@@ -137,11 +136,17 @@ const viewAllHref = isEnglish ? "/en-US/explore" : "/explorar";
       <p class="categories-subtitle">{t("gallery.desc")}</p>
     </div>
 
-    <CategoryFilter client:visible locale={locale} translations={translations} categories={categories} viewAllHref={viewAllHref} containerSelector="#category-carousel-container" itemSelector="[data-category]" />
+    <CategoryFilter client:visible locale={locale} translations={translations} categories={categories} containerSelector="#category-carousel-container" itemSelector="[data-category]" />
 
     <!-- SSR-first: cards renderizadas en servidor -->
     <div id="category-carousel-container" class="carousel-container">
       {listingData.map((item) => <CardMain item={item} currentLang={locale} />)}
+    </div>
+
+    <div class="view-all-container">
+      <a href={viewAllHref} class="view-all-link" id="view-all-link">
+        {t("gallery.view_all")}
+      </a>
     </div>
   </div>
 </section>

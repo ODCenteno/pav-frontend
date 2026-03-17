@@ -62,7 +62,6 @@ const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
 
 // Labels UI (idealmente se moverán a translations, pero quedan correctos por locale)
 const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
-const readMoreLabel = langKey === "en" ? "Read more" : "Leer más";
 
 // Create a clean data object for the popup (avoid complex nested objects in data attributes)
 const cardData = {
@@ -87,11 +86,12 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     data-listing-type={item.type}
     data-is-featured={isFeatured}
     data-card-item={cardDataJson}
+    onclick={`this.dispatchEvent(new CustomEvent('cardclick', { bubbles: true, detail: JSON.parse(this.dataset.cardItem.replace(/&quot;/g, '"').replace(/&#39;/g, "'")) }))`}
   >
     <div class="listing-image-container">
       {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
-      <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel}>
+      <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel} onclick="event.stopPropagation()">
         <SvgIcon name="bookmark-outline" class="bookmark-icon" />
       </button>
     </div>
@@ -115,13 +115,6 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
       <p class="listing-desc">{desc}</p>
 
       <div class="listing-footer">
-        <button
-          type="button"
-          class="btn btn-outline btn-sm"
-          onclick={`this.closest('article').dispatchEvent(new CustomEvent('cardclick', { bubbles: true, detail: JSON.parse(this.closest('article').dataset.cardItem.replace(/&quot;/g, '"').replace(/&#39;/g, "'")) }))`}
-        >
-          {readMoreLabel}
-        </button>
         <Socials socialInfo={socialInfo} />
       </div>
     </div>
