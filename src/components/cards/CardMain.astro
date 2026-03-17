@@ -81,11 +81,10 @@ const cardData = {
 const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<div class="listing-card-container">
+<div class="listing-card-container" data-category={item.categoryId}>
   <article
     class="listing-card"
     data-listing-type={item.type}
-    data-category={item.categoryId}
     data-is-featured={isFeatured}
     data-card-item={cardDataJson}
   >

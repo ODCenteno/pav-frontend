@@ -8,6 +8,7 @@
 .agents/
 .qwen/
 GEMINI.md
+STRAPI_PLAN.md
 *.orig
 .astro/
 agents/

@@ -1,9 +1,9 @@
 ---
 import "./categories.css";
-import type { Listing } from "../../../types/listing.type";
-import type { LocalizedString } from "../../../types/i18n.type";
-import { useTranslations } from "../../../i18n/utils";
-import { categoryData as rawCategoryData } from "../../../data/categoryData"; // New import
+import type { Listing } from "@/types/listing.type.ts";
+import type { LocalizedString } from "@/types/i18n.type.ts";
+import { useTranslations } from "@/i18n/utils";
+import { categoryData as rawCategoryData } from "@/data/categoryData"; // New import
 
 import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
 import CardMain from "@/components/cards/CardMain.astro";
@@ -25,26 +25,34 @@ function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
 
 // 3) Fetch SSR (defensivo)
 let listingData: Listing[] = [];
-const useLocalData = import.meta.env.USE_LOCAL_CATEGORY_DATA === 'true';
+const useLocalData = true; // Forzamos local para verificar, o usa import.meta.env.USE_LOCAL_CATEGORY_DATA === "true"
 
 if (useLocalData) {
-  listingData = rawCategoryData.map(cat => ({
-    id: cat.id,
-    type: cat.type,
-    slug: cat.slug,
-    name: { es: cat.name_es, en: cat.name_en },
-    categoryId: cat.id,
-    category: {
+  listingData = rawCategoryData
+    .filter(cat => cat.isFeatured === true) // Filtrar solo destacados para el carrusel
+    .map((cat) => ({
       id: cat.id,
-      slug: cat.slug,
       type: cat.type,
+      slug: cat.slug,
       name: { es: cat.name_es, en: cat.name_en },
+      categoryId: cat.categoryId, // Usar el nuevo campo de categoría
+      category: {
+        id: cat.categoryId,
+        slug: cat.slug,
+        type: cat.type,
+        name: { es: cat.category_name_es, en: cat.category_name_en },
+        description: { es: cat.description_es, en: cat.description_en },
+        icon: cat.icon,
+        color: cat.color,
+        order: cat.order,
+      },
+      shortDescription: { es: cat.description_es, en: cat.description_en },
       description: { es: cat.description_es, en: cat.description_en },
-      icon: cat.icon,
-      color: cat.color,
-      order: cat.order,
-    }
-  })) as Listing[];
+      media: { mainImageUrl: cat.image },
+      pricing: { price: cat.price },
+      contact: cat.contact || {}, // Pasar información de contacto
+      tags: (cat.tags_es || []).map((t, i) => ({ es: t, en: cat.tags_en?.[i] || t })),
+    })) as Listing[];
 } else {
   try {
     const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
@@ -71,17 +79,17 @@ for (const item of listingData) {
   const cat = item.category as any;
   if (cat) {
     // 1. Label Extraction
-    if (cat.name && typeof cat.name === 'object') {
-       // Nested LocalizedString
-       label = getLocalizedText(cat.name, locale);
+    if (cat.name && typeof cat.name === "object") {
+      // Nested LocalizedString
+      label = getLocalizedText(cat.name, locale);
     } else {
-       // Flat structure (fallback)
-       const isEn = locale.toLowerCase().startsWith("en");
-       label = isEn ? cat.name_en : cat.name_es;
+      // Flat structure (fallback)
+      const isEn = locale.toLowerCase().startsWith("en");
+      label = isEn ? cat.name_en : cat.name_es;
     }
 
     // 2. Order Extraction
-    if (typeof cat.order === 'number') {
+    if (typeof cat.order === "number") {
       order = cat.order;
     }
   }
