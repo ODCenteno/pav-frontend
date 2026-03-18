@@ -1,12 +1,60 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro"
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/main/hero/PageHero.astro";
+import CardMain from "../components/cards/CardMain.astro";
+import PopupManager from "../components/popup/PopupManager.astro";
+import { useTranslations } from "../i18n/utils";
+import { categoryData } from "../data/categoryData";
+import type { Listing } from "../types/listing.type";
+
+const locale = Astro.currentLocale ?? "es";
+const t = useTranslations(locale);
+
+// Filter experiences from data
+const experiences = categoryData.filter(item => item.categoryId === "experiences") as unknown as Listing[];
 ---
 
 <BaseLayout
-  siteTitle="Experiencias en Puerto Agua Verde | Rancho San Cosme"
-  ogTitle="Explora las Experiencias Únicas en Puerto Agua Verde y Rancho San Cosme"
-  siteDescription="Descubre las mejores experiencias en Puerto Agua Verde y Rancho San Cosme."
-  ogDescription="Sumérgete en las experiencias inolvidables que Puerto Agua Verde y Rancho San Cosme tienen para ofrecer"
+  siteTitle={t("page.experiences.siteTitle")}
+  ogTitle={t("page.experiences.ogTitle")}
+  siteDescription={t("page.experiences.siteDescription")}
+  ogDescription={t("page.experiences.ogDescription")}
 >
-  <h1>Experiencias Page</h1>
+  <PageHero 
+    slot="Hero"
+    title={t("featured.experiences.title")} 
+    description={t("featured.experiences.desc")} 
+  />
+
+  <section class="section-padding">
+    <div class="container">
+      <div class="experiences-grid">
+        {experiences.map((item) => (
+          <CardMain item={item} currentLang={locale} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <PopupManager />
 </BaseLayout>
+
+<style>
+  .experiences-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  @media (min-width: 640px) {
+    .experiences-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .experiences-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

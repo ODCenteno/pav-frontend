@@ -1,0 +1,30 @@
+.page-hero {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-xl);
+}
+
+.page-hero__content {
+    max-width: 800px;
+}
+
+.page-hero__title {
+    font-size: var(--text-hero);
+    color: var(--color-on-surface);
+    margin-bottom: var(--space-sm);
+    line-height: 1.1;
+}
+
+.page-hero__description {
+    font-size: var(--text-lg);
+    color: var(--secondary-text);
+    line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+    .page-hero {
+        padding-top: var(--space-3xl);
+    }
+}
