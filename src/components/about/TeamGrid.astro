@@ -1,0 +1,27 @@
+---
+import MemberCard from "./MemberCard.astro";
+import type { TeamMember } from "../../types/about.type";
+import "./teamGrid.css";
+
+interface Props {
+  title: string;
+  description: string;
+  members: TeamMember[];
+  locale: string;
+}
+
+const { title, description, members, locale } = Astro.props;
+---
+
+<section class="team-grid section-padding container">
+  <div class="section-header">
+    <h2 class="team-grid__title">{title}</h2>
+    <p class="team-grid__description">{description}</p>
+  </div>
+  
+  <div class="team-grid__list">
+    {members.map(member => (
+      <MemberCard member={member} locale={locale} />
+    ))}
+  </div>
+</section>

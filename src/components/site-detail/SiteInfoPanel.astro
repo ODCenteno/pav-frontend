@@ -1,0 +1,56 @@
+---
+import "./siteInfoPanel.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+interface Props {
+  labels: {
+    info: string;
+    hours: string;
+    price: string;
+    amenities: string;
+  };
+  schedule?: string;
+  price?: string;
+  amenities?: string[];
+}
+
+const { labels, schedule, price, amenities } = Astro.props;
+---
+
+<section class="site-info container">
+  <h2 class="site-info__title">{labels.info}</h2>
+  
+  <div class="site-info__grid">
+    {schedule && (
+      <div class="site-info__item">
+        <div class="site-info__icon-wrapper">
+           <!-- Icon for hours could be added here if available in SvgIcon -->
+           <span class="site-info__label">{labels.hours}</span>
+        </div>
+        <p class="site-info__value">{schedule}</p>
+      </div>
+    )}
+
+    {price && (
+      <div class="site-info__item">
+        <div class="site-info__icon-wrapper">
+           <span class="site-info__label">{labels.price}</span>
+        </div>
+        <p class="site-info__value">{price}</p>
+      </div>
+    )}
+
+    {amenities && amenities.length > 0 && (
+      <div class="site-info__item full-width">
+        <div class="site-info__icon-wrapper">
+           <span class="site-info__label">{labels.amenities}</span>
+        </div>
+        <ul class="site-info__list">
+          {amenities.map(item => (
+            <li class="site-info__list-item">{item}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+</section>

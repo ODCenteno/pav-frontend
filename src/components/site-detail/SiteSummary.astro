@@ -1,0 +1,46 @@
+---
+import "./siteSummary.css";
+
+interface Props {
+  description: string;
+  labels: {
+    about: string;
+    directions: string;
+    contact: string;
+  };
+  contactActions: {
+    whatsapp?: string;
+    phone?: string;
+  };
+}
+
+const { description, labels, contactActions } = Astro.props;
+---
+
+<section class="site-summary container">
+  <div class="site-summary__grid">
+    <div class="site-summary__main">
+      <h2 class="site-summary__subtitle">{labels.about}</h2>
+      <div class="site-summary__description">
+        <p>{description}</p>
+      </div>
+    </div>
+    
+    <aside class="site-summary__sidebar">
+      <div class="quick-actions-card">
+        <button class="btn btn-primary btn-block mb-sm">
+          {labels.directions}
+        </button>
+        {contactActions.whatsapp && (
+          <a href={`https://wa.me/${contactActions.whatsapp}`} class="btn btn-outline btn-block" target="_blank">
+            {labels.contact}
+          </a>
+        )}
+      </div>
+    </aside>
+
+    <div class="site-summary__full-width">
+      <slot />
+    </div>
+  </div>
+</section>

@@ -29,6 +29,7 @@
     position: relative;
     height: 180px;
     width: 100%;
+    flex-shrink: 0;
 }
 
 .listing-image-container img {
@@ -64,6 +65,23 @@
 .bookmark-icon {
     width: 20px;
     height: 20px;
+}
+
+.fav-btn .icon-filled {
+    display: none;
+}
+
+.fav-btn.is-favorite {
+    background: white;
+}
+
+.fav-btn.is-favorite .icon-outline {
+    display: none;
+}
+
+.fav-btn.is-favorite .icon-filled {
+    display: block;
+    color: var(--color-primary);
 }
 
 .listing-content {
@@ -130,15 +148,15 @@
 }
 
 /* Container Queries for Adaptive Layout */
-@container card (min-width: 500px) {
+@container card (min-width: 600px) {
     .listing-card {
         flex-direction: row;
-        min-height: 200px;
+        height: 240px; /* Fixed height for row layout */
     }
 
     .listing-image-container {
         width: 40%;
-        height: auto;
+        height: 100%;
     }
 
     .listing-content {

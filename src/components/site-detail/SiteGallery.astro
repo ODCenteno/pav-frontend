@@ -1,0 +1,29 @@
+---
+import GalleryManager from "./GalleryManager.tsx";
+import "./siteGallery.css";
+
+interface Props {
+  title: string;
+  images: string[];
+  noContainer?: boolean;
+}
+
+const { title, images, noContainer = false } = Astro.props;
+const displayImages = images?.slice(0, 8) || [];
+---
+
+{displayImages.length > 0 && (
+  <section class="site-gallery" class:list={{ container: !noContainer, "section-padding": !noContainer }}>
+    <h2 class="site-gallery__title">{title}</h2>
+    
+    <GalleryManager client:load images={displayImages}>
+      <div class="site-gallery__grid">
+        {displayImages.map((img, index) => (
+          <div class="site-gallery__item" data-index={index} style="cursor: pointer;">
+            <img src={img} alt={`${title} gallery ${index + 1}`} loading="lazy" />
+          </div>
+        ))}
+      </div>
+    </GalleryManager>
+  </section>
+)}

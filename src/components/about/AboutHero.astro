@@ -1,0 +1,23 @@
+---
+import "./aboutHero.css";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const { title, description, image = "/src/images/pav-05.webp" } = Astro.props;
+---
+
+<section class="about-hero">
+  <div class="about-hero__image-container">
+    <img src={image} alt={title} class="about-hero__image" />
+    <div class="about-hero__overlay"></div>
+  </div>
+  
+  <div class="about-hero__content container">
+    <h1 class="about-hero__title">{title}</h1>
+    <p class="about-hero__description">{description}</p>
+  </div>
+</section>

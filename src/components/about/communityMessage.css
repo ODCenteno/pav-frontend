@@ -1,0 +1,32 @@
+.community-message {
+    background-color: var(--color-on-surface);
+    color: var(--white);
+    text-align: center;
+}
+
+.community-message__content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.community-message__title {
+    color: var(--color-primary);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-md);
+}
+
+.community-message__quote {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    line-height: 1.4;
+    font-style: italic;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .community-message__quote {
+        font-size: var(--text-3xl);
+    }
+}

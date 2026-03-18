@@ -1,0 +1,46 @@
+---
+import SvgIcon from "../icons/SvgIcon.astro";
+import FavoriteButton from "./FavoriteButton.tsx";
+import "./siteHero.css";
+
+interface Props {
+  id: string;
+  title: string;
+  categoryLabel: string;
+  image: string;
+  tags: string[];
+  labels: {
+    favorite: string;
+    favoriteActive: string;
+    share: string;
+  };
+}
+
+const { id, title, categoryLabel, image, tags, labels } = Astro.props;
+---
+
+<div class="site-hero">
+  <div class="site-hero__image-container">
+    <img src={image} alt={title} class="site-hero__image" />
+    <div class="site-hero__overlay">
+      <div class="container site-hero__actions-container">
+        <div class="site-hero__actions">
+          <FavoriteButton client:load id={id} labelSave={labels.favorite} labelSaved={labels.favoriteActive} />
+          <button class="site-hero__action-btn" aria-label={labels.share} title={labels.share} onclick="navigator.share({ title: document.title, url: window.location.href })">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-share-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9l8 -4" /><path d="M8 15l8 4" /><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M16 21m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M16 3m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="site-hero__info container">
+    <div class="site-hero__breadcrumb">
+      <span>{categoryLabel}</span>
+    </div>
+    <h1 class="site-hero__title">{title}</h1>
+    <div class="site-hero__tags">
+      {tags.map(tag => <span class="site-hero__tag">{tag}</span>)}
+    </div>
+  </div>
+</div>

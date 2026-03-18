@@ -1,14 +1,73 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
-import MapSection from "@/components/main/mapSection/MapSection.astro";
-import CtaSection from "@/components/main/CTA/CtaSection.astro";
-import { useTranslations } from "@/i18n/utils";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AboutHero from "../../components/about/AboutHero.astro";
+import AboutIntro from "../../components/about/AboutIntro.astro";
+import AboutValues from "../../components/about/AboutValues.astro";
+import TeamGrid from "../../components/about/TeamGrid.astro";
+import OrganizationsGrid from "../../components/about/OrganizationsGrid.astro";
+import CommunityMessage from "../../components/about/CommunityMessage.astro";
+import CollaborationBlock from "../../components/about/CollaborationBlock.astro";
+import SiteCTA from "../../components/site-detail/SiteCTA.astro";
+import { useTranslations } from "../../i18n/utils";
+import { teamMembers, organizations } from "../../data/aboutData";
 
-const t = useTranslations(Astro.currentLocale);
+const locale = "en";
+const t = useTranslations(locale);
 ---
 
-<BaseLayout siteTitle={t("page.about.siteTitle")} ogTitle={t("page.about.ogTitle")} siteDescription={t("page.about.siteDescription")} ogDescription={t("page.about.ogDescription")}>
-  <slot />
-  <MapSection />
-  <CtaSection />
+<BaseLayout
+  siteTitle={t("page.about.siteTitle")}
+  ogTitle={t("page.about.ogTitle")}
+  siteDescription={t("page.about.siteDescription")}
+  ogDescription={t("page.about.ogDescription")}
+>
+  <AboutHero
+    slot="Hero"
+    title={t("aboutPage.hero.title")}
+    description={t("aboutPage.hero.desc")}
+  />
+
+  <AboutIntro
+    title={t("aboutPage.intro.title")}
+    text={t("aboutPage.intro.text")}
+  />
+
+  <AboutValues
+    mission={{ title: t("aboutPage.mission.title"), text: t("aboutPage.mission.text") }}
+    vision={{ title: t("aboutPage.vision.title"), text: t("aboutPage.vision.text") }}
+    values={{ title: t("aboutPage.values.title"), items: t("aboutPage.values.items") as unknown as string[] }}
+  />
+
+  <TeamGrid
+    title={t("aboutPage.team.title")}
+    description={t("aboutPage.team.desc")}
+    members={teamMembers}
+    locale={locale}
+  />
+
+  <OrganizationsGrid
+    title={t("aboutPage.organizations.title")}
+    description={t("aboutPage.organizations.desc")}
+    organizations={organizations}
+    locale={locale}
+  />
+
+  <CommunityMessage
+    title={t("aboutPage.community.title")}
+    text={t("aboutPage.community.text")}
+  />
+
+  <CollaborationBlock
+    title={t("aboutPage.collab.title")}
+    description={t("aboutPage.collab.desc")}
+    btnPrimary={t("aboutPage.collab.btnPrimary")}
+    btnSecondary={t("aboutPage.collab.btnSecondary")}
+  />
+
+  <SiteCTA
+    title={t("aboutPage.cta.title")}
+    description={t("aboutPage.cta.desc")}
+    btnText={t("aboutPage.cta.btn")}
+    href="/en/sitios"
+  />
 </BaseLayout>

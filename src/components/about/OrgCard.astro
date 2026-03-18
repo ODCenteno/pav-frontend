@@ -1,0 +1,27 @@
+---
+import type { Organization } from "../../types/about.type";
+import "./orgCard.css";
+
+interface Props {
+  org: Organization;
+  locale: string;
+}
+
+const { org, locale } = Astro.props;
+const description = org.shortDescription ? (org.shortDescription[locale as "es" | "en"] || org.shortDescription.es) : "";
+---
+
+<div class="org-card">
+  <div class="org-card__logo-container">
+    <img src={org.logo} alt={org.name} class="org-card__logo" />
+  </div>
+  <div class="org-card__content">
+    <h3 class="org-card__name">{org.name}</h3>
+    {description && <p class="org-card__description">{description}</p>}
+    {org.links?.website && (
+      <a href={org.links.website} target="_blank" rel="noopener noreferrer" class="org-card__link">
+        Visit website
+      </a>
+    )}
+  </div>
+</div>

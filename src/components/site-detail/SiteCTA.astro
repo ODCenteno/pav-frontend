@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  btnText: string;
+  href: string;
+}
+
+const { title, description, btnText, href } = Astro.props;
+---
+
+<section class="site-cta container section-padding">
+  <div class="site-cta__container" style="background-color: var(--color-on-surface); color: var(--white); padding: var(--space-xl); border-radius: var(--radius-lg); text-align: center;">
+    <h2 style="color: var(--white); margin-bottom: var(--space-sm);">{title}</h2>
+    <p style="margin-bottom: var(--space-lg); opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">{description}</p>
+    <a href={href} class="btn btn-accent">{btnText}</a>
+  </div>
+</section>

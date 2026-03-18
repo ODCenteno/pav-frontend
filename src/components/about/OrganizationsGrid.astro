@@ -1,0 +1,27 @@
+---
+import OrgCard from "./OrgCard.astro";
+import type { Organization } from "../../types/about.type";
+import "./organizationsGrid.css";
+
+interface Props {
+  title: string;
+  description: string;
+  organizations: Organization[];
+  locale: string;
+}
+
+const { title, description, organizations, locale } = Astro.props;
+---
+
+<section class="orgs-grid section-padding container">
+  <div class="section-header">
+    <h2 class="orgs-grid__title">{title}</h2>
+    <p class="orgs-grid__description">{description}</p>
+  </div>
+  
+  <div class="orgs-grid__list">
+    {organizations.map(org => (
+      <OrgCard org={org} locale={locale} />
+    ))}
+  </div>
+</section>

@@ -14,12 +14,16 @@ export function useTranslations(currentLocale: string | undefined) {
   const lang = currentLocale?.startsWith('en') ? 'en-US' : 'es-MX';
   const dictionary = TRANSLATIONS[lang];
 
-  return function t(key: string, params: Record<string, string> = {}): string {
+  return function t(key: string, params: Record<string, string> = {}): any {
     // Navigate the object using dot notation (e.g., "nav.destinations")
     const translation = key.split('.').reduce((obj: any, k) => obj?.[k], dictionary);
 
-    if (typeof translation !== 'string') {
+    if (!translation) {
       return key; // Return the key if the translation is not found
+    }
+
+    if (typeof translation !== 'string') {
+      return translation; // Return the object/array as is
     }
 
     let text = translation;

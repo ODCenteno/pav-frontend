@@ -1,0 +1,203 @@
+---
+import CardMain from "../../cards/CardMain.astro";
+import { categoryData } from "../../../data/categoryData";
+import { useTranslations } from "../../../i18n/utils";
+import type { Listing } from "../../../types/listing.type";
+
+const locale = Astro.currentLocale ?? "es";
+const t = useTranslations(locale);
+
+// Get all sites to render them (initially hidden)
+const allSites = categoryData as unknown as Listing[];
+
+const categories = [
+  { id: "all", label: t("categories.all") },
+  { id: "sites", label: t("sitesPage.filters.beaches") },
+  { id: "restaurants", label: t("sitesPage.filters.food") },
+  { id: "accommodation", label: t("sitesPage.filters.stay") },
+  { id: "services", label: t("sitesPage.filters.services") },
+  { id: "experiences", label: t("nav.experiences") }
+];
+---
+
+<section class="favorites-section section-padding" id="favorites-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="favorites-title">{t("gallery.title")}</h2>
+      <p class="favorites-subtitle">{t("sitesPage.sections.favorites")}</p>
+    </div>
+
+    <!-- Category Chips for Favorites -->
+    <div class="filter-container">
+      <div class="filter-chips" id="favorite-chips">
+        {categories.map(cat => (
+          <button type="button" class="chip" data-category-filter={cat.id} class:list={{ active: cat.id === 'all' }}>
+            {cat.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Favorites Carousel -->
+    <div id="favorites-carousel-container" class="carousel-container favorites-hidden">
+      {allSites.map((item) => (
+        <div class="carousel-item favorite-card-wrapper" data-fav-id={item.id} data-category={item.categoryId} style="display: none;">
+          <CardMain item={item} currentLang={locale} />
+        </div>
+      ))}
+    </div>
+
+    <!-- Empty State -->
+    <div id="favorites-empty-state" class="empty-state" style="display: none;">
+      <div class="empty-state__content">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+        <p>{t("sitesPage.favoritesEmpty")}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .favorites-section {
+    background-color: var(--color-bone);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .favorites-hidden {
+    display: none;
+  }
+
+  .favorites-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-xs);
+  }
+
+  .favorites-subtitle {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .empty-state {
+    padding: var(--space-xl) 0;
+    text-align: center;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+  }
+
+  .empty-state__content {
+    max-width: 400px;
+    margin: 0 auto;
+    color: var(--secondary-text);
+  }
+
+  .empty-icon {
+    margin-bottom: var(--space-sm);
+    opacity: 0.5;
+  }
+
+  .horizontal-carousel {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding-bottom: var(--space-md);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .horizontal-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-item {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 768px) {
+    .carousel-item {
+      flex: 0 0 320px;
+    }
+  }
+  
+  /* Reuse carousel styles from elsewhere if possible, or define here for isolation */
+  .carousel-container {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding: var(--space-sm) 0 var(--space-lg);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .carousel-container::-webkit-scrollbar { display: none; }
+</style>
+
+<script>
+  import { getFavorites } from "../../../utils/favorites";
+
+  function initFavoritesSection() {
+    const section = document.getElementById("favorites-section");
+    if (!section) return;
+
+    const carousel = document.getElementById("favorites-carousel-container");
+    const emptyState = document.getElementById("favorites-empty-state");
+    const cardWrappers = section.querySelectorAll(".favorite-card-wrapper");
+    const chips = section.querySelectorAll("[data-category-filter]");
+    
+    let activeFilter = "all";
+
+    function updateFavorites() {
+      const favorites = getFavorites();
+      let visibleCount = 0;
+
+      cardWrappers.forEach((el) => {
+        const id = el.getAttribute("data-fav-id");
+        const category = el.getAttribute("data-category");
+        const isFav = favorites.includes(id);
+        const matchesFilter = activeFilter === "all" || category === activeFilter;
+
+        if (isFav && matchesFilter) {
+          el.style.display = "block";
+          visibleCount++;
+        } else {
+          el.style.display = "none";
+        }
+      });
+
+      if (favorites.length === 0) {
+        carousel.classList.add("favorites-hidden");
+        emptyState.style.display = "block";
+      } else {
+        carousel.classList.remove("favorites-hidden");
+        emptyState.style.display = visibleCount === 0 ? "block" : "none";
+      }
+    }
+
+    // Filter logic
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        activeFilter = chip.getAttribute("data-category-filter");
+        
+        // Update active class
+        chips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        
+        updateFavorites();
+      });
+    });
+
+    // Listen for favorite updates
+    window.addEventListener("favorites-updated", updateFavorites);
+    
+    // Initial run
+    updateFavorites();
+  }
+
+  document.addEventListener("DOMContentLoaded", initFavoritesSection);
+  document.addEventListener("astro:page-load", initFavoritesSection);
+</script>

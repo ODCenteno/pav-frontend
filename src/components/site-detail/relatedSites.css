@@ -1,0 +1,22 @@
+.related-sites__title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-lg);
+}
+
+.related-sites__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+@media (min-width: 640px) {
+    .related-sites__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .related-sites__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

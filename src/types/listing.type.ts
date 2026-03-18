@@ -1,6 +1,6 @@
 import type { LocalizedString } from './i18n.type';
 import type { Category, ListingType } from './category.type';
-import type { Location, ContactInfo, Pricing, Media } from './common.type';
+import type { Location, ContactInfo, Pricing, Media, Schedule, Recommendations } from './common.type';
 import type { OrganizationMeta } from './organization.type';
 
 export interface Listing {
@@ -24,5 +24,12 @@ export interface Listing {
   isFeatured?: boolean;
   status?: 'published' | 'draft';
 
+  image?: string; // Mock data compatibility
   organizationMeta?: OrganizationMeta;
+
+  // New fields for detail page
+  schedule?: Schedule;
+  amenities?: LocalizedString[];
+  recommendations?: Recommendations;
+  relatedSites?: string[]; // IDs of related listings
 }

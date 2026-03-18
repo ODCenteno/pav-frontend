@@ -1,0 +1,21 @@
+---
+import "./aboutIntro.css";
+
+interface Props {
+  title: string;
+  text: string;
+}
+
+const { title, text } = Astro.props;
+---
+
+<section class="about-intro section-padding container">
+  <div class="about-intro__grid">
+    <div class="about-intro__header">
+      <h2 class="about-intro__title">{title}</h2>
+    </div>
+    <div class="about-intro__content">
+      <p class="about-intro__text">{text}</p>
+    </div>
+  </div>
+</section>

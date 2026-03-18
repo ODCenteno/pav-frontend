@@ -1,0 +1,25 @@
+.about-intro__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+.about-intro__title {
+    font-size: var(--text-3xl);
+    color: var(--color-on-surface);
+    line-height: 1.2;
+}
+
+.about-intro__text {
+    font-size: var(--text-lg);
+    color: var(--color-on-surface);
+    line-height: 1.7;
+}
+
+@media (min-width: 1024px) {
+    .about-intro__grid {
+        grid-template-columns: 1fr 1.5fr;
+        gap: var(--space-2xl);
+        align-items: baseline;
+    }
+}

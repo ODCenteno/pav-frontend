@@ -1,0 +1,35 @@
+---
+import "./aboutValues.css";
+
+interface Props {
+  mission: { title: string; text: string };
+  vision: { title: string; text: string };
+  values: { title: string; items: string[] };
+}
+
+const { mission, vision, values } = Astro.props;
+const items = Array.isArray(values.items) ? values.items : [];
+---
+
+<section class="about-values section-padding">
+  <div class="container">
+    <div class="about-values__grid">
+      <div class="value-card">
+        <h3 class="value-card__title">{mission.title}</h3>
+        <p class="value-card__text">{mission.text}</p>
+      </div>
+      
+      <div class="value-card">
+        <h3 class="value-card__title">{vision.title}</h3>
+        <p class="value-card__text">{vision.text}</p>
+      </div>
+      
+      <div class="value-card">
+        <h3 class="value-card__title">{values.title}</h3>
+        <ul class="value-card__list">
+          {items.map(item => <li>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

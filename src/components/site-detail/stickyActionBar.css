@@ -1,0 +1,71 @@
+.sticky-action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--white);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    padding: var(--space-xs) var(--space-md) calc(var(--space-xs) + env(safe-area-inset-bottom));
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+}
+
+.sticky-action-bar__container {
+    width: 100%;
+    max-width: var(--container-width);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xs);
+}
+
+/* Hide on Desktop */
+@media (min-width: 1024px) {
+    .sticky-action-bar {
+        display: none;
+    }
+}
+
+.sticky-action-bar__btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--secondary-text);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sticky-action-bar__btn span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.sticky-action-bar__btn.primary {
+    background-color: var(--color-on-surface);
+    color: var(--white);
+}
+
+.sticky-action-bar__btn.secondary {
+    background-color: var(--color-pebble);
+    color: var(--color-on-surface);
+}
+
+.sticky-action-bar__btn.active {
+    color: var(--color-primary);
+}
+
+.sticky-action-bar__btn svg {
+    width: 20px;
+    height: 20px;
+}

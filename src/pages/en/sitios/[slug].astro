@@ -1,0 +1,126 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHero from "../../../components/site-detail/SiteHero.astro";
+import SiteSummary from "../../../components/site-detail/SiteSummary.astro";
+import SiteInfoPanel from "../../../components/site-detail/SiteInfoPanel.astro";
+import SiteTips from "../../../components/site-detail/SiteTips.astro";
+import SiteGallery from "../../../components/site-detail/SiteGallery.astro";
+import RelatedSites from "../../../components/site-detail/RelatedSites.astro";
+import SiteCTA from "../../../components/site-detail/SiteCTA.astro";
+import StickyActionBar from "../../../components/site-detail/StickyActionBar.tsx";
+import PopupManager from "../../../components/popup/PopupManager.astro";
+import { useTranslations } from "../../../i18n/utils";
+import { categoryData } from "../../../data/categoryData";
+import type { Listing } from "../../../types/listing.type";
+
+export async function getStaticPaths() {
+  const listings = categoryData;
+  return listings.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const locale = "en";
+const t = useTranslations(locale);
+
+// Helper for localizing nested objects if needed, or using the flat mock data structure
+const title = item.name_en || item.name?.en;
+const description = item.description_en || item.description?.en;
+const categoryLabel = item.category_name_en || item.category?.name?.en;
+const tags = item.tags_en || (item.tags || []).map(t => t.en);
+
+const labels = {
+  about: t("siteDetailPage.labels.about"),
+  directions: t("siteDetailPage.actions.directions"),
+  contact: t("siteDetailPage.actions.contact"),
+  favorite: t("siteDetailPage.actions.favorite"),
+  favoriteActive: t("siteDetailPage.actions.favoriteActive"),
+  share: t("siteDetailPage.actions.share"),
+  info: t("siteDetailPage.labels.info"),
+  hours: t("siteDetailPage.labels.hours"),
+  price: t("siteDetailPage.labels.price"),
+  amenities: t("siteDetailPage.labels.amenities"),
+  tips: t("siteDetailPage.labels.tips"),
+};
+
+const contactActions = {
+  whatsapp: item.contact?.whatsapp,
+  phone: item.contact?.phone,
+};
+
+const schedule = item.schedule?.text_en || item.schedule?.text?.en;
+const amenities = item.amenities_en || (item.amenities || []).map(a => a.en);
+const bestTime = item.recommendations?.bestTime_en || item.recommendations?.bestTimeToVisit?.en;
+const bring = item.recommendations?.bring_en || item.recommendations?.whatToBring?.map(b => b.en);
+---
+
+<BaseLayout
+  siteTitle={`${title} | Puerto Agua Verde`}
+  siteDescription={description}
+>
+  <SiteHero
+    slot="Hero"
+    id={item.id}
+    title={title}
+    categoryLabel={categoryLabel}
+    image={item.image}
+    tags={tags}
+    labels={labels}
+  />
+
+  <SiteSummary
+    description={description}
+    labels={labels}
+    contactActions={contactActions}
+  >
+    <SiteGallery
+      title={labels.gallery}
+      images={item.gallery}
+      noContainer={true}
+    />
+  </SiteSummary>
+
+  <SiteInfoPanel
+    labels={labels}
+    schedule={schedule}
+    price={item.price}
+    amenities={amenities}
+  />
+
+  {(bestTime || (bring && bring.length > 0)) && (
+    <SiteTips
+      labels={labels}
+      bestTime={bestTime}
+      whatToBring={bring}
+    />
+  )}
+
+  <RelatedSites
+    title={labels.related}
+    relatedIds={item.relatedSites}
+    currentLang={locale}
+  />
+
+  <SiteCTA
+    title={t("siteDetailPage.cta.title")}
+    description={t("siteDetailPage.cta.desc")}
+    btnText={t("siteDetailPage.cta.btn")}
+    href="/en/sitios"
+  />
+
+  <StickyActionBar
+    client:load
+    id={item.id}
+    whatsapp={item.contact?.whatsapp}
+    labels={{
+      directions: labels.directions,
+      contact: labels.contact,
+      favorite: labels.favorite,
+      favoriteActive: labels.favoriteActive,
+    }}
+  />
+
+  <PopupManager />
+</BaseLayout>

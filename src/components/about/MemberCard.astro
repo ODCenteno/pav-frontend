@@ -1,0 +1,40 @@
+---
+import type { TeamMember } from "../../types/about.type";
+import { useTranslations } from "../../i18n/utils";
+import "./memberCard.css";
+
+interface Props {
+  member: TeamMember;
+  locale: string;
+}
+
+const { member, locale } = Astro.props;
+const t = useTranslations(locale);
+
+const role = member.role[locale as "es" | "en"] || member.role.es;
+const bio = member.shortBio ? (member.shortBio[locale as "es" | "en"] || member.shortBio.es) : "";
+---
+
+<div class="member-card">
+  <div class="member-card__photo-container">
+    <img src={member.photo} alt={member.name} class="member-card__photo" />
+  </div>
+  <div class="member-card__content">
+    <h3 class="member-card__name">{member.name}</h3>
+    <p class="member-card__role">{role}</p>
+    {bio && <p class="member-card__bio">{bio}</p>}
+    
+    <div class="member-card__links">
+      {member.links?.instagram && (
+        <a href={`https://instagram.com/${member.links.instagram}`} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+        </a>
+      )}
+      {member.links?.email && (
+        <a href={`mailto:${member.links.email}`} aria-label="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </a>
+      )}
+    </div>
+  </div>
+</div>

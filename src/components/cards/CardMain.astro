@@ -36,6 +36,8 @@ const tags = (item.tags ?? []).map((t) => getLocalizedText(t, langKey).trim()).f
 
 // Media: intentamos varias formas (modelo nuevo y legacy) para no romper MVP
 const mainImageUrl =
+  // mock data primary field
+  (item as any).image ||
   // modelo nuevo (si existe)
   (item.media as any)?.mainImageUrl ||
   (item.media as any)?.mainImage?.url ||
@@ -63,6 +65,9 @@ const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
 // Labels UI (idealmente se moverán a translations, pero quedan correctos por locale)
 const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
 
+// Detail link construction
+const detailLink = currentLang === "es" ? `/sitios/${item.slug}` : `/en/sitios/${item.slug}`;
+
 // Create a clean data object for the popup (avoid complex nested objects in data attributes)
 const cardData = {
   id: item.id,
@@ -86,13 +91,14 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     data-listing-type={item.type}
     data-is-featured={isFeatured}
     data-card-item={cardDataJson}
-    onclick={`this.dispatchEvent(new CustomEvent('cardclick', { bubbles: true, detail: JSON.parse(this.dataset.cardItem.replace(/&quot;/g, '"').replace(/&#39;/g, "'")) }))`}
+    onclick={`window.location.assign('${detailLink}')`}
   >
     <div class="listing-image-container">
       {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
-      <button type="button" class="fav-btn" aria-label={favLabel} title={favLabel} onclick="event.stopPropagation()">
-        <SvgIcon name="bookmark-outline" class="bookmark-icon" />
+      <button type="button" class="fav-btn" data-fav-id={item.id} aria-label={favLabel} title={favLabel} onclick="event.stopPropagation(); window.toggleFav(this)">
+        <SvgIcon name="bookmark-outline" class="bookmark-icon icon-outline" />
+        <SvgIcon name="bookmark-filled" class="bookmark-icon icon-filled" />
       </button>
     </div>
 
@@ -115,8 +121,44 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
       <p class="listing-desc">{desc}</p>
 
       <div class="listing-footer">
-        <Socials socialInfo={socialInfo} />
+        <Socials socialInfo={socialInfo} detailLink={detailLink} />
       </div>
     </div>
   </article>
 </div>
+
+<script>
+  import { isFavorite, toggleFavorite } from "../../utils/favorites";
+
+  function updateAllFavButtons() {
+    const buttons = document.querySelectorAll(".fav-btn");
+    buttons.forEach((btn) => {
+      const id = btn.getAttribute("data-fav-id");
+      if (id && isFavorite(id)) {
+        btn.classList.add("is-favorite");
+      } else {
+        btn.classList.remove("is-favorite");
+      }
+    });
+  }
+
+  // Global function for onclick
+  (window as any).toggleFav = function(el: HTMLElement) {
+    const id = el.getAttribute("data-fav-id");
+    if (id) {
+      const isAdded = toggleFavorite(id);
+      if (isAdded) {
+        el.classList.add("is-favorite");
+      } else {
+        el.classList.remove("is-favorite");
+      }
+    }
+  };
+
+  // Sync state on load
+  document.addEventListener("DOMContentLoaded", updateAllFavButtons);
+  document.addEventListener("astro:page-load", updateAllFavButtons);
+  
+  // Listen for updates from other components
+  window.addEventListener("favorites-updated", updateAllFavButtons);
+</script>

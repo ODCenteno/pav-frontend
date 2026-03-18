@@ -1,0 +1,28 @@
+---
+import CardMain from "../cards/CardMain.astro";
+import { categoryData } from "../../data/categoryData";
+import type { Listing } from "../../types/listing.type";
+import "./relatedSites.css";
+
+interface Props {
+  title: string;
+  relatedIds: string[];
+  currentLang: string;
+}
+
+const { title, relatedIds, currentLang } = Astro.props;
+
+// Filter data to get related sites full objects
+const relatedItems = categoryData.filter(item => relatedIds && relatedIds.includes(item.id)) as unknown as Listing[];
+---
+
+{relatedItems.length > 0 && (
+  <section class="related-sites container section-padding">
+    <h2 class="related-sites__title">{title}</h2>
+    <div class="related-sites__grid">
+      {relatedItems.map(item => (
+        <CardMain item={item} currentLang={currentLang} />
+      ))}
+    </div>
+  </section>
+)}

@@ -1,0 +1,22 @@
+.orgs-grid__title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-xs);
+}
+
+.orgs-grid__description {
+    font-size: var(--text-base);
+    color: var(--secondary-text);
+    margin-bottom: var(--space-lg);
+}
+
+.orgs-grid__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+    .orgs-grid__list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

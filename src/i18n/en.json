@@ -118,5 +118,114 @@
       "siteDescription": "Discover the must-see points of interest in Puerto Agua Verde and Rancho San Cosme. Beaches, trails, cultural sites, and more.",
       "ogDescription": "Explore the key points of interest in Puerto Agua Verde and Rancho San Cosme. From stunning beaches to cultural landmarks, find out what to see and do."
     }
+  },
+  "sitesPage": {
+    "heroTitle": "Explore places around you",
+    "heroDesc": "Discover beaches, restaurants, accommodations, and services in Puerto Agua Verde and Rancho San Cosme.",
+    "searchPlaceholder": "Search places, food, stays or services...",
+    "filters": {
+      "all": "All",
+      "beaches": "Beaches",
+      "food": "Food",
+      "stay": "Stay",
+      "services": "Services"
+    },
+    "sections": {
+      "nearby": "Nearby",
+      "popular": "Popular",
+      "recommended": "Recommended for you",
+      "favorites": "My Favorites"
+    },
+    "empty": "No places found in this category.",
+    "favoritesEmpty": "You haven't saved any favorites yet. Explore our sites and save your preferred ones!"
+  },
+  "siteDetailPage": {
+    "breadcrumb": {
+      "home": "Home",
+      "sites": "Points of Interest"
+    },
+    "actions": {
+      "directions": "Get directions",
+      "contact": "Contact",
+      "favorite": "Save",
+      "favoriteActive": "Saved",
+      "share": "Share"
+    },
+    "labels": {
+      "about": "About this place",
+      "gallery": "Gallery",
+      "info": "Useful information",
+      "location": "Location",
+      "hours": "Hours",
+      "price": "Price range",
+      "amenities": "Amenities",
+      "contact": "Contact",
+      "tips": "Good to know",
+      "related": "You may also like"
+    },
+    "map": {
+      "open": "Open in map"
+    },
+    "empty": {
+      "description": "More information about this place will be available soon.",
+      "gallery": "Images coming soon.",
+      "related": "No related places available at the moment."
+    },
+    "cta": {
+      "title": "Keep exploring the destination",
+      "desc": "Discover more places, experiences, and services in Puerto Agua Verde and Rancho San Cosme.",
+      "btn": "Explore more places"
+    }
+  },
+  "aboutPage": {
+    "hero": {
+      "title": "A project rooted in place and community",
+      "desc": "Puerto Agua Verde and Rancho San Cosme are destinations shaped by nature, history, and the people who give them life. This project was created to share that richness with visitors in a respectful, clear, and accessible way."
+    },
+    "intro": {
+      "title": "What this project is",
+      "text": "This platform is a community-oriented guide designed to help travelers discover places, experiences, services, and local stories across Puerto Agua Verde and Rancho San Cosme. More than a directory, it is an effort to connect visitors with the people, landscapes, and traditions that make this destination unique."
+    },
+    "mission": {
+      "title": "Our mission",
+      "text": "To make it easier for visitors to explore the destination while supporting local visibility, responsible tourism, and a stronger connection between community and traveler."
+    },
+    "vision": {
+      "title": "Our vision",
+      "text": "To become a trusted digital guide that highlights the identity, value, and opportunities of Puerto Agua Verde and Rancho San Cosme for both local residents and international visitors."
+    },
+    "values": {
+      "title": "Our values",
+      "items": [
+        "Respect for the community",
+        "Responsible tourism",
+        "Local identity",
+        "Accessibility of information",
+        "Collaboration and shared growth"
+      ]
+    },
+    "team": {
+      "title": "People behind the project",
+      "desc": "Meet some of the people helping shape, support, and grow this initiative."
+    },
+    "organizations": {
+      "title": "Organizations and collaborators",
+      "desc": "This project is strengthened by the participation of local groups, community leaders, and partner organizations committed to the destination."
+    },
+    "community": {
+      "title": "A guide built with gratitude",
+      "text": "We deeply appreciate the people of Puerto Agua Verde and Rancho San Cosme, as well as every visitor who arrives with curiosity, respect, and care. This project exists thanks to the stories, efforts, and generosity of the community."
+    },
+    "collab": {
+      "title": "Would you like to collaborate?",
+      "desc": "If you are part of the community, represent a local organization, or would like to contribute to the growth of this guide, we would love to hear from you.",
+      "btnPrimary": "Get in touch",
+      "btnSecondary": "Follow the project"
+    },
+    "cta": {
+      "title": "Keep discovering the destination",
+      "desc": "Explore places, experiences, and services that reflect the spirit of Puerto Agua Verde and Rancho San Cosme.",
+      "btn": "Explore the guide"
+    }
   }
 }

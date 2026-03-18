@@ -15,9 +15,14 @@ export const categoryData = [
     slug: "tour-isla-catalana",
     name_es: "Tour Isla Catalana",
     name_en: "Catalana Island Tour",
-    description_es: "Avistamiento de delfines y snorkel en aguas cristalinas.",
-    description_en: "Dolphin watching and snorkeling in crystal clear waters.",
+    description_es: "Ubicado entre mar, sierra y desierto, este tour ofrece una experiencia tranquila para quienes buscan paisaje, descanso y conexión con el entorno local. Avistamiento de delfines y snorkel en aguas cristalinas.",
+    description_en: "Located between the sea, mountains and desert, this tour offers a peaceful experience for those seeking landscape, rest and connection with the local environment. Dolphin watching and snorkeling in crystal clear waters.",
     image: "/src/images/pav-06.png",
+    gallery: [
+      "/src/images/pav-01.jpg",
+      "/src/images/pav-02.jpg",
+      "/src/images/pav-03.jpg"
+    ],
     price: "$60 USD",
     isFeatured: true,
     tags_es: ["Aventura", "Mar"],
@@ -28,7 +33,26 @@ export const categoryData = [
       facebook: "IslaCatalanaTours",
       phone: "+521234567890",
       email: "info@islacatalana.com"
-    }
+    },
+    location: {
+      lat: 25.5123,
+      lng: -111.0456,
+      name_es: "Muelle de Puerto Agua Verde",
+      name_en: "Puerto Agua Verde Pier"
+    },
+    schedule: {
+      text_es: "Salidas diarias a las 8:00 AM",
+      text_en: "Daily departures at 8:00 AM"
+    },
+    amenities_es: ["Chalecos salvavidas", "Equipo de snorkel", "Agua y snacks"],
+    amenities_en: ["Life jackets", "Snorkeling gear", "Water and snacks"],
+    recommendations: {
+      bestTime_es: "Mañana (8 AM - 12 PM)",
+      bestTime_en: "Morning (8 AM - 12 PM)",
+      bring_es: ["Protector solar biodegradable", "Toalla", "Gorra"],
+      bring_en: ["Biodegradable sunscreen", "Towel", "Cap"]
+    },
+    relatedSites: ["exp-02", "res-01"]
   },
   {
     id: "exp-02",
@@ -36,17 +60,36 @@ export const categoryData = [
     slug: "senderismo-cerro-blanco",
     name_es: "Senderismo Cerro Blanco",
     name_en: "White Hill Hiking",
-    description_es: "Ruta guiada con vistas panorámicas al Mar de Cortés.",
-    description_en: "Guided route with panoramic views of the Sea of Cortez.",
+    description_es: "Ruta guiada con vistas panorámicas al Mar de Cortés. Una caminata de intensidad moderada perfecta para fotógrafos y amantes de la naturaleza.",
+    description_en: "Guided route with panoramic views of the Sea of Cortez. A moderate intensity hike perfect for photographers and nature lovers.",
     image: "/src/images/pav-03.jpg",
+    gallery: ["/src/images/pav-01.jpg", "/src/images/pav-12.jpg"],
     price: "$25 USD",
     isFeatured: true,
-    tags_es: ["Naturaleza"],
-    tags_en: ["Nature"],
+    tags_es: ["Naturaleza", "Senderismo"],
+    tags_en: ["Nature", "Hiking"],
     contact: {
       whatsapp: "+521112223333",
       instagram: "cerro_blanco_hiking",
       phone: "+521112223333"
+    },
+    location: {
+      lat: 25.5200,
+      lng: -111.0500,
+      name_es: "Inicio de sendero Cerro Blanco",
+      name_en: "White Hill Trailhead"
+    },
+    schedule: {
+      text_es: "Salidas 7:00 AM (Recomendado)",
+      text_en: "Departures at 7:00 AM (Recommended)"
+    },
+    amenities_es: ["Guía certificado", "Bastones de senderismo"],
+    amenities_en: ["Certified guide", "Hiking poles"],
+    recommendations: {
+      bestTime_es: "Invierno y Primavera",
+      bestTime_en: "Winter and Spring",
+      bring_es: ["Botas de montaña", "2L de agua", "Cámara"],
+      bring_en: ["Hiking boots", "2L of water", "Camera"]
     }
   },
   {
@@ -93,9 +136,10 @@ export const categoryData = [
     slug: "cabanas-del-sol",
     name_es: "Cabañas del Sol",
     name_en: "Sun Cabins",
-    description_es: "Eco-cabañas con energía solar frente a la playa.",
-    description_en: "Solar-powered eco-cabins right on the beach.",
+    description_es: "Eco-cabañas con energía solar frente a la playa. El lugar ideal para desconectarse y disfrutar del sonido del mar.",
+    description_en: "Solar-powered eco-cabins right on the beach. The ideal place to disconnect and enjoy the sound of the sea.",
     image: "/src/images/pav-07.jpg",
+    gallery: ["/src/images/pav-04.jpg", "/src/images/pav-05.jpg"],
     price: "$120 USD",
     isFeatured: true,
     tags_es: ["Eco", "Playa"],
@@ -105,7 +149,15 @@ export const categoryData = [
       instagram: "cabanas_del_sol_av",
       facebook: "CabanasDelSolAguaVerde",
       email: "reservas@cabanasdelsol.com"
-    }
+    },
+    location: {
+      lat: 25.5000,
+      lng: -111.0400,
+      name_es: "Playa Agua Verde",
+      name_en: "Agua Verde Beach"
+    },
+    amenities_es: ["Energía solar", "Cocina equipada", "Terraza privada"],
+    amenities_en: ["Solar power", "Equipped kitchen", "Private terrace"]
   },
   {
     id: "acc-02",
