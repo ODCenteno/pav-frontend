@@ -62,6 +62,42 @@
     "title": "Highlights",
     "subtitle": "Discover the best options for your visit"
   },
+  "quickFacts": {
+    "title": "At a glance",
+    "subtitle": "A few facts that make Puerto Agua Verde & Rancho San Cosme worth the trip.",
+    "items": [
+      {
+        "title": "~2 hours from Loreto",
+        "value": "98 km",
+        "desc": "Puerto Agua Verde is about 98 km from Loreto, with a driving time of roughly 2 hours."
+      },
+      {
+        "title": "~5 hours from La Paz",
+        "value": "360 km",
+        "desc": "From La Paz, the route is about 360 km, with an estimated drive of around 5 hours."
+      },
+      {
+        "title": "Best season",
+        "value": "May–June",
+        "desc": "The best window for outdoor activities runs from early May to mid-June. October is also a strong option."
+      },
+      {
+        "title": "Protected nature nearby",
+        "value": "5 islands",
+        "desc": "Loreto Bay National Park includes five major islands, one of the region’s standout natural treasures."
+      },
+      {
+        "title": "Biodiversity",
+        "value": "1,300+ species",
+        "desc": "More than 1,300 plant and animal species have been recorded in Loreto Bay National Park."
+      },
+      {
+        "title": "What to do",
+        "value": "Snorkel · Kayak · Hiking",
+        "desc": "The area is ideal for kayaking, snorkeling, hiking, camping, and wildlife-focused activities."
+      }
+    ]
+  },
   "map": {
     "title": "Destination Map",
     "desc": "Explore key points of Puerto Agua Verde and Rancho San Cosme. Find routes, services, beaches, and activities near you.",

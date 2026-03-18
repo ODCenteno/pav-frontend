@@ -62,6 +62,42 @@
     "title": "Lo más destacado",
     "subtitle": "Descubre las mejores opciones para tu visita"
   },
+  "quickFacts": {
+    "title": "Lo esencial de un vistazo",
+    "subtitle": "Datos rápidos para entender por qué Puerto Agua Verde y Rancho San Cosme merecen el viaje.",
+    "items": [
+      {
+        "title": "A ~2 horas de Loreto",
+        "value": "98 km",
+        "desc": "Puerto Agua Verde se encuentra a unos 98 km de Loreto, con un trayecto aproximado de 2 horas en auto."
+      },
+      {
+        "title": "A ~5 horas de La Paz",
+        "value": "360 km",
+        "desc": "Desde La Paz, el recorrido es de alrededor de 360 km, con un tiempo estimado de casi 5 horas por carretera."
+      },
+      {
+        "title": "Mejor época",
+        "value": "Mayo–junio",
+        "desc": "La mejor ventana para actividades al aire libre va de principios de mayo a mediados de junio. Octubre también destaca."
+      },
+      {
+        "title": "Naturaleza cercana",
+        "value": "5 islas",
+        "desc": "El Parque Nacional Bahía de Loreto reúne cinco islas principales, uno de los grandes atractivos naturales de la región."
+      },
+      {
+        "title": "Biodiversidad",
+        "value": "1,300+ especies",
+        "desc": "En el Parque Nacional Bahía de Loreto se han registrado más de 1,300 especies de plantas y animales."
+      },
+      {
+        "title": "Qué hacer",
+        "value": "Snorkel · Kayak · Hiking",
+        "desc": "La región destaca por actividades como kayak, snorkel, senderismo, campamento y observación de fauna."
+      }
+    ]
+  },
   "map": {
     "title": "Mapa del Destino",
     "desc": "Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme. Encuentra rutas, servicios, playas y actividades cerca de ti.",

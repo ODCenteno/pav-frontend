@@ -1,0 +1,120 @@
+.quick-facts {
+    background-color: var(--white);
+}
+
+.quick-facts__title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-xs);
+}
+
+.quick-facts__subtitle {
+    font-size: var(--text-base);
+    color: var(--secondary-text);
+}
+
+.quick-facts__bento {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+}
+
+.quick-facts__card {
+    background-color: var(--color-bone);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.quick-facts__card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Accent Colors */
+.fact-accent-1 {
+    background-color: var(--color-coral);
+    color: var(--white);
+    border-color: var(--color-coral-dark);
+}
+
+.fact-accent-1 .quick-facts__card-title,
+.fact-accent-1 .quick-facts__card-value,
+.fact-accent-1 .quick-facts__card-desc {
+    color: var(--white);
+}
+
+.fact-accent-2 {
+    background-color: var(--color-slate);
+    color: var(--white);
+}
+
+.fact-accent-2 .quick-facts__card-title,
+.fact-accent-2 .quick-facts__card-value,
+.fact-accent-2 .quick-facts__card-desc {
+    color: var(--white);
+}
+
+.quick-facts__image-box {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    height: 200px;
+}
+
+.quick-facts__image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.quick-facts__card-title {
+    font-size: var(--text-sm);
+    color: var(--secondary-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+}
+
+.quick-facts__card-value {
+    font-size: var(--text-2xl);
+    color: var(--color-primary);
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+    line-height: 1.2;
+}
+
+.quick-facts__card-desc {
+    font-size: var(--text-sm);
+    color: var(--color-on-surface-variant);
+    line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+    .quick-facts__bento {
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-rows: minmax(220px, auto);
+    }
+
+    .quick-facts__image-box {
+        height: auto;
+    }
+
+    /* Wide card spans 2 columns */
+    .wide {
+        grid-column: span 2;
+    }
+
+    .quick-facts__card-value {
+        font-size: var(--text-3xl);
+    }
+}
+
+@media (min-width: 1024px) {
+    .quick-facts__bento {
+        gap: var(--space-sm);
+    }
+}
