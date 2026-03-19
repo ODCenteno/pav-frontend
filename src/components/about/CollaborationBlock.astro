@@ -11,13 +11,15 @@ interface Props {
 const { title, description, btnPrimary, btnSecondary } = Astro.props;
 ---
 
-<section class="collaboration-block section-padding container">
-  <div class="collaboration-block__content">
-    <h2 class="collaboration-block__title">{title}</h2>
-    <p class="collaboration-block__description">{description}</p>
-    <div class="collaboration-block__actions">
-      <a href="#" class="btn btn-primary">{btnPrimary}</a>
-      <a href="#" class="btn btn-outline">{btnSecondary}</a>
+<section class="collaboration-block section-padding">
+  <div class="container">
+    <div class="collaboration-block__content">
+      <h2 class="collaboration-block__title">{title}</h2>
+      <p class="collaboration-block__description">{description}</p>
+      <div class="collaboration-block__actions">
+        <a href="#" class="btn btn-primary">{btnPrimary}</a>
+        <a href="#" class="btn btn-outline">{btnSecondary}</a>
+      </div>
     </div>
   </div>
 </section>

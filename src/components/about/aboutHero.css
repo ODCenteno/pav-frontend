@@ -1,7 +1,7 @@
 .about-hero {
     position: relative;
     width: 100%;
-    min-height: 60dvh;
+    min-height: 80dvh;
     display: flex;
     align-items: center;
     background-color: var(--color-charcoal);
@@ -55,10 +55,10 @@
 
 @media (max-width: 768px) {
     .about-hero {
-        min-height: 50dvh;
+        min-height: 60dvh;
         text-align: center;
     }
-    
+
     .about-hero__overlay {
         background: rgba(0,0,0,0.5);
     }

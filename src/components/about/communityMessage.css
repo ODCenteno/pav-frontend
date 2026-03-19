@@ -2,6 +2,10 @@
     background-color: var(--color-on-surface);
     color: var(--white);
     text-align: center;
+    height: 50dvh;
+    display: grid;
+    place-items: center;
+    align-content: center;
 }
 
 .community-message__content {
@@ -25,7 +29,20 @@
     margin: 0;
 }
 
+.community-message__desc {
+    font-size: var(--text-base);
+    color: var(--white);
+}
+
 @media (min-width: 768px) {
+    .community-message__title {
+    color: var(--color-primary);
+    font-size: var(--text-xl);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-md);
+}
+
     .community-message__quote {
         font-size: var(--text-3xl);
     }

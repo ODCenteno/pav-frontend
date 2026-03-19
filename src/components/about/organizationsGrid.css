@@ -6,7 +6,6 @@
 .orgs-grid__description {
     font-size: var(--text-base);
     color: var(--secondary-text);
-    margin-bottom: var(--space-lg);
 }
 
 .orgs-grid__list {

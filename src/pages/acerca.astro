@@ -15,59 +15,25 @@ const locale = Astro.currentLocale ?? "es";
 const t = useTranslations(locale);
 ---
 
-<BaseLayout
-  siteTitle={t("page.about.siteTitle")}
-  ogTitle={t("page.about.ogTitle")}
-  siteDescription={t("page.about.siteDescription")}
-  ogDescription={t("page.about.ogDescription")}
->
-  <AboutHero
-    slot="Hero"
-    title={t("aboutPage.hero.title")}
-    description={t("aboutPage.hero.desc")}
-  />
+<BaseLayout siteTitle={t("page.about.siteTitle")} ogTitle={t("page.about.ogTitle")} siteDescription={t("page.about.siteDescription")} ogDescription={t("page.about.ogDescription")}>
+  <AboutHero slot="Hero" title={t("aboutPage.hero.title")} description={t("aboutPage.hero.desc")} />
 
-  <AboutIntro
-    title={t("aboutPage.intro.title")}
-    text={t("aboutPage.intro.text")}
-  />
+  <AboutIntro title={t("aboutPage.intro.title")} text={t("aboutPage.intro.text")} />
 
-  <AboutValues
-    mission={{ title: t("aboutPage.mission.title"), text: t("aboutPage.mission.text") }}
-    vision={{ title: t("aboutPage.vision.title"), text: t("aboutPage.vision.text") }}
-    values={{ title: t("aboutPage.values.title"), items: t("aboutPage.values.items") as unknown as string[] }}
-  />
+  <AboutValues mission={{ title: t("aboutPage.mission.title"), text: t("aboutPage.mission.text") }} vision={{ title: t("aboutPage.vision.title"), text: t("aboutPage.vision.text") }} values={{ title: t("aboutPage.values.title"), items: t("aboutPage.values.items") as unknown as string[] }} />
 
-  <TeamGrid
-    title={t("aboutPage.team.title")}
-    description={t("aboutPage.team.desc")}
-    members={teamMembers}
-    locale={locale}
-  />
+  <TeamGrid title={t("aboutPage.team.title")} description={t("aboutPage.team.desc")} members={teamMembers} locale={locale} />
 
-  <OrganizationsGrid
-    title={t("aboutPage.organizations.title")}
-    description={t("aboutPage.organizations.desc")}
-    organizations={organizations}
-    locale={locale}
-  />
+  <OrganizationsGrid title={t("aboutPage.organizations.title")} description={t("aboutPage.organizations.desc")} organizations={organizations} locale={locale} />
 
-  <CommunityMessage
-    title={t("aboutPage.community.title")}
-    text={t("aboutPage.community.text")}
-  />
+  <CommunityMessage title={t("aboutPage.community.title")} text={t("aboutPage.community.text")} />
 
-  <CollaborationBlock
-    title={t("aboutPage.collab.title")}
-    description={t("aboutPage.collab.desc")}
-    btnPrimary={t("aboutPage.collab.btnPrimary")}
-    btnSecondary={t("aboutPage.collab.btnSecondary")}
-  />
+  <CollaborationBlock title={t("aboutPage.collab.title")} description={t("aboutPage.collab.desc")} btnPrimary={t("aboutPage.collab.btnPrimary")} btnSecondary={t("aboutPage.collab.btnSecondary")} />
 
-  <SiteCTA
+  <!-- <SiteCTA
     title={t("aboutPage.cta.title")}
     description={t("aboutPage.cta.desc")}
     btnText={t("aboutPage.cta.btn")}
     href="/sitios"
-  />
+  /> -->
 </BaseLayout>

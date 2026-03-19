@@ -16,7 +16,7 @@
 .collaboration-block__description {
     font-size: var(--text-base);
     color: var(--secondary-text);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-sm);
 }
 
 .collaboration-block__actions {
