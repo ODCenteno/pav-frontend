@@ -1,7 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHero from "../components/main/hero/PageHero.astro";
-import CardMain from "../components/cards/CardMain.astro";
+import ExpHero from "../components/main/experiences/ExpHero.astro";
+import ExpIntro from "../components/main/experiences/ExpIntro.astro";
+import ExpFeatured from "../components/main/experiences/ExpFeatured.astro";
+import ExpGrid from "../components/main/experiences/ExpGrid.astro";
+import ExpCTA from "../components/main/experiences/ExpCTA.astro";
 import PopupManager from "../components/popup/PopupManager.astro";
 import { useTranslations } from "../i18n/utils";
 import { categoryData } from "../data/categoryData";
@@ -11,7 +14,9 @@ const locale = Astro.currentLocale ?? "es";
 const t = useTranslations(locale);
 
 // Filter experiences from data
-const experiences = categoryData.filter(item => item.categoryId === "experiences") as unknown as Listing[];
+const allExperiences = categoryData.filter(item => item.categoryId === "experiences") as unknown as Listing[];
+const featuredExperiences = allExperiences.filter(item => item.isFeatured);
+const regularExperiences = allExperiences.filter(item => !item.isFeatured);
 ---
 
 <BaseLayout
@@ -20,41 +25,36 @@ const experiences = categoryData.filter(item => item.categoryId === "experiences
   siteDescription={t("page.experiences.siteDescription")}
   ogDescription={t("page.experiences.ogDescription")}
 >
-  <PageHero 
+  <ExpHero 
     slot="Hero"
-    title={t("featured.experiences.title")} 
-    description={t("featured.experiences.desc")} 
+    title={t("experiencesPage.heroTitle")} 
+    description={t("experiencesPage.heroDesc")} 
   />
 
-  <section class="section-padding">
-    <div class="container">
-      <div class="experiences-grid">
-        {experiences.map((item) => (
-          <CardMain item={item} currentLang={locale} />
-        ))}
-      </div>
-    </div>
-  </section>
+  <ExpIntro text={t("experiencesPage.intro")} />
+
+  {featuredExperiences.map((exp, index) => (
+    <ExpFeatured 
+      experience={exp} 
+      locale={locale} 
+      isReversed={index % 2 !== 0} 
+    />
+  ))}
+
+  {regularExperiences.length > 0 && (
+    <ExpGrid 
+      title={t("experiencesPage.featuredTitle")} 
+      experiences={regularExperiences} 
+      locale={locale} 
+    />
+  )}
+
+  <ExpCTA 
+    title={t("experiencesPage.cta.title")} 
+    description={t("experiencesPage.cta.desc")} 
+    btnText={t("experiencesPage.cta.btn")} 
+    href="/sitios" 
+  />
 
   <PopupManager />
 </BaseLayout>
-
-<style>
-  .experiences-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  @media (min-width: 640px) {
-    .experiences-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .experiences-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-</style>

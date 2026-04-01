@@ -1,0 +1,15 @@
+---
+import "./expIntro.css";
+
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<section class="exp-intro section-padding container">
+  <div class="exp-intro__content">
+    <p class="exp-intro__text">{text}</p>
+  </div>
+</section>

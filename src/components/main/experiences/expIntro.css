@@ -1,0 +1,18 @@
+.exp-intro__content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.exp-intro__text {
+    font-size: var(--text-xl);
+    color: var(--color-on-surface);
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+@media (min-width: 768px) {
+    .exp-intro__text {
+        font-size: var(--text-2xl);
+    }
+}

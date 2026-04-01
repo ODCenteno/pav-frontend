@@ -1,0 +1,23 @@
+.exp-grid__title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-lg);
+    color: var(--color-on-surface);
+}
+
+.exp-grid__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+@media (min-width: 640px) {
+    .exp-grid__list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .exp-grid__list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

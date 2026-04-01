@@ -1,0 +1,25 @@
+---
+import CardMain from "../../cards/CardMain.astro";
+import type { Listing } from "../../../types/listing.type";
+import "./expGrid.css";
+
+interface Props {
+  title: string;
+  experiences: Listing[];
+  locale: string;
+}
+
+const { title, experiences, locale } = Astro.props;
+---
+
+<section class="exp-grid section-padding container">
+  <div class="section-header">
+    <h2 class="exp-grid__title">{title}</h2>
+  </div>
+  
+  <div class="exp-grid__list">
+    {experiences.map(item => (
+      <CardMain item={item} currentLang={locale} />
+    ))}
+  </div>
+</section>

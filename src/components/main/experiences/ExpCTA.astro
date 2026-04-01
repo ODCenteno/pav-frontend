@@ -1,0 +1,20 @@
+---
+import "./expCTA.css";
+
+interface Props {
+  title: string;
+  description: string;
+  btnText: string;
+  href: string;
+}
+
+const { title, description, btnText, href } = Astro.props;
+---
+
+<section class="exp-cta section-padding container">
+  <div class="exp-cta__container">
+    <h2 class="exp-cta__title">{title}</h2>
+    <p class="exp-cta__desc">{description}</p>
+    <a href={href} class="btn btn-primary">{btnText}</a>
+  </div>
+</section>

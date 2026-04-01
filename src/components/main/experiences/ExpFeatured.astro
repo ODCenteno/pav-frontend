@@ -1,0 +1,44 @@
+---
+import type { Listing } from "../../../types/listing.type";
+import "./expFeatured.css";
+
+interface Props {
+  experience: Listing;
+  locale: string;
+  isReversed?: boolean;
+}
+
+const { experience, locale, isReversed = false } = Astro.props;
+
+// Helper to get localized text from object or fallback to legacy flat fields
+function getLocalizedText(item: any, field: string, lang: string): string {
+  if (!item) return "";
+  
+  // Try object structure: item.name.en
+  if (item[field] && typeof item[field] === 'object') {
+    return item[field][lang] || item[field]['es'] || "";
+  }
+  
+  // Try legacy flat fields: item.name_en
+  const flatKey = `${field}_${lang}`;
+  return item[flatKey] || item[`${field}_es`] || item[field] || "";
+}
+
+const title = getLocalizedText(experience, 'name', locale);
+const description = getLocalizedText(experience, 'description', locale);
+const detailLink = locale === "es" ? `/sitios/${experience.slug}` : `/en/sitios/${experience.slug}`;
+---
+
+<section class="exp-featured section-padding container" class:list={{ "is-reversed": isReversed }}>
+  <div class="exp-featured__grid">
+    <div class="exp-featured__image-container">
+      <img src={experience.image} alt={title} class="exp-featured__img" />
+    </div>
+    <div class="exp-featured__content">
+      <span class="exp-featured__badge">{locale === 'es' ? 'Destacada' : 'Featured'}</span>
+      <h2 class="exp-featured__title">{title}</h2>
+      <p class="exp-featured__desc">{description}</p>
+      <a href={detailLink} class="btn btn-outline">{locale === 'es' ? 'Ver más' : 'View more'}</a>
+    </div>
+  </div>
+</section>

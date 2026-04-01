@@ -1,0 +1,22 @@
+---
+import "./expHero.css";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const { title, description, image = "/src/images/pav-landscape-12.webp" } = Astro.props;
+---
+
+<section class="exp-hero">
+  <div class="exp-hero__bg">
+    <img src={image} alt={title} class="exp-hero__img" />
+    <div class="exp-hero__overlay"></div>
+  </div>
+  <div class="exp-hero__content container">
+    <h1 class="exp-hero__title">{title}</h1>
+    <p class="exp-hero__desc">{description}</p>
+  </div>
+</section>
