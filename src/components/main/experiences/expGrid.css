@@ -19,5 +19,6 @@
 @media (min-width: 1024px) {
     .exp-grid__list {
         grid-template-columns: repeat(3, 1fr);
+        padding: 0 var(--space-lg);
     }
 }
