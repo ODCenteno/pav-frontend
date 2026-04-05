@@ -12,14 +12,12 @@ interface Props {
 const { title, experiences, locale } = Astro.props;
 ---
 
-<section class="exp-grid section-padding container">
-  <div class="section-header">
+<section class="exp-grid section-padding">
+  <div class="section-header container">
     <h2 class="exp-grid__title">{title}</h2>
   </div>
-  
+
   <div class="exp-grid__list">
-    {experiences.map(item => (
-      <CardMain item={item} currentLang={locale} />
-    ))}
+    {experiences.map((item) => <CardMain item={item} currentLang={locale} />)}
   </div>
 </section>

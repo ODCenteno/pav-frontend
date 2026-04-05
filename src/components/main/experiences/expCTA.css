@@ -20,6 +20,7 @@
 
 .exp-cta__desc {
     font-size: var(--text-lg);
+    color: var(--white);
     opacity: 0.9;
     margin-bottom: var(--space-lg);
 }

@@ -85,7 +85,7 @@ const cardData = {
 const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<div class="listing-card-container" data-category={item.categoryId}>
+<div class="listing-card-container" data-category={item.categoryId} data-name={title.toLowerCase()} data-description={desc.toLowerCase()}>
   <article
     class="listing-card"
     data-listing-type={item.type}

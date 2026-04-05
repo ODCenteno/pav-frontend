@@ -6,12 +6,11 @@ import SiteInfoPanel from "../../components/site-detail/SiteInfoPanel.astro";
 import SiteTips from "../../components/site-detail/SiteTips.astro";
 import SiteGallery from "../../components/site-detail/SiteGallery.astro";
 import RelatedSites from "../../components/site-detail/RelatedSites.astro";
-import SiteCTA from "../../components/site-detail/SiteCTA.astro";
 import StickyActionBar from "../../components/site-detail/StickyActionBar.tsx";
-import PopupManager from "../../components/popup/PopupManager.astro";
 import { useTranslations } from "../../i18n/utils";
 import { categoryData } from "../../data/categoryData";
 import type { Listing } from "../../types/listing.type";
+import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
 export async function getStaticPaths() {
   const listings = categoryData;
@@ -25,10 +24,10 @@ const { item } = Astro.props;
 const locale = "es";
 const t = useTranslations(locale);
 
-const title = item.name_es || item.name?.es;
-const description = item.description_es || item.description?.es;
-const categoryLabel = item.category_name_es || item.category?.name?.es;
-const tags = item.tags_es || (item.tags || []).map(t => t.es);
+const title = item.name_es || item.name?.[locale] || item.name?.es;
+const description = item.description_es || item.description?.[locale] || item.description?.es;
+const categoryLabel = item.category_name_es || item.category?.name?.[locale] || item.category?.name?.es;
+const tags = item.tags_es || (Array.isArray(item.tags) ? item.tags.map((t) => (typeof t === "string" ? t : t?.[locale] || t?.es)) : []);
 
 const labels = {
   about: t("siteDetailPage.labels.about"),
@@ -49,65 +48,26 @@ const contactActions = {
   phone: item.contact?.phone,
 };
 
-const schedule = item.schedule?.text_es || item.schedule?.text?.es;
-const amenities = item.amenities_es || (item.amenities || []).map(a => a.es);
-const bestTime = item.recommendations?.bestTime_es || item.recommendations?.bestTimeToVisit?.es;
-const bring = item.recommendations?.bring_es || item.recommendations?.whatToBring?.map(b => b.es);
+const schedule = item.schedule?.text_es || item.schedule?.text?.[locale] || item.schedule?.text?.es;
+const amenities = item.amenities_es || (Array.isArray(item.amenities) ? item.amenities.map((a) => (typeof a === "string" ? a : a?.[locale] || a?.es)) : []);
+const bestTime = item.recommendations?.bestTime_es || item.recommendations?.bestTimeToVisit?.[locale] || item.recommendations?.bestTimeToVisit?.es;
+const bring = item.recommendations?.bring_es || (Array.isArray(item.recommendations?.whatToBring) ? item.recommendations.whatToBring.map((b) => (typeof b === "string" ? b : b?.[locale] || b?.es)) : []);
 ---
 
-<BaseLayout
-  siteTitle={`${title} | Puerto Agua Verde`}
-  siteDescription={description}
->
-  <SiteHero
-    slot="Hero"
-    id={item.id}
-    title={title}
-    categoryLabel={categoryLabel}
-    image={item.image}
-    tags={tags}
-    labels={labels}
-  />
+<BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
+  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.image} tags={tags} labels={labels} />
 
-  <SiteSummary
-    description={description}
-    labels={labels}
-    contactActions={contactActions}
-  >
-    <SiteGallery
-      title={labels.gallery}
-      images={item.gallery}
-      noContainer={true}
-    />
+  <SiteSummary description={description} labels={labels} contactActions={contactActions}>
+    <SiteGallery title={labels.gallery} images={item.gallery} noContainer={true} />
   </SiteSummary>
 
-  <SiteInfoPanel
-    labels={labels}
-    schedule={schedule}
-    price={item.price}
-    amenities={amenities}
-  />
+  <SiteInfoPanel labels={labels} schedule={schedule} price={item.price} amenities={amenities} />
 
-  {(bestTime || (bring && bring.length > 0)) && (
-    <SiteTips
-      labels={labels}
-      bestTime={bestTime}
-      whatToBring={bring}
-    />
-  )}
+  {(bestTime || (bring && bring.length > 0)) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} />}
 
-  <RelatedSites
-    title={labels.related}
-    relatedIds={item.relatedSites}
-    currentLang={locale}
-  />
+  <RelatedSites title={labels.related} relatedIds={item.relatedSites} currentLang={locale} />
 
-  <SiteCTA
-    title={t("siteDetailPage.cta.title")}
-    description={t("siteDetailPage.cta.desc")}
-    btnText={t("siteDetailPage.cta.btn")}
-    href="/sitios"
-  />
+  <ExpCTA title={t("siteDetailPage.cta.title")} description={t("siteDetailPage.cta.desc")} btnText={t("siteDetailPage.cta.btn")} href="/sitios" />
 
   <StickyActionBar
     client:load
@@ -120,6 +80,4 @@ const bring = item.recommendations?.bring_es || item.recommendations?.whatToBrin
       favoriteActive: labels.favoriteActive,
     }}
   />
-
-  <PopupManager />
 </BaseLayout>

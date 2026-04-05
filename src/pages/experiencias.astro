@@ -13,8 +13,25 @@ import type { Listing } from "../types/listing.type";
 const locale = Astro.currentLocale ?? "es";
 const t = useTranslations(locale);
 
-// Filter experiences from data
-const allExperiences = categoryData.filter(item => item.categoryId === "experiences") as unknown as Listing[];
+// Filter and map experiences from data
+const allExperiencesRaw = categoryData.filter(item => item.categoryId === "experiences");
+const allExperiences = allExperiencesRaw.map(item => ({
+  ...item,
+  name: { es: item.name_es, en: item.name_en },
+  shortDescription: { es: item.description_es, en: item.description_en },
+  description: { es: item.description_es, en: item.description_en },
+  tags: (item.tags_es || []).map((t, i) => ({ 
+    es: t, 
+    en: item.tags_en?.[i] || t 
+  })),
+  media: { 
+    mainImageUrl: item.image 
+  },
+  pricing: { 
+    price: item.price 
+  }
+})) as unknown as Listing[];
+
 const featuredExperiences = allExperiences.filter(item => item.isFeatured);
 const regularExperiences = allExperiences.filter(item => !item.isFeatured);
 ---
@@ -55,6 +72,5 @@ const regularExperiences = allExperiences.filter(item => !item.isFeatured);
     btnText={t("experiencesPage.cta.btn")} 
     href="/sitios" 
   />
-
-  <PopupManager />
+</BaseLayout>
 </BaseLayout>

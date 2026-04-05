@@ -3,8 +3,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageHero from "@/components/main/hero/PageHero.astro";
 import FavoritesSection from "@/components/main/favorites/FavoritesSection.astro";
 import CardMain from "@/components/cards/CardMain.astro";
-import SiteCTA from "@/components/site-detail/SiteCTA.astro";
-import PopupManager from "@/components/popup/PopupManager.astro";
+import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
+
+import SitesExplorer from "@/components/main/categories/SitesExplorer.tsx";
 import { useTranslations } from "@/i18n/utils";
 import { categoryData } from "@/data/categoryData";
 import type { Listing } from "@/types/listing.type";
@@ -18,151 +19,84 @@ const categories = [
   { id: "restaurants", label: t("sitesPage.filters.food") },
   { id: "accommodation", label: t("sitesPage.filters.stay") },
   { id: "services", label: t("sitesPage.filters.services") },
-  { id: "experiences", label: t("nav.experiences") }
+  { id: "experiences", label: t("nav.experiences") },
 ];
 
-const groupedSites = categories.map(cat => ({
-  ...cat,
-  items: categoryData.filter(item => item.categoryId === cat.id) as unknown as Listing[]
-})).filter(group => group.items.length > 0);
-
+const groupedSites = categories
+  .map((cat) => ({
+    ...cat,
+    items: categoryData
+      .filter((item) => item.categoryId === cat.id)
+      .map((item) => ({
+        ...item,
+        // Adapt flat fields to localized objects
+        name: { es: item.name_es, en: item.name_en },
+        shortDescription: { es: item.description_es, en: item.description_en },
+        description: { es: item.description_es, en: item.description_en },
+        // Convert arrays of strings to array of LocalizedStrings
+        tags: (item.tags_es || []).map((tag, i) => ({
+          es: tag,
+          en: item.tags_en?.[i] || tag,
+        })),
+        media: {
+          mainImageUrl: item.image,
+        },
+        pricing: {
+          price: item.price,
+        },
+      })) as unknown as Listing[],
+  }))
+  .filter((group) => group.items.length > 0);
 ---
 
-<BaseLayout 
-  siteTitle={t("sites.siteTitle")} 
-  ogTitle={t("sites.ogTitle")} 
-  siteDescription={t("sites.siteDescription")} 
-  ogDescription={t("sites.ogDescription")}
->
-  <PageHero 
-    slot="Hero"
-    title={t("sitesPage.heroTitle")} 
-    description={t("sitesPage.heroDesc")} 
-  />
+<BaseLayout siteTitle={t("sites.siteTitle")} ogTitle={t("sites.ogTitle")} siteDescription={t("sites.siteDescription")} ogDescription={t("sites.ogDescription")}>
+  <PageHero slot="Hero" title={t("sitesPage.heroTitle")} description={t("sitesPage.heroDesc")} />
 
   <FavoritesSection />
 
   <section class="sites-explorer section-padding">
     <div class="container">
-      <!-- Search Bar -->
-      <div class="search-container">
-        <div class="search-box">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" placeholder={t("sitesPage.searchPlaceholder")} class="search-input" />
-        </div>
-      </div>
-
-      <!-- Quick Filters (Chips) -->
-      <div class="filter-container">
-        <div class="filter-chips">
-          {groupedSites.map(group => (
-            <a href={`#category-${group.id}`} class="chip">
-              {group.label}
-            </a>
-          ))}
-        </div>
-      </div>
+      <SitesExplorer
+        client:load
+        locale={locale}
+        categories={categories}
+        translations={{
+          all: t("categories.all"),
+          noResults: t("sitesPage.empty"),
+          searchPlaceholder: t("sitesPage.searchPlaceholder"),
+        }}
+      />
 
       <!-- Categories Sections -->
-      {groupedSites.map(group => (
-        <div class="category-section" id={`category-${group.id}`}>
-          <div class="category-header">
-            <h2 class="category-title">{group.label}</h2>
-            <span class="item-count">{group.items.length} places</span>
+      {
+        groupedSites.map((group) => (
+          <div class="category-section" id={`category-${group.id}`}>
+            <div class="category-header">
+              <h2 class="category-title">{group.label}</h2>
+              <span class="item-count">
+                {group.items.length} {locale === "es" ? "sitios" : "places"}
+              </span>
+            </div>
+
+            <div class="horizontal-carousel">
+              {group.items.map((item) => (
+                <div class="carousel-item">
+                  <CardMain item={item} currentLang={locale} />
+                </div>
+              ))}
+            </div>
           </div>
-          
-          <div class="horizontal-carousel">
-            {group.items.map(item => (
-              <div class="carousel-item">
-                <CardMain item={item} currentLang={locale} />
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </section>
 
-  <SiteCTA
-    title={t("aboutPage.cta.title")}
-    description={t("aboutPage.cta.desc")}
-    btnText={t("aboutPage.cta.btn")}
-    href="/en/acerca"
-  />
-
-  <PopupManager />
+  <ExpCTA title={t("aboutPage.cta.title")} description={t("aboutPage.cta.desc")} btnText={t("aboutPage.cta.btn")} href="/en/acerca" />
 </BaseLayout>
 
 <style>
   .sites-explorer {
     background-color: var(--color-surface);
-  }
-
-  .search-container {
-    margin-bottom: var(--space-xl);
-  }
-
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    padding: 0.8rem 1.2rem;
-    border-radius: var(--radius-full);
-    box-shadow: var(--shadow-sm);
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .search-icon {
-    color: var(--secondary-text);
-    margin-right: 0.8rem;
-  }
-
-  .search-input {
-    border: none;
-    background: transparent;
-    width: 100%;
-    font-size: var(--text-base);
-    color: var(--color-on-surface);
-    outline: none;
-  }
-
-  .filter-container {
-    margin-bottom: var(--space-xl);
-    overflow: hidden;
-  }
-
-  .filter-chips {
-    display: flex;
-    gap: var(--space-2xs);
-    overflow-x: auto;
-    padding-bottom: var(--space-xs);
-    scrollbar-width: none;
-  }
-
-  .filter-chips::-webkit-scrollbar {
-    display: none;
-  }
-
-  .chip {
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--border-color);
-    background: var(--white);
-    white-space: nowrap;
-    cursor: pointer;
-    font-size: var(--text-sm);
-    font-weight: 500;
-    color: var(--secondary-text);
-    transition: all var(--transition-fast);
-    text-decoration: none;
-  }
-
-  .chip:hover {
-    background-color: var(--color-on-surface);
-    color: var(--white);
-    border-color: var(--color-on-surface);
   }
 
   .category-section {
@@ -197,7 +131,7 @@ const groupedSites = categories.map(cat => ({
     padding-bottom: var(--space-md);
     scroll-snap-type: x mandatory;
     scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE 10+ */
+    -ms-overflow-style: none; /* IE 10+ */
     -webkit-overflow-scrolling: touch;
   }
 

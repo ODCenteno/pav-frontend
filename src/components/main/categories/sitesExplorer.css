@@ -1,0 +1,78 @@
+.explorer-controls {
+    margin-bottom: var(--space-xl);
+}
+
+.search-container {
+    margin-bottom: var(--space-xl);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-icon {
+    color: var(--secondary-text);
+    margin-right: 0.8rem;
+}
+
+.search-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: var(--text-base);
+    color: var(--color-on-surface);
+    outline: none;
+}
+
+.filter-container {
+    margin-bottom: var(--space-xl);
+    overflow: hidden;
+}
+
+.filter-chips {
+    display: flex;
+    gap: var(--space-2xs);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+    scrollbar-width: none;
+}
+
+.filter-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.chip {
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+    background: var(--white);
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--secondary-text);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.chip.active, .chip:hover {
+    background-color: var(--color-on-surface);
+    color: var(--white);
+    border-color: var(--color-on-surface);
+}
+
+.empty-state-message {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--secondary-text);
+    font-size: var(--text-lg);
+    grid-column: 1 / -1;
+}

@@ -7,7 +7,7 @@ import TeamGrid from "../components/about/TeamGrid.astro";
 import OrganizationsGrid from "../components/about/OrganizationsGrid.astro";
 import CommunityMessage from "../components/about/CommunityMessage.astro";
 import CollaborationBlock from "../components/about/CollaborationBlock.astro";
-import SiteCTA from "../components/site-detail/SiteCTA.astro";
+import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { useTranslations } from "../i18n/utils";
 import { teamMembers, organizations } from "../data/aboutData";
 
@@ -30,10 +30,10 @@ const t = useTranslations(locale);
 
   <CollaborationBlock title={t("aboutPage.collab.title")} description={t("aboutPage.collab.desc")} btnPrimary={t("aboutPage.collab.btnPrimary")} btnSecondary={t("aboutPage.collab.btnSecondary")} />
 
-  <!-- <SiteCTA
+  <ExpCTA
     title={t("aboutPage.cta.title")}
     description={t("aboutPage.cta.desc")}
     btnText={t("aboutPage.cta.btn")}
     href="/sitios"
-  /> -->
+  />
 </BaseLayout>

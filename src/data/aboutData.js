@@ -7,7 +7,7 @@ export const teamMembers = [
       es: "Apasionado por el desarrollo comunitario y el turismo sostenible en Baja California Sur.",
       en: "Passionate about community development and sustainable tourism in Baja California Sur."
     },
-    photo: "/src/images/pav-01.jpg",
+    photo: "/images/pav-01.jpg",
     links: { email: "juan@example.com", instagram: "juan_pav" },
     order: 1
   },
@@ -19,7 +19,7 @@ export const teamMembers = [
       es: "Nacida y crecida en Puerto Agua Verde, dedicada a preservar las historias locales.",
       en: "Born and raised in Puerto Agua Verde, dedicated to preserving local stories."
     },
-    photo: "/src/images/pav-02.jpg",
+    photo: "/images/pav-02.jpg",
     links: { instagram: "maria_av" },
     order: 2
   }
@@ -34,7 +34,7 @@ export const organizations = [
       es: "Organización local que agrupa a los pescadores de la bahía.",
       en: "Local organization that groups the fishermen of the bay."
     },
-    logo: "/src/images/pav-06.png",
+    logo: "/images/pav-06.png",
     links: { website: "https://example.com" },
     order: 1
   },
@@ -46,7 +46,7 @@ export const organizations = [
       es: "Asociación dedicada a la conservación del Rancho San Cosme.",
       en: "Association dedicated to the conservation of Rancho San Cosme."
     },
-    logo: "/src/images/pav-05.jpg",
+    logo: "/images/pav-05.jpg",
     order: 2
   }
 ];
