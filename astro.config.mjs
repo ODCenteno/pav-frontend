@@ -5,8 +5,6 @@ import partytown from "@astrojs/partytown";
 import sitemap from "@astrojs/sitemap";
 import markdoc from "@astrojs/markdoc";
 
-import cloudflare from "@astrojs/cloudflare";
-
 export default defineConfig({
   integrations: [react(), partytown(), sitemap(), markdoc()],
 
@@ -15,6 +13,4 @@ export default defineConfig({
     defaultLocale: "es",
     routing: { prefixDefaultLocale: false },
   },
-
-  adapter: cloudflare(),
 });
