@@ -3,34 +3,27 @@ import "./header.css";
 import Image from "astro/components/Image.astro";
 import favicon from "../../../public/favicon.ico";
 import { useTranslations } from "../../i18n/utils";
-import { getAbsoluteLocaleUrl } from "astro:i18n";
+import { navigation } from "@/utils/navigation";
 import SvgIcon from "../icons/SvgIcon.astro";
 
-const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale || "es";
+const t = useTranslations(locale);
 
 const locales = ["en", "es"];
-const alternateLocaleCode = locales.find((l) => l !== Astro.currentLocale);
-
-// Calculate current path without locale prefix
-const pathname = Astro.url.pathname;
-const currentLocale = Astro.currentLocale;
-const prefix = `/${currentLocale}/`;
-const relativePath = pathname.startsWith(prefix) 
-  ? pathname.slice(prefix.length) 
-  : (pathname === `/${currentLocale}` ? "" : pathname.replace(/^\//, ""));
+const alternateLocaleCode = locales.find((l) => l !== locale);
 
 let alternateLang;
 if (alternateLocaleCode) {
   alternateLang = {
     locale: alternateLocaleCode,
-    url: getAbsoluteLocaleUrl(alternateLocaleCode, relativePath),
+    url: navigation.toggleLocale(Astro.url.pathname, locale, alternateLocaleCode),
   };
 }
 ---
 
 <header class="site-header">
   <div class="container header-container">
-    <a href={getAbsoluteLocaleUrl(Astro.currentLocale, "")} class="logo">
+    <a href={navigation.home(locale)} class="logo">
       <span class="logo-icon">
         <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32} />
       </span><span class="logo-text">Agua Verde</span>
@@ -39,9 +32,9 @@ if (alternateLocaleCode) {
     <!-- Desktop Navigation Only -->
     <nav class="main-nav desktop-only" id="main-navigation">
       <ul class="main-nav--ul">
-        <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "experiencias")} data-key="nav_experiences">{t("nav.experiences")}</a></li>
-        <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "sitios")} data-key="nav_sites">{t("nav.sites")}</a></li>
-        <li><a class="main-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "acerca")} data-key="nav_about">{t("nav.about")}</a></li>
+        <li><a class="main-nav--link" href={navigation.experiences(locale)} data-key="nav_experiences">{t("nav.experiences")}</a></li>
+        <li><a class="main-nav--link" href={navigation.sites(locale)} data-key="nav_sites">{t("nav.sites")}</a></li>
+        <li><a class="main-nav--link" href={navigation.about(locale)} data-key="nav_about">{t("nav.about")}</a></li>
         {
           alternateLang && (
             <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">

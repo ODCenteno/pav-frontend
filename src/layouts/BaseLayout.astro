@@ -1,6 +1,6 @@
 ---
 import "@/styles/globals.css";
-import { getAbsoluteLocaleUrl, getAbsoluteLocaleUrlList } from "astro:i18n";
+import { getRelativeLocaleUrl, getRelativeLocaleUrlList } from "astro:i18n";
 import { ClientRouter } from "astro:transitions";
 import Header from "@/components/header/Header.astro";
 import Footer from "@/components/footer/Footer.astro";
@@ -17,10 +17,10 @@ const pathnameNoLocale = pathname === localePrefix ? "/" : pathname.startsWith(l
 
 const path = pathnameNoLocale.replace(/^\/+/, "");
 
-const hrefs = getAbsoluteLocaleUrlList(path);
+const hrefs = getRelativeLocaleUrlList(path);
 
-// x-default apuntando al defaultLocale para ESTA misma página
-const defaultLocaleUrl = getAbsoluteLocaleUrl(defaultLocale, path);
+// x-default apuntando al defaultLocale para ESTA misma página (usando relativo para evitar fallos de config)
+const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
 ---
 
 <!doctype html>

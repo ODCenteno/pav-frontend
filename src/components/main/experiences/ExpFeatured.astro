@@ -2,6 +2,7 @@
 import type { Listing } from "../../../types/listing.type";
 import "./expFeatured.css";
 import { navigation } from "@/utils/navigation";
+import { useTranslations } from "@/i18n/utils";
 
 interface Props {
   experience: Listing;
@@ -28,6 +29,8 @@ function getLocalizedText(item: any, field: string, lang: string): string {
 const title = getLocalizedText(experience, "name", locale);
 const description = getLocalizedText(experience, "description", locale);
 const detailLink = navigation.siteDetail(experience.slug, locale);
+
+const t = useTranslations(locale);
 ---
 
 <section class="exp-featured section-padding" class:list={{ "is-reversed": isReversed }}>
@@ -36,10 +39,10 @@ const detailLink = navigation.siteDetail(experience.slug, locale);
       <img src={experience.image} alt={title} class="exp-featured__img" />
     </div>
     <div class="exp-featured__content">
-      <span class="exp-featured__badge">{locale === "es" ? "Destacada" : "Featured"}</span>
+      <span class="exp-featured__badge">{t("experiencesPage.featuredBadge")}</span>
       <h2 class="exp-featured__title">{title}</h2>
       <p class="exp-featured__desc">{description}</p>
-      <a href={detailLink} class="btn btn-outline">{locale === "es" ? "Ver más" : "View more"}</a>
+      <a href={detailLink} class="btn btn-outline">{t("experiencesPage.viewMore")}</a>
     </div>
   </div>
 </section>

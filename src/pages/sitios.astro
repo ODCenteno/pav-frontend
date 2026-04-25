@@ -76,7 +76,7 @@ const groupedSites = categories
             <div class="category-header">
               <h2 class="category-title">{group.label}</h2>
               <span class="item-count">
-                {group.items.length} {locale === "es" ? "sitios" : "places"}
+                {t("sitesPage.itemCount", { count: group.items.length.toString() })}
               </span>
             </div>
 

@@ -11,6 +11,7 @@ import { useTranslations } from "../../i18n/utils";
 import { categoryData } from "../../data/categoryData";
 import type { Listing } from "../../types/listing.type";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
+import { navigation } from "@/utils/navigation";
 
 export const prerender = true;
 
@@ -69,7 +70,7 @@ const bring = item.recommendations?.bring_es || (Array.isArray(item.recommendati
 
   <RelatedSites title={labels.related} relatedIds={item.relatedSites} currentLang={locale} />
 
-  <ExpCTA title={t("siteDetailPage.cta.title")} description={t("siteDetailPage.cta.desc")} btnText={t("siteDetailPage.cta.btn")} href="/sitios" />
+  <ExpCTA title={t("siteDetailPage.cta.title")} description={t("siteDetailPage.cta.desc")} btnText={t("siteDetailPage.cta.btn")} href={navigation.sites(locale)} />
 
   <StickyActionBar
     client:load

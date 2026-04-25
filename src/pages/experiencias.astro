@@ -1,76 +1,64 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import ExpHero from "../components/main/experiences/ExpHero.astro";
-import ExpIntro from "../components/main/experiences/ExpIntro.astro";
-import ExpFeatured from "../components/main/experiences/ExpFeatured.astro";
-import ExpGrid from "../components/main/experiences/ExpGrid.astro";
-import ExpCTA from "../components/main/experiences/ExpCTA.astro";
-import PopupManager from "../components/popup/PopupManager.astro";
-import { useTranslations } from "../i18n/utils";
-import { categoryData } from "../data/categoryData";
-import type { Listing } from "../types/listing.type";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/main/hero/PageHero.astro";
+import ExpFeatured from "@/components/main/experiences/ExpFeatured.astro";
+import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
+import { useTranslations } from "@/i18n/utils";
+import { categoryData } from "@/data/categoryData";
+import { navigation } from "@/utils/navigation";
 
-const locale = Astro.currentLocale ?? "es";
+const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 
-// Filter and map experiences from data
-const allExperiencesRaw = categoryData.filter(item => item.categoryId === "experiences");
-const allExperiences = allExperiencesRaw.map(item => ({
-  ...item,
-  name: { es: item.name_es, en: item.name_en },
-  shortDescription: { es: item.description_es, en: item.description_en },
-  description: { es: item.description_es, en: item.description_en },
-  tags: (item.tags_es || []).map((t, i) => ({ 
-    es: t, 
-    en: item.tags_en?.[i] || t 
-  })),
-  media: { 
-    mainImageUrl: item.image 
-  },
-  pricing: { 
-    price: item.price 
-  }
-})) as unknown as Listing[];
-
-const featuredExperiences = allExperiences.filter(item => item.isFeatured);
-const regularExperiences = allExperiences.filter(item => !item.isFeatured);
+// Get a few featured experiences
+const featuredExperiences = categoryData
+  .filter(item => item.categoryId === 'experiences')
+  .slice(0, 3);
 ---
 
-<BaseLayout
-  siteTitle={t("page.experiences.siteTitle")}
-  ogTitle={t("page.experiences.ogTitle")}
-  siteDescription={t("page.experiences.siteDescription")}
-  ogDescription={t("page.experiences.ogDescription")}
+<BaseLayout 
+  siteTitle={t("experiences.siteTitle")} 
+  ogTitle={t("experiences.ogTitle")}
+  siteDescription={t("experiences.siteDescription")}
+  ogDescription={t("experiences.ogDescription")}
 >
-  <ExpHero 
+  <PageHero 
     slot="Hero"
     title={t("experiencesPage.heroTitle")} 
-    description={t("experiencesPage.heroDesc")} 
+    description={t("experiencesPage.heroDesc")}
   />
 
-  <ExpIntro text={t("experiencesPage.intro")} />
+  <section class="experiences-intro section-padding">
+    <div class="container text-center">
+      <h2>{t("experiencesPage.introTitle")}</h2>
+      <p class="max-w-700">{t("experiencesPage.introDesc")}</p>
+    </div>
+  </section>
 
-  {featuredExperiences.map((exp, index) => (
-    <ExpFeatured 
-      experience={exp} 
-      locale={locale} 
-      isReversed={index % 2 !== 0} 
-    />
-  ))}
-
-  {regularExperiences.length > 0 && (
-    <ExpGrid 
-      title={t("experiencesPage.featuredTitle")} 
-      experiences={regularExperiences} 
-      locale={locale} 
-    />
-  )}
+  <div class="experiences-list">
+    {featuredExperiences.map((exp, index) => (
+      <ExpFeatured 
+        experience={exp} 
+        locale={locale} 
+        isReversed={index % 2 !== 0} 
+      />
+    ))}
+  </div>
 
   <ExpCTA 
-    title={t("experiencesPage.cta.title")} 
-    description={t("experiencesPage.cta.desc")} 
-    btnText={t("experiencesPage.cta.btn")} 
-    href="/sitios" 
+    title={t("experiencesPage.ctaTitle")} 
+    description={t("experiencesPage.ctaDesc")}
+    btnText={t("experiencesPage.ctaBtn")}
+    href={navigation.sites(locale)}
   />
 </BaseLayout>
-</BaseLayout>
+
+<style>
+  .experiences-intro {
+    background-color: var(--color-surface);
+  }
+  .max-w-700 {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+</style>

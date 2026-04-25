@@ -1,21 +1,30 @@
 ---
 import "./aboutIntro.css";
 
+import { useTranslations } from "@/i18n/utils";
+
 interface Props {
-  title: string;
-  text: string;
+  data?: {
+    title: string;
+    text: string;
+  };
+  locale?: string;
 }
 
-const { title, text } = Astro.props;
+const { data, locale = "es" } = Astro.props;
+const t = useTranslations(locale);
+
+const title = data?.title || t("aboutPage.intro.title");
+const text = data?.text || t("aboutPage.intro.text");
 ---
 
 <section class="about-intro section-padding">
   <div class="about-intro__grid container">
     <div class="about-intro__header">
-      <h2 class="about-intro__title">{title}</h2>
+      {title && <h2 class="about-intro__title">{title}</h2>}
     </div>
     <div class="about-intro__content">
-      <p class="about-intro__text">{text}</p>
+      {text && <p class="about-intro__text">{text}</p>}
     </div>
   </div>
 </section>

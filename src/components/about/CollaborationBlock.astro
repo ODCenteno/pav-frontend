@@ -1,24 +1,40 @@
 ---
 import "./collaborationBlock.css";
 
+import { useTranslations } from "@/i18n/utils";
+
 interface Props {
-  title: string;
-  description: string;
-  btnPrimary: string;
-  btnSecondary: string;
+  data?: {
+    title: string;
+    desc: string;
+    btnPrimary: string;
+    btnSecondary: string;
+    links?: {
+      primary: string;
+      secondary: string;
+    };
+  };
+  locale?: string;
 }
 
-const { title, description, btnPrimary, btnSecondary } = Astro.props;
+const { data, locale = "es" } = Astro.props;
+const t = useTranslations(locale);
+
+const title = data?.title || t("aboutPage.collab.title");
+const desc = data?.desc || t("aboutPage.collab.desc");
+const btnPrimary = data?.btnPrimary || t("aboutPage.collab.btnPrimary");
+const btnSecondary = data?.btnSecondary || t("aboutPage.collab.btnSecondary");
+const links = data?.links || { primary: "#", secondary: "#" };
 ---
 
 <section class="collaboration-block section-padding">
   <div class="container">
     <div class="collaboration-block__content">
-      <h2 class="collaboration-block__title">{title}</h2>
-      <p class="collaboration-block__description">{description}</p>
+      {title && <h2 class="collaboration-block__title">{title}</h2>}
+      {desc && <p class="collaboration-block__description">{desc}</p>}
       <div class="collaboration-block__actions">
-        <a href="#" class="btn btn-primary">{btnPrimary}</a>
-        <a href="#" class="btn btn-outline">{btnSecondary}</a>
+        {btnPrimary && <a href={links.primary} class="btn btn-primary">{btnPrimary}</a>}
+        {btnSecondary && <a href={links.secondary} class="btn btn-outline">{btnSecondary}</a>}
       </div>
     </div>
   </div>

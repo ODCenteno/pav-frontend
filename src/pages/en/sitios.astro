@@ -9,6 +9,7 @@ import SitesExplorer from "@/components/main/categories/SitesExplorer.tsx";
 import { useTranslations } from "@/i18n/utils";
 import { categoryData } from "@/data/categoryData";
 import type { Listing } from "@/types/listing.type";
+import { navigation } from "@/utils/navigation";
 
 const locale = "en";
 const t = useTranslations(locale);
@@ -74,7 +75,7 @@ const groupedSites = categories
             <div class="category-header">
               <h2 class="category-title">{group.label}</h2>
               <span class="item-count">
-                {group.items.length} {locale === "es" ? "sitios" : "places"}
+                {group.items.length} {t("sitesPage.itemCount", { count: group.items.length.toString() }) || (locale === "es" ? "sitios" : "places")}
               </span>
             </div>
 
@@ -91,7 +92,7 @@ const groupedSites = categories
     </div>
   </section>
 
-  <ExpCTA title={t("aboutPage.cta.title")} description={t("aboutPage.cta.desc")} btnText={t("aboutPage.cta.btn")} href="/en/acerca" />
+  <ExpCTA title={t("aboutPage.cta.title")} description={t("aboutPage.cta.desc")} btnText={t("aboutPage.cta.btn")} href={navigation.about(locale)} />
 </BaseLayout>
 
 <style>

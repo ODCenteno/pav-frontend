@@ -1,35 +1,68 @@
 ---
 import "./aboutValues.css";
 
+import { useTranslations } from "@/i18n/utils";
+
 interface Props {
-  mission: { title: string; text: string };
-  vision: { title: string; text: string };
-  values: { title: string; items: string[] };
+  mission?: { title: string; text: string };
+  vision?: { title: string; text: string };
+  values?: { title: string; items: string[] };
+  locale?: string;
 }
 
-const { mission, vision, values } = Astro.props;
+const { 
+  mission: missionProp, 
+  vision: visionProp, 
+  values: valuesProp,
+  locale = "es"
+} = Astro.props;
+
+const t = useTranslations(locale);
+
+const mission = {
+  title: missionProp?.title || t("aboutPage.mission.title"),
+  text: missionProp?.text || t("aboutPage.mission.text")
+};
+
+const vision = {
+  title: visionProp?.title || t("aboutPage.vision.title"),
+  text: visionProp?.text || t("aboutPage.vision.text")
+};
+
+const values = {
+  title: valuesProp?.title || t("aboutPage.values.title"),
+  items: valuesProp?.items || t("aboutPage.values.items") || []
+};
+
+// Ensure we have an array even if data is missing or wrong
 const items = Array.isArray(values.items) ? values.items : [];
 ---
 
 <section class="about-values section-padding">
   <div class="container">
     <div class="about-values__grid">
-      <div class="value-card">
-        <h3 class="value-card__title">{mission.title}</h3>
-        <p class="value-card__text">{mission.text}</p>
-      </div>
+      {mission?.title && (
+        <div class="value-card">
+          <h3 class="value-card__title">{mission.title}</h3>
+          <p class="value-card__text">{mission.text}</p>
+        </div>
+      )}
       
-      <div class="value-card">
-        <h3 class="value-card__title">{vision.title}</h3>
-        <p class="value-card__text">{vision.text}</p>
-      </div>
+      {vision?.title && (
+        <div class="value-card">
+          <h3 class="value-card__title">{vision.title}</h3>
+          <p class="value-card__text">{vision.text}</p>
+        </div>
+      )}
       
-      <div class="value-card">
-        <h3 class="value-card__title">{values.title}</h3>
-        <ul class="value-card__list">
-          {items.map(item => <li>{item}</li>)}
-        </ul>
-      </div>
+      {values?.title && (
+        <div class="value-card">
+          <h3 class="value-card__title">{values.title}</h3>
+          <ul class="value-card__list">
+            {items.map(item => <li>{item}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   </div>
 </section>

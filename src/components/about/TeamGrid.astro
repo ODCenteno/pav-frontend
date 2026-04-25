@@ -2,25 +2,30 @@
 import MemberCard from "./MemberCard.astro";
 import type { TeamMember } from "../../types/about.type";
 import "./teamGrid.css";
+import { useTranslations } from "@/i18n/utils";
 
 interface Props {
-  title: string;
-  description: string;
-  members: TeamMember[];
+  title?: string;
+  description?: string;
+  team?: TeamMember[]; // Changed from 'members' to match how it's called
   locale: string;
 }
 
-const { title, description, members, locale } = Astro.props;
+const { title, description, team = [], locale = "es" } = Astro.props;
+const t = useTranslations(locale);
+
+const displayTitle = title || t("aboutPage.team.title");
+const displayDescription = description || t("aboutPage.team.desc");
 ---
 
 <section class="team-grid section-padding container">
   <div class="section-header">
-    <h2 class="team-grid__title">{title}</h2>
-    <p class="team-grid__description">{description}</p>
+    <h2 class="team-grid__title">{displayTitle}</h2>
+    {displayDescription && <p class="team-grid__description">{displayDescription}</p>}
   </div>
   
   <div class="team-grid__list">
-    {members.map(member => (
+    {Array.isArray(team) && team.map(member => (
       <MemberCard member={member} locale={locale} />
     ))}
   </div>

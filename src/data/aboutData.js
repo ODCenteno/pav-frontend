@@ -1,4 +1,30 @@
-export const teamMembers = [
+export const introData = {
+  title: "Mostrando nuestro territorio con respeto y cuidado",
+  text: "Esta plataforma es una guía comunitaria diseñada para ayudar a los viajeros a descubrir lugares, experiencias, servicios e historias locales de Puerto Agua Verde y Rancho San Cosme. Más que un directorio, es un esfuerzo por conectar a los visitantes con las personas, paisajes y tradiciones que hacen único a este destino."
+};
+
+export const valuesData = {
+  mission: {
+    title: "Nuestra misión",
+    text: "Facilitar que los visitantes exploren el destino mientras se impulsa la visibilidad local, el turismo responsable y una conexión más cercana entre la comunidad y quien la visita."
+  },
+  vision: {
+    title: "Nuestra visión",
+    text: "Convertirnos en una guía digital confiable que destaque la identidad, el valor y las oportunidades de Puerto Agua Verde y Rancho San Cosme tanto para habitantes locales como para visitantes nacionales e internacionales."
+  },
+  values: {
+    title: "Nuestros valores",
+    items: [
+      "Respeto por la comunidad",
+      "Turismo responsable",
+      "Identidad local",
+      "Accesibilidad de la información",
+      "Colaboración y crecimiento compartido"
+    ]
+  }
+};
+
+export const teamData = [
   {
     id: "tm-01",
     name: "Juan Pérez",
@@ -25,7 +51,7 @@ export const teamMembers = [
   }
 ];
 
-export const organizations = [
+export const organizationsData = [
   {
     id: "org-01",
     name: "Cooperativa Pesquera Agua Verde",
@@ -50,3 +76,19 @@ export const organizations = [
     order: 2
   }
 ];
+
+export const communityMessageData = {
+  title: "Una guía construida con gratitud",
+  text: "Agradecemos profundamente a las personas de Puerto Agua Verde y Rancho San Cosme, así como a cada visitante que llega con curiosidad, respeto y cuidado. Este proyecto existe gracias a las historias, el esfuerzo y la generosidad de la comunidad."
+};
+
+export const collaborationData = {
+  title: "¿Te gustaría colaborar?",
+  desc: "Si formas parte de la comunidad, representas a una organización local o te gustaría aportar al crecimiento de esta guía, será un gusto escucharte.",
+  btnPrimary: "Ponerte en contacto",
+  btnSecondary: "Seguir el proyecto",
+  links: {
+    primary: "mailto:info@puertoaguaverde.mx",
+    secondary: "https://instagram.com/puertoaguaverde"
+  }
+};

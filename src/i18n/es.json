@@ -173,6 +173,7 @@
       "favorites": "Mis Favoritos"
     },
     "empty": "No hay resultados en esta categoría.",
+    "itemCount": "{{count}} sitios",
     "favoritesEmpty": "Aún no has guardado ningún favorito. ¡Explora nuestros sitios y guarda tus preferidos!"
   },
   "experiencesPage": {
@@ -180,6 +181,8 @@
     "heroDesc": "Del mar al desierto, descubre actividades que te conectan con la verdadera esencia de Baja California Sur.",
     "intro": "Puerto Agua Verde y Rancho San Cosme ofrecen más que lugares para visitar, ofrecen momentos para vivir. Explora aventuras al aire libre, tradiciones locales y paisajes inolvidables.",
     "featuredTitle": "Experiencias destacadas",
+    "featuredBadge": "Destacada",
+    "viewMore": "Ver más",
     "cta": {
       "title": "Encuentra tu próxima experiencia",
       "desc": "Explora todas las actividades disponibles y comienza a planear tu aventura.",

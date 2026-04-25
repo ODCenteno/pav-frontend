@@ -1,20 +1,29 @@
 ---
 import "./communityMessage.css";
 
+import { useTranslations } from "@/i18n/utils";
+
 interface Props {
-  title: string;
-  text: string;
+  data?: {
+    title: string;
+    text: string;
+  };
+  locale?: string;
 }
 
-const { title, text } = Astro.props;
+const { data, locale = "es" } = Astro.props;
+const t = useTranslations(locale);
+
+const title = data?.title || t("aboutPage.community.title");
+const text = data?.text || t("aboutPage.community.text");
 ---
 
 <section class="community-message section-padding">
   <div class="container">
     <div class="community-message__content">
-      <h2 class="community-message__title">{title}</h2>
+      {title && <h2 class="community-message__title">{title}</h2>}
       <blockquote class="community-message__quote">
-        <p class="community-message__desc">{text}</p>
+        {text && <p class="community-message__desc">{text}</p>}
       </blockquote>
     </div>
   </div>

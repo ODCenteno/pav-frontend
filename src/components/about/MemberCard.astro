@@ -11,17 +11,17 @@ interface Props {
 const { member, locale } = Astro.props;
 const t = useTranslations(locale);
 
-const role = member.role[locale as "es" | "en"] || member.role.es;
+const role = member.role ? (member.role[locale as "es" | "en"] || member.role.es) : "";
 const bio = member.shortBio ? (member.shortBio[locale as "es" | "en"] || member.shortBio.es) : "";
 ---
 
 <div class="member-card">
   <div class="member-card__photo-container">
-    <img src={member.photo} alt={member.name} class="member-card__photo" />
+    {member.photo && <img src={member.photo} alt={member.name} class="member-card__photo" />}
   </div>
   <div class="member-card__content">
-    <h3 class="member-card__name">{member.name}</h3>
-    <p class="member-card__role">{role}</p>
+    <h3 class="member-card__name">{member.name || "Team Member"}</h3>
+    {role && <p class="member-card__role">{role}</p>}
     {bio && <p class="member-card__bio">{bio}</p>}
     
     <div class="member-card__links">

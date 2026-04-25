@@ -11,6 +11,7 @@ import StickyActionBar from "../../../components/site-detail/StickyActionBar.tsx
 import { useTranslations } from "../../../i18n/utils";
 import { categoryData } from "../../../data/categoryData";
 import type { Listing } from "../../../types/listing.type";
+import { navigation } from "@/utils/navigation";
 
 export const prerender = true;
 
@@ -108,7 +109,7 @@ const bring = item.recommendations?.bring_en || (Array.isArray(item.recommendati
     title={t("siteDetailPage.cta.title")}
     description={t("siteDetailPage.cta.desc")}
     btnText={t("siteDetailPage.cta.btn")}
-    href="/en/sitios"
+    href={navigation.sites(locale)}
   />
 
   <StickyActionBar

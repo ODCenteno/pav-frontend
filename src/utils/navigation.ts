@@ -44,5 +44,17 @@ export const navigation = {
     // Ensure we don't end up with // if home is /
     const base = home.endsWith("/") ? home.slice(0, -1) : home;
     return `${base}#${anchor.replace(/^#/, "")}`;
+  },
+
+  /**
+   * Returns the URL for the same page in a different locale.
+   */
+  toggleLocale: (currentPath: string, currentLocale: string, targetLocale: string) => {
+    const prefix = `/${currentLocale}/`;
+    const relativePath = currentPath.startsWith(prefix) 
+      ? currentPath.slice(prefix.length) 
+      : (currentPath === `/${currentLocale}` ? "" : currentPath.replace(/^\//, ""));
+    
+    return getRelativeLocaleUrl(targetLocale, relativePath);
   }
 };

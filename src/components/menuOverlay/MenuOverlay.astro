@@ -1,27 +1,20 @@
 ---
 import "./menuOverlay.css";
 import { useTranslations } from "@/i18n/utils";
-import { getAbsoluteLocaleUrl } from "astro:i18n";
+import { navigation } from "@/utils/navigation";
 import SvgIcon from "../icons/SvgIcon.astro";
 
-const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale || "es";
+const t = useTranslations(locale);
 
 const locales = ["en", "es"];
-const alternateLocaleCode = locales.find((l) => l !== Astro.currentLocale);
-
-// Calculate current path without locale prefix for the toggle
-const pathname = Astro.url.pathname;
-const currentLocale = Astro.currentLocale;
-const prefix = `/${currentLocale}/`;
-const relativePath = pathname.startsWith(prefix) 
-  ? pathname.slice(prefix.length) 
-  : (pathname === `/${currentLocale}` ? "" : pathname.replace(/^\//, ""));
+const alternateLocaleCode = locales.find((l) => l !== locale);
 
 let alternateLang;
 if (alternateLocaleCode) {
   alternateLang = {
     locale: alternateLocaleCode,
-    url: getAbsoluteLocaleUrl(alternateLocaleCode, relativePath),
+    url: navigation.toggleLocale(Astro.url.pathname, locale, alternateLocaleCode),
   };
 }
 ---
@@ -32,10 +25,10 @@ if (alternateLocaleCode) {
   </button>
   <nav class="mobile-nav">
     <ul class="mobile-nav--ul">
-      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "")} data-key="nav_home">{t("nav.home")}</a></li>
-      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "experiencias")} data-key="nav_experiences">{t("nav.experiences")}</a></li>
-      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "sitios")} data-key="nav_sites">{t("nav.sites")}</a></li>
-      <li><a class="mobile-nav--link" href={getAbsoluteLocaleUrl(Astro.currentLocale, "acerca")} data-key="nav_about">{t("nav.about")}</a></li>
+      <li><a class="mobile-nav--link" href={navigation.home(locale)} data-key="nav_home">{t("nav.home")}</a></li>
+      <li><a class="mobile-nav--link" href={navigation.experiences(locale)} data-key="nav_experiences">{t("nav.experiences")}</a></li>
+      <li><a class="mobile-nav--link" href={navigation.sites(locale)} data-key="nav_sites">{t("nav.sites")}</a></li>
+      <li><a class="mobile-nav--link" href={navigation.about(locale)} data-key="nav_about">{t("nav.about")}</a></li>
       
       {
         alternateLang && (
