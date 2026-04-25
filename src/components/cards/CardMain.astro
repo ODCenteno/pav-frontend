@@ -4,6 +4,7 @@ import type { Listing } from "../../types/listing.type";
 import type { LocalizedString } from "../../types/i18n.type";
 import Socials from "./Socials.astro";
 import SvgIcon from "../icons/SvgIcon.astro";
+import { navigation } from "@/utils/navigation";
 
 // Props
 const { item, currentLang } = Astro.props as { item: Listing; currentLang: string };
@@ -66,7 +67,7 @@ const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
 const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
 
 // Detail link construction
-const detailLink = currentLang === "es" ? `/sitios/${item.slug}` : `/en/sitios/${item.slug}`;
+const detailLink = item.href ? (item.href as any)[langKey] : navigation.siteDetail(item.slug, langKey);
 
 // Create a clean data object for the popup (avoid complex nested objects in data attributes)
 const cardData = {

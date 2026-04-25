@@ -1,6 +1,7 @@
 ---
 import type { Listing } from "../../../types/listing.type";
 import "./expFeatured.css";
+import { navigation } from "@/utils/navigation";
 
 interface Props {
   experience: Listing;
@@ -26,7 +27,7 @@ function getLocalizedText(item: any, field: string, lang: string): string {
 
 const title = getLocalizedText(experience, "name", locale);
 const description = getLocalizedText(experience, "description", locale);
-const detailLink = locale === "es" ? `/sitios/${experience.slug}` : `/en/sitios/${experience.slug}`;
+const detailLink = navigation.siteDetail(experience.slug, locale);
 ---
 
 <section class="exp-featured section-padding" class:list={{ "is-reversed": isReversed }}>
