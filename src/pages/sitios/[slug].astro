@@ -12,6 +12,8 @@ import { categoryData } from "../../data/categoryData";
 import type { Listing } from "../../types/listing.type";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const listings = categoryData;
   return listings.map((item) => ({

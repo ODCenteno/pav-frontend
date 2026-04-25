@@ -12,6 +12,8 @@ import { useTranslations } from "../../../i18n/utils";
 import { categoryData } from "../../../data/categoryData";
 import type { Listing } from "../../../types/listing.type";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const listings = categoryData;
   return listings.map((item) => ({
