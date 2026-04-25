@@ -10,6 +10,7 @@ import SitesExplorer from "@/components/main/categories/SitesExplorer.tsx";
 import { useTranslations } from "@/i18n/utils";
 import { categoryData } from "@/data/categoryData";
 import type { Listing } from "@/types/listing.type";
+import { navigation } from "@/utils/navigation";
 
 const locale = Astro.currentLocale ?? "es";
 const t = useTranslations(locale);
@@ -92,7 +93,7 @@ const groupedSites = categories
     </div>
   </section>
 
-  <ExpCTA title={t("aboutPage.cta.title")} description={t("aboutPage.cta.desc")} btnText={t("aboutPage.cta.btn")} href="/acerca" />
+  <ExpCTA title={t("aboutPage.cta.title")} description={t("aboutPage.cta.desc")} btnText={t("aboutPage.cta.btn")} href={navigation.about(locale)} />
 </BaseLayout>
 
 <style>

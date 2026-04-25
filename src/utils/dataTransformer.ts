@@ -2,6 +2,7 @@ import type { Listing, ListingType } from '@/types/listing.type';
 import type { LocalizedString } from '@/types/i18n.type';
 import type { Location, ContactInfo, Pricing, Media } from '@/types/common.type';
 import type { OrganizationMeta, OrganizationType } from '@/types/organization.type';
+import { navigation } from './navigation';
 
 
 // Based on the provided example data from Google Sheets
@@ -131,6 +132,10 @@ export function transformSheetDataToNested(data: FlatSheetData[]): Listing[] {
       pricing: pricing,
       media: media,
       organizationMeta: organizationMeta,
+      href: {
+        es: navigation.siteDetail(item.slug, "es"),
+        en: navigation.siteDetail(item.slug, "en"),
+      }
     };
   });
 }

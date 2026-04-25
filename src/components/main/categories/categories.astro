@@ -7,6 +7,7 @@ import { categoryData as rawCategoryData } from "@/data/categoryData"; // New im
 
 import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
 import CardMain from "@/components/cards/CardMain.astro";
+import { navigation } from "@/utils/navigation";
 
 // 1) Locale seguro (Astro.currentLocale puede ser undefined en tipos)
 const locale = Astro.currentLocale ?? Astro.defaultLocale ?? "es";
@@ -125,8 +126,7 @@ const translations = {
 };
 
 // 6) viewAllHref seguro por locale (sin error de undefined)
-const isEnglish = locale.toLowerCase().startsWith("en");
-const viewAllHref = isEnglish ? "/en/sitios" : "/sitios";
+const viewAllHref = navigation.sites(locale);
 ---
 
 <section class="destinations section-padding">

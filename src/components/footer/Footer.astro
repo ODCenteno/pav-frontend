@@ -4,8 +4,11 @@ import Image from "astro/components/Image.astro";
 import favicon from "@/images/icons/favicon-32x32.png";
 import { useTranslations } from "../../i18n/utils";
 import SvgIcon from "../icons/SvgIcon.astro";
+import { navigation } from "@/utils/navigation";
+import { siteSettings } from "@/config/siteSettings";
 
-const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale || "es";
+const t = useTranslations(locale);
 ---
 
 <footer class="footer-main">
@@ -20,11 +23,11 @@ const t = useTranslations(Astro.currentLocale);
     <div class="footer-col" aria-label="Quick links">
       <h3 class="footer_title" data-key="footer_title">{t("footer.title")}</h3>
       <ul class="footer__list">
-        <li><a class="footer-link" href="/experiences" data-key="footer_link_home">{t("footer.experiences")}</a></li>
-        <li><a class="footer-link" href="#categories" data-key="footer_link_categories">{t("footer.categories")}</a></li>
-        <li><a class="footer-link" href="#destinations" data-key="footer_link_destinations">{t("footer.destinations")}</a></li>
-        <li><a class="footer-link" href="#highlights" data-key="footer_link_highlights">{t("footer.highlights")}</a></li>
-        <li><a class="footer-link" href="#map" data-key="footer_link_map">{t("footer.map")}</a></li>
+        <li><a class="footer-link" href={navigation.experiences(locale)} data-key="footer_link_home">{t("footer.experiences")}</a></li>
+        <li><a class="footer-link" href={navigation.homeAnchor("categories", locale)} data-key="footer_link_categories">{t("footer.categories")}</a></li>
+        <li><a class="footer-link" href={navigation.homeAnchor("destinations", locale)} data-key="footer_link_destinations">{t("footer.destinations")}</a></li>
+        <li><a class="footer-link" href={navigation.homeAnchor("highlights", locale)} data-key="footer_link_highlights">{t("footer.highlights")}</a></li>
+        <li><a class="footer-link" href={navigation.homeAnchor("map", locale)} data-key="footer_link_map">{t("footer.map")}</a></li>
       </ul>
     </div>
 
@@ -33,19 +36,19 @@ const t = useTranslations(Astro.currentLocale);
 
       <ul class="footer-social">
         <li>
-          <a class="footer-link" href="https://instagram.com/" target="_blank" rel="noopener noreferrer">
+          <a class="footer-link" href={siteSettings.social.instagram} target="_blank" rel="noopener noreferrer">
             <SvgIcon name="instagram" class="footer-icon" />
             <span data-key="footer_instagram">Instagram</span>
           </a>
         </li>
         <li>
-          <a class="footer-link" href="https://facebook.com/" target="_blank" rel="noopener noreferrer">
+          <a class="footer-link" href={siteSettings.social.facebook} target="_blank" rel="noopener noreferrer">
             <SvgIcon name="facebook" class="footer-icon" />
             <span data-key="footer_facebook">Facebook</span>
           </a>
         </li>
         <li>
-          <a class="footer-link" href="https://maps.google.com/" target="_blank" rel="noopener noreferrer">
+          <a class="footer-link" href={siteSettings.social.googleMaps} target="_blank" rel="noopener noreferrer">
             <SvgIcon name="location" class="footer-icon" />
             <span data-key="footer_location">Location</span>
           </a>
@@ -53,17 +56,17 @@ const t = useTranslations(Astro.currentLocale);
       </ul>
 
       <div class="footer-contact">
-        <a class="footer-contactItem footer-link" href="mailto:info@puertoaguaverde.mx">
+        <a class="footer-contactItem footer-link" href={`mailto:${siteSettings.contact.email}`}>
           <SvgIcon name="mail" class="footer-icon" />
-          <span>info@puertoaguaverde.mx</span>
+          <span>{siteSettings.contact.email}</span>
         </a>
 
-        <a class="footer-contactItem footer-link" href="tel:+526141234567">
+        <a class="footer-contactItem footer-link" href={`tel:${siteSettings.contact.phoneRaw}`}>
           <SvgIcon name="phone" class="footer-icon" />
-          <span>+52 614 123 4567</span>
+          <span>{siteSettings.contact.phone}</span>
         </a>
 
-        <a class="footer-contactItem footer-link" href="https://wa.me/526141234567" target="_blank" rel="noopener noreferrer">
+        <a class="footer-contactItem footer-link" href={`https://wa.me/${siteSettings.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
           <SvgIcon name="whatsapp" class="footer-icon" />
           <span data-key="footer_whatsapp">WhatsApp</span>
         </a>
@@ -73,8 +76,8 @@ const t = useTranslations(Astro.currentLocale);
     </section>
   </div>
   <div class="footer-bottom">
-    <p class="footer-rights" data-key="footer_rights">© 2026 Puerto Agua Verde &amp; Rancho San Cosme. All rights reserved.</p>
+    <p class="footer-rights" data-key="footer_rights">© 2026 {siteSettings.metadata.siteName}. All rights reserved.</p>
 
-    <a class="footer-legal footer-link" href="/legal" data-key="footer_legal"> Privacy Notice · Terms &amp; Conditions </a>
+    <a class="footer-legal footer-link" href={navigation.legal("privacy-notice", locale)} data-key="footer_legal"> Privacy Notice · Terms &amp; Conditions </a>
   </div>
 </footer>

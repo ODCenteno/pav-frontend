@@ -32,4 +32,10 @@ export interface Listing {
   amenities?: LocalizedString[];
   recommendations?: Recommendations;
   relatedSites?: string[]; // IDs of related listings
+
+  // Localized URLs calculated during transformation
+  href?: {
+    es: string;
+    en: string;
+  };
 }
