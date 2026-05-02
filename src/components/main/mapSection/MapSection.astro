@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import "./mapSection.css";
-import mapImage from "@/images/landing/mapa-OSM.webp";
+import mapImage from "/images/landing/mapa-OSM.webp";
 import { useTranslations } from "../../../i18n/utils";
 
 const t = useTranslations(Astro.currentLocale);
@@ -9,7 +9,7 @@ const t = useTranslations(Astro.currentLocale);
 
 <section class="map-section">
   <div class="map-bg">
-    <Image src={mapImage} alt="Mapa de Puerto Agua Verde y Rancho San Cosme" quality={80} />
+    <img src={"/images/landing/mapa-OSM.webp"} alt="Mapa de Puerto Agua Verde y Rancho San Cosme" quality={80} />
   </div>
   <div class="container map-content">
     <h2 data-key="map_title">{t("map.title")}</h2>

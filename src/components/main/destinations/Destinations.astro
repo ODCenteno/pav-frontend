@@ -1,8 +1,8 @@
 ---
 import "./destinations.css";
 import { Image } from "astro:assets";
-import img04 from "@/images/pav-04.jpg";
-import img05 from "@/images/pav-05.jpg";
+import img04 from "/images/pav-04.jpg";
+import img05 from "/images/pav-05.jpg";
 import { useTranslations } from "../../../i18n/utils";
 
 const t = useTranslations(Astro.currentLocale);
@@ -17,7 +17,7 @@ const t = useTranslations(Astro.currentLocale);
     <div class="stories-layout">
       <article class="featured-story">
         <div class="story-img">
-          <Image src={img04} alt="Puerto Agua Verde" />
+          <img src={"/images/PAV-Letrero-.webp"} alt="Puerto Agua Verde" />
         </div>
         <div class="story-content">
           <h3 data-key="about_puerto_title">{t("about.puerto.title")}</h3>
@@ -27,7 +27,7 @@ const t = useTranslations(Astro.currentLocale);
 
       <article class="featured-story">
         <div class="story-img">
-          <Image src={img05} alt="Rancho San Cosme" />
+          <img src={"/images/pav-landscape-12.webp"} alt="Rancho San Cosme" />
         </div>
         <div class="story-content">
           <h3 data-key="about_rancho_title">{t("about.rancho.title")}</h3>

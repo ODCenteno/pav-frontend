@@ -1,12 +1,14 @@
 ---
 import "./hero.css";
 import { Image } from "astro:assets";
-import img1 from "../../../images/pav-01.jpg";
-import img2 from "../../../images/pav-10.jpg";
-import img3 from "../../../images/pav-11.jpg";
+// import img1 from "../../public/images/pav-01.jpg";
+// import img2 from "../../public/images/pav-10.jpg";
+// import img3 from "../../public/images/pav-11.jpg";
 import { useTranslations } from "../../../i18n/utils";
+import { navigation } from "@/utils/navigation";
 
 const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale || "es";
 ---
 
 <section class="hero section-padding">
@@ -15,18 +17,18 @@ const t = useTranslations(Astro.currentLocale);
       <h1 data-key="hero_title" set:html={t("hero.title")} />
       <p data-key="hero_desc">{t("hero.desc")}</p>
       <div class="hero-actions">
-        <a href="#" class="btn btn-accent" data-key="hero_cta">{t("hero.cta")}</a>
+        <a class="btn btn-accent" href={navigation.sites(locale)} data-key="hero_cta">{t("hero.cta")}</a></li>
       </div>
     </div>
     <div class="hero-images">
       <div class="hero-img-card img-1">
-        <Image src={img1} alt="Coast" loading="eager" />
+        <img src={"/images/PAV-Lanscape-Cueva.webp"} alt="Coast" loading="eager" />
       </div>
       <div class="hero-img-card img-2">
-        <Image src={img2} alt="Nature" loading="eager" />
+        <img src={"/images/pav-02.jpg"} alt="Nature" loading="eager" />
       </div>
       <div class="hero-img-card img-3">
-        <Image src={img3} alt="Landscape" loading="eager" />
+        <img src={"/images/PAV-Lanscape-Fuga.webp"} alt="Landscape" loading="eager" />
       </div>
     </div>
   </div>

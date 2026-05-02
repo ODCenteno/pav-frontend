@@ -1,9 +1,9 @@
 ---
 import "./highlights.css";
 import { Image } from "astro:assets";
-import img06 from "@/images/pav-06.png";
-import img07 from "@/images/pav-07.jpg";
-import img08 from "@/images/pav-aloja-01.webp";
+import img06 from "/images/pav-06.png";
+import img07 from "/images/pav-07.jpg";
+import img08 from "/images/pav-aloja-01.webp";
 import { useTranslations } from "../../../i18n/utils";
 
 const t = useTranslations(Astro.currentLocale);
@@ -19,7 +19,7 @@ const t = useTranslations(Astro.currentLocale);
       <!-- Experiences -->
       <div class="review-card">
         <div class="card-img-container">
-          <Image src={img06} alt="Experiences" />
+          <img src={"/images/pav-landscape-13.webp"} alt="Experiences" />
         </div>
         <h3 data-key="feat_exp_title">{t("featured.experiences.title")}</h3>
         <p data-key="feat_exp_desc">{t("featured.experiences.desc")}</p>
@@ -28,7 +28,7 @@ const t = useTranslations(Astro.currentLocale);
       <!-- Accommodation -->
       <div class="review-card">
         <div class="card-img-container">
-          <Image src={img07} alt="Accommodation" />
+          <img src={"/images/pav-aloja-01.webp"} alt="Accommodation" />
         </div>
         <h3 data-key="feat_acc_title">{t("featured.accommodation.title")}</h3>
         <p data-key="feat_acc_desc">{t("featured.accommodation.desc")}</p>
@@ -37,7 +37,7 @@ const t = useTranslations(Astro.currentLocale);
       <!-- Restaurants -->
       <div class="review-card">
         <div class="card-img-container">
-          <Image src={img08} alt="Restaurants" />
+          <img src={"/images/PAV-Comida.webp"} alt="Restaurants" />
         </div>
         <h3 data-key="feat_rest_title">{t("featured.restaurants.title")}</h3>
         <p data-key="feat_rest_desc">{t("featured.restaurants.desc")}</p>
