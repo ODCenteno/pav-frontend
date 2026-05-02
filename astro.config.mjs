@@ -12,7 +12,7 @@ export default defineConfig({
     imageService: 'cloudflare',
     runtime: { mode: 'off' },
   }),
-  site: "https://pav-frontend.pages.dev",
+  site: "https://pav-frontend.pixie-cemodan.workers.dev/",
   integrations: [react(), partytown(), sitemap(), markdoc()],
 
   i18n: {
