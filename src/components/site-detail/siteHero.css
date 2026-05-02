@@ -8,6 +8,7 @@
     width: 100%;
     height: clamp(300px, 50dvh, 500px);
     overflow: hidden;
+    background-color: var(--color-charcoal);
 }
 
 .site-hero__image {
@@ -33,7 +34,7 @@
 .site-hero__actions {
     position: absolute;
     top: var(--space-md);
-    right: var(--space-md);
+    right: 0;
     display: flex;
     gap: var(--space-sm);
     z-index: 10;
@@ -54,23 +55,9 @@
     color: var(--color-on-surface);
 }
 
-.site-hero__action-btn:hover {
-    transform: scale(1.1);
-}
-
-.site-hero__action-btn.is-favorite {
-    color: var(--color-primary);
-}
-
-.site-hero__icon {
-    width: 24px;
-    height: 24px;
-    color: var(--color-on-surface);
-}
-
 .site-hero__info {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-lg);
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-xl);
 }
 
 .site-hero__breadcrumb {
@@ -83,20 +70,21 @@
 }
 
 .site-hero__title {
-    font-size: var(--text-3xl);
+    font-size: var(--text-hero); /* Consistencia con otros heroes */
     margin-bottom: var(--space-sm);
-    line-height: 1.2;
+    line-height: 1.1;
+    color: var(--color-on-surface);
 }
 
 .site-hero__tags {
     display: flex;
-    gap: var(--space-2xs);
+    gap: var(--space-xs);
     flex-wrap: wrap;
 }
 
 .site-hero__tag {
     font-size: var(--text-xs);
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.85rem;
     background-color: var(--color-pebble);
     border-radius: var(--radius-full);
     color: var(--color-on-surface-variant);
@@ -107,9 +95,5 @@
     .site-hero__image-container {
         height: 60dvh;
         max-height: 600px;
-    }
-    
-    .site-hero__title {
-        font-size: var(--text-4xl);
     }
 }

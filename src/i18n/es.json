@@ -179,10 +179,15 @@
   "experiencesPage": {
     "heroTitle": "Experiencias más allá de lo común",
     "heroDesc": "Del mar al desierto, descubre actividades que te conectan con la verdadera esencia de Baja California Sur.",
-    "intro": "Puerto Agua Verde y Rancho San Cosme ofrecen más que lugares para visitar, ofrecen momentos para vivir. Explora aventuras al aire libre, tradiciones locales y paisajes inolvidables.",
+    "heroImage": "/images/pav-12.jpg",
+    "introTitle": "Momentos que se quedan contigo",
+    "introDesc": "Puerto Agua Verde y Rancho San Cosme ofrecen más que lugares para visitar — ofrecen momentos para vivir. Explora aventuras al aire libre, tradiciones locales y paisajes inolvidables.",
     "featuredTitle": "Experiencias destacadas",
     "featuredBadge": "Destacada",
     "viewMore": "Ver más",
+    "ctaTitle": "Encuentra tu próxima experiencia",
+    "ctaDesc": "Explora todas las actividades disponibles y comienza a planear tu aventura.",
+    "ctaBtn": "Ver todas las experiencias",
     "cta": {
       "title": "Encuentra tu próxima experiencia",
       "desc": "Explora todas las actividades disponibles y comienza a planear tu aventura.",
@@ -230,7 +235,8 @@
   "aboutPage": {
     "hero": {
       "title": "Un proyecto con raíces en el territorio y la comunidad",
-      "desc": "Puerto Agua Verde y Rancho San Cosme son destinos marcados por la naturaleza, la historia y las personas que les dan vida. Este proyecto fue creado para compartir esa riqueza con los visitantes de una manera clara, respetuosa y accesible."
+      "desc": "Puerto Agua Verde y Rancho San Cosme son destinos marcados por la naturaleza, la historia y las personas que les dan vida. Este proyecto fue creado para compartir esa riqueza con los visitantes de una manera clara, respetuosa y accesible.",
+      "image":"/images/pav-11.jpg"
     },
     "intro": {
       "title": "Mostrando nuestro territorio con respeto y cuidado",

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageHero from "@/components/main/hero/PageHero.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
 import FavoritesSection from "@/components/main/favorites/FavoritesSection.astro";
 import CardMain from "@/components/cards/CardMain.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
@@ -52,7 +52,12 @@ const groupedSites = categories
 ---
 
 <BaseLayout siteTitle={t("sites.siteTitle")} ogTitle={t("sites.ogTitle")} siteDescription={t("sites.siteDescription")} ogDescription={t("sites.ogDescription")}>
-  <PageHero slot="Hero" title={t("sitesPage.heroTitle")} description={t("sitesPage.heroDesc")} />
+  <HeroPage 
+    slot="Hero" 
+    title={t("sitesPage.heroTitle")} 
+    description={t("sitesPage.heroDesc")} 
+    backgroundImage="/images/pav-01.jpg"
+  />
 
   <FavoritesSection />
 

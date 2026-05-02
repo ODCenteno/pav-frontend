@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PageHero from "@/components/main/hero/PageHero.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
 import ExpFeatured from "@/components/main/experiences/ExpFeatured.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { useTranslations } from "@/i18n/utils";
@@ -22,10 +22,11 @@ const featuredExperiences = categoryData
   siteDescription={t("experiences.siteDescription")}
   ogDescription={t("experiences.ogDescription")}
 >
-  <PageHero 
+  <HeroPage 
     slot="Hero"
     title={t("experiencesPage.heroTitle")} 
     description={t("experiencesPage.heroDesc")}
+    backgroundImage="/images/pav-landscape-12.webp"
   />
 
   <section class="experiences-intro section-padding">

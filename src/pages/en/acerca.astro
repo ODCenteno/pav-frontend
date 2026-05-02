@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import AboutHero from "@/components/about/AboutHero.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
 import AboutIntro from "@/components/about/AboutIntro.astro";
 import AboutValues from "@/components/about/AboutValues.astro";
 import TeamGrid from "@/components/about/TeamGrid.astro";
@@ -30,7 +30,12 @@ const t = useTranslations(locale);
   siteDescription={t("about.siteDescription")}
   ogDescription={t("about.ogDescription")}
 >
-  <AboutHero slot="Hero" />
+  <HeroPage 
+    slot="Hero" 
+    title={t("aboutPage.hero.title")} 
+    description={t("aboutPage.hero.description")}
+    backgroundImage={t("aboutPage.hero.image")}
+  />
   
   <AboutIntro data={introData} locale={locale} />
   

@@ -1,0 +1,25 @@
+---
+import "./heroPage.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  backgroundImage?: string;
+}
+
+const { 
+  title, 
+  description, 
+  backgroundImage = "/images/pav-landscape-12.webp" 
+} = Astro.props;
+---
+
+<section class="hero-page" style={`--hero-bg: url('${backgroundImage}')`}>
+  <div class="hero-page__overlay"></div>
+  <div class="hero-page__container">
+    <div class="hero-page__content">
+      <h1 class="hero-page__title" set:html={title} />
+      <p class="hero-page__desc">{description}</p>
+    </div>
+  </div>
+</section>

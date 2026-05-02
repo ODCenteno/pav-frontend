@@ -179,10 +179,14 @@
   "experiencesPage": {
     "heroTitle": "Experiences beyond the ordinary",
     "heroDesc": "From the sea to the desert, discover activities that connect you with the true essence of Baja California Sur.",
-    "intro": "Puerto Agua Verde and Rancho San Cosme offer more than places to visit, they offer moments to live. Explore outdoor adventures, local traditions, and unforgettable landscapes.",
+    "introTitle": "Moments that stay with you",
+    "introDesc": "Puerto Agua Verde and Rancho San Cosme offer more than places to visit — they offer moments to live. Explore outdoor adventures, local traditions, and unforgettable landscapes.",
     "featuredTitle": "Featured experiences",
     "featuredBadge": "Featured",
     "viewMore": "View more",
+    "ctaTitle": "Find your next experience",
+    "ctaDesc": "Explore all available activities and start planning your adventure.",
+    "ctaBtn": "View all experiences",
     "cta": {
       "title": "Find your next experience",
       "desc": "Explore all available activities and start planning your adventure.",
