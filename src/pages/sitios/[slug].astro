@@ -75,6 +75,8 @@ const bring = item.recommendations?.bring_es || (Array.isArray(item.recommendati
   <StickyActionBar
     client:load
     id={item.id}
+    lat={item.location.lat}
+    lng={item.location.lng}
     whatsapp={item.contact?.whatsapp}
     labels={{
       directions: labels.directions,

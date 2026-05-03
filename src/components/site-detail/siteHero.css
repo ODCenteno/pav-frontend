@@ -57,7 +57,7 @@
 
 .site-hero__info {
     padding-top: var(--space-lg);
-    padding-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
 }
 
 .site-hero__breadcrumb {

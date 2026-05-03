@@ -6,7 +6,6 @@
 .site-summary__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
 }
 
 .site-summary__subtitle {

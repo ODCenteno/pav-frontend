@@ -1,6 +1,6 @@
 /* Stories / Destinations */
 .stories {
-    background-color: var(--color-surface);
+    background-color: var(--color-primary);
 }
 
 .stories .section-header {
@@ -9,7 +9,7 @@
 }
 
 .stories-subtitle {
-    color: var(--secondary-text);
+    color: var(--text-color);
     font-size: var(--text-base);
 }
 
@@ -39,7 +39,7 @@
 }
 
 .category {
-    color: var(--accent-color);
+    color: var(--text-color);
     font-size: var(--text-xs);
     font-weight: 700;
     text-transform: uppercase;
@@ -49,19 +49,19 @@
 }
 
 .meta {
-    color: var(--secondary-text);
+    color: var(--text-color);
     font-size: var(--text-sm);
     margin-bottom: var(--space-xs);
 }
 
 .excerpt {
-    color: var(--secondary-text);
+    color: var(--text-color);
     font-size: var(--text-base);
     line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
+    /* display: -webkit-box;
+    -webkit-line-clamp: 3; */
     -webkit-box-orient: vertical;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .stories-list {

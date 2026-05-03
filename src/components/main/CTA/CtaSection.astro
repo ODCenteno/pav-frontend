@@ -3,6 +3,8 @@ import "./ctaSection.css";
 import { useTranslations } from "../../../i18n/utils";
 
 const t = useTranslations(Astro.currentLocale);
+const {lat, lon} = Astro.props;
+
 ---
 
 <section class="section-padding text-center">

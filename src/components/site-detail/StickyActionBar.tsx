@@ -13,7 +13,7 @@ interface StickyActionBarProps {
   };
 }
 
-export default function StickyActionBar({ id, whatsapp, labels }: StickyActionBarProps) {
+export default function StickyActionBar({ id, whatsapp, labels, lat, lng }: StickyActionBarProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -28,10 +28,10 @@ export default function StickyActionBar({ id, whatsapp, labels }: StickyActionBa
   return (
     <div className="sticky-action-bar">
       <div className="sticky-action-bar__container">
-        <button className="sticky-action-bar__btn secondary" onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}>
+        <a className="sticky-action-bar__btn secondary" href={`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`} target="_blank" rel="noopener noreferrer">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
           <span>{labels.directions}</span>
-        </button>
+        </a>
         
         {whatsapp && (
           <a href={`https://wa.me/${whatsapp}`} className="sticky-action-bar__btn primary" target="_blank" rel="noopener noreferrer">
