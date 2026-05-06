@@ -116,6 +116,8 @@ const bring = item.recommendations?.bring_en || (Array.isArray(item.recommendati
     client:load
     id={item.id}
     whatsapp={item.contact?.whatsapp}
+    lat= {item.location?.lat}
+    lng= {item.location?.lng}
     labels={{
       directions: labels.directions,
       contact: labels.contact,

@@ -108,6 +108,24 @@ export const categoryData = [
     contact: {
       whatsapp: "+521112224444",
       facebook: "PescaTradicionalAV"
+    },
+    location: {
+      lat: 25.5200,
+      lng: -111.0500,
+      name_es: "Pesca saliendo del muelle principal",
+      name_en: "Fishing experience"
+    },
+    schedule: {
+      text_es: "Salidas 7:00 AM (Recomendado)",
+      text_en: "Departures at 7:00 AM (Recommended)"
+    },
+    amenities_es: ["Guía certificado", "Cañas para pescar"],
+    amenities_en: ["Certified guide", "Pishing rodes"],
+    recommendations: {
+      bestTime_es: "Invierno y Primavera",
+      bestTime_en: "Winter and Spring",
+      bring_es: ["Botas de montaña", "2L de agua", "Cámara"],
+      bring_en: ["Hiking boots", "2L of water", "Camera"]
     }
   },
   {
@@ -126,6 +144,24 @@ export const categoryData = [
     contact: {
       whatsapp: "+521112225555",
       instagram: "agua_verde_kayaks"
+    },
+    location: {
+      lat: 25.5200,
+      lng: -111.0500,
+      name_es: "Kayak al Amanecer",
+      name_en: "Sunrise Kayaking"
+    },
+    schedule: {
+      text_es: "Salidas 7:00 AM (Recomendado)",
+      text_en: "Departures at 7:00 AM (Recommended)"
+    },
+    amenities_es: ["Guía certificado", "Bastones de senderismo"],
+    amenities_en: ["Certified guide", "Hiking poles"],
+    recommendations: {
+      bestTime_es: "Invierno y Primavera",
+      bestTime_en: "Winter and Spring",
+      bring_es: ["Botas de montaña", "2L de agua", "Cámara"],
+      bring_en: ["Hiking boots", "2L of water", "Camera"]
     }
   },
 
