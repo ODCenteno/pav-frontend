@@ -16,21 +16,55 @@ import { navigation } from "@/utils/navigation";
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const listings = categoryData;
-  return listings.map((item) => ({
+  return categoryData.map((item: any) => ({
     params: { slug: item.slug },
-    props: { item },
+    props: { 
+      item: {
+        ...item,
+        name: { es: item.name_es, en: item.name_en },
+        description: { es: item.description_es, en: item.description_en },
+        tags: (item.tags_es || []).map((t: string, i: number) => ({
+          es: t,
+          en: item.tags_en?.[i] || t,
+        })),
+        amenities: (item.amenities_es || []).map((a: string, i: number) => ({
+          es: a,
+          en: item.amenities_en?.[i] || a,
+        })),
+        schedule: item.schedule ? {
+          text: { es: item.schedule.text_es, en: item.schedule.text_en }
+        } : undefined,
+        recommendations: item.recommendations ? {
+          bestTimeToVisit: { es: item.recommendations.bestTime_es, en: item.recommendations.bestTime_en },
+          whatToBring: (item.recommendations.bring_es || []).map((b: string, i: number) => ({
+            es: b,
+            en: item.recommendations.bring_en?.[i] || b,
+          }))
+        } : undefined,
+        media: {
+          mainImageUrl: item.image,
+          galleryUrls: item.gallery || []
+        },
+        category: {
+          name: { es: item.category_name_es, en: item.category_name_en }
+        }
+      } as Listing
+    },
   }));
+}
+
+interface Props {
+  item: Listing;
 }
 
 const { item } = Astro.props;
 const locale = "es";
 const t = useTranslations(locale);
 
-const title = item.name_es || item.name?.[locale] || item.name?.es;
-const description = item.description_es || item.description?.[locale] || item.description?.es;
-const categoryLabel = item.category_name_es || item.category?.name?.[locale] || item.category?.name?.es;
-const tags = item.tags_es || (Array.isArray(item.tags) ? item.tags.map((t) => (typeof t === "string" ? t : t?.[locale] || t?.es)) : []);
+const title = item.name[locale];
+const description = item.description?.[locale];
+const categoryLabel = item.category?.name?.[locale] || "";
+const tags = (item.tags || []).map(tag => tag[locale]);
 
 const labels = {
   about: t("siteDetailPage.labels.about"),
@@ -44,6 +78,8 @@ const labels = {
   price: t("siteDetailPage.labels.price"),
   amenities: t("siteDetailPage.labels.amenities"),
   tips: t("siteDetailPage.labels.tips"),
+  gallery: t("siteDetailPage.labels.gallery") || "Gallery",
+  related: t("siteDetailPage.labels.related") || "Related Sites",
 };
 
 const contactActions = {
@@ -51,20 +87,20 @@ const contactActions = {
   phone: item.contact?.phone,
 };
 
-const schedule = item.schedule?.text_es || item.schedule?.text?.[locale] || item.schedule?.text?.es;
-const amenities = item.amenities_es || (Array.isArray(item.amenities) ? item.amenities.map((a) => (typeof a === "string" ? a : a?.[locale] || a?.es)) : []);
-const bestTime = item.recommendations?.bestTime_es || item.recommendations?.bestTimeToVisit?.[locale] || item.recommendations?.bestTimeToVisit?.es;
-const bring = item.recommendations?.bring_es || (Array.isArray(item.recommendations?.whatToBring) ? item.recommendations.whatToBring.map((b) => (typeof b === "string" ? b : b?.[locale] || b?.es)) : []);
+const schedule = item.schedule?.text?.[locale];
+const amenities = (item.amenities || []).map(a => a[locale]);
+const bestTime = item.recommendations?.bestTimeToVisit?.[locale];
+const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
 ---
 
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
-  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.image} tags={tags} labels={labels} />
+  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} tags={tags} labels={labels} />
 
   <SiteSummary description={description} labels={labels} contactActions={contactActions}>
-    <SiteGallery title={labels.gallery} images={item.gallery} noContainer={true} />
+    <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
   </SiteSummary>
 
-  <SiteInfoPanel labels={labels} schedule={schedule} price={item.price} amenities={amenities} />
+  <SiteInfoPanel labels={labels} schedule={schedule} price={item.pricing?.price} amenities={amenities} />
 
   {(bestTime || (bring && bring.length > 0)) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} />}
 

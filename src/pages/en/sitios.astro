@@ -39,12 +39,30 @@ const groupedSites = categories
           es: tag,
           en: item.tags_en?.[i] || tag,
         })),
+        amenities: (item.amenities_es || []).map((a, i) => ({
+          es: a,
+          en: item.amenities_en?.[i] || a,
+        })),
+        schedule: item.schedule ? {
+          text: { es: item.schedule.text_es, en: item.schedule.text_en }
+        } : undefined,
+        recommendations: item.recommendations ? {
+          bestTimeToVisit: { es: item.recommendations.bestTime_es, en: item.recommendations.bestTime_en },
+          whatToBring: (item.recommendations.bring_es || []).map((b, i) => ({
+            es: b,
+            en: item.recommendations.bring_en?.[i] || b,
+          }))
+        } : undefined,
         media: {
           mainImageUrl: item.image,
+          galleryUrls: item.gallery || []
         },
         pricing: {
           price: item.price,
         },
+        category: {
+          name: { es: item.category_name_es, en: item.category_name_en }
+        }
       })) as unknown as Listing[],
   }))
   .filter((group) => group.items.length > 0);
