@@ -10,7 +10,12 @@ export interface FavoriteItem {
 export function getFavorites(): string[] {
   if (typeof window === "undefined") return [];
   const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+  if (!stored) return [];
+  try {
+    return JSON.parse(stored);
+  } catch {
+    return [];
+  }
 }
 
 export function toggleFavorite(id: string): boolean {

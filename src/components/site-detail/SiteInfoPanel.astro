@@ -10,7 +10,7 @@ interface Props {
     amenities: string;
   };
   schedule?: string;
-  price?: string;
+  price?: string | number;
   amenities?: string[];
 }
 
@@ -19,7 +19,7 @@ const { labels, schedule, price, amenities } = Astro.props;
 
 <section class="site-info container">
   <h2 class="site-info__title">{labels.info}</h2>
-  
+
   <div class="site-info__grid">
     {schedule && (
       <div class="site-info__item">

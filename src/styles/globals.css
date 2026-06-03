@@ -2,17 +2,22 @@
     /* Base Colors (Primitives) */
     --color-bone: #FDFCF8;
     --color-charcoal: #1A1A1A;
-    --color-coral: #E87A5D;
+    --color-coral: #D4604A;
     --color-coral-dark: #D66A4E;
     --color-slate: #666666;
     --color-pebble: #E0E0E0;
     --color-white: #FFFFFF;
+    --color-emerald: #5A8A80;
+    --color-olive: #8b5e30;
+    --color-orange: #e46818;
+    --color-gold: #e79112;
+    --color-yellow: #f5e477;
 
     /* Semantic Functional Tokens */
     --color-surface: var(--color-bone);
     --color-on-surface: var(--color-charcoal);
     --color-on-surface-variant: var(--color-slate);
-    --color-primary: var(--color-coral);
+    --color-primary: var(--color-emerald);
     --color-primary-hover: var(--color-coral-dark);
     --color-outline: var(--color-pebble);
 
@@ -26,7 +31,7 @@
     --white: var(--color-white);
 
     /* Typography */
-    --font-heading: 'Playfair Display', serif;
+    --font-heading: 'Roboto', sans-serif;
     --font-body: 'Inter', sans-serif;
 
     /* Fluid Typography Scale (320px -> 1440px) */
