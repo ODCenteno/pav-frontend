@@ -1,0 +1,35 @@
+---
+import "./guideTouristMap.css";
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    image: string;
+    caption: { es: string; en: string };
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+---
+
+<section class="guide-tourist-map section-padding">
+  <div class="container">
+    <header class="guide-tourist-map__header">
+      <h2 class="guide-tourist-map__title">{data.title[lang]}</h2>
+    </header>
+
+    <figure class="guide-tourist-map__figure">
+      <div class="guide-tourist-map__image-wrap">
+        <img
+          src={data.image}
+          alt={data.title[lang]}
+          loading="lazy"
+          class="guide-tourist-map__image"
+        />
+      </div>
+      <figcaption class="guide-tourist-map__caption">{data.caption[lang]}</figcaption>
+    </figure>
+  </div>
+</section>

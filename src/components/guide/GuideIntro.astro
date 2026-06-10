@@ -1,0 +1,45 @@
+---
+import "./guideIntro.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+interface LocalizedString {
+  es: string;
+  en: string;
+}
+
+interface Props {
+  data: {
+    ranchTitle: LocalizedString;
+    ranchText: LocalizedString;
+    portTitle: LocalizedString;
+    portText: LocalizedString;
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+
+const lang = locale?.startsWith("en") ? "en" : "es";
+---
+
+<section class="guide-intro section-padding">
+  <div class="container">
+    <div class="guide-intro__grid">
+      <article class="guide-intro__card guide-intro__card--ranch">
+        <div class="guide-intro__icon" aria-hidden="true">
+          <SvgIcon name="compass" class="guide-intro__icon-svg" />
+        </div>
+        <h2 class="guide-intro__title">{data.ranchTitle[lang]}</h2>
+        <p class="guide-intro__text">{data.ranchText[lang]}</p>
+      </article>
+
+      <article class="guide-intro__card guide-intro__card--port">
+        <div class="guide-intro__icon" aria-hidden="true">
+          <SvgIcon name="water" class="guide-intro__icon-svg" />
+        </div>
+        <h2 class="guide-intro__title">{data.portTitle[lang]}</h2>
+        <p class="guide-intro__text">{data.portText[lang]}</p>
+      </article>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,23 @@
+.guide-influence {
+    background-color: var(--color-bone);
+}
+
+.guide-influence__content {
+    max-width: 880px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.guide-influence__title {
+    font-size: var(--text-3xl);
+    margin: 0;
+}
+
+.guide-influence__text {
+    font-size: var(--text-lg);
+    color: var(--color-on-surface);
+    line-height: 1.7;
+}

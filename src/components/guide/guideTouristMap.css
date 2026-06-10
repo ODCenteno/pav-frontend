@@ -1,0 +1,45 @@
+.guide-tourist-map {
+    background-color: var(--color-bone);
+}
+
+.guide-tourist-map__header {
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.guide-tourist-map__title {
+    font-size: var(--text-3xl);
+    margin: 0;
+}
+
+.guide-tourist-map__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.guide-tourist-map__image-wrap {
+    width: 100%;
+    background-color: var(--color-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.guide-tourist-map__image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+.guide-tourist-map__caption {
+    font-size: var(--text-sm);
+    color: var(--color-on-surface-variant);
+    text-align: center;
+    max-width: 720px;
+    line-height: 1.5;
+}

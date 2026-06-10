@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Ruta desde La Paz a Puerto Agua Verde">
+  <defs>
+    <linearGradient id="bg-lapaz" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a8fb7"/>
+      <stop offset="100%" stop-color="#1f5d7a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg-lapaz)"/>
+  <g stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="8 8" opacity="0.7">
+    <path d="M120,120 Q300,200 500,260 T720,360"/>
+  </g>
+  <g fill="#fff" font-family="Inter, sans-serif">
+    <circle cx="120" cy="120" r="14" fill="#F5A623" stroke="#fff"/>
+    <text x="120" y="100" text-anchor="middle" font-size="16" font-weight="700">La Paz</text>
+    <circle cx="720" cy="360" r="14" fill="#D4604A" stroke="#fff"/>
+    <text x="720" y="390" text-anchor="middle" font-size="16" font-weight="700">Puerto Agua Verde</text>
+    <text x="400" y="60" text-anchor="middle" font-size="22" font-weight="700">Ruta: La Paz → Puerto Agua Verde</text>
+    <text x="400" y="90" text-anchor="middle" font-size="14" opacity="0.9">360 km · ~5 h</text>
+    <text x="400" y="430" text-anchor="middle" font-size="13" opacity="0.7">Mapa detallado próximamente</text>
+  </g>
+</svg>

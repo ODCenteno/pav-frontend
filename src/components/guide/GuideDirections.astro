@@ -1,0 +1,87 @@
+---
+import "./guideDirections.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+interface RouteInfo {
+  label: { es: string; en: string };
+  desc: { es: string; en: string };
+  distance: string;
+  time: string;
+  image: string;
+}
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    loreto: RouteInfo;
+    laPaz: RouteInfo;
+    drivingTipsTitle: { es: string; en: string };
+    drivingTips: { es: string[]; en: string[] };
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+const tips = data.drivingTips[lang] || [];
+---
+
+<section class="guide-directions section-padding">
+  <div class="container">
+    <header class="guide-directions__header">
+      <h2 class="guide-directions__title">{data.title[lang]}</h2>
+    </header>
+
+    <div class="guide-directions__grid">
+      <article class="guide-directions__card">
+        <div class="guide-directions__map" aria-hidden="true">
+          <img
+            src={data.loreto.image}
+            alt={data.loreto.label[lang]}
+            loading="lazy"
+          />
+          <span class="guide-directions__placeholder">Mapa próximamente</span>
+        </div>
+        <div class="guide-directions__card-body">
+          <div class="guide-directions__card-header">
+            <h3 class="guide-directions__card-title">{data.loreto.label[lang]}</h3>
+            <span class="guide-directions__badge guide-directions__badge--distance">{data.loreto.distance}</span>
+            <span class="guide-directions__badge guide-directions__badge--time">{data.loreto.time}</span>
+          </div>
+          <p class="guide-directions__text">{data.loreto.desc[lang]}</p>
+        </div>
+      </article>
+
+      <article class="guide-directions__card">
+        <div class="guide-directions__map" aria-hidden="true">
+          <img
+            src={data.laPaz.image}
+            alt={data.laPaz.label[lang]}
+            loading="lazy"
+          />
+          <span class="guide-directions__placeholder">Mapa próximamente</span>
+        </div>
+        <div class="guide-directions__card-body">
+          <div class="guide-directions__card-header">
+            <h3 class="guide-directions__card-title">{data.laPaz.label[lang]}</h3>
+            <span class="guide-directions__badge guide-directions__badge--distance">{data.laPaz.distance}</span>
+            <span class="guide-directions__badge guide-directions__badge--time">{data.laPaz.time}</span>
+          </div>
+          <p class="guide-directions__text">{data.laPaz.desc[lang]}</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="guide-directions__tips">
+      <h3 class="guide-directions__tips-title">
+        <SvgIcon name="route" class="guide-directions__tips-icon" />
+        {data.drivingTipsTitle[lang]}
+      </h3>
+      <ul class="guide-directions__tips-list" role="list">
+        {tips.map((tip) => (
+          <li class="guide-directions__tip">{tip}</li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,41 @@
+---
+import "./guideProtectedArea.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    text: { es: string; en: string };
+    link: {
+      label: { es: string; en: string };
+      href: string;
+    };
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+---
+
+<section class="guide-protected section-padding">
+  <div class="container">
+    <div class="guide-protected__inner">
+      <div class="guide-protected__icon" aria-hidden="true">
+        <SvgIcon name="info" class="guide-protected__icon-svg" />
+      </div>
+      <h2 class="guide-protected__title">{data.title[lang]}</h2>
+      <p class="guide-protected__text">{data.text[lang]}</p>
+      <a
+        class="btn btn-outline guide-protected__link"
+        href={data.link.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={data.link.label[lang]}
+      >
+        {data.link.label[lang]}
+        <SvgIcon name="arrow-right" class="guide-protected__link-icon" />
+      </a>
+    </div>
+  </div>
+</section>

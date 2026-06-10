@@ -10,6 +10,7 @@ export const navigation = {
   sites: (locale: string = "es") => getRelativeLocaleUrl(locale, "sitios"),
   siteDetail: (slug: string, locale: string = "es") => getRelativeLocaleUrl(locale, `sitios/${slug}`),
   about: (locale: string = "es") => getRelativeLocaleUrl(locale, "acerca"),
+  guide: (locale: string = "es") => getRelativeLocaleUrl(locale, "guide"),
   legal: (slug: string = "privacy-notice", locale: string = "es") => getRelativeLocaleUrl(locale, `legal/${slug}`),
   homeAnchor: (anchor: string, locale: string = "es") => {
     const home = getRelativeLocaleUrl(locale, "");

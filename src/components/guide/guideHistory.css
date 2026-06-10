@@ -1,0 +1,98 @@
+.guide-history {
+    background-color: var(--color-white);
+}
+
+.guide-history__header {
+    margin-bottom: var(--space-lg);
+    max-width: 720px;
+}
+
+.guide-history__title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2xs);
+}
+
+.guide-history__lead {
+    font-size: var(--text-lg);
+    color: var(--color-on-surface);
+    line-height: 1.6;
+}
+
+.guide-history__timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-left: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.guide-history__timeline::before {
+    content: "";
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--color-outline);
+    display: none;
+}
+
+.guide-history__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    align-items: start;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--color-bone);
+}
+
+.guide-history__year {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-primary);
+    text-align: right;
+    padding-right: var(--space-sm);
+    border-right: 2px solid var(--color-coral);
+    align-self: stretch;
+}
+
+.guide-history__year-mobile {
+    display: none;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-coral);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2xs);
+}
+
+.guide-history__item-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+}
+
+.guide-history__text {
+    font-size: var(--text-base);
+    color: var(--color-on-surface);
+    line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+    .guide-history__item {
+        grid-template-columns: 1fr;
+    }
+    .guide-history__year {
+        display: none;
+    }
+    .guide-history__year-mobile {
+        display: block;
+    }
+}

@@ -1,0 +1,44 @@
+---
+import "./guideAmenities.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+type AmenityIcon = "wifi" | "signal" | "toilet" | "parking" | "water";
+
+interface AmenityItem {
+  icon: AmenityIcon;
+  title: { es: string; en: string };
+  text: { es: string; en: string };
+}
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    items: AmenityItem[];
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+const items = data.items || [];
+---
+
+<section class="guide-amenities section-padding">
+  <div class="container">
+    <header class="guide-amenities__header">
+      <h2 class="guide-amenities__title">{data.title[lang]}</h2>
+    </header>
+
+    <ul class="guide-amenities__grid" role="list">
+      {items.map((item) => (
+        <li class="guide-amenities__tile">
+          <span class="guide-amenities__icon" aria-hidden="true">
+            <SvgIcon name={item.icon} class="guide-amenities__icon-svg" />
+          </span>
+          <h3 class="guide-amenities__tile-title">{item.title[lang]}</h3>
+          <p class="guide-amenities__tile-text">{item.text[lang]}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

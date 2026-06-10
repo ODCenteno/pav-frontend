@@ -1,0 +1,72 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
+import GuideIntro from "@/components/guide/GuideIntro.astro";
+import GuideHistory from "@/components/guide/GuideHistory.astro";
+import GuideFishingRefuge from "@/components/guide/GuideFishingRefuge.astro";
+import GuideProtectedArea from "@/components/guide/GuideProtectedArea.astro";
+import GuideInfluenceArea from "@/components/guide/GuideInfluenceArea.astro";
+import GuideRecommendations from "@/components/guide/GuideRecommendations.astro";
+import GuideDirections from "@/components/guide/GuideDirections.astro";
+import GuideAmenities from "@/components/guide/GuideAmenities.astro";
+import GuideTouristMap from "@/components/guide/GuideTouristMap.astro";
+import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
+
+import { useTranslations } from "@/i18n/utils";
+import {
+  heroData,
+  introData,
+  historyData,
+  fishingData,
+  protectedAreaData,
+  influenceData,
+  recommendationsData,
+  directionsData,
+  amenitiesData,
+  touristMapData,
+  ctaData,
+} from "@/data/guideData";
+import { navigation } from "@/utils/navigation";
+
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  siteTitle={t("page.guide.siteTitle")}
+  ogTitle={t("page.guide.ogTitle")}
+  siteDescription={t("page.guide.siteDescription")}
+  ogDescription={t("page.guide.ogDescription")}
+>
+  <HeroPage
+    slot="Hero"
+    title={t("guidePage.hero.title")}
+    description={t("guidePage.hero.desc")}
+    backgroundImage={heroData.image}
+  />
+
+  <GuideIntro data={introData} locale={locale} />
+
+  <GuideHistory data={historyData} locale={locale} />
+
+  <GuideFishingRefuge data={fishingData} locale={locale} />
+
+  <GuideProtectedArea data={protectedAreaData} locale={locale} />
+
+  <GuideInfluenceArea data={influenceData} locale={locale} />
+
+  <GuideRecommendations data={recommendationsData} locale={locale} />
+
+  <GuideDirections data={directionsData} locale={locale} />
+
+  <GuideAmenities data={amenitiesData} locale={locale} />
+
+  <GuideTouristMap data={touristMapData} locale={locale} />
+
+  <ExpCTA
+    title={t("guidePage.cta.title")}
+    description={t("guidePage.cta.desc")}
+    btnText={t("guidePage.cta.btn")}
+    href={navigation.experiences(locale)}
+  />
+</BaseLayout>

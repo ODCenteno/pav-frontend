@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Ruta desde Loreto a Puerto Agua Verde">
+  <defs>
+    <linearGradient id="bg-loreto" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5A8A80"/>
+      <stop offset="100%" stop-color="#3a6b62"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg-loreto)"/>
+  <g stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="8 8" opacity="0.7">
+    <path d="M120,360 Q300,300 500,260 T720,140"/>
+  </g>
+  <g fill="#fff" font-family="Inter, sans-serif">
+    <circle cx="120" cy="360" r="14" fill="#F5A623" stroke="#fff"/>
+    <text x="120" y="395" text-anchor="middle" font-size="16" font-weight="700">Loreto</text>
+    <circle cx="720" cy="140" r="14" fill="#D4604A" stroke="#fff"/>
+    <text x="720" y="120" text-anchor="middle" font-size="16" font-weight="700">Puerto Agua Verde</text>
+    <text x="400" y="60" text-anchor="middle" font-size="22" font-weight="700">Ruta: Loreto → Puerto Agua Verde</text>
+    <text x="400" y="90" text-anchor="middle" font-size="14" opacity="0.9">98 km · ~2 h</text>
+    <text x="400" y="420" text-anchor="middle" font-size="13" opacity="0.7">Mapa detallado próximamente</text>
+  </g>
+</svg>

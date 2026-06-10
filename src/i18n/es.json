@@ -3,6 +3,7 @@
     "home": "Inicio",
     "experiences": "Experiencias",
     "sites": "Sitios de Interés",
+    "guide": "Guía del destino",
     "about": "Sobre nosotros",
     "accommodation": "Alojamiento",
     "restaurants": "Restaurantes",
@@ -148,6 +149,12 @@
       "siteDescription": "Descubre la historia, cultura y belleza natural de Puerto Agua Verde y Rancho San Cosme.",
       "ogDescription": "Explora la historia, cultura y belleza natural de Puerto Agua Verde y Rancho San Cosme. Conoce sus comunidades, tradiciones y paisajes únicos."
     },
+    "guide": {
+      "siteTitle": "Guía del Destino | Puerto Agua Verde y Rancho San Cosme",
+      "ogTitle": "Guía del Destino: Puerto Agua Verde y Rancho San Cosme",
+      "siteDescription": "Información completa sobre la bahía, el área natural protegida, la pesca sustentable, cómo llegar, servicios y recomendaciones para tu visita.",
+      "ogDescription": "Descubre la bahía, la historia de la comunidad, la zona de refugio pesquero, el área natural protegida, cómo llegar y los servicios para visitantes en Puerto Agua Verde y Rancho San Cosme."
+    },
     "sites": {
       "siteTitle": "Sitios de Interés en Puerto Agua Verde | Rancho San Cosme",
       "ogTitle": "Explora los Sitios de Interés en Puerto Agua Verde y Rancho San Cosme",
@@ -282,6 +289,101 @@
       "title": "Sigue descubriendo el destino",
       "desc": "Explora lugares, experiencias y servicios que reflejan el espíritu de Puerto Agua Verde y Rancho San Cosme.",
       "btn": "Explorar la guía"
+    }
+  },
+  "guidePage": {
+    "navLabel": "Guía del destino",
+    "hero": {
+      "title": "Guía del Destino",
+      "desc": "Conoce la bahía, la comunidad, el área natural protegida, cómo llegar y los servicios que encontrarás en Puerto Agua Verde y Rancho San Cosme.",
+      "image": "/images/pav-landscape-12.webp"
+    },
+    "intro": {
+      "ranchTitle": "Rancho San Cosme",
+      "ranchText": "Rancho San Cosme es un asentamiento histórico del ejido que conserva la vida rural del sur de Baja California Sur. Entre caminos de tierra, milpas y casas de adobe, sus habitantes mantienen viva una relación cotidiana con el desierto, la montaña y el mar.",
+      "portTitle": "Puerto Agua Verde",
+      "portText": "Puerto Agua Verde es una comunidad costera que combina pesca artesanal, turismo de bajo impacto y una bahía de aguas tranquilas rodeada de cerros. Es un punto de partida para explorar la Reserva de la Biosfera del Vizcaíno y el Parque Nacional Bahía de Loreto."
+    },
+    "history": {
+      "title": "Historia de la comunidad",
+      "text": "La comunidad de Agua Verde y Rancho San Cosme se ha formado a lo largo de generaciones a partir de la pesca, la agricultura de temporal y el trabajo cooperativo. Conoce algunos hitos que han marcado su desarrollo.",
+      "milestones": [
+        { "year": "S. XIX", "text": "Primeros registros de campamentos pesqueros temporales en la bahía, usados por familias de la región del Vizcaíno." },
+        { "year": "1937", "text": "Se constituye formalmente el ejido de Agua Verde, base de la tenencia comunal de la tierra." },
+        { "year": "1970s", "text": "Se consolidan las cooperativas pesqueras que articulan la economía local y la vida social del puerto." },
+        { "year": "1996", "text": "La bahía es incorporada al Parque Nacional Bahía de Loreto, área natural protegida federal." },
+        { "year": "Hoy", "text": "La comunidad impulsa un modelo de turismo comunitario que protege su identidad y su entorno natural." }
+      ]
+    },
+    "fishing": {
+      "title": "Zona de refugio pesquero — Pesca sustentable",
+      "text": "Parte de las aguas de la bahía funciona como zona de refugio pesquero, donde se aplican vedas, tallas mínimas y artes de pesca selectivas para asegurar la renovación de las poblaciones marinas.",
+      "rules": [
+        "Respeta las vedas temporales y zonas de no pesca señalizadas.",
+        "Utiliza artes de pesca permitidas y selectivas.",
+        "Devuelve al mar los ejemplares por debajo de la talla mínima.",
+        "Infórmate con la cooperativa pesquera local antes de practicar pesca recreativa."
+      ]
+    },
+    "protected": {
+      "title": "¿Qué es un área natural protegida?",
+      "text": "Un Área Natural Protegida (ANP) es una zona del territorio nacional — terrestre o marina — cuya conservación ha sido declarada de interés público por la federación. En ella se regulan actividades para preservar ecosistemas, especies y servicios ambientales.",
+      "linkLabel": "Más información en CONANP",
+      "linkHref": "https://descubreanp.conanp.gob.mx/"
+    },
+    "influence": {
+      "title": "Área de influencia",
+      "text": "El área de influencia de Puerto Agua Verde y Rancho San Cosme abarca la bahía, los arroyos que bajan de la Sierra de la Giganta y los ecosistemas costeros que conectan con la Reserva de la Biosfera El Vizcaíno y el Parque Nacional Bahía de Loreto. Las decisiones de manejo que afectan a la comunidad tienen impacto sobre una red de ecosistemas compartida."
+    },
+    "recommendations": {
+      "title": "Recomendaciones y buenas prácticas para visitantes",
+      "items": [
+        "Lleva agua potable suficiente y protégete del sol, incluso en invierno.",
+        "No dejes residuos: vuelve con todo lo que trajiste y separa lo reciclable.",
+        "Respeta la vida silvestre: observa desde la distancia y no alimentes a los animales.",
+        "Apoya la economía local contratando guías, hospedaje y servicios comunitarios.",
+        "Consulta el clima y las condiciones del camino antes de desplazarte por la región.",
+        "Respeta la señalización y los usos de las áreas naturales protegidas."
+      ]
+    },
+    "directions": {
+      "title": "¿Cómo llegar?",
+      "loreto": {
+        "label": "Desde Loreto",
+        "desc": "Toma la carretera federal hacia Cd. Constitución y desvía en el entronque hacia Puerto Agua Verde. El camino combina tramo pavimentado y camino rural en buen estado.",
+        "distance": "98 km",
+        "time": "~2 h"
+      },
+      "laPaz": {
+        "label": "Desde La Paz",
+        "desc": "Sal por la carretera Transpeninsular hacia el norte. Es un recorrido largo, por lo que se recomienda salir temprano y cargar combustible en ciudades intermedias.",
+        "distance": "360 km",
+        "time": "~5 h"
+      },
+      "drivingTipsTitle": "Recomendaciones para el camino",
+      "drivingTips": [
+        "Revisa presión y estado de las llantas antes de salir.",
+        "Carga combustible en Loreto o Cd. Constitución antes del último tramo.",
+        "Conduce con precaución en los kilómetros finales: camino sinuoso y fauna silvestre."
+      ]
+    },
+    "amenities": {
+      "title": "Servicios para visitantes",
+      "items": [
+        { "icon": "wifi", "title": "Wi-Fi", "text": "Zonas con conexión Wi-Fi comunitaria (Starlink) en el área del muelle y en algunos hospedajes del puerto." },
+        { "icon": "signal", "title": "Internet y señal", "text": "Cobertura de datos limitada; se recomienda descargar mapas y contenido antes del viaje." },
+        { "icon": "toilet", "title": "Sanitarios", "text": "Baños públicos disponibles en zonas comunes del puerto y del rancho." }
+      ]
+    },
+    "touristMap": {
+      "title": "Mapa turístico del destino",
+      "image": "/images/tourist-map.png",
+      "caption": "Mapa de referencia: ubicación de Puerto Agua Verde y Rancho San Cosme, rutas desde Loreto y La Paz, zona de refugio pesquero y servicios para visitantes."
+    },
+    "cta": {
+      "title": "Sigue explorando el destino",
+      "desc": "Visita las secciones de experiencias y sitios de interés para planear tu viaje a Puerto Agua Verde y Rancho San Cosme.",
+      "btn": "Ver experiencias"
     }
   }
 }

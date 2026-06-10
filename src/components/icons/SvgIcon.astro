@@ -8,7 +8,27 @@
  */
 
 export interface Props {
-  name: "bookmark-outline" | "bookmark-filled" | "instagram" | "facebook" | "location" | "mail" | "phone" | "whatsapp" | "menu" | "close";
+  name:
+    | "bookmark-outline"
+    | "bookmark-filled"
+    | "instagram"
+    | "facebook"
+    | "location"
+    | "mail"
+    | "phone"
+    | "whatsapp"
+    | "menu"
+    | "close"
+    | "wifi"
+    | "signal"
+    | "toilet"
+    | "parking"
+    | "water"
+    | "leaf"
+    | "route"
+    | "info"
+    | "arrow-right"
+    | "compass";
   class?: string;
   title?: string;
   ariaLabel?: string;
@@ -56,6 +76,36 @@ const ICONS: Record<string, string> = {
   `,
   "close": `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  `,
+  "wifi": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+  `,
+  "signal": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h.01"></path><path d="M7 20v-4"></path><path d="M12 20V8"></path><path d="M17 20V4"></path><path d="M22 4v16"></path></svg>
+  `,
+  "toilet": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12h10"></path><path d="M9 5l-1.45 7.42A2 2 0 0 0 9.51 14.7h4.98a2 2 0 0 0 1.96-2.28L15 5"></path><path d="M10 5v0"></path><path d="M12 5v9"></path><path d="M9 14l1 6h4l1-6"></path></svg>
+  `,
+  "parking": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M9 17V7h4a3 3 0 0 1 0 6H9"></path></svg>
+  `,
+  "water": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+  `,
+  "leaf": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-3.5 2.5-7 7-11 4.5 4 7 7.5 7 11a7 7 0 0 1-7 7z"></path><path d="M2 22c5-3 7-7 7-12"></path></svg>
+  `,
+  "route": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg>
+  `,
+  "info": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+  `,
+  "arrow-right": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+  `,
+  "compass": `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
   `
 };
 

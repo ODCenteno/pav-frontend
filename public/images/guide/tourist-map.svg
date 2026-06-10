@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Mapa turístico de Puerto Agua Verde y Rancho San Cosme">
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a8fb7"/>
+      <stop offset="100%" stop-color="#1f5d7a"/>
+    </linearGradient>
+    <linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d6b78a"/>
+      <stop offset="100%" stop-color="#a67c52"/>
+    </linearGradient>
+    <pattern id="hatch" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="12" stroke="#8b5e30" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#sea)"/>
+  <!-- Coastline / land -->
+  <path d="M0,0 L1200,0 L1200,300 Q900,330 700,300 Q500,260 300,310 Q150,340 0,300 Z" fill="url(#land)"/>
+  <path d="M0,300 Q150,340 300,310 Q500,260 700,300 Q900,330 1200,300 L1200,360 Q900,400 700,370 Q500,340 300,380 Q150,410 0,380 Z" fill="url(#hatch)" opacity="0.4"/>
+
+  <!-- Bay curve -->
+  <path d="M150,360 Q450,440 750,400 Q950,380 1100,420" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 6" opacity="0.7"/>
+  <text x="600" y="500" fill="#fff" font-family="Playfair Display, serif" font-size="34" font-weight="700" text-anchor="middle">BAHÍA AGUA VERDE</text>
+
+  <!-- Compass -->
+  <g transform="translate(1110, 90)">
+    <circle r="36" fill="#fff" opacity="0.9"/>
+    <polygon points="0,-28 8,0 0,28 -8,0" fill="#1A1A1A"/>
+    <text x="0" y="-40" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#fff">N</text>
+  </g>
+
+  <!-- Title -->
+  <g>
+    <rect x="60" y="40" width="780" height="60" fill="#1A1A1A"/>
+    <text x="80" y="80" fill="#fff" font-family="Inter, sans-serif" font-size="26" font-weight="700" letter-spacing="1">MAPA TURÍSTICO: PUERTO AGUA VERDE &amp; RANCHO SAN COSME</text>
+  </g>
+
+  <!-- POIs -->
+  <g font-family="Inter, sans-serif" fill="#1A1A1A">
+    <!-- Puerto Agua Verde (port) -->
+    <circle cx="450" cy="470" r="22" fill="#D4604A" stroke="#fff" stroke-width="3"/>
+    <circle cx="450" cy="470" r="6" fill="#fff"/>
+    <rect x="180" y="490" width="240" height="48" fill="#1A1A1A"/>
+    <text x="300" y="514" fill="#fff" font-size="16" font-weight="700" text-anchor="middle">PUERTO AGUA VERDE</text>
+    <text x="300" y="530" fill="#fff" font-size="13" text-anchor="middle">(Comunidad y Muelle)</text>
+
+    <!-- Rancho San Cosme -->
+    <circle cx="300" cy="200" r="18" fill="#5A8A80" stroke="#fff" stroke-width="3"/>
+    <text x="270" y="180" font-size="14" font-weight="700">RANCHO SAN COSME</text>
+    <text x="270" y="196" font-size="11" opacity="0.85">(Comunidad rural)</text>
+
+    <!-- Faro San Marcial -->
+    <circle cx="640" cy="500" r="16" fill="#F5A623" stroke="#fff" stroke-width="3"/>
+    <text x="660" y="496" font-size="13" font-weight="700">Faro San Marcial</text>
+
+    <!-- Brisa del Mar -->
+    <circle cx="540" cy="600" r="14" fill="#F5A623" stroke="#fff" stroke-width="3"/>
+    <text x="500" y="600" font-size="13" font-weight="700">Brisa del Mar</text>
+
+    <!-- Fishing refuge -->
+    <rect x="800" y="430" width="280" height="100" fill="#1f5d7a" stroke="#fff" stroke-width="2"/>
+    <text x="940" y="465" fill="#fff" font-size="15" font-weight="700" text-anchor="middle">ZONA DE REFUGIO PESQUERO</text>
+    <text x="940" y="485" fill="#fff" font-size="13" text-anchor="middle">Pesca sustentable</text>
+    <text x="940" y="510" fill="#F5e477" font-size="13" font-weight="700" text-anchor="middle">→ Más info en CONANP</text>
+
+    <!-- Protected area callout -->
+    <rect x="800" y="560" width="280" height="80" fill="#5A8A80" stroke="#fff" stroke-width="2"/>
+    <text x="940" y="595" fill="#fff" font-size="15" font-weight="700" text-anchor="middle">ÁREA NATURAL PROTEGIDA</text>
+    <text x="940" y="615" fill="#fff" font-size="12" text-anchor="middle">Recomendaciones y reglas</text>
+
+    <!-- Service icons -->
+    <g transform="translate(80, 660)">
+      <rect x="0" y="0" width="420" height="80" fill="#1A1A1A" rx="6"/>
+      <text x="20" y="32" fill="#fff" font-size="13" font-weight="700">SERVICIOS:</text>
+      <text x="20" y="56" fill="#fff" font-size="13">Wi-Fi (Starlink) · Baños públicos</text>
+    </g>
+  </g>
+
+  <!-- Routes -->
+  <g stroke-dasharray="10 6" stroke-width="4" fill="none">
+    <path d="M380,140 Q500,200 450,470" stroke="#1A1A1A"/>
+    <text x="540" y="120" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#fff">↑ Desde Loreto (Norte)</text>
+    <path d="M450,750 Q500,650 450,470" stroke="#1A1A1A"/>
+    <text x="540" y="760" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#fff">↓ Desde La Paz (Sur)</text>
+  </g>
+
+  <text x="80" y="780" fill="#fff" opacity="0.6" font-size="11" font-family="Inter, sans-serif">Mapa de referencia — Puerto Agua Verde &amp; Rancho San Cosme, BCS</text>
+</svg>

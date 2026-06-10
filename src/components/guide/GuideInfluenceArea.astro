@@ -1,0 +1,23 @@
+---
+import "./guideInfluence.css";
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    text: { es: string; en: string };
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+---
+
+<section class="guide-influence section-padding">
+  <div class="container">
+    <div class="guide-influence__content">
+      <h2 class="guide-influence__title">{data.title[lang]}</h2>
+      <p class="guide-influence__text">{data.text[lang]}</p>
+    </div>
+  </div>
+</section>

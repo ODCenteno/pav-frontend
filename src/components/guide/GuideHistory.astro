@@ -1,0 +1,42 @@
+---
+import "./guideHistory.css";
+
+interface Milestone {
+  year: string;
+  es: string;
+  en: string;
+}
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    text: { es: string; en: string };
+    milestones: Milestone[];
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+---
+
+<section class="guide-history section-padding">
+  <div class="container">
+    <header class="guide-history__header">
+      <h2 class="guide-history__title">{data.title[lang]}</h2>
+      <p class="guide-history__lead">{data.text[lang]}</p>
+    </header>
+
+    <ol class="guide-history__timeline" role="list">
+      {data.milestones.map((m) => (
+        <li class="guide-history__item">
+          <span class="guide-history__year" aria-hidden="true">{m.year}</span>
+          <div class="guide-history__item-content">
+            <span class="guide-history__year-mobile">{m.year}</span>
+            <p class="guide-history__text">{m[lang]}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

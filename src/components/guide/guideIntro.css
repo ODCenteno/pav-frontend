@@ -1,0 +1,57 @@
+.guide-intro {
+    background-color: var(--color-bone);
+}
+
+.guide-intro__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+.guide-intro__card {
+    background-color: var(--color-white);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.guide-intro__icon {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background-color: var(--color-coral);
+    color: var(--color-white);
+    margin-bottom: var(--space-2xs);
+}
+
+.guide-intro__icon-svg {
+    width: 24px;
+    height: 24px;
+}
+
+.guide-intro__card--port .guide-intro__icon {
+    background-color: var(--color-primary);
+}
+
+.guide-intro__title {
+    font-size: var(--text-2xl);
+    margin: 0;
+}
+
+.guide-intro__text {
+    font-size: var(--text-base);
+    color: var(--color-on-surface);
+    line-height: 1.7;
+}
+
+@media (min-width: 768px) {
+    .guide-intro__grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

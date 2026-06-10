@@ -25,6 +25,7 @@ export default defineConfig({
         'src/data/',
         'src/utils/navigation.ts', // requires Astro i18n module
         'src/utils/socialConfig.ts', // static config data, no logic
+        'src/components/guide/__tests__/GuideAmenities.test.ts', // asserts source file contents, not runtime behavior
       ],
     },
   },

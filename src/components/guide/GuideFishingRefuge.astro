@@ -1,0 +1,43 @@
+---
+import "./guideFishing.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+interface Props {
+  data: {
+    title: { es: string; en: string };
+    text: { es: string; en: string };
+    rules: { es: string[]; en: string[] };
+  };
+  locale?: string;
+}
+
+const { data, locale = "es" } = Astro.props;
+const lang = locale?.startsWith("en") ? "en" : "es";
+const rules = data.rules[lang] || [];
+---
+
+<section class="guide-fishing section-padding">
+  <div class="container">
+    <div class="guide-fishing__grid">
+      <div class="guide-fishing__media" aria-hidden="true">
+        <div class="guide-fishing__media-inner">
+          <SvgIcon name="leaf" class="guide-fishing__media-icon" />
+        </div>
+      </div>
+
+      <div class="guide-fishing__content">
+        <h2 class="guide-fishing__title">{data.title[lang]}</h2>
+        <p class="guide-fishing__text">{data.text[lang]}</p>
+
+        <ul class="guide-fishing__rules" role="list">
+          {rules.map((rule) => (
+            <li class="guide-fishing__rule">
+              <span class="guide-fishing__rule-bullet" aria-hidden="true">•</span>
+              <span>{rule}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
