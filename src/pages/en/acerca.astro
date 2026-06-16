@@ -10,49 +10,77 @@ import CollaborationBlock from "@/components/about/CollaborationBlock.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
 import { useTranslations } from "@/i18n/utils";
-import { 
-  introData, 
-  valuesData, 
-  teamData, 
-  organizationsData, 
-  communityMessageData, 
-  collaborationData 
-} from "@/data/aboutData";
+import { getAboutPageWithFallback } from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
 
 const locale = "en";
 const t = useTranslations(locale);
+
+const about = await getAboutPageWithFallback(locale);
+
+const introData = about.intro
+  ? { title: about.intro.title, text: about.intro.text }
+  : { title: t("aboutPage.intro.title"), text: t("aboutPage.intro.text") };
+
+const valuesData = about.values ?? {
+  mission: { title: t("aboutPage.mission.title"), text: t("aboutPage.mission.text") },
+  vision: { title: t("aboutPage.vision.title"), text: t("aboutPage.vision.text") },
+  values: { title: t("aboutPage.values.title"), items: t("aboutPage.values.items") as string[] || [] },
+};
+
+const teamData = about.team;
+const organizationsData = about.organizations;
+
+const communityMessageData = about.community
+  ? { title: about.community.title, text: about.community.text }
+  : { title: t("aboutPage.community.title"), text: t("aboutPage.community.text") };
+
+const collaborationData = about.collaboration
+  ? {
+      title: about.collaboration.title,
+      desc: about.collaboration.desc,
+      btnPrimary: about.collaboration.btnPrimary,
+      btnSecondary: about.collaboration.btnSecondary,
+      links: about.collaboration.links,
+    }
+  : {
+      title: t("aboutPage.collab.title"),
+      desc: t("aboutPage.collab.desc"),
+      btnPrimary: t("aboutPage.collab.btnPrimary"),
+      btnSecondary: t("aboutPage.collab.btnSecondary"),
+      links: { primary: "#", secondary: "#" },
+    };
 ---
 
-<BaseLayout 
-  siteTitle={t("about.siteTitle")} 
-  ogTitle={t("about.ogTitle")}
-  siteDescription={t("about.siteDescription")}
-  ogDescription={t("about.ogDescription")}
+<BaseLayout
+  siteTitle={t("page.about.siteTitle")}
+  ogTitle={t("page.about.ogTitle")}
+  siteDescription={t("page.about.siteDescription")}
+  ogDescription={t("page.about.ogDescription")}
 >
-  <HeroPage 
-    slot="Hero" 
-    title={t("aboutPage.hero.title")} 
-    description={t("aboutPage.hero.description")}
+  <HeroPage
+    slot="Hero"
+    title={t("aboutPage.hero.title")}
+    description={t("aboutPage.hero.desc")}
     backgroundImage={t("aboutPage.hero.image")}
   />
-  
+
   <AboutIntro data={introData} locale={locale} />
-  
+
   <AboutValues {...valuesData} locale={locale} />
-  
+
   <TeamGrid team={teamData} locale={locale} />
-  
+
   <OrganizationsGrid organizations={organizationsData} locale={locale} />
-  
+
   <CommunityMessage data={communityMessageData} locale={locale} />
-  
+
   <CollaborationBlock data={collaborationData} locale={locale} />
 
-  <ExpCTA 
-    title={t("aboutPage.cta.title")} 
-    description={t("aboutPage.cta.desc")} 
-    btnText={t("aboutPage.cta.btn")} 
-    href={navigation.sites(locale)} 
+  <ExpCTA
+    title={t("aboutPage.cta.title")}
+    description={t("aboutPage.cta.desc")}
+    btnText={t("aboutPage.cta.btn")}
+    href={navigation.sites(locale)}
   />
 </BaseLayout>

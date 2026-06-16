@@ -9,47 +9,17 @@ import RelatedSites from "../../../components/site-detail/RelatedSites.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import StickyActionBar from "../../../components/site-detail/StickyActionBar.tsx";
 import { useTranslations } from "../../../i18n/utils";
-import { categoryData } from "../../../data/categoryData";
+import { getListingsWithFallback } from "../../../lib/cms";
 import type { Listing } from "../../../types/listing.type";
 import { navigation } from "@/utils/navigation";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  return categoryData.map((item: any) => ({
+  const listings = await getListingsWithFallback("en");
+  return listings.map((item) => ({
     params: { slug: item.slug },
-    props: { 
-      item: {
-        ...item,
-        name: { es: item.name_es, en: item.name_en },
-        description: { es: item.description_es, en: item.description_en },
-        tags: (item.tags_es || []).map((t: string, i: number) => ({
-          es: t,
-          en: item.tags_en?.[i] || t,
-        })),
-        amenities: (item.amenities_es || []).map((a: string, i: number) => ({
-          es: a,
-          en: item.amenities_en?.[i] || a,
-        })),
-        schedule: item.schedule ? {
-          text: { es: item.schedule.text_es, en: item.schedule.text_en }
-        } : undefined,
-        recommendations: item.recommendations ? {
-          bestTimeToVisit: { es: item.recommendations.bestTime_es, en: item.recommendations.bestTime_en },
-          whatToBring: (item.recommendations.bring_es || []).map((b: string, i: number) => ({
-            es: b,
-            en: item.recommendations.bring_en?.[i] || b,
-          }))
-        } : undefined,
-        media: {
-          mainImageUrl: item.image,
-          galleryUrls: item.gallery || []
-        },
-        category: {
-          name: { es: item.category_name_es, en: item.category_name_en }
-        }
-      } as Listing
-    },
+    props: { item },
   }));
 }
 

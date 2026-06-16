@@ -1,19 +1,18 @@
 import type { LocalizedString } from './i18n.type';
-import type { Category, ListingType } from './category.type';
+import type { Category } from './category.type';
 import type { Location, ContactInfo, Pricing, Media, Schedule, Recommendations } from './common.type';
 import type { OrganizationMeta } from './organization.type';
 
 export interface Listing {
   id: string;
-  type: ListingType; // 'commerce' | 'service' | 'poi' | 'organization'
   slug: string;
 
   name: LocalizedString;
   shortDescription?: LocalizedString;
   description?: LocalizedString;
 
-  categoryId: string;
-  category?: Category; // opcional, si haces el join en frontend
+  categoryId: string; // matches category.slug
+  category?: Category;
   tags?: LocalizedString[];
 
   location?: Location;
@@ -24,14 +23,15 @@ export interface Listing {
   isFeatured?: boolean;
   status?: 'published' | 'draft';
 
-  image?: string; // Mock data compatibility
+  image?: string; // legacy field, prefer media.mainImageUrl
   organizationMeta?: OrganizationMeta;
 
   // New fields for detail page
   schedule?: Schedule;
   amenities?: LocalizedString[];
   recommendations?: Recommendations;
-  relatedSites?: string[]; // IDs of related listings
+  relatedSites?: string[];
+  order?: number;
 
   // Localized URLs calculated during transformation
   href?: {

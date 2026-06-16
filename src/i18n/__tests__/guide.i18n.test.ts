@@ -69,52 +69,54 @@ describe("i18n/guidePage", () => {
     // Some keys are proper nouns or brand names that stay identical across
     // locales by design (e.g. "Rancho San Cosme"). For these, we only assert
     // presence + non-empty.
-    const properNouns: Record<string, string> = {
-      "ranchTitle": "Rancho San Cosme",
-      "portTitle": "Puerto Agua Verde",
-    };
 
-    const translatableKeys: (string | { path: string[]; noun?: string })[] = [
-      ["navLabel"],
-      ["hero", "title"],
-      ["hero", "desc"],
-      ["intro", "ranchText"],
-      ["intro", "portText"],
-      ["history", "title"],
-      ["history", "text"],
-      ["protected", "title"],
-      ["protected", "text"],
-      ["protected", "linkLabel"],
-      ["influence", "title"],
-      ["influence", "text"],
-      ["recommendations", "title"],
-      ["directions", "title"],
-      ["directions", "loreto", "label"],
-      ["directions", "loreto", "desc"],
-      ["directions", "laPaz", "label"],
-      ["directions", "laPaz", "desc"],
-      ["directions", "drivingTipsTitle"],
-      ["amenities", "title"],
-      ["touristMap", "title"],
-      ["touristMap", "caption"],
-      ["cta", "title"],
-      ["cta", "desc"],
-      ["cta", "btn"],
-      // Proper nouns (kept identical on purpose)
-      { path: ["intro", "ranchTitle"], noun: properNouns.ranchTitle },
-      { path: ["intro", "portTitle"], noun: properNouns.portTitle },
+    type KeyEntry = { path: string[] };
+    const translatableKeys: KeyEntry[] = [
+      { path: ["navLabel"] },
+      { path: ["hero", "title"] },
+      { path: ["hero", "desc"] },
+      { path: ["intro", "ranchTitle"] },  // proper noun
+      { path: ["intro", "ranchText"] },
+      { path: ["intro", "portTitle"] },   // proper noun
+      { path: ["intro", "portText"] },
+      { path: ["history", "title"] },
+      { path: ["history", "text"] },
+      { path: ["protected", "title"] },
+      { path: ["protected", "text"] },
+      { path: ["protected", "linkLabel"] },
+      { path: ["influence", "title"] },
+      { path: ["influence", "text"] },
+      { path: ["recommendations", "title"] },
+      { path: ["directions", "title"] },
+      { path: ["directions", "loreto", "label"] },
+      { path: ["directions", "loreto", "desc"] },
+      { path: ["directions", "laPaz", "label"] },
+      { path: ["directions", "laPaz", "desc"] },
+      { path: ["directions", "drivingTipsTitle"] },
+      { path: ["amenities", "title"] },
+      { path: ["touristMap", "title"] },
+      { path: ["touristMap", "caption"] },
+      { path: ["cta", "title"] },
+      { path: ["cta", "desc"] },
+      { path: ["cta", "btn"] },
     ];
+    // Keys that are proper nouns / brand names kept identical across locales.
+    const properNounKeys = new Set([
+      "intro.ranchTitle",
+      "intro.portTitle",
+    ]);
 
     for (const entry of translatableKeys) {
-      const path = Array.isArray(entry) ? entry : entry.path;
+      const path = entry.path;
+      const key = path.join(".");
       const esVal = getByPath(es.guidePage, path) as string;
       const enVal = getByPath(en.guidePage, path) as string;
       expect(typeof esVal).toBe("string");
       expect(typeof enVal).toBe("string");
-      expect(esVal.length, `es.${path.join(".")} non-empty`).toBeGreaterThan(0);
-      expect(enVal.length, `en.${path.join(".")} non-empty`).toBeGreaterThan(0);
-      if (!Array.isArray(entry)) continue; // proper noun — only check presence
-      expect(enVal, `en.${path.join(".")} should differ from es`).not.toBe(esVal);
+      expect(esVal.length, `es.${key} non-empty`).toBeGreaterThan(0);
+      expect(enVal.length, `en.${key} non-empty`).toBeGreaterThan(0);
+      if (properNounKeys.has(key)) continue; // proper noun — only check presence
+      expect(enVal, `en.${key} should differ from es`).not.toBe(esVal);
     }
   });
 

@@ -1,6 +1,6 @@
 ---
 import CardMain from "../cards/CardMain.astro";
-import { categoryData } from "../../data/categoryData";
+import { getListingsWithFallback } from "../../lib/cms";
 import type { Listing } from "../../types/listing.type";
 import "./relatedSites.css";
 
@@ -12,8 +12,10 @@ interface Props {
 
 const { title, relatedIds, currentLang } = Astro.props;
 
-// Filter data to get related sites full objects
-const relatedItems = categoryData.filter((item) => relatedIds && relatedIds.includes(item.id)) as unknown as Listing[];
+const allListings: Listing[] = await getListingsWithFallback(currentLang);
+const relatedItems = relatedIds
+  ? allListings.filter((item) => relatedIds.includes(item.id))
+  : [];
 ---
 
 {

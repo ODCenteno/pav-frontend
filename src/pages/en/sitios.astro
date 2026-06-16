@@ -7,12 +7,14 @@ import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
 import SitesExplorer from "@/components/main/categories/SitesExplorer.tsx";
 import { useTranslations } from "@/i18n/utils";
-import { categoryData } from "@/data/categoryData";
+import { getListingsWithFallback } from "@/lib/cms";
 import type { Listing } from "@/types/listing.type";
 import { navigation } from "@/utils/navigation";
 
 const locale = "en";
 const t = useTranslations(locale);
+
+const allSites: Listing[] = await getListingsWithFallback(locale);
 
 // Group data by category
 const categories = [
@@ -26,53 +28,16 @@ const categories = [
 const groupedSites = categories
   .map((cat) => ({
     ...cat,
-    items: categoryData
-      .filter((item) => item.categoryId === cat.id)
-      .map((item) => ({
-        ...item,
-        // Adapt flat fields to localized objects
-        name: { es: item.name_es, en: item.name_en },
-        shortDescription: { es: item.description_es, en: item.description_en },
-        description: { es: item.description_es, en: item.description_en },
-        // Convert arrays of strings to array of LocalizedStrings
-        tags: (item.tags_es || []).map((tag, i) => ({
-          es: tag,
-          en: item.tags_en?.[i] || tag,
-        })),
-        amenities: (item.amenities_es || []).map((a, i) => ({
-          es: a,
-          en: item.amenities_en?.[i] || a,
-        })),
-        schedule: item.schedule ? {
-          text: { es: item.schedule.text_es, en: item.schedule.text_en }
-        } : undefined,
-        recommendations: item.recommendations ? {
-          bestTimeToVisit: { es: item.recommendations.bestTime_es, en: item.recommendations.bestTime_en },
-          whatToBring: (item.recommendations.bring_es || []).map((b, i) => ({
-            es: b,
-            en: item.recommendations.bring_en?.[i] || b,
-          }))
-        } : undefined,
-        media: {
-          mainImageUrl: item.image,
-          galleryUrls: item.gallery || []
-        },
-        pricing: {
-          price: item.price,
-        },
-        category: {
-          name: { es: item.category_name_es, en: item.category_name_en }
-        }
-      })) as unknown as Listing[],
+    items: allSites.filter((item) => item.categoryId === cat.id),
   }))
   .filter((group) => group.items.length > 0);
 ---
 
-<BaseLayout siteTitle={t("sites.siteTitle")} ogTitle={t("sites.ogTitle")} siteDescription={t("sites.siteDescription")} ogDescription={t("sites.ogDescription")}>
-  <HeroPage 
-    slot="Hero" 
-    title={t("sitesPage.heroTitle")} 
-    description={t("sitesPage.heroDesc")} 
+<BaseLayout siteTitle={t("page.sites.siteTitle")} ogTitle={t("page.sites.ogTitle")} siteDescription={t("page.sites.siteDescription")} ogDescription={t("page.sites.ogDescription")}>
+  <HeroPage
+    slot="Hero"
+    title={t("sitesPage.heroTitle")}
+    description={t("sitesPage.heroDesc")}
     backgroundImage="/images/pav-01.jpg"
   />
 
@@ -98,7 +63,7 @@ const groupedSites = categories
             <div class="category-header">
               <h2 class="category-title">{group.label}</h2>
               <span class="item-count">
-                {group.items.length} {t("sitesPage.itemCount", { count: group.items.length.toString() }) || (locale === "es" ? "sitios" : "places")}
+                {t("sitesPage.itemCount", { count: group.items.length.toString() })}
               </span>
             </div>
 

@@ -1,14 +1,13 @@
 ---
 import CardMain from "../../cards/CardMain.astro";
-import { categoryData } from "../../../data/categoryData";
+import { getListingsWithFallback } from "../../../lib/cms";
 import { useTranslations } from "../../../i18n/utils";
 import type { Listing } from "../../../types/listing.type";
 
 const locale = Astro.currentLocale ?? "es";
 const t = useTranslations(locale);
 
-// Get all sites to render them (initially hidden)
-const allSites = categoryData as unknown as Listing[];
+const allSites: Listing[] = await getListingsWithFallback(locale);
 
 const categories = [
   { id: "all", label: t("categories.all") },

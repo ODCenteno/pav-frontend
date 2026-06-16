@@ -3,19 +3,17 @@ import "./categories.css";
 import type { Listing } from "@/types/listing.type.ts";
 import type { LocalizedString } from "@/types/i18n.type.ts";
 import { useTranslations } from "@/i18n/utils";
-import { categoryData as rawCategoryData } from "@/data/categoryData"; // New import
+import { getListingsWithFallback, getCategoriesWithFallback } from "@/lib/cms";
+import type { Category } from "@/types/category.type.ts";
 
 import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
 import CardMain from "@/components/cards/CardMain.astro";
 import { navigation } from "@/utils/navigation";
 
-// 1) Locale seguro (Astro.currentLocale puede ser undefined en tipos)
 const locale = Astro.currentLocale ?? Astro.defaultLocale ?? "es";
 
-// 2) Traductor SSR
 const t = useTranslations(locale);
 
-// Helper local para LocalizedString (por si category.name existe)
 function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
   if (!value) return "";
   const isEn = loc.toLowerCase().startsWith("en");
@@ -24,94 +22,48 @@ function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
   return typeof v === "string" ? v : "";
 }
 
-// 3) Fetch SSR (defensivo)
-let listingData: Listing[] = [];
-const useLocalData = true; // Forzamos local para verificar, o usa import.meta.env.USE_LOCAL_CATEGORY_DATA === "true"
+const allListings: Listing[] = await getListingsWithFallback(locale);
+const allCategories: Category[] = await getCategoriesWithFallback(locale);
 
-if (useLocalData) {
-  listingData = rawCategoryData
-    .filter((cat) => cat.isFeatured === true) // Filtrar solo destacados para el carrusel
-    .map((cat) => ({
-      id: cat.id,
-      type: cat.type,
-      slug: cat.slug,
-      name: { es: cat.name_es, en: cat.name_en },
-      categoryId: cat.categoryId, // Usar el nuevo campo de categoría
-      category: {
-        id: cat.categoryId,
-        slug: cat.slug,
-        type: cat.type,
-        name: { es: cat.category_name_es, en: cat.category_name_en },
-        description: { es: cat.description_es, en: cat.description_en },
-        icon: cat.icon,
-        color: cat.color,
-        order: cat.order,
-      },
-      shortDescription: { es: cat.description_es, en: cat.description_en },
-      description: { es: cat.description_es, en: cat.description_en },
-      media: { mainImageUrl: cat.image },
-      pricing: { price: cat.price },
-      contact: cat.contact || {}, // Pasar información de contacto
-      tags: (cat.tags_es || []).map((t, i) => ({ es: t, en: cat.tags_en?.[i] || t })),
-    })) as Listing[];
-} else {
-  try {
-    const listingAPI = await fetch(`${import.meta.env.API_LIST_URL}?status=published`);
-    const listingJson = listingAPI.ok ? await listingAPI.json() : { data: [] };
-    listingData = Array.isArray(listingJson?.data) ? listingJson.data : [];
-  } catch (e) {
-    console.error("Error fetching categories from API:", e);
-    listingData = [];
-  }
+// Build a category lookup from the CMS-driven list
+const categoryBySlug = new Map<string, Category>();
+for (const c of allCategories) {
+  categoryBySlug.set(c.slug, c);
 }
 
-// 4) Construir categorías dinámicas (id + label traducible + orden)
-// - Soporta estructura anidada (name: {es, en}) y plana (name_es, name_en)
-// - Respeta el campo 'order' si existe
+// Map each listing to its category (prefer the populated one, else the lookup)
+const listingData: Listing[] = allListings
+  .filter((item) => item.isFeatured === true)
+  .map((item) => {
+    if (item.category) return item;
+    const cat = categoryBySlug.get(item.categoryId);
+    return cat ? { ...item, category: cat } : item;
+  });
+
+// Build the categories list shown in the filter
 const categoryMap = new Map<string, { label: string; order: number }>();
 
+// Seed from the categories collection so order/label are correct even with no featured listings
+for (const c of allCategories) {
+  categoryMap.set(c.slug, {
+    label: getLocalizedText(c.name, locale),
+    order: c.order ?? 999,
+  });
+}
+
+// Then enrich with any featured listings that point to categories not in the collection
 for (const item of listingData) {
   const id = item.categoryId;
-  if (!id) continue;
-
-  let label = "";
-  let order = 999; // Default al final si no tiene orden
-
+  if (!id || categoryMap.has(id)) continue;
   const cat = item.category as any;
   if (cat) {
-    // 1. Label Extraction
-    if (cat.name && typeof cat.name === "object") {
-      // Nested LocalizedString
-      label = getLocalizedText(cat.name, locale);
-    } else {
-      // Flat structure (fallback)
-      const isEn = locale.toLowerCase().startsWith("en");
-      label = isEn ? cat.name_en : cat.name_es;
-    }
-
-    // 2. Order Extraction
-    if (typeof cat.order === "number") {
-      order = cat.order;
-    }
-  }
-
-  // Fallback label si falló lo anterior
-  if (!label) label = id;
-
-  // Store logic: Preferir datos completos si ya existe una entrada parcial
-  if (!categoryMap.has(id)) {
-    categoryMap.set(id, { label, order });
-  } else {
-    // Si la entrada existente no tiene orden válido y la actual sí, actualizamos
-    const current = categoryMap.get(id)!;
-    if (current.order === 999 && order !== 999) {
-      categoryMap.set(id, { label, order });
-    }
-    // (Opcional) Si la actual tiene mejor label, también podríamos actualizar
+    const label = cat.name && typeof cat.name === "object"
+      ? getLocalizedText(cat.name, locale)
+      : id;
+    categoryMap.set(id, { label, order: cat.order ?? 999 });
   }
 }
 
-// Ordenar: Primero por 'order' (asc), luego alfabético
 const categories = Array.from(categoryMap.entries())
   .map(([id, data]) => ({ id, label: data.label, order: data.order }))
   .sort((a, b) => {
@@ -119,13 +71,11 @@ const categories = Array.from(categoryMap.entries())
     return a.label.localeCompare(b.label, locale);
   });
 
-// 5) Strings UI (SSR)
 const translations = {
   noResults: t("gallery.noResults"),
   all: t("categories.all"),
 };
 
-// 6) viewAllHref seguro por locale (sin error de undefined)
 const viewAllHref = navigation.sites(locale);
 ---
 
