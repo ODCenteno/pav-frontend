@@ -1,7 +1,10 @@
 /**
- * Global site settings. 
+ * Global site settings.
  * This structure mirrors what we expect to receive from Strapi's "Global" single type.
+ * Falls back to local defaults when CMS is unavailable.
  */
+import { getGlobalSettings } from "@/lib/cms";
+
 export const siteSettings = {
   contact: {
     email: "info@puertoaguaverde.mx",
@@ -23,9 +26,16 @@ export const siteSettings = {
 };
 
 /**
- * Helper to get settings. In the future, this will fetch from Strapi with a fallback to local.
+ * Helper to get settings. Fetches from Strapi with fallback to local settings.
  */
 export async function getSiteSettings() {
-  // TODO: Implement Strapi fetch here
+  try {
+    const globalSettings = await getGlobalSettings();
+    if (globalSettings) {
+      return globalSettings;
+    }
+  } catch (error) {
+    console.warn('[siteSettings] Failed to fetch from Strapi, using defaults:', error);
+  }
   return siteSettings;
 }

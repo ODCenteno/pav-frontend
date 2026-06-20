@@ -20,6 +20,20 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
 </div>
 
 <script is:inline>
+  /**
+   * PopupManager - Handles popup state and content rendering
+   *
+   * SECURITY NOTE: This component intentionally avoids innerHTML injection
+   * for user-facing content. All dynamic content is rendered using:
+   * - textContent for text (auto-escapes HTML entities)
+   * - DOM property assignment (src, alt, className) for elements
+   * - document.createElement() for DOM construction
+   *
+   * This approach prevents XSS without requiring DOMPurify sanitization.
+   * The only innerHTML usage is for clearing container content (line 43, 100),
+   * which is safe as it doesn't inject unsanitized user input.
+   */
+
   // This script runs on the client and manages the popup state
   let isPopupOpen = false;
   let selectedCardData = null;

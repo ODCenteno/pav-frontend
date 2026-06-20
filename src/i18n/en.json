@@ -383,5 +383,19 @@
       "desc": "Visit the experiences and points of interest sections to plan your trip to Puerto Agua Verde and Rancho San Cosme.",
       "btn": "See experiences"
     }
+  },
+  "offline": {
+    "title": "No Connection",
+    "message": "You don't have an internet connection right now. Some features may be limited.",
+    "retry": "Retry",
+    "home": "Go to home",
+    "tipTitle": "Tip for your next visit:",
+    "tipText": "Download the site as an app to access content offline and load faster."
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Notice",
+      "placeholder": "The privacy notice content will be loaded here once it is available in the content management system."
+    }
   }
 }

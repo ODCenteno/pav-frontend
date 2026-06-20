@@ -269,6 +269,79 @@ export async function getSiteContents(keys: string[], locale: string = 'es'): Pr
   return Promise.all(keys.map((k) => getSiteContent(k, locale)));
 }
 
+// ---------- legal pages ----------
+
+export interface LegalPageAttributes {
+  slug: string;
+  title: { es: string; en: string };
+  content: { es: string; en: string };
+  publishedAt: string | null;
+}
+
+export async function getLegalPage(slug: string, locale: string = 'es'): Promise<{ slug: string; title: string; content: string } | null> {
+  return safe(async () => {
+    const item = await strapiGetOne<LegalPageAttributes>('/legal-pages', {
+      'filters[slug][$eq]': slug,
+      locale,
+    });
+    if (!item) return null;
+    const attrs = unwrap(item);
+    const loc = locale.startsWith('en') ? 'en' : 'es';
+    return {
+      slug: attrs.slug,
+      title: attrs.title[loc] || attrs.title.es,
+      content: attrs.content[loc] || attrs.content.es,
+    };
+  });
+}
+
+// ---------- global settings ----------
+
+export interface GlobalAttributes {
+  contactEmail: string;
+  contactPhone: string;
+  contactPhoneRaw: string;
+  contactWhatsapp: string;
+  contactAddress: string;
+  socialInstagram: string;
+  socialFacebook: string;
+  socialGoogleMaps: string;
+  metadataSiteName: string;
+  metadataDefaultTitle: string;
+  metadataDefaultDescription: string;
+}
+
+export async function getGlobalSettings(): Promise<{
+  contact: { email: string; phone: string; phoneRaw: string; whatsapp: string; address: string };
+  social: { instagram: string; facebook: string; googleMaps: string };
+  metadata: { siteName: string; defaultTitle: string; defaultDescription: string };
+} | null> {
+  return safe(async () => {
+    const item = await strapiGetOne<GlobalAttributes>('/global', {});
+    if (!item) return null;
+    const a = unwrap(item);
+    return {
+      contact: {
+        email: a.contactEmail,
+        phone: a.contactPhone,
+        phoneRaw: a.contactPhoneRaw,
+        whatsapp: a.contactWhatsapp,
+        address: a.contactAddress,
+      },
+      social: {
+        instagram: a.socialInstagram,
+        facebook: a.socialFacebook,
+        googleMaps: a.socialGoogleMaps,
+      },
+      metadata: {
+        siteName: a.metadataSiteName,
+        defaultTitle: a.metadataDefaultTitle,
+        defaultDescription: a.metadataDefaultDescription,
+      },
+    };
+  });
+}
+
 // ---------- composite getters ----------
 
 export interface AboutPageData {

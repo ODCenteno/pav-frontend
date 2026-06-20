@@ -1,0 +1,43 @@
+# Security Headers for Puerto Agua Verde
+
+# X-Frame-Options - Prevent clickjacking
+/*
+  X-Frame-Options: DENY
+
+# X-Content-Type-Options - Prevent MIME sniffing
+/*
+  X-Content-Type-Options: nosniff
+
+# Referrer-Policy - Control referrer information
+/*
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Permissions-Policy - Restrict browser features
+/*
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+
+# Content-Security-Policy - Mitigate XSS and injection attacks
+# Note: Adjust CSP directives based on actual resource usage
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.parler.cc https://*.pardot.com https://px.ads.linkedin.com https://snap.licdn.com https://www.linkedin.com https://bat.bing.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.strapi.io https://*.cloudflare.com https://*.workers.dev; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self' blob:;
+
+# Strict-Transport-Security (HSTS) - Force HTTPS
+# Uncomment when ready for production
+# /*
+#   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+# X-XSS-Protection (legacy, but still recommended for older browsers)
+/*
+  X-XSS-Protection: 1; mode=block
+
+# Cache-Control for sensitive pages
+/favicon/*
+  Cache-Control: public, max-age=31536000, immutable
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate

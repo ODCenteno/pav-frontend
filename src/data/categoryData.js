@@ -1,6 +1,6 @@
 // Metadatos de las categorías para evitar repetición
 const categoryMeta = {
-  experiences: { es: "Experiencias", en: "Experiences", icon: "adventure", color: "#E87A5D", order: 1 },
+  experiences: { es: "Experiencias", en: "Experiences", icon: "adventure", color: "#C44D3A", order: 1 },
   accommodation: { es: "Hospedaje", en: "Accommodation", icon: "home", color: "#4A90E2", order: 2 },
   restaurants: { es: "Restaurantes", en: "Restaurants", icon: "restaurant", color: "#F5A623", order: 3 },
   sites: { es: "Sitios", en: "Sites", icon: "location", color: "#7ED321", order: 4 },

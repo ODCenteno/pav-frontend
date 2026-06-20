@@ -1,13 +1,84 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { useTranslations } from "@/i18n/utils";
+import { getLegalPage } from "@/lib/cms";
 
-const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale || 'es';
+const t = useTranslations(locale);
+
+const legalData = await getLegalPage('privacy-notice', locale);
+
+const title = legalData?.title || t('legal.privacy.title');
+const content = legalData?.content || t('legal.privacy.placeholder');
 ---
 
-<BaseLayout title="Privacy Notice">
-  <section class="section-padding container">
-    <h1>Privacy Notice / Aviso de Privacidad</h1>
-    <p>Placeholder for legal content from Strapi.</p>
+<BaseLayout
+  title={`${title} | Puerto Agua Verde`}
+  siteTitle={title}
+  siteDescription={content.slice(0, 160)}
+>
+  <section class="section-padding container legal-page">
+    <header class="legal-header">
+      <h1>{title}</h1>
+    </header>
+    <article class="legal-content" set:html={content}></article>
   </section>
 </BaseLayout>
+
+<style>
+  .legal-page {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .legal-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-outline);
+  }
+
+  .legal-header h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: 0;
+  }
+
+  .legal-content {
+    font-size: var(--text-base);
+    line-height: 1.8;
+  }
+
+  .legal-content :global(h2) {
+    font-size: var(--text-xl);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .legal-content :global(h3) {
+    font-size: var(--text-lg);
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-xs);
+  }
+
+  .legal-content :global(p) {
+    margin-bottom: var(--space-md);
+  }
+
+  .legal-content :global(ul),
+  .legal-content :global(ol) {
+    margin-bottom: var(--space-md);
+    padding-left: var(--space-lg);
+  }
+
+  .legal-content :global(li) {
+    margin-bottom: var(--space-xs);
+  }
+
+  .legal-content :global(a) {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .legal-content :global(a:hover) {
+    color: var(--color-primary-hover);
+  }
+</style>
