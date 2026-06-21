@@ -93,12 +93,10 @@ describe("strapiTransformer", () => {
           isFeatured: true,
           order: 1,
           category: {
-            data: {
-              id: 1,
-              attributes: { name: "Experiencias", slug: "experiences" },
-            },
+            id: 1,
+            name: "Experiencias",
+            slug: "experiences",
           },
-          categoryId: "experiences",
           tags: ["Aventura", "Mar"],
           location: {
             lat: 25.5,

@@ -49,7 +49,7 @@ const filterEmpty = t("sitesPage.empty");
         <div
           class="carousel-item favorite-card-wrapper"
           data-fav-id={String(item.id)}
-          data-category={item.categoryId || item.category?.slug || ""}
+          data-category={item.category?.slug || ""}
         >
           <CardMain item={item} currentLang={locale} />
         </div>

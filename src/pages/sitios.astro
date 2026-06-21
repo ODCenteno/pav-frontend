@@ -17,9 +17,6 @@ const t = useTranslations(locale);
 
 const allSites: Listing[] = await getListingsWithFallback(locale);
 
-// Group data by category. Falls back to the populated relation's slug
-// when categoryId is null so listings with only the relation set still
-// show in the correct category section.
 const categories = [
   { id: "sites", label: t("sitesPage.filters.beaches") },
   { id: "restaurants", label: t("sitesPage.filters.food") },
@@ -32,7 +29,7 @@ const groupedSites = categories
   .map((cat) => ({
     ...cat,
     items: allSites.filter((item) =>
-      item.categoryId === cat.id || item.category?.slug === cat.id
+      item.category?.slug === cat.id
     ),
   }))
   .filter((group) => group.items.length > 0);

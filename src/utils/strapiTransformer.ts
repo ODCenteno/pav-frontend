@@ -75,7 +75,6 @@ export interface ListingAttributes {
   isFeatured?: boolean;
   order?: number;
   category?: StrapiRelation<CategoryAttributes>;
-  categoryId?: string;
   tags?: string[];
   contact?: {
     whatsapp?: string;
@@ -281,14 +280,19 @@ export function transformListing(item: StrapiItem<ListingAttributes>, locale: st
   const mainImageUrl = mediaUrl(a.mainImage);
   const galleryUrls = mediaUrls(a.gallery);
 
+  // Extract category relation - handle both Strapi v4 wrapped {data: ...} and v5 flat format
+  const catRaw = a.category as any;
+  const catItem: StrapiItem<CategoryAttributes> | null | undefined =
+    catRaw && 'data' in catRaw ? (catRaw.data ?? null) : catRaw;
+
   return {
     id,
     slug,
     name: localized(a.title, locale),
     shortDescription: a.shortDescription ? localized(a.shortDescription, locale) : undefined,
     description: a.description ? localized(asString(a.description), locale) : undefined,
-    categoryId: a.categoryId || a.category?.data?.attributes?.slug || '',
-    category: a.category?.data ? transformCategory(a.category.data) : undefined,
+    categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
+    category: catItem ? transformCategory(catItem) : undefined,
     tags: (a.tags || []).map((t) => localized(t, locale)),
     locationURL: a.locationURL || undefined,
     location: normalizeLocation(a.location, locale),

@@ -232,9 +232,9 @@ export async function getListings(locale: string = 'es'): Promise<Listing[]> {
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[category]': 'true',
-        'populate[mainImage]': 'true',
-        'populate[gallery]': 'true',
+        'populate[0]': 'category',
+        'populate[1]': 'mainImage',
+        'populate[2]': 'gallery',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -249,10 +249,10 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
     const res = await strapiGet<ListingAttributes>('/listings', {
       'filters[slug][$eq]': slug,
       'filters[publishedAt][$notNull]': 'true',
-      'populate[category]': 'true',
-      'populate[mainImage]': 'true',
-      'populate[gallery]': 'true',
-      'populate[relatedListings]': 'true',
+      'populate[0]': 'category',
+      'populate[1]': 'mainImage',
+      'populate[2]': 'gallery',
+      'populate[3]': 'relatedListings',
       'pagination[pageSize]': '1',
       locale,
     });
@@ -265,10 +265,10 @@ export async function getListingsByCategorySlug(categorySlug: string, locale: st
   return (
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
-        'filters[categoryId][$eq]': categorySlug,
+        'filters[category][slug][$eq]': categorySlug,
         'filters[publishedAt][$notNull]': 'true',
-        'populate[category]': 'true',
-        'populate[mainImage]': 'true',
+        'populate[0]': 'category',
+        'populate[1]': 'mainImage',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -284,8 +284,8 @@ export async function getFeaturedListings(locale: string = 'es', limit: number =
       const res = await strapiGet<ListingAttributes>('/listings', {
         'filters[isFeatured][$eq]': 'true',
         'filters[publishedAt][$notNull]': 'true',
-        'populate[category]': 'true',
-        'populate[mainImage]': 'true',
+        'populate[0]': 'category',
+        'populate[1]': 'mainImage',
         sort: 'order:asc',
         'pagination[pageSize]': String(limit),
         locale,
@@ -302,7 +302,7 @@ export async function getTeamMembers(locale: string = 'es'): Promise<TeamMember[
     (await safe(async () => {
       const res = await strapiGet<TeamMemberAttributes>('/team-members', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[photo]': 'true',
+        'populate[0]': 'photo',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -319,7 +319,7 @@ export async function getOrganizations(locale: string = 'es'): Promise<Organizat
     (await safe(async () => {
       const res = await strapiGet<OrganizationAttributes>('/organizations', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[logo]': 'true',
+        'populate[0]': 'logo',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -537,7 +537,7 @@ const USE_DEV_FALLBACK =
 
 /**
  * Derive categories from a listings array. No API call is made - this
- * extracts unique categoryIds from already-loaded listings.
+ * extracts unique category slugs from already-loaded listings.
  *
  * Use this when you've already loaded listings via getListingsWithFallback
  * to avoid a redundant listings fetch.
@@ -545,13 +545,14 @@ const USE_DEV_FALLBACK =
 export function deriveCategoriesFromListings(listings: Listing[]): Category[] {
   const seen = new Map<string, Category>();
   for (const l of listings) {
-    if (l.categoryId && !seen.has(l.categoryId)) {
+    const slug = l.categoryId || l.category?.slug;
+    if (slug && !seen.has(slug)) {
       const c = l.category;
-      seen.set(l.categoryId, {
-        id: l.categoryId,
-        slug: l.categoryId,
-        name: (c?.name as any) || { es: l.categoryId, en: l.categoryId },
-        order: 0,
+      seen.set(slug, {
+        id: slug,
+        slug,
+        name: (c?.name as any) || { es: slug, en: slug },
+        order: c?.order ?? 0,
         isActive: true,
       });
     }
@@ -581,16 +582,9 @@ function dedupedListingsFetch(locale: string): Promise<Listing[]> {
   if (existing) return existing;
 
   const promise = (async () => {
-    // Fetch listings + categories in parallel so we can resolve
-    // categoryId -> Category when the Strapi relation is null.
-    const [listings, categories] = await Promise.all([
-      getListings(locale),
-      getCategories(locale),
-    ]);
+    const listings = await getListings(locale);
 
-    if (listings.length > 0) {
-      return attachCategoriesToListings(listings, categories);
-    }
+    if (listings.length > 0) return listings;
 
     if (!USE_DEV_FALLBACK) return [];
     return getListingsFallback();
@@ -599,25 +593,6 @@ function dedupedListingsFetch(locale: string): Promise<Listing[]> {
   listingsInFlight.set(key, promise);
   promise.finally(() => listingsInFlight.delete(key));
   return promise;
-}
-
-/**
- * Resolve a category object for each listing using the populated relation
- * or the listing's `categoryId` field as a fallback. Returns a new array.
- */
-export function attachCategoriesToListings(
-  listings: Listing[],
-  categories: Category[]
-): Listing[] {
-  if (categories.length === 0) return listings;
-  const byId = new Map(categories.map((c) => [c.id, c]));
-  return listings.map((item) => {
-    if (item.category) return item;
-    if (item.categoryId && byId.has(item.categoryId)) {
-      return { ...item, category: byId.get(item.categoryId)! };
-    }
-    return item;
-  });
 }
 
 export async function getListingsWithFallback(locale: string = 'es'): Promise<Listing[]> {

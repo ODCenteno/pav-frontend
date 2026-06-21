@@ -110,7 +110,9 @@ describe("cms client", () => {
             attributes: {
               title: "Tour A",
               slug: "tour-a",
-              categoryId: "experiences",
+              category: {
+                data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } },
+              },
             },
           },
         ])
@@ -305,7 +307,7 @@ describe("cms client", () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce(
         strapiOk([
-          { id: 1, attributes: { title: "X", slug: "x", categoryId: "experiences" } },
+          { id: 1, attributes: { title: "X", slug: "x", category: { data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } } } } },
         ])
       );
       const items = await getListingsByCategorySlug("experiences", "es");
@@ -437,9 +439,9 @@ describe("cms client", () => {
       expect(items.length).toBeGreaterThan(0); // falls back to local
     });
 
-    it("attaches categories from categoryId when relation is null", async () => {
+    it("populates category from Strapi relation", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
-      // listings (with null category relation, but populated categoryId)
+      // listing with a populated category relation
       fetchMock.mockResolvedValueOnce(
         strapiOk([
           {
@@ -447,22 +449,18 @@ describe("cms client", () => {
             attributes: {
               title: "Tour A",
               slug: "tour-a",
-              categoryId: "experiences",
-              // category is intentionally null - simulates the Strapi v5 case
+              category: {
+                data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } },
+              },
             },
           },
-        ])
-      );
-      // categories
-      fetchMock.mockResolvedValueOnce(
-        strapiOk([
-          { id: "experiences", attributes: { name: "Experiencias", slug: "experiences" } },
         ])
       );
       const items = await getListingsWithFallback("es");
       expect(items).toHaveLength(1);
       expect(items[0].category).toBeDefined();
-      expect(items[0].category?.id).toBe("experiences");
+      expect(items[0].category?.slug).toBe("experiences");
+      expect(items[0].categoryId).toBe("experiences");
     });
   });
 

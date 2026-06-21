@@ -77,7 +77,7 @@ const cardData = {
   shortDescription: item.shortDescription,
   mainImageUrl: mainImageUrl,
   pricing: { price: price },
-  categoryId: item.categoryId,
+  categoryId: item.category?.slug || '',
   category: item.category,
   type: item.type,
   slug: item.slug,
@@ -86,7 +86,7 @@ const cardData = {
 const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<div class="listing-card-container" data-category={item.categoryId} data-name={title.toLowerCase()} data-description={desc.toLowerCase()}>
+<div class="listing-card-container" data-category={item.category?.slug || ''} data-name={title.toLowerCase()} data-description={desc.toLowerCase()}>
   <article
     class="listing-card"
     data-listing-type={item.type}

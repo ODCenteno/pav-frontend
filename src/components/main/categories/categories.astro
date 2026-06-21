@@ -36,7 +36,8 @@ const listingData: Listing[] = allListings
   .filter((item) => item.isFeatured === true)
   .map((item) => {
     if (item.category) return item;
-    const cat = categoryBySlug.get(item.categoryId);
+    const slug = item.category?.slug || item.categoryId;
+    const cat = slug ? categoryBySlug.get(slug) : undefined;
     return cat ? { ...item, category: cat } : item;
   });
 
@@ -53,7 +54,7 @@ for (const c of allCategories) {
 
 // Then enrich with any featured listings that point to categories not in the collection
 for (const item of listingData) {
-  const id = item.categoryId;
+  const id = item.category?.slug || item.categoryId;
   if (!id || categoryMap.has(id)) continue;
   const cat = item.category as any;
   if (cat) {
