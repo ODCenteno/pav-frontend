@@ -16,6 +16,7 @@ export interface Listing {
   tags?: LocalizedString[];
 
   location?: Location;
+  locationURL?: string;
   contact?: ContactInfo;
   pricing?: Pricing;
   media?: Media;

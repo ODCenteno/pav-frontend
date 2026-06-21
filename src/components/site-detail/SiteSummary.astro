@@ -12,9 +12,10 @@ interface Props {
     whatsapp?: string;
     phone?: string;
   };
+  mapUrl?: string;
 }
 
-const { description, labels, contactActions } = Astro.props;
+const { description, labels, contactActions, mapUrl } = Astro.props;
 ---
 
 <section class="site-summary container">
@@ -27,6 +28,20 @@ const { description, labels, contactActions } = Astro.props;
     </div>
 
     <aside class="site-summary__sidebar">
+      {mapUrl && (
+        <div class="map-container">
+          <iframe
+            src={mapUrl}
+            width="100%"
+            height="250"
+            class="map-iframe"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+            title={labels.about}
+          ></iframe>
+        </div>
+      )}
       <div class="quick-actions-card">
         <button class="btn btn-primary btn-block mb-sm">
           {labels.directions}

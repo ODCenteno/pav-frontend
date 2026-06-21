@@ -20,6 +20,7 @@ import {
   transformTeamMember,
   transformOrganization,
   transformSiteContent,
+  unwrap,
   type StrapiItem,
   type CategoryAttributes,
   type ListingAttributes,
@@ -30,6 +31,58 @@ import {
 
 const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
+
+// Cache TTL: 60 seconds - balances freshness with performance
+const CACHE_TTL_MS = 60_000;
+
+// In-memory request cache to prevent duplicate API calls within the same
+// request lifecycle (Astro renders pages on each request, so this helps
+// prevent redundant calls when multiple components fetch the same data).
+type CacheEntry<T> = { data: T; expiresAt: number };
+const requestCache = new Map<string, CacheEntry<unknown>>();
+
+/**
+ * Get cached data or fetch fresh if cache miss/expired.
+ * Deduplicates concurrent requests using in-flight promise tracking.
+ */
+const inFlightRequests = new Map<string, Promise<unknown>>();
+
+async function cachedFetch<T>(
+  cacheKey: string,
+  fetcher: () => Promise<T>,
+): Promise<T> {
+  const now = Date.now();
+  const cached = requestCache.get(cacheKey) as CacheEntry<T> | undefined;
+
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
+
+  // Deduplicate concurrent requests for the same key
+  const inFlight = inFlightRequests.get(cacheKey) as Promise<T> | undefined;
+  if (inFlight) {
+    return inFlight;
+  }
+
+  const promise = fetcher()
+    .then((data) => {
+      requestCache.set(cacheKey, { data, expiresAt: now + CACHE_TTL_MS });
+      return data;
+    })
+    .finally(() => {
+      inFlightRequests.delete(cacheKey);
+    });
+
+  inFlightRequests.set(cacheKey, promise);
+  return promise;
+}
+
+/**
+ * Clear all cached CMS data. Useful for cache invalidation scenarios.
+ */
+export function clearCmsCache(): void {
+  requestCache.clear();
+}
 
 interface StrapiList<T> {
   data: StrapiItem<T>[];
@@ -73,45 +126,67 @@ function buildUrl(path: string, params?: Record<string, string | number | undefi
   return url.toString();
 }
 
+/**
+ * Normalize params to a stable string for cache key generation.
+ */
+function paramsToKey(params?: Record<string, string | number | undefined>): string {
+  if (!params) return '';
+  return Object.entries(params)
+    .filter(([, v]) => v !== undefined && v !== null)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}=${v}`)
+    .join('&');
+}
+
 async function strapiGet<T>(path: string, params?: Record<string, string | number | undefined>): Promise<StrapiList<T>> {
-  const url = buildUrl(path, params);
-  const res = await fetch(url, {
-    headers: {
-      Authorization: STRAPI_TOKEN ? `Bearer ${STRAPI_TOKEN}` : '',
-      'Content-Type': 'application/json',
-    },
+  const cacheKey = `GET:${path}?${paramsToKey(params)}`;
+  return cachedFetch(cacheKey, async () => {
+    const url = buildUrl(path, params);
+    const res = await fetch(url, {
+      headers: {
+        Authorization: STRAPI_TOKEN ? `Bearer ${STRAPI_TOKEN}` : '',
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      const err: StrapiError = { status: res.status, statusText: res.statusText, body };
+      throw new CmsError(
+        `Strapi GET ${path} failed: ${err.status} ${err.statusText} ${err.body}`,
+        err.status
+      );
+    }
+    return (await res.json()) as StrapiList<T>;
   });
-  if (!res.ok) {
-    const body = await res.text();
-    const err: StrapiError = { status: res.status, statusText: res.statusText, body };
-    throw new CmsError(
-      `Strapi GET ${path} failed: ${err.status} ${err.statusText} ${err.body}`,
-      err.status
-    );
-  }
-  return (await res.json()) as StrapiList<T>;
 }
 
 async function strapiGetOne<T>(path: string, params?: Record<string, string | number | undefined>): Promise<StrapiItem<T> | null> {
-  const url = buildUrl(path, params);
-  const res = await fetch(url, {
-    headers: {
-      Authorization: STRAPI_TOKEN ? `Bearer ${STRAPI_TOKEN}` : '',
-      'Content-Type': 'application/json',
-    },
+  const cacheKey = `GETONE:${path}?${paramsToKey(params)}`;
+  return cachedFetch(cacheKey, async () => {
+    const url = buildUrl(path, params);
+    const res = await fetch(url, {
+      headers: {
+        Authorization: STRAPI_TOKEN ? `Bearer ${STRAPI_TOKEN}` : '',
+        'Content-Type': 'application/json',
+      },
+    });
+    if (res.status === 404) {
+      return null;
+    }
+    if (!res.ok) {
+      const body = await res.text();
+      throw new CmsError(
+        `Strapi GET ${path} failed: ${res.status} ${res.statusText} ${body}`,
+        res.status
+      );
+    }
+    const json = (await res.json()) as StrapiSingle<T> | StrapiList<T>;
+    // Handle both list and single responses. `data: null` or empty `[]` → return null.
+    const data = (json as StrapiSingle<T>).data ?? (json as StrapiList<T>).data;
+    if (data == null) return null;
+    if (Array.isArray(data)) return data.length > 0 ? data[0] : null;
+    return data;
   });
-  if (res.status === 404) {
-    return null;
-  }
-  if (!res.ok) {
-    const body = await res.text();
-    throw new CmsError(
-      `Strapi GET ${path} failed: ${res.status} ${res.statusText} ${body}`,
-      res.status
-    );
-  }
-  const json = (await res.json()) as StrapiSingle<T>;
-  return json.data;
 }
 
 // ---------- generic safe wrapper ----------
@@ -157,9 +232,9 @@ export async function getListings(locale: string = 'es'): Promise<Listing[]> {
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[category]': '*',
-        'populate[mainImage]': '*',
-        'populate[gallery]': '*',
+        'populate[category]': 'true',
+        'populate[mainImage]': 'true',
+        'populate[gallery]': 'true',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -174,10 +249,10 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
     const res = await strapiGet<ListingAttributes>('/listings', {
       'filters[slug][$eq]': slug,
       'filters[publishedAt][$notNull]': 'true',
-      'populate[category]': '*',
-      'populate[mainImage]': '*',
-      'populate[gallery]': '*',
-      'populate[relatedListings]': '*',
+      'populate[category]': 'true',
+      'populate[mainImage]': 'true',
+      'populate[gallery]': 'true',
+      'populate[relatedListings]': 'true',
       'pagination[pageSize]': '1',
       locale,
     });
@@ -192,8 +267,8 @@ export async function getListingsByCategorySlug(categorySlug: string, locale: st
       const res = await strapiGet<ListingAttributes>('/listings', {
         'filters[categoryId][$eq]': categorySlug,
         'filters[publishedAt][$notNull]': 'true',
-        'populate[category]': '*',
-        'populate[mainImage]': '*',
+        'populate[category]': 'true',
+        'populate[mainImage]': 'true',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -209,8 +284,8 @@ export async function getFeaturedListings(locale: string = 'es', limit: number =
       const res = await strapiGet<ListingAttributes>('/listings', {
         'filters[isFeatured][$eq]': 'true',
         'filters[publishedAt][$notNull]': 'true',
-        'populate[category]': '*',
-        'populate[mainImage]': '*',
+        'populate[category]': 'true',
+        'populate[mainImage]': 'true',
         sort: 'order:asc',
         'pagination[pageSize]': String(limit),
         locale,
@@ -222,14 +297,15 @@ export async function getFeaturedListings(locale: string = 'es', limit: number =
 
 // ---------- team members ----------
 
-export async function getTeamMembers(): Promise<TeamMember[]> {
+export async function getTeamMembers(locale: string = 'es'): Promise<TeamMember[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<TeamMemberAttributes>('/team-members', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[photo]': '*',
+        'populate[photo]': 'true',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
+        locale,
       });
       return res.data.map(transformTeamMember);
     })) ?? []
@@ -238,14 +314,15 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
 
 // ---------- organizations ----------
 
-export async function getOrganizations(): Promise<Organization[]> {
+export async function getOrganizations(locale: string = 'es'): Promise<Organization[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<OrganizationAttributes>('/organizations', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[logo]': '*',
+        'populate[logo]': 'true',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
+        locale,
       });
       return res.data.map(transformOrganization);
     })) ?? []
@@ -265,8 +342,39 @@ export async function getSiteContent(key: string, locale: string = 'es'): Promis
   });
 }
 
+/**
+ * Batch fetch multiple site-content keys in a single API request.
+ * Uses Strapi's `$in` operator to fetch all keys at once instead of
+ * making N parallel requests.
+ */
 export async function getSiteContents(keys: string[], locale: string = 'es'): Promise<(SiteContent | null)[]> {
-  return Promise.all(keys.map((k) => getSiteContent(k, locale)));
+  if (keys.length === 0) return [];
+
+  const result = await safe(async () => {
+    // Build $in array params
+    const inParams: Record<string, string> = {};
+    keys.forEach((key, idx) => {
+      inParams[`filters[key][$in][${idx}]`] = key;
+    });
+
+    const res = await strapiGet<SiteContentAttributes>('/site-contents', {
+      ...inParams,
+      'pagination[pageSize]': String(Math.max(keys.length * 2, 100)),
+      locale,
+    });
+
+    // Index results by key for fast lookup
+    const byKey = new Map<string, SiteContent>();
+    for (const item of res.data) {
+      const transformed = transformSiteContent(item, locale);
+      byKey.set(transformed.key, transformed);
+    }
+
+    // Return in same order as requested keys
+    return keys.map((key) => byKey.get(key) ?? null);
+  });
+
+  return result ?? keys.map(() => null);
 }
 
 // ---------- legal pages ----------
@@ -317,7 +425,7 @@ export async function getGlobalSettings(): Promise<{
   metadata: { siteName: string; defaultTitle: string; defaultDescription: string };
 } | null> {
   return safe(async () => {
-    const item = await strapiGetOne<GlobalAttributes>('/global', {});
+    const item = await strapiGetOne<GlobalAttributes>('/site-global', {});
     if (!item) return null;
     const a = unwrap(item);
     return {
@@ -368,18 +476,22 @@ export interface AboutPageData {
 }
 
 export async function getAboutPage(locale: string = 'es'): Promise<AboutPageData> {
-  const [intro, values, community, collaboration, team, organizations] = await Promise.all([
-    getSiteContent('about-intro', locale),
-    getSiteContent('about-values', locale),
-    getSiteContent('about-community', locale),
-    getSiteContent('about-collaboration', locale),
-    getTeamMembers(),
-    getOrganizations(),
+  // Batch the 4 site-content keys into a single API call
+  const [siteContents, team, organizations] = await Promise.all([
+    getSiteContents(
+      ['about-intro', 'about-values', 'about-community', 'about-collaboration'],
+      locale
+    ),
+    getTeamMembers(locale),
+    getOrganizations(locale),
   ]);
+
+  const [intro, values, community, collaboration] = siteContents;
+  const loc = locale.startsWith('en') ? 'en' : 'es';
 
   return {
     intro: intro
-      ? { title: intro.title[locale.startsWith('en') ? 'en' : 'es'], text: intro.text[locale.startsWith('en') ? 'en' : 'es'] }
+      ? { title: intro.title[loc] || intro.title.es, text: intro.text[loc] || intro.text.es }
       : null,
     values: values?.extraData
       ? {
@@ -389,12 +501,12 @@ export async function getAboutPage(locale: string = 'es'): Promise<AboutPageData
         }
       : null,
     community: community
-      ? { title: community.title[locale.startsWith('en') ? 'en' : 'es'], text: community.text[locale.startsWith('en') ? 'en' : 'es'] }
+      ? { title: community.title[loc] || community.title.es, text: community.text[loc] || community.text.es }
       : null,
     collaboration: collaboration?.extraData
       ? {
-          title: (collaboration.extraData as any).title || collaboration.title[locale.startsWith('en') ? 'en' : 'es'],
-          desc: (collaboration.extraData as any).desc || collaboration.text[locale.startsWith('en') ? 'en' : 'es'],
+          title: (collaboration.extraData as any).title || collaboration.title[loc] || collaboration.title.es,
+          desc: (collaboration.extraData as any).desc || collaboration.text[loc] || collaboration.text.es,
           btnPrimary: (collaboration.extraData as any).btnPrimary,
           btnSecondary: (collaboration.extraData as any).btnSecondary,
           links: (collaboration.extraData as any).links || { primary: '#', secondary: '#' },
@@ -423,10 +535,14 @@ const USE_DEV_FALLBACK =
     ? import.meta.env.DEV
     : _envFallback === 'true';
 
-export function getCategoriesWithFallback(locale: string = 'es'): Category[] {
-  // The dev fallback doesn't ship a separate categories file; derive it from
-  // the listings collection.
-  const listings = getListingsFallback();
+/**
+ * Derive categories from a listings array. No API call is made - this
+ * extracts unique categoryIds from already-loaded listings.
+ *
+ * Use this when you've already loaded listings via getListingsWithFallback
+ * to avoid a redundant listings fetch.
+ */
+export function deriveCategoriesFromListings(listings: Listing[]): Category[] {
   const seen = new Map<string, Category>();
   for (const l of listings) {
     if (l.categoryId && !seen.has(l.categoryId)) {
@@ -443,11 +559,69 @@ export function getCategoriesWithFallback(locale: string = 'es'): Category[] {
   return Array.from(seen.values()).sort((a, b) => (a.order || 0) - (b.order || 0));
 }
 
+/**
+ * @deprecated Prefer deriveCategoriesFromListings(listings) when listings
+ * are already loaded. This variant still works but may trigger an extra
+ * listings fetch via getListingsFallback().
+ */
+export function getCategoriesWithFallback(locale: string = 'es'): Category[] {
+  return deriveCategoriesFromListings(getListingsFallback());
+}
+
+/**
+ * In-flight promise dedup for listings queries. When multiple components
+ * call getListingsWithFallback on the same render, they share a single
+ * underlying request instead of firing N parallel HTTP calls.
+ */
+const listingsInFlight = new Map<string, Promise<Listing[]>>();
+
+function dedupedListingsFetch(locale: string): Promise<Listing[]> {
+  const key = locale;
+  const existing = listingsInFlight.get(key);
+  if (existing) return existing;
+
+  const promise = (async () => {
+    // Fetch listings + categories in parallel so we can resolve
+    // categoryId -> Category when the Strapi relation is null.
+    const [listings, categories] = await Promise.all([
+      getListings(locale),
+      getCategories(locale),
+    ]);
+
+    if (listings.length > 0) {
+      return attachCategoriesToListings(listings, categories);
+    }
+
+    if (!USE_DEV_FALLBACK) return [];
+    return getListingsFallback();
+  })();
+
+  listingsInFlight.set(key, promise);
+  promise.finally(() => listingsInFlight.delete(key));
+  return promise;
+}
+
+/**
+ * Resolve a category object for each listing using the populated relation
+ * or the listing's `categoryId` field as a fallback. Returns a new array.
+ */
+export function attachCategoriesToListings(
+  listings: Listing[],
+  categories: Category[]
+): Listing[] {
+  if (categories.length === 0) return listings;
+  const byId = new Map(categories.map((c) => [c.id, c]));
+  return listings.map((item) => {
+    if (item.category) return item;
+    if (item.categoryId && byId.has(item.categoryId)) {
+      return { ...item, category: byId.get(item.categoryId)! };
+    }
+    return item;
+  });
+}
+
 export async function getListingsWithFallback(locale: string = 'es'): Promise<Listing[]> {
-  const fromCms = await getListings(locale);
-  if (fromCms.length > 0) return fromCms;
-  if (!USE_DEV_FALLBACK) return [];
-  return getListingsFallback();
+  return dedupedListingsFetch(locale);
 }
 
 export async function getListingBySlugWithFallback(slug: string, locale: string = 'es'): Promise<Listing | null> {
@@ -464,15 +638,15 @@ export async function getFeaturedListingsWithFallback(locale: string = 'es', lim
   return getListingsFallback().filter((l) => l.isFeatured).slice(0, limit);
 }
 
-export async function getTeamWithFallback(): Promise<TeamMember[]> {
-  const fromCms = await getTeamMembers();
+export async function getTeamWithFallback(locale: string = 'es'): Promise<TeamMember[]> {
+  const fromCms = await getTeamMembers(locale);
   if (fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
   return getTeamFallback();
 }
 
-export async function getOrganizationsWithFallback(): Promise<Organization[]> {
-  const fromCms = await getOrganizations();
+export async function getOrganizationsWithFallback(locale: string = 'es'): Promise<Organization[]> {
+  const fromCms = await getOrganizations(locale);
   if (fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
   return getOrganizationsFallback();

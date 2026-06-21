@@ -1,5 +1,5 @@
 .site-info {
-    padding-top: var(--space-xl);
+    padding: var(--space-md) 0;
     border-top: 1px solid var(--border-color);
 }
 

@@ -12,6 +12,7 @@ import { useTranslations } from "../../../i18n/utils";
 import { getListingsWithFallback } from "../../../lib/cms";
 import type { Listing } from "../../../types/listing.type";
 import { navigation } from "@/utils/navigation";
+import { buildMapsEmbedUrl } from "@/utils/maps";
 
 export const prerender = true;
 
@@ -35,6 +36,7 @@ const title = item.name[locale];
 const description = item.description?.[locale];
 const categoryLabel = item.category?.name?.[locale] || "";
 const tags = (item.tags || []).map(tag => tag[locale]);
+const mapUrl = buildMapsEmbedUrl(item.location, item.locationURL, locale);
 
 const labels = {
   about: t("siteDetailPage.labels.about"),
@@ -81,6 +83,7 @@ const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
     description={description}
     labels={labels}
     contactActions={contactActions}
+    mapUrl={mapUrl}
   >
     <SiteGallery
       title={labels.gallery}

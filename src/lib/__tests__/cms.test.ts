@@ -26,6 +26,7 @@ import {
   getGuidePage,
   getListingsWithFallback,
   getAboutPageWithFallback,
+  clearCmsCache,
   CmsError,
 } from "../cms";
 
@@ -62,6 +63,7 @@ function strapiError(status: number = 500) {
 const originalEnv = { ...import.meta.env };
 beforeEach(() => {
   fetchMock.mockReset();
+  clearCmsCache();
 });
 afterEach(() => {
   // Reset env stub
@@ -177,13 +179,115 @@ describe("cms client", () => {
   describe("getGuidePage", () => {
     it("returns null fields when no entries exist", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
-      for (let i = 0; i < 11; i++) {
-        fetchMock.mockResolvedValueOnce(strapiNotFound());
-      }
+      // getGuidePage now uses a single batched request via getSiteContents
+      fetchMock.mockResolvedValueOnce(strapiNotFound());
       const data = await getGuidePage("es");
       expect(data.hero).toBeNull();
       expect(data.intro).toBeNull();
       expect(data.directions).toBeNull();
+    });
+
+    it("builds view model from extraData JSON for all sections", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      // getGuidePage now uses a single batched request via getSiteContents
+      fetchMock.mockResolvedValueOnce(
+        strapiOk([
+          { id: 1, attributes: { key: "guide-hero", title: "GH", text: "GD", extraData: { image: "/img.png" } } },
+          {
+            id: 2,
+            attributes: {
+              key: "guide-bay",
+              title: "",
+              text: "",
+              extraData: {
+                ranchTitle: { es: "RS", en: "RE" },
+                ranchText: { es: "RS-T", en: "RE-T" },
+                portTitle: { es: "PS", en: "PE" },
+                portText: { es: "PS-T", en: "PE-T" },
+              },
+            },
+          },
+          {
+            id: 3,
+            attributes: {
+              key: "guide-history",
+              title: { es: "HT", en: "HT" },
+              text: { es: "H-T", en: "H-T" },
+              extraData: { milestones: [{ year: "1900", es: "ES", en: "EN" }] },
+            },
+          },
+          {
+            id: 4,
+            attributes: {
+              key: "guide-fishing",
+              title: { es: "FT", en: "FT" },
+              text: { es: "F-T", en: "F-T" },
+              extraData: { rules: { es: ["r1"], en: ["r1-en"] } },
+            },
+          },
+          {
+            id: 5,
+            attributes: {
+              key: "guide-conap",
+              title: { es: "CT", en: "CT" },
+              text: { es: "C-T", en: "C-T" },
+              extraData: { link: { label: { es: "L", en: "L" }, href: "https://example.com" } },
+            },
+          },
+          { id: 6, attributes: { key: "guide-influence", title: { es: "IT", en: "IT" }, text: { es: "I-T", en: "I-T" } } },
+          {
+            id: 7,
+            attributes: {
+              key: "guide-recommendations",
+              title: { es: "RT", en: "RT" },
+              text: "",
+              extraData: { items: { es: ["a"], en: ["a-en"] } },
+            },
+          },
+          {
+            id: 8,
+            attributes: {
+              key: "guide-directions",
+              title: { es: "DT", en: "DT" },
+              text: "",
+              extraData: {
+                loreto: { label: { es: "L", en: "L" }, desc: { es: "D", en: "D" }, distance: "98 km", time: "~2 h", image: "/loreto.png" },
+                laPaz: { label: { es: "L", en: "L" }, desc: { es: "D", en: "D" }, distance: "360 km", time: "~5 h", image: "/lapaz.png" },
+                drivingTipsTitle: { es: "T", en: "T" },
+                drivingTips: { es: ["t1"], en: ["t1-en"] },
+              },
+            },
+          },
+          {
+            id: 9,
+            attributes: {
+              key: "guide-amenities",
+              title: { es: "AT", en: "AT" },
+              text: "",
+              extraData: {
+                items: [
+                  { icon: "wifi", title: { es: "W", en: "W" }, text: { es: "WT", en: "WT" } },
+                ],
+              },
+            },
+          },
+          { id: 10, attributes: { key: "guide-tourist-map", title: { es: "MT", en: "MT" }, text: { es: "C", en: "C" }, extraData: { image: "/map.png" } } },
+          { id: 11, attributes: { key: "guide-cta", title: { es: "CT", en: "CT" }, text: { es: "CD", en: "CD" }, extraData: { btn: { es: "B", en: "B" } } } },
+        ])
+      );
+
+      const data = await getGuidePage("es");
+      expect(data.hero?.image).toBe("/img.png");
+      expect(data.intro?.ranchTitle).toBe("RS");
+      expect(data.history?.milestones[0].es).toBe("ES");
+      expect(data.fishing?.rules[0]).toBe("r1");
+      expect(data.protected?.linkHref).toBe("https://example.com");
+      expect(data.influence?.title).toBe("IT");
+      expect(data.recommendations?.items[0]).toBe("a");
+      expect(data.directions?.loreto.distance).toBe("98 km");
+      expect(data.amenities?.items[0].icon).toBe("wifi");
+      expect(data.touristMap?.image).toBe("/map.png");
+      expect(data.cta?.btn).toBe("B");
     });
   });
 
@@ -269,47 +373,40 @@ describe("cms client", () => {
   describe("getAboutPage", () => {
     it("builds view model from extraData JSON", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
-      // intro
+      // getAboutPage now uses a single batched request for site-content
       fetchMock.mockResolvedValueOnce(
-        strapiOk({ id: 1, attributes: { key: "about-intro", title: "T", text: "Txt" } })
-      );
-      // values
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 2,
-          attributes: {
-            key: "about-values",
-            title: "",
-            text: "",
-            extraData: {
-              mission: { title: "M", text: "MT" },
-              vision: { title: "V", text: "VT" },
-              values: { title: "VAL", items: ["a", "b"] },
+        strapiOk([
+          { id: 1, attributes: { key: "about-intro", title: "T", text: "Txt" } },
+          {
+            id: 2,
+            attributes: {
+              key: "about-values",
+              title: "",
+              text: "",
+              extraData: {
+                mission: { title: "M", text: "MT" },
+                vision: { title: "V", text: "VT" },
+                values: { title: "VAL", items: ["a", "b"] },
+              },
             },
           },
-        })
-      );
-      // community
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({ id: 3, attributes: { key: "about-community", title: "C", text: "CT" } })
-      );
-      // collaboration
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 4,
-          attributes: {
-            key: "about-collaboration",
-            title: "CO",
-            text: "COT",
-            extraData: {
-              title: "CO2",
-              desc: "COT2",
-              btnPrimary: "BP",
-              btnSecondary: "BS",
-              links: { primary: "/a", secondary: "/b" },
+          { id: 3, attributes: { key: "about-community", title: "C", text: "CT" } },
+          {
+            id: 4,
+            attributes: {
+              key: "about-collaboration",
+              title: "CO",
+              text: "COT",
+              extraData: {
+                title: "CO2",
+                desc: "COT2",
+                btnPrimary: "BP",
+                btnSecondary: "BS",
+                links: { primary: "/a", secondary: "/b" },
+              },
             },
           },
-        })
+        ])
       );
       // team
       fetchMock.mockResolvedValueOnce(strapiOk([{ id: 1, attributes: { name: "M1" } }]));
@@ -328,165 +425,44 @@ describe("cms client", () => {
     });
   });
 
-  describe("getGuidePage", () => {
-    it("builds view model from extraData JSON for all sections", async () => {
-      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
-      // guide-hero
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({ id: 1, attributes: { key: "guide-hero", title: "GH", text: "GD", extraData: { image: "/img.png" } } })
-      );
-      // guide-bay
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 2,
-          attributes: {
-            key: "guide-bay",
-            title: "",
-            text: "",
-            extraData: {
-              ranchTitle: { es: "RS", en: "RE" },
-              ranchText: { es: "RS-T", en: "RE-T" },
-              portTitle: { es: "PS", en: "PE" },
-              portText: { es: "PS-T", en: "PE-T" },
-            },
-          },
-        })
-      );
-      // guide-history
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 3,
-          attributes: {
-            key: "guide-history",
-            title: { es: "HT", en: "HT" },
-            text: { es: "H-T", en: "H-T" },
-            extraData: { milestones: [{ year: "1900", es: "ES", en: "EN" }] },
-          },
-        })
-      );
-      // guide-fishing
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 4,
-          attributes: {
-            key: "guide-fishing",
-            title: { es: "FT", en: "FT" },
-            text: { es: "F-T", en: "F-T" },
-            extraData: { rules: { es: ["r1"], en: ["r1-en"] } },
-          },
-        })
-      );
-      // guide-conap
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 5,
-          attributes: {
-            key: "guide-conap",
-            title: { es: "CT", en: "CT" },
-            text: { es: "C-T", en: "C-T" },
-            extraData: { link: { label: { es: "L", en: "L" }, href: "https://example.com" } },
-          },
-        })
-      );
-      // guide-influence
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({ id: 6, attributes: { key: "guide-influence", title: { es: "IT", en: "IT" }, text: { es: "I-T", en: "I-T" } } })
-      );
-      // guide-recommendations
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 7,
-          attributes: {
-            key: "guide-recommendations",
-            title: { es: "RT", en: "RT" },
-            text: "",
-            extraData: { items: { es: ["a"], en: ["a-en"] } },
-          },
-        })
-      );
-      // guide-directions
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 8,
-          attributes: {
-            key: "guide-directions",
-            title: { es: "DT", en: "DT" },
-            text: "",
-            extraData: {
-              loreto: { label: { es: "L", en: "L" }, desc: { es: "D", en: "D" }, distance: "98 km", time: "~2 h", image: "/loreto.png" },
-              laPaz: { label: { es: "L", en: "L" }, desc: { es: "D", en: "D" }, distance: "360 km", time: "~5 h", image: "/lapaz.png" },
-              drivingTipsTitle: { es: "T", en: "T" },
-              drivingTips: { es: ["t1"], en: ["t1-en"] },
-            },
-          },
-        })
-      );
-      // guide-amenities
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 9,
-          attributes: {
-            key: "guide-amenities",
-            title: { es: "AT", en: "AT" },
-            text: "",
-            extraData: {
-              items: [
-                { icon: "wifi", title: { es: "W", en: "W" }, text: { es: "WT", en: "WT" } },
-              ],
-            },
-          },
-        })
-      );
-      // guide-tourist-map
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 10,
-          attributes: {
-            key: "guide-tourist-map",
-            title: { es: "MT", en: "MT" },
-            text: { es: "C", en: "C" },
-            extraData: { image: "/map.png" },
-          },
-        })
-      );
-      // guide-cta
-      fetchMock.mockResolvedValueOnce(
-        strapiOk({
-          id: 11,
-          attributes: {
-            key: "guide-cta",
-            title: { es: "CT", en: "CT" },
-            text: { es: "CD", en: "CD" },
-            extraData: { btn: { es: "B", en: "B" } },
-          },
-        })
-      );
-
-      const data = await getGuidePage("es");
-      expect(data.hero?.image).toBe("/img.png");
-      expect(data.intro?.ranchTitle).toBe("RS");
-      expect(data.history?.milestones[0].es).toBe("ES");
-      expect(data.fishing?.rules[0]).toBe("r1");
-      expect(data.protected?.linkHref).toBe("https://example.com");
-      expect(data.influence?.title).toBe("IT");
-      expect(data.recommendations?.items[0]).toBe("a");
-      expect(data.directions?.loreto.distance).toBe("98 km");
-      expect(data.amenities?.items[0].icon).toBe("wifi");
-      expect(data.touristMap?.image).toBe("/map.png");
-      expect(data.cta?.btn).toBe("B");
-    });
-  });
-
   describe("getListingsWithFallback", () => {
     it("returns local fallback when CMS returns empty", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       (import.meta.env as any).STRAPI_USE_DEV_FALLBACK = "true";
-      // Force-import to pick up env (vitest reads env at module-load time)
-      // The wrapper inspects STRAPI_USE_DEV_FALLBACK at call time via the
-      // module's captured env. Instead, set it before the import.
+      // getListingsWithFallback now fetches listings + categories in parallel.
+      // Both must return empty so the dev fallback path triggers.
+      fetchMock.mockResolvedValueOnce(strapiOk([]));
       fetchMock.mockResolvedValueOnce(strapiOk([]));
       const items = await getListingsWithFallback("es");
       expect(items.length).toBeGreaterThan(0); // falls back to local
+    });
+
+    it("attaches categories from categoryId when relation is null", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      // listings (with null category relation, but populated categoryId)
+      fetchMock.mockResolvedValueOnce(
+        strapiOk([
+          {
+            id: 1,
+            attributes: {
+              title: "Tour A",
+              slug: "tour-a",
+              categoryId: "experiences",
+              // category is intentionally null - simulates the Strapi v5 case
+            },
+          },
+        ])
+      );
+      // categories
+      fetchMock.mockResolvedValueOnce(
+        strapiOk([
+          { id: "experiences", attributes: { name: "Experiencias", slug: "experiences" } },
+        ])
+      );
+      const items = await getListingsWithFallback("es");
+      expect(items).toHaveLength(1);
+      expect(items[0].category).toBeDefined();
+      expect(items[0].category?.id).toBe("experiences");
     });
   });
 
@@ -494,8 +470,8 @@ describe("cms client", () => {
     it("returns fallback data when CMS is empty", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       (import.meta.env as any).STRAPI_USE_DEV_FALLBACK = "true";
-      // getAboutPage makes 6 calls
-      for (let i = 0; i < 6; i++) {
+      // getAboutPage now uses 1 batched request + team + orgs = 3 calls
+      for (let i = 0; i < 3; i++) {
         fetchMock.mockResolvedValueOnce(strapiNotFound());
       }
       const data = await getAboutPageWithFallback("es");

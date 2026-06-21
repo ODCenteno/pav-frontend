@@ -12,6 +12,7 @@ import { getListingsWithFallback } from "../../lib/cms";
 import type { Listing } from "../../types/listing.type";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { navigation } from "@/utils/navigation";
+import { buildMapsEmbedUrl } from "@/utils/maps";
 
 export const prerender = true;
 
@@ -35,6 +36,9 @@ const title = item.name[locale];
 const description = item.description?.[locale];
 const categoryLabel = item.category?.name?.[locale] || "";
 const tags = (item.tags || []).map(tag => tag[locale]);
+const location = item.location;
+const mapUrl = buildMapsEmbedUrl(location, item.locationURL, locale);
+
 
 const labels = {
   about: t("siteDetailPage.labels.about"),
@@ -66,7 +70,7 @@ const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
   <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} tags={tags} labels={labels} />
 
-  <SiteSummary description={description} labels={labels} contactActions={contactActions}>
+  <SiteSummary description={description} labels={labels} contactActions={contactActions} mapUrl={mapUrl}>
     <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
   </SiteSummary>
 

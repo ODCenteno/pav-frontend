@@ -1,6 +1,6 @@
 .site-summary {
     padding-top: var(--space-md);
-    padding-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
 }
 
 .site-summary__grid {
@@ -42,6 +42,11 @@
     margin-bottom: var(--space-sm);
 }
 
+.map-iframe {
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
 @media (min-width: 1024px) {
     .site-summary__grid {
         grid-template-columns: 1.8fr 1fr;
@@ -55,4 +60,10 @@
     .quick-actions-card {
         display: block; /* Shown only on desktop */
     }
+}
+
+@media screen {
+  .map-container {
+    margin-top: 16px;
+  }
 }

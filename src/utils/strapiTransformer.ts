@@ -85,6 +85,7 @@ export interface ListingAttributes {
     instagram?: string;
     facebook?: string;
   };
+  locationURL?: string;
   location?: {
     lat?: number;
     lng?: number;
@@ -147,7 +148,9 @@ export interface SiteContentAttributes {
 
 // ---------- helpers ----------
 
-function unwrap<T>(item: StrapiItem<T>): T {
+const STRAPI_BASE_URL = (import.meta.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
+
+export function unwrap<T>(item: StrapiItem<T>): T {
   // Strapi v5 returns either { attributes: {...} } or the fields directly on
   // the item. Support both.
   if (item && typeof item === 'object' && 'attributes' in item && item.attributes) {
@@ -171,21 +174,87 @@ function localized(value: string | { es: string; en: string } | undefined, local
   return { es: v, en: v };
 }
 
-function mediaUrl(media: StrapiMedia | undefined): string {
-  if (!media?.data) return '';
-  const url = media.data.attributes?.url || '';
+/**
+ * Strapi v5 may return `location` as either a structured object
+ * `{ lat, lng, name, address, ... }` or a positional array `[lat, lng]`
+ * depending on how the record was authored. This helper normalises both
+ * shapes into the canonical `Location` interface.
+ */
+/**
+ * Build a LocalizedString from a Strapi JSON field using locale-suffixed
+ * keys (e.g. `bestTime_es`, `bestTime_en`). Falls back `_en` → `_es`.
+ */
+function localeSuffixed(obj: any, key: string): LocalizedString | undefined {
+  if (!obj) return undefined;
+  const es = obj[`${key}_es`];
+  const en = obj[`${key}_en`] ?? es;
+  if (es == null && en == null) return undefined;
+  return { es: String(es ?? ''), en: String(en ?? '') };
+}
+
+/**
+ * Build a LocalizedString[] from locale-suffixed array keys
+ * (e.g. `bring_es`, `bring_en`).
+ */
+function localeSuffixedArray(obj: any, key: string): LocalizedString[] | undefined {
+  if (!obj) return undefined;
+  const es: string[] = Array.isArray(obj[`${key}_es`]) ? obj[`${key}_es`] : [];
+  const en: string[] = Array.isArray(obj[`${key}_en`]) ? obj[`${key}_en`] : es;
+  if (es.length === 0) return undefined;
+  return es.map((item, i) => ({ es: item, en: en[i] ?? item }));
+}
+
+function normalizeLocation(raw: any, locale: string): any {
+  if (!raw) return undefined;
+
+  // Positional array shape: [lat, lng] or [lat, lng, ...]
+  if (Array.isArray(raw)) {
+    const [lat, lng] = raw;
+    if (typeof lat !== 'number' || typeof lng !== 'number') return undefined;
+    return {
+      lat: lat || 0,
+      lng: lng || 0,
+      name: undefined,
+      address: { es: '', en: '' },
+    };
+  }
+
+  // Object shape
+  return {
+    lat: typeof raw.lat === 'number' ? raw.lat : 0,
+    lng: typeof raw.lng === 'number' ? raw.lng : 0,
+    name: raw.name
+      ? typeof raw.name === 'string'
+        ? localized(raw.name, locale)
+        : raw.name
+      : undefined,
+    address: raw.address
+      ? typeof raw.address === 'string'
+        ? localized(raw.address, locale)
+        : raw.address
+      : { es: '', en: '' },
+    locality: raw.locality,
+    googleMapsUrl: raw.googleMapsUrl,
+    openStreetMapUrl: raw.openStreetMapUrl,
+  };
+}
+
+function resolveMediaUrl(url: string): string {
   if (!url) return '';
   if (url.startsWith('http')) return url;
-  const base = (import.meta.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
-  return `${base}${url}`;
+  return `${STRAPI_BASE_URL}${url}`;
+}
+
+function mediaUrl(media: StrapiMedia | undefined): string {
+  if (!media?.data) return '';
+  return resolveMediaUrl(media.data.attributes?.url || '');
 }
 
 function mediaUrls(media: StrapiMediaArray | undefined): string[] {
   if (!media?.data) return [];
   return media.data
-    .map((m) => m.attributes?.url || '')
-    .filter(Boolean)
-    .map((url) => (url.startsWith('http') ? url : `${(import.meta.env.STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '')}${url}`));
+    .map((m) => resolveMediaUrl(m.attributes?.url || ''))
+    .filter(Boolean);
 }
 
 // ---------- transformers ----------
@@ -221,25 +290,8 @@ export function transformListing(item: StrapiItem<ListingAttributes>, locale: st
     categoryId: a.categoryId || a.category?.data?.attributes?.slug || '',
     category: a.category?.data ? transformCategory(a.category.data) : undefined,
     tags: (a.tags || []).map((t) => localized(t, locale)),
-    location: a.location
-      ? {
-          lat: a.location.lat || 0,
-          lng: a.location.lng || 0,
-          name: a.location.name
-            ? typeof a.location.name === 'string'
-              ? localized(a.location.name, locale)
-              : a.location.name
-            : undefined,
-          address: a.location.address
-            ? typeof a.location.address === 'string'
-              ? localized(a.location.address, locale)
-              : a.location.address
-            : { es: '', en: '' },
-          locality: a.location.locality,
-          googleMapsUrl: a.location.googleMapsUrl,
-          openStreetMapUrl: a.location.openStreetMapUrl,
-        }
-      : undefined,
+    locationURL: a.locationURL || undefined,
+    location: normalizeLocation(a.location, locale),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
     media: mainImageUrl || galleryUrls.length > 0
@@ -252,34 +304,16 @@ export function transformListing(item: StrapiItem<ListingAttributes>, locale: st
     schedule: a.schedule
       ? {
           isAlwaysOpen: a.schedule.isAlwaysOpen,
-          text: a.schedule.text
-            ? typeof a.schedule.text === 'string'
-              ? localized(a.schedule.text, locale)
-              : a.schedule.text
-            : undefined,
+          text: localeSuffixed(a.schedule, 'text'),
         }
       : undefined,
     amenities: (a.amenities || []).map((t) => localized(t, locale)),
     recommendations: a.recommendations
       ? {
-          bestTimeToVisit: a.recommendations.bestTimeToVisit
-            ? typeof a.recommendations.bestTimeToVisit === 'string'
-              ? localized(a.recommendations.bestTimeToVisit, locale)
-              : a.recommendations.bestTimeToVisit
-            : undefined,
-          whatToBring: Array.isArray(a.recommendations.whatToBring)
-            ? (a.recommendations.whatToBring as string[]).map((t) => localized(t, locale))
-            : (a.recommendations.whatToBring as { es: string[]; en: string[] } | undefined),
-          accessibilityNotes: a.recommendations.accessibilityNotes
-            ? typeof a.recommendations.accessibilityNotes === 'string'
-              ? localized(a.recommendations.accessibilityNotes, locale)
-              : a.recommendations.accessibilityNotes
-            : undefined,
-          connectivityNotes: a.recommendations.connectivityNotes
-            ? typeof a.recommendations.connectivityNotes === 'string'
-              ? localized(a.recommendations.connectivityNotes, locale)
-              : a.recommendations.connectivityNotes
-            : undefined,
+          bestTimeToVisit: localeSuffixed(a.recommendations, 'bestTime'),
+          whatToBring: localeSuffixedArray(a.recommendations, 'bring'),
+          accessibilityNotes: localeSuffixed(a.recommendations, 'accessibilityNotes'),
+          connectivityNotes: localeSuffixed(a.recommendations, 'connectivityNotes'),
         }
       : undefined,
     relatedSites: a.relatedListings?.data?.map((r) => String(r.id ?? r.documentId)) ?? undefined,

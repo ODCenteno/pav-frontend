@@ -3,7 +3,7 @@ import "./categories.css";
 import type { Listing } from "@/types/listing.type.ts";
 import type { LocalizedString } from "@/types/i18n.type.ts";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback, getCategoriesWithFallback } from "@/lib/cms";
+import { getListingsWithFallback, deriveCategoriesFromListings } from "@/lib/cms";
 import type { Category } from "@/types/category.type.ts";
 
 import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
@@ -23,7 +23,7 @@ function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
 }
 
 const allListings: Listing[] = await getListingsWithFallback(locale);
-const allCategories: Category[] = await getCategoriesWithFallback(locale);
+const allCategories: Category[] = deriveCategoriesFromListings(allListings);
 
 // Build a category lookup from the CMS-driven list
 const categoryBySlug = new Map<string, Category>();
