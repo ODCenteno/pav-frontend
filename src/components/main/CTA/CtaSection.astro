@@ -1,16 +1,18 @@
 ---
 import "./ctaSection.css";
-import { useTranslations } from "../../../i18n/utils";
+import type { CtaData } from "@/types/homepage.type";
 
-const t = useTranslations(Astro.currentLocale);
-const {lat, lon} = Astro.props;
+interface Props {
+  data: CtaData;
+}
 
+const { data } = Astro.props;
 ---
 
 <section class="section-padding text-center">
   <div class="container">
-    <h2 data-key="final_cta_title">{t("finalCta.title")}</h2>
-    <p class="cta-description" data-key="final_cta_desc">{t("finalCta.desc")}</p>
-    <a href="#" class="btn btn-primary" data-key="final_cta_btn">{t("finalCta.btn")}</a>
+    <h2 data-key="final_cta_title">{data.title}</h2>
+    <p class="cta-description" data-key="final_cta_desc">{data.description}</p>
+    <a href={data.buttonLink || "#"} class="btn btn-primary" data-key="final_cta_btn">{data.buttonLabel}</a>
   </div>
 </section>

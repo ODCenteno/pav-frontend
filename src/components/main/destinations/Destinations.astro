@@ -1,39 +1,33 @@
 ---
 import "./destinations.css";
-import { Image } from "astro:assets";
-import img04 from "/images/pav-04.jpg";
-import img05 from "/images/pav-05.jpg";
-import { useTranslations } from "../../../i18n/utils";
+import type { SectionHeader, DestinationStory } from "@/types/homepage.type";
 
-const t = useTranslations(Astro.currentLocale);
+interface Props {
+  header: SectionHeader;
+  items: DestinationStory[];
+}
+
+const { header, items } = Astro.props;
 ---
 
 <section class="stories section-padding">
   <div class="container">
     <div class="section-header">
-      <h2 data-key="stories_title">{t("stories.title")}</h2>
-      <p class="stories-subtitle" data-key="stories_subtitle">{t("stories.subtitle")}</p>
+      <h2 data-key="stories_title">{header.title}</h2>
+      <p class="stories-subtitle" data-key="stories_subtitle">{header.subtitle}</p>
     </div>
     <div class="stories-layout">
-      <article class="featured-story">
-        <div class="story-img">
-          <img src={"/images/PAV-Letrero-.webp"} alt="Puerto Agua Verde" />
-        </div>
-        <div class="story-content">
-          <h3 data-key="about_puerto_title">{t("about.puerto.title")}</h3>
-          <p class="excerpt" data-key="about_puerto_text">{t("about.puerto.text")}</p>
-        </div>
-      </article>
-
-      <article class="featured-story">
-        <div class="story-img">
-          <img src={"/images/pav-landscape-12.webp"} alt="Rancho San Cosme" />
-        </div>
-        <div class="story-content">
-          <h3 data-key="about_rancho_title">{t("about.rancho.title")}</h3>
-          <p class="excerpt" data-key="about_rancho_text">{t("about.rancho.text")}</p>
-        </div>
-      </article>
+      {items.slice(0, 2).map((story) => (
+        <article class="featured-story">
+          <div class="story-img">
+            <img src={story.image} alt={story.alt} />
+          </div>
+          <div class="story-content">
+            <h3>{story.title}</h3>
+            <p class="excerpt">{story.text}</p>
+          </div>
+        </article>
+      ))}
     </div>
   </div>
 </section>

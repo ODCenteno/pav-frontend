@@ -13,6 +13,7 @@ import type { Category } from '../types/category.type';
 import type { Listing } from '../types/listing.type';
 import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
+import type { HomepageData } from '../types/homepage.type';
 import type { LocalizedString } from '../types/i18n.type';
 import { navigation } from './navigation';
 
@@ -143,6 +144,68 @@ export interface SiteContentAttributes {
   text?: string;
   order?: number;
   extraData?: any;
+}
+
+export interface HeroSectionAttributes {
+  title?: string;
+  titleHighlight?: string;
+  description?: string;
+  ctaLabel?: string;
+  ctaLink?: string;
+  images?: StrapiMediaArray;
+}
+
+export interface SectionHeaderAttributes {
+  title?: string;
+  subtitle?: string;
+}
+
+export interface DestinationStoryAttributes {
+  title?: string;
+  text?: string;
+  image?: StrapiMedia;
+}
+
+export interface HighlightCardAttributes {
+  title?: string;
+  description?: string;
+  image?: StrapiMedia;
+  link?: string;
+}
+
+export interface QuickFactAttributes {
+  title?: string;
+  value?: string;
+  description?: string;
+}
+
+export interface MapSectionAttributes {
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  buttonUrl?: string;
+  image?: StrapiMedia;
+}
+
+export interface CtaSectionAttributes {
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  buttonLink?: string;
+}
+
+export interface HomepageAttributes {
+  hero?: HeroSectionAttributes;
+  destinationsHeader?: SectionHeaderAttributes;
+  destinations?: DestinationStoryAttributes[];
+  highlightsHeader?: SectionHeaderAttributes;
+  highlights?: HighlightCardAttributes[];
+  quickFactsHeader?: SectionHeaderAttributes;
+  quickFacts?: QuickFactAttributes[];
+  quickFactsImage1?: StrapiMedia;
+  quickFactsImage2?: StrapiMedia;
+  mapSection?: MapSectionAttributes;
+  finalCta?: CtaSectionAttributes;
 }
 
 // ---------- helpers ----------
@@ -389,5 +452,97 @@ export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, lo
     text: localized(a.text, locale),
     order: a.order,
     extraData: a.extraData || null,
+  };
+}
+
+export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: string = 'es'): HomepageData {
+  const a = unwrap(item);
+
+  const hero = a.hero || {};
+  const heroImages = hero.images?.data || [];
+
+  const destinationsHeader = a.destinationsHeader || {};
+  const destinationsItems = (a.destinations || []).map((d: any) => ({
+    title: localized(d.title, locale).es,
+    text: localized(d.text, locale).es,
+    image: d.image?.data ? resolveMediaUrl(d.image.data.attributes?.url || '') : '',
+    alt: d.image?.data?.attributes?.alternativeText || '',
+  }));
+
+  const highlightsHeader = a.highlightsHeader || {};
+  const highlightsItems = (a.highlights || []).map((h: any) => ({
+    title: localized(h.title, locale).es,
+    description: localized(h.description, locale).es,
+    image: h.image?.data ? resolveMediaUrl(h.image.data.attributes?.url || '') : '',
+    alt: h.image?.data?.attributes?.alternativeText || '',
+    link: h.link || undefined,
+  }));
+
+  const quickFactsHeader = a.quickFactsHeader || {};
+  const quickFactsItems = (a.quickFacts || []).map((q: any) => ({
+    title: localized(q.title, locale).es,
+    value: localized(q.value, locale).es,
+    description: localized(q.description, locale).es,
+  }));
+  const quickFactsImages = [
+    a.quickFactsImage1?.data ? resolveMediaUrl(a.quickFactsImage1.data.attributes?.url || '') : '',
+    a.quickFactsImage2?.data ? resolveMediaUrl(a.quickFactsImage2.data.attributes?.url || '') : '',
+  ];
+
+  const mapSection = a.mapSection || {};
+  const mapImage = mapSection.image?.data
+    ? resolveMediaUrl(mapSection.image.data.attributes?.url || '')
+    : '';
+
+  const finalCta = a.finalCta || {};
+
+  return {
+    hero: {
+      title: localized(hero.title, locale).es,
+      titleHighlight: localized(hero.titleHighlight, locale).es,
+      description: localized(hero.description, locale).es,
+      ctaLabel: localized(hero.ctaLabel, locale).es,
+      ctaLink: hero.ctaLink || '/sitios',
+      images: heroImages.map((img: any) => ({
+        url: resolveMediaUrl(img.attributes?.url || ''),
+        alt: img.attributes?.alternativeText || '',
+      })),
+    },
+    destinations: {
+      header: {
+        title: localized(destinationsHeader.title, locale).es,
+        subtitle: localized(destinationsHeader.subtitle, locale).es,
+      },
+      items: destinationsItems,
+    },
+    highlights: {
+      header: {
+        title: localized(highlightsHeader.title, locale).es,
+        subtitle: localized(highlightsHeader.subtitle, locale).es,
+      },
+      items: highlightsItems,
+    },
+    quickFacts: {
+      header: {
+        title: localized(quickFactsHeader.title, locale).es,
+        subtitle: localized(quickFactsHeader.subtitle, locale).es,
+      },
+      items: quickFactsItems,
+      images: quickFactsImages,
+    },
+    mapSection: {
+      title: localized(mapSection.title, locale).es,
+      description: localized(mapSection.description, locale).es,
+      buttonLabel: localized(mapSection.buttonLabel, locale).es,
+      buttonUrl: mapSection.buttonUrl || '',
+      image: mapImage,
+      alt: mapSection.image?.data?.attributes?.alternativeText || '',
+    },
+    finalCta: {
+      title: localized(finalCta.title, locale).es,
+      description: localized(finalCta.description, locale).es,
+      buttonLabel: localized(finalCta.buttonLabel, locale).es,
+      buttonLink: finalCta.buttonLink || '#',
+    },
   };
 }

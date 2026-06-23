@@ -1,27 +1,21 @@
 ---
-import { Image } from "astro:assets";
 import "./mapSection.css";
-import mapImage from "/images/landing/mapa-OSM.webp";
-import { useTranslations } from "../../../i18n/utils";
+import type { MapSectionData } from "@/types/homepage.type";
 
-const t = useTranslations(Astro.currentLocale);
+interface Props {
+  data: MapSectionData;
+}
+
+const { data } = Astro.props;
 ---
 
 <section class="map-section">
   <div class="map-bg">
-    <img src={"/images/landing/mapa-OSM.webp"} alt="Mapa de Puerto Agua Verde y Rancho San Cosme" quality={80} />
+    <img src={data.image} alt={data.alt || data.title} quality={80} />
   </div>
   <div class="container map-content">
-    <h2 data-key="map_title">{t("map.title")}</h2>
-    <p class="map-description" data-key="map_desc">{t("map.desc")}</p>
-    <button class="btn btn-accent">{t("map.btn")}</button>
+    <h2 data-key="map_title">{data.title}</h2>
+    <p class="map-description" data-key="map_desc">{data.description}</p>
+    <a href={data.buttonUrl} target="_blank" rel="noopener noreferrer" class="btn btn-accent">{data.buttonLabel}</a>
   </div>
 </section>
-
-<script>
-  const mapBtn = document.querySelector<HTMLButtonElement>(".map-content .btn");
-  mapBtn.addEventListener("click", () => {
-    const url = "https://www.openstreetmap.org/?#map=15/25.51204/-111.07577&layers=C";
-    window.open(url, "_blank");
-  });
-</script>

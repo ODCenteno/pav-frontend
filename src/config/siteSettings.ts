@@ -4,8 +4,9 @@
  * Falls back to local defaults when CMS is unavailable.
  */
 import { getGlobalSettings } from "@/lib/cms";
+import type { GlobalSettings } from "@/types/site-content.type";
 
-export const siteSettings = {
+export const siteSettings: GlobalSettings = {
   contact: {
     email: "info@puertoaguaverde.mx",
     phone: "+52 614 123 4567",
@@ -22,13 +23,24 @@ export const siteSettings = {
     siteName: "Puerto Agua Verde",
     defaultTitle: "Puerto Agua Verde - Community Directory",
     defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme.",
-  }
+  },
+  seo: {
+    keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios",
+    ogImage: "",
+    ogUrl: "",
+    author: "ODCenteno",
+    themeColor: "#5A8A80",
+  },
+  branding: {
+    logoImage: "",
+    logoShortName: "Agua Verde",
+  },
 };
 
 /**
  * Helper to get settings. Fetches from Strapi with fallback to local settings.
  */
-export async function getSiteSettings() {
+export async function getSiteSettings(): Promise<GlobalSettings> {
   try {
     const globalSettings = await getGlobalSettings();
     if (globalSettings) {

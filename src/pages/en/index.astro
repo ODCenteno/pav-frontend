@@ -8,16 +8,19 @@ import QuickFacts from "../../components/main/quickFacts/QuickFacts.astro";
 import MapSection from "../../components/main/mapSection/MapSection.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
 import { useTranslations } from "@/i18n/utils";
+import { getHomepageWithFallback } from "@/lib/cms";
 
-const t = useTranslations(Astro.currentLocale);
+const locale = Astro.currentLocale || "es";
+const t = useTranslations(locale);
+const homepage = await getHomepageWithFallback(locale);
 ---
 
 <BaseLayout siteTitle={t("page.index.siteTitle")} ogTitle={t("page.index.ogTitle")} siteDescription={t("page.index.siteDescription")} ogDescription={t("page.index.ogDescription")}>
-  <Hero slot="Hero" />
+  <Hero slot="Hero" data={homepage.hero} />
   <PopupManager slot="categories" />
-  <Destinations />
-  <Highlights />
-  <QuickFacts />
-  <MapSection />
-  <CtaSection />
+  <Destinations header={homepage.destinations.header} items={homepage.destinations.items} />
+  <Highlights header={homepage.highlights.header} items={homepage.highlights.items} />
+  <QuickFacts header={homepage.quickFacts.header} items={homepage.quickFacts.items} images={homepage.quickFacts.images} />
+  <MapSection data={homepage.mapSection} />
+  <CtaSection data={homepage.finalCta} />
 </BaseLayout>

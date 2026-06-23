@@ -5,7 +5,16 @@ import { ClientRouter } from "astro:transitions";
 import Header from "@/components/header/Header.astro";
 import Footer from "@/components/footer/Footer.astro";
 import MenuOverlay from "@/components/menuOverlay/MenuOverlay.astro";
+import { useTranslations } from "@/i18n/utils";
+import { getSiteSettings } from "@/lib/cms";
+
 const { siteTitle, ogTitle, siteDescription, ogDescription } = Astro.props;
+
+const locale = Astro.currentLocale || "es";
+const currentLocale = locale === "en" ? "en" : "es";
+const t = useTranslations(locale);
+
+const settings = await getSiteSettings();
 
 const LOCALES = ["es", "en"] as const;
 const defaultLocale = "es";
@@ -20,6 +29,14 @@ const path = pathnameNoLocale.replace(/^\/+/, "");
 const hrefs = getRelativeLocaleUrlList(path);
 
 const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
+
+const ogLocale = locale === "en" ? "en_US" : "es_ES";
+const ogImage = settings.seo.ogImage || "/some-image.png";
+const ogUrl = settings.seo.ogUrl || Astro.url.href;
+const themeColor = settings.seo.themeColor || "#5A8A80";
+const keywords = settings.seo.keywords || "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios";
+const author = settings.seo.author || "ODCenteno";
+const siteName = settings.metadata.siteName || "Puerto Agua Verde";
 ---
 
 <!doctype html>
@@ -29,17 +46,17 @@ const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{siteTitle}</title>
-    {LOCALES.map((locale, i) => <link rel="alternate" hreflang={locale} href={hrefs[i]} />)}
+    {LOCALES.map((loc, i) => <link rel="alternate" hreflang={loc} href={hrefs[i]} />)}
 
     <link rel="alternate" hreflang="x-default" href={defaultLocaleUrl} />
-    <meta name="author" content="ODCenteno" />
+    <meta name="author" content={author} />
     <meta name="title" content={siteTitle} />
     <meta name="description" content={siteDescription} />
-    <meta name="keywords" content="BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios" />
+    <meta name="keywords" content={keywords} />
     <meta name="robots" content="index, follow" />
 
     <link rel="icon" href="/favicon.png" type="image/x-icon" />
-    <meta name="theme-color" content="#5A8A80" />
+    <meta name="theme-color" content={themeColor} />
     <ClientRouter />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,7 +69,7 @@ const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Puerto Agua Verde" />
+    <meta name="apple-mobile-web-app-title" content={siteName} />
 
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
@@ -63,18 +80,18 @@ const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <meta name="msapplication-TileColor" content="#2b5797" />
 
-    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={ogDescription} />
-    <meta property="og:image" content="/some-image.png" />
-    <meta property="og:url" content="/this-page.html" />
-    <meta property="og:site_name" content="Puerto Agua Verde" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={ogUrl} />
+    <meta property="og:site_name" content={siteName} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={ogDescription} />
-    <meta name="twitter:image" content="" />
+    <meta name="twitter:image" content={settings.seo.ogImage || ""} />
     <meta name="twitter:image:alt" content={ogTitle} />
   </head>
   <body>
@@ -101,9 +118,13 @@ const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                       const updateBanner = document.createElement('div');
                       updateBanner.className = 'pwa-update-banner';
+                      const bannerText = document.documentElement.lang === 'en'
+                        ? 'A new version is available'
+                        : 'Hay una nueva versión disponible';
+                      const btnText = document.documentElement.lang === 'en' ? 'Update' : 'Actualizar';
                       updateBanner.innerHTML = `
-                        <p>Hay una nueva versión disponible</p>
-                        <button id="pwa-update-btn">Actualizar</button>
+                        <p>${bannerText}</p>
+                        <button id="pwa-update-btn">${btnText}</button>
                       `;
                       document.body.appendChild(updateBanner);
 

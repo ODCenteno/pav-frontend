@@ -14,12 +14,14 @@ import type { Category } from '../types/category.type';
 import type { Listing } from '../types/listing.type';
 import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
+import type { HomepageData } from '../types/homepage.type';
 import {
   transformCategory,
   transformListing,
   transformTeamMember,
   transformOrganization,
   transformSiteContent,
+  transformHomepage,
   unwrap,
   type StrapiItem,
   type CategoryAttributes,
@@ -27,7 +29,52 @@ import {
   type TeamMemberAttributes,
   type OrganizationAttributes,
   type SiteContentAttributes,
+  type HomepageAttributes,
 } from '../utils/strapiTransformer';
+
+export async function getSiteSettings() {
+  return (await import('../config/siteSettings')).getSiteSettings();
+}
+
+async function _getSiteSettingsCms(): Promise<{
+  contact: { email: string; phone: string; phoneRaw: string; whatsapp: string; address: string };
+  social: { instagram: string; facebook: string; googleMaps: string };
+  metadata: { siteName: string; defaultTitle: string; defaultDescription: string };
+  seo: { keywords: string; ogImage: string; ogUrl: string; author: string; themeColor: string };
+  branding: { logoImage: string; logoShortName: string };
+}> {
+  const gs = await getGlobalSettings();
+  if (gs) return gs as any;
+  return {
+    contact: { email: "info@puertoaguaverde.mx", phone: "+52 614 123 4567", phoneRaw: "+526141234567", whatsapp: "526141234567", address: "Puerto Agua Verde, BCS, México" },
+    social: { instagram: "https://instagram.com/puertoaguaverde", facebook: "https://facebook.com/puertoaguaverde", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
+    metadata: { siteName: "Puerto Agua Verde", defaultTitle: "Puerto Agua Verde - Community Directory", defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme." },
+    seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "", author: "ODCenteno", themeColor: "#5A8A80" },
+    branding: { logoImage: "", logoShortName: "Agua Verde" },
+  };
+}
+
+export async function getSiteSettingsDirect(): Promise<{
+  contact: { email: string; phone: string; phoneRaw: string; whatsapp: string; address: string };
+  social: { instagram: string; facebook: string; googleMaps: string };
+  metadata: { siteName: string; defaultTitle: string; defaultDescription: string };
+  seo: { keywords: string; ogImage: string; ogUrl: string; author: string; themeColor: string };
+  branding: { logoImage: string; logoShortName: string };
+}> {
+  try {
+    const gs = await getGlobalSettings();
+    if (gs) return gs as any;
+  } catch (error) {
+    console.warn('[siteSettings] Failed to fetch from Strapi, using defaults:', error);
+  }
+  return {
+    contact: { email: "info@puertoaguaverde.mx", phone: "+52 614 123 4567", phoneRaw: "+526141234567", whatsapp: "526141234567", address: "Puerto Agua Verde, BCS, México" },
+    social: { instagram: "https://instagram.com/puertoaguaverde", facebook: "https://facebook.com/puertoaguaverde", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
+    metadata: { siteName: "Puerto Agua Verde", defaultTitle: "Puerto Agua Verde - Community Directory", defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme." },
+    seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "", author: "ODCenteno", themeColor: "#5A8A80" },
+    branding: { logoImage: "", logoShortName: "Agua Verde" },
+  };
+}
 
 const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
@@ -417,17 +464,39 @@ export interface GlobalAttributes {
   metadataSiteName: string;
   metadataDefaultTitle: string;
   metadataDefaultDescription: string;
+  seoKeywords?: string;
+  seoOgImage?: { data?: { id: number; attributes?: { url: string; alternativeText?: string } } | null };
+  seoOgUrl?: string;
+  seoAuthor?: string;
+  seoThemeColor?: string;
+  logoImage?: { data?: { id: number; attributes?: { url: string } } | null };
+  logoShortName?: string;
 }
 
 export async function getGlobalSettings(): Promise<{
   contact: { email: string; phone: string; phoneRaw: string; whatsapp: string; address: string };
   social: { instagram: string; facebook: string; googleMaps: string };
   metadata: { siteName: string; defaultTitle: string; defaultDescription: string };
+  seo: { keywords: string; ogImage: string; ogUrl: string; author: string; themeColor: string };
+  branding: { logoImage: string; logoShortName: string };
 } | null> {
   return safe(async () => {
     const item = await strapiGetOne<GlobalAttributes>('/site-global', {});
     if (!item) return null;
     const a = unwrap(item);
+    const strapiBaseUrl = STRAPI_URL.replace(/\/$/, '');
+    const ogImageData = a.seoOgImage?.data;
+    const ogImageUrl = ogImageData?.attributes?.url
+      ? ogImageData.attributes.url.startsWith('http')
+        ? ogImageData.attributes.url
+        : `${strapiBaseUrl}${ogImageData.attributes.url}`
+      : '';
+    const logoImageData = a.logoImage?.data;
+    const logoImageUrl = logoImageData?.attributes?.url
+      ? logoImageData.attributes.url.startsWith('http')
+        ? logoImageData.attributes.url
+        : `${strapiBaseUrl}${logoImageData.attributes.url}`
+      : '';
     return {
       contact: {
         email: a.contactEmail,
@@ -446,8 +515,233 @@ export async function getGlobalSettings(): Promise<{
         defaultTitle: a.metadataDefaultTitle,
         defaultDescription: a.metadataDefaultDescription,
       },
+      seo: {
+        keywords: a.seoKeywords || '',
+        ogImage: ogImageUrl,
+        ogUrl: a.seoOgUrl || '',
+        author: a.seoAuthor || '',
+        themeColor: a.seoThemeColor || '#5A8A80',
+      },
+      branding: {
+        logoImage: logoImageUrl,
+        logoShortName: a.logoShortName || 'Agua Verde',
+      },
     };
   });
+}
+
+// ---------- homepage ----------
+
+export async function getHomepage(locale: string = 'es'): Promise<HomepageData | null> {
+  return safe(async () => {
+    const item = await strapiGetOne<HomepageAttributes>('/homepage', {
+      'populate[0]': 'hero.images',
+      'populate[1]': 'destinations.image',
+      'populate[2]': 'highlights.image',
+      'populate[3]': 'quickFactsImage1',
+      'populate[4]': 'quickFactsImage2',
+      'populate[5]': 'mapSection.image',
+      locale,
+    });
+    if (!item) return null;
+    return transformHomepage(item, locale);
+  });
+}
+
+export async function getHomepageWithFallback(locale: string = 'es'): Promise<HomepageData> {
+  const fromCms = await getHomepage(locale);
+  if (fromCms) return fromCms;
+  return getHomepageFallback(locale);
+}
+
+const HOMEPAGE_FALLBACK_ES: HomepageData = {
+  hero: {
+    title: 'Puerto Agua Verde &',
+    titleHighlight: 'Rancho San Cosme',
+    description: 'Un destino natural en Baja California Sur donde la tranquilidad, la tradición y los paisajes espectaculares se encuentran con la auténtica vida costera. Explora playas, experiencias locales, senderos y servicios para planear tu visita.',
+    ctaLabel: 'Explorar el destino',
+    ctaLink: '/sitios',
+    images: [
+      { url: '/images/PAV-Lanscape-Cueva.webp', alt: 'Coast' },
+      { url: '/images/pav-02.jpg', alt: 'Nature' },
+      { url: '/images/PAV-Lanscape-Fuga.webp', alt: 'Landscape' },
+    ],
+  },
+  destinations: {
+    header: {
+      title: 'Conoce el destino',
+      subtitle: 'Descubre la historia y cultura de estos lugares únicos',
+    },
+    items: [
+      {
+        title: 'Puerto Agua Verde',
+        text: 'Puerto Agua Verde es un pequeño rincón de Baja California Sur conocido por sus aguas color turquesa, su ambiente comunitario y su naturaleza intacta. Aquí se combinan la pesca tradicional, las playas tranquilas y las actividades al aire libre que atraen a viajeros en busca de autenticidad y paz.',
+        image: '/images/PAV-Letrero-.webp',
+        alt: 'Puerto Agua Verde',
+      },
+      {
+        title: 'Rancho San Cosme',
+        text: 'Rancho San Cosme es un espacio histórico y cultural donde la vida rural se mantiene viva. Rodeado de montañas y vegetación desértica, es un punto de encuentro para visitantes que buscan experiencias locales, senderos, actividades guiadas y conexión con la naturaleza.',
+        image: '/images/pav-landscape-12.webp',
+        alt: 'Rancho San Cosme',
+      },
+    ],
+  },
+  highlights: {
+    header: {
+      title: 'Lo más destacado',
+      subtitle: 'Descubre las mejores opciones para tu visita',
+    },
+    items: [
+      {
+        title: 'Experiencias para disfrutar',
+        description: 'Descubre actividades únicas para conectar con la naturaleza, la cultura local y la hospitalidad de la comunidad.',
+        image: '/images/pav-landscape-13.webp',
+        alt: 'Experiences',
+        link: '/experiencias',
+      },
+      {
+        title: 'Hospédate con nosotros',
+        description: 'Encuentra opciones de alojamiento que combinan comodidad, naturaleza y una vista privilegiada del paisaje.',
+        image: '/images/pav-aloja-01.webp',
+        alt: 'Accommodation',
+        link: '/sitios?category=accommodation',
+      },
+      {
+        title: 'Sabores de la región',
+        description: 'Desde mariscos frescos hasta cocina tradicional, conoce los lugares donde podrás disfrutar la gastronomía local.',
+        image: '/images/PAV-Comida.webp',
+        alt: 'Restaurants',
+        link: '/sitios?category=restaurants',
+      },
+    ],
+  },
+  quickFacts: {
+    header: {
+      title: 'Lo esencial de un vistazo',
+      subtitle: 'Datos rápidos para entender por qué Puerto Agua Verde y Rancho San Cosme merecen el viaje.',
+    },
+    items: [
+      { title: 'A ~2 horas de Loreto', value: '98 km', description: 'Puerto Agua Verde se encuentra a unos 98 km de Loreto, con un trayecto aproximado de 2 horas en auto.' },
+      { title: 'A ~5 horas de La Paz', value: '360 km', description: 'Desde La Paz, el recorrido es de alrededor de 360 km, con un tiempo estimado de casi 5 horas por carretera.' },
+      { title: 'Mejor época', value: 'Mayo–junio', description: 'La mejor ventana para actividades al aire libre va de principios de mayo a mediados de junio. Octubre también destaca.' },
+      { title: 'Naturaleza cercana', value: '5 islas', description: 'El Parque Nacional Bahía de Loreto reúne cinco islas principales, uno de los grandes atractivos naturales de la región.' },
+      { title: 'Biodiversidad', value: '1,300+ especies', description: 'En el Parque Nacional Bahía de Loreto se han registrado más de 1,300 especies de plantas y animales.' },
+      { title: 'Qué hacer', value: 'Snorkel · Kayak · Hiking', description: 'La región destaca por actividades como kayak, snorkel, senderismo, campamento y observación de fauna.' },
+    ],
+    images: ['/images/pav-01.jpg', '/images/pav-04.jpg'],
+  },
+  mapSection: {
+    title: 'Mapa del Destino',
+    description: 'Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme. Encuentra rutas, servicios, playas y actividades cerca de ti.',
+    buttonLabel: 'Ver Mapa en OpenStreetMap',
+    buttonUrl: 'https://www.openstreetmap.org/?#map=15/25.51204/-111.07577&layers=C',
+    image: '/images/landing/mapa-OSM.webp',
+    alt: 'Mapa de Puerto Agua Verde',
+  },
+  finalCta: {
+    title: 'Tu viaje comienza aquí',
+    description: 'Puerto Agua Verde y Rancho San Cosme no son solo puntos en el mapa, son paisajes vivos de mar, desierto y tradición. Planea tu estancia, explora experiencias locales y descubre el ritmo auténtico de la vida en Baja.',
+    buttonLabel: 'Comenzar a planear mi visita',
+    buttonLink: '/sitios',
+  },
+};
+
+const HOMEPAGE_FALLBACK_EN: HomepageData = {
+  hero: {
+    title: 'Puerto Agua Verde &',
+    titleHighlight: 'Rancho San Cosme',
+    description: 'A natural destination in Baja California Sur where tranquility, tradition, and spectacular landscapes meet authentic coastal life. Explore beaches, local experiences, trails, and services to plan your visit.',
+    ctaLabel: 'Explore the destination',
+    ctaLink: '/en/sitios',
+    images: [
+      { url: '/images/PAV-Lanscape-Cueva.webp', alt: 'Coast' },
+      { url: '/images/pav-02.jpg', alt: 'Nature' },
+      { url: '/images/PAV-Lanscape-Fuga.webp', alt: 'Landscape' },
+    ],
+  },
+  destinations: {
+    header: {
+      title: 'Discover the destination',
+      subtitle: 'Learn about the history and culture of these unique places',
+    },
+    items: [
+      {
+        title: 'Puerto Agua Verde',
+        text: 'Puerto Agua Verde is a small corner of Baja California Sur known for its turquoise waters, community atmosphere, and untouched nature. Here, traditional fishing, quiet beaches, and outdoor activities combine to attract travelers in search of authenticity and peace.',
+        image: '/images/PAV-Letrero-.webp',
+        alt: 'Puerto Agua Verde',
+      },
+      {
+        title: 'Rancho San Cosme',
+        text: 'Rancho San Cosme is a historical and cultural space where rural life remains alive. Surrounded by mountains and desert vegetation, it is a meeting point for visitors seeking local experiences, trails, guided activities, and connection with nature.',
+        image: '/images/pav-landscape-12.webp',
+        alt: 'Rancho San Cosme',
+      },
+    ],
+  },
+  highlights: {
+    header: {
+      title: 'Highlights',
+      subtitle: 'Discover the best options for your visit',
+    },
+    items: [
+      {
+        title: 'Experiences to enjoy',
+        description: 'Discover unique activities to connect with nature, local culture, and community hospitality.',
+        image: '/images/pav-landscape-13.webp',
+        alt: 'Experiences',
+        link: '/en/experiences',
+      },
+      {
+        title: 'Stay with us',
+        description: 'Find accommodation options that combine comfort, nature, and a privileged view of the landscape.',
+        image: '/images/pav-aloja-01.webp',
+        alt: 'Accommodation',
+        link: '/en/sitios?category=accommodation',
+      },
+      {
+        title: 'Flavors of the region',
+        description: 'From fresh seafood to traditional cuisine, discover the places where you can enjoy local gastronomy.',
+        image: '/images/PAV-Comida.webp',
+        alt: 'Restaurants',
+        link: '/en/sitios?category=restaurants',
+      },
+    ],
+  },
+  quickFacts: {
+    header: {
+      title: 'At a glance',
+      subtitle: 'A few facts that make Puerto Agua Verde & Rancho San Cosme worth the trip.',
+    },
+    items: [
+      { title: '~2 hours from Loreto', value: '98 km', description: 'Puerto Agua Verde is about 98 km from Loreto, with a driving time of roughly 2 hours.' },
+      { title: '~5 hours from La Paz', value: '360 km', description: 'From La Paz, the route is about 360 km, with an estimated drive of around 5 hours.' },
+      { title: 'Best season', value: 'May–June', description: 'The best window for outdoor activities runs from early May to mid-June. October is also a strong option.' },
+      { title: 'Protected nature nearby', value: '5 islands', description: 'Loreto Bay National Park includes five major islands, one of the region\'s standout natural treasures.' },
+      { title: 'Biodiversity', value: '1,300+ species', description: 'More than 1,300 plant and animal species have been recorded in Loreto Bay National Park.' },
+      { title: 'What to do', value: 'Snorkel · Kayak · Hiking', description: 'The area is ideal for kayaking, snorkeling, hiking, camping, and wildlife-focused activities.' },
+    ],
+    images: ['/images/pav-01.jpg', '/images/pav-04.jpg'],
+  },
+  mapSection: {
+    title: 'Destination Map',
+    description: 'Explore key points of Puerto Agua Verde and Rancho San Cosme. Find routes, services, beaches, and activities near you.',
+    buttonLabel: 'View Map on OpenStreetMap',
+    buttonUrl: 'https://www.openstreetmap.org/?#map=15/25.51204/-111.07577&layers=C',
+    image: '/images/landing/mapa-OSM.webp',
+    alt: 'Puerto Agua Verde map',
+  },
+  finalCta: {
+    title: 'Your journey begins here',
+    description: 'Puerto Agua Verde and Rancho San Cosme are more than places on the map, they are living landscapes of sea, desert, and tradition. Plan your stay, explore local experiences, and discover the rhythm of authentic Baja life.',
+    buttonLabel: 'Start planning your visit',
+    buttonLink: '/en/sitios',
+  },
+};
+
+function getHomepageFallback(locale: string): HomepageData {
+  return locale === 'en' || locale.startsWith('en') ? HOMEPAGE_FALLBACK_EN : HOMEPAGE_FALLBACK_ES;
 }
 
 // ---------- composite getters ----------

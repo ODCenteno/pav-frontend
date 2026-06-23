@@ -1,81 +1,79 @@
 ---
 import "./quickFacts.css";
-import { useTranslations } from "../../../i18n/utils";
+import type { SectionHeader, QuickFact } from "@/types/homepage.type";
 
-const locale = Astro.currentLocale ?? "es";
-const t = useTranslations(locale);
+interface Props {
+  header: SectionHeader;
+  items: QuickFact[];
+  images: string[];
+}
 
-const quickFactsItems = t("quickFacts.items") as any[];
+const { header, items, images } = Astro.props;
 
-// Current images to use
-const image1 = "/images/pav-01.jpg";
-const image2 = "/images/pav-04.jpg";
+const [image1, image2] = images;
 ---
 
 <section class="quick-facts section-padding">
   <div class="container">
     <div class="section-header">
-      <h2 class="quick-facts__title">{t("quickFacts.title")}</h2>
-      <p class="quick-facts__subtitle">{t("quickFacts.subtitle")}</p>
+      <h2 class="quick-facts__title">{header.title}</h2>
+      <p class="quick-facts__subtitle">{header.subtitle}</p>
     </div>
 
     <div class="quick-facts__bento">
-      <!-- Row 1: Fact 1, Image 1, Fact 2 -->
       <div class="quick-facts__card fact-accent-1">
         <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{quickFactsItems[0].title}</h3>
-          <div class="quick-facts__card-value">{quickFactsItems[0].value}</div>
-          <p class="quick-facts__card-desc">{quickFactsItems[0].desc}</p>
+          <h3 class="quick-facts__card-title">{items[0]?.title}</h3>
+          <div class="quick-facts__card-value">{items[0]?.value}</div>
+          <p class="quick-facts__card-desc">{items[0]?.description}</p>
         </div>
       </div>
 
       <div class="quick-facts__card">
         <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{quickFactsItems[1].title}</h3>
-          <div class="quick-facts__card-value">{quickFactsItems[1].value}</div>
-          <p class="quick-facts__card-desc">{quickFactsItems[1].desc}</p>
+          <h3 class="quick-facts__card-title">{items[1]?.title}</h3>
+          <div class="quick-facts__card-value">{items[1]?.value}</div>
+          <p class="quick-facts__card-desc">{items[1]?.description}</p>
         </div>
       </div>
 
       <div class="quick-facts__image-box">
-        <img src={image1} alt="Puerto Agua Verde landscape" />
+        {image1 && <img src={image1} alt="Puerto Agua Verde landscape" />}
       </div>
 
-      <!-- Row 2: Fact 3, Fact 4, Fact 5 -->
       <div class="quick-facts__card">
         <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{quickFactsItems[2].title}</h3>
-          <div class="quick-facts__card-value">{quickFactsItems[2].value}</div>
-          <p class="quick-facts__card-desc">{quickFactsItems[2].desc}</p>
+          <h3 class="quick-facts__card-title">{items[2]?.title}</h3>
+          <div class="quick-facts__card-value">{items[2]?.value}</div>
+          <p class="quick-facts__card-desc">{items[2]?.description}</p>
         </div>
       </div>
 
       <div class="quick-facts__card">
         <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{quickFactsItems[3].title}</h3>
-          <div class="quick-facts__card-value">{quickFactsItems[3].value}</div>
-          <p class="quick-facts__card-desc">{quickFactsItems[3].desc}</p>
+          <h3 class="quick-facts__card-title">{items[3]?.title}</h3>
+          <div class="quick-facts__card-value">{items[3]?.value}</div>
+          <p class="quick-facts__card-desc">{items[3]?.description}</p>
         </div>
       </div>
 
       <div class="quick-facts__card">
         <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{quickFactsItems[4].title}</h3>
-          <div class="quick-facts__card-value">{quickFactsItems[4].value}</div>
-          <p class="quick-facts__card-desc">{quickFactsItems[4].desc}</p>
+          <h3 class="quick-facts__card-title">{items[4]?.title}</h3>
+          <div class="quick-facts__card-value">{items[4]?.value}</div>
+          <p class="quick-facts__card-desc">{items[4]?.description}</p>
         </div>
       </div>
 
-      <!-- Row 3: Image 2, Fact 6 (Wide) -->
       <div class="quick-facts__image-box">
-        <img src={image2} alt="Local details" />
+        {image2 && <img src={image2} alt="Local details" />}
       </div>
 
       <div class="quick-facts__card fact-accent-2 wide">
         <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{quickFactsItems[5].title}</h3>
-          <div class="quick-facts__card-value">{quickFactsItems[5].value}</div>
-          <p class="quick-facts__card-desc">{quickFactsItems[5].desc}</p>
+          <h3 class="quick-facts__card-title">{items[5]?.title}</h3>
+          <div class="quick-facts__card-value">{items[5]?.value}</div>
+          <p class="quick-facts__card-desc">{items[5]?.description}</p>
         </div>
       </div>
     </div>

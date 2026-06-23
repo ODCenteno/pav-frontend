@@ -37,4 +37,15 @@ export interface GlobalSettings {
     defaultTitle: string;
     defaultDescription: string;
   };
+  seo: {
+    keywords: string;
+    ogImage: string;
+    ogUrl: string;
+    author: string;
+    themeColor: string;
+  };
+  branding: {
+    logoImage: string;
+    logoShortName: string;
+  };
 }

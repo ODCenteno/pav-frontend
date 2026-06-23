@@ -1,47 +1,31 @@
 ---
 import "./highlights.css";
-import { Image } from "astro:assets";
-import img06 from "/images/pav-06.png";
-import img07 from "/images/pav-07.jpg";
-import img08 from "/images/pav-aloja-01.webp";
-import { useTranslations } from "../../../i18n/utils";
+import type { SectionHeader, HighlightCard } from "@/types/homepage.type";
 
-const t = useTranslations(Astro.currentLocale);
+interface Props {
+  header: SectionHeader;
+  items: HighlightCard[];
+}
+
+const { header, items } = Astro.props;
 ---
 
 <section class="highlights section-padding">
   <div class="container">
     <div class="section-header">
-      <h2 data-key="highlights_title">{t("highlights.title")}</h2>
-      <p class="highlights-subtitle" data-key="highlights_subtitle">{t("highlights.subtitle")}</p>
+      <h2 data-key="highlights_title">{header.title}</h2>
+      <p class="highlights-subtitle" data-key="highlights_subtitle">{header.subtitle}</p>
     </div>
     <div class="highlights-layout">
-      <!-- Experiences -->
-      <div class="review-card">
-        <div class="card-img-container">
-          <img src={"/images/pav-landscape-13.webp"} alt="Experiences" />
+      {items.slice(0, 3).map((card) => (
+        <div class="review-card">
+          <div class="card-img-container">
+            <img src={card.image} alt={card.alt} />
+          </div>
+          <h3>{card.title}</h3>
+          <p>{card.description}</p>
         </div>
-        <h3 data-key="feat_exp_title">{t("featured.experiences.title")}</h3>
-        <p data-key="feat_exp_desc">{t("featured.experiences.desc")}</p>
-      </div>
-
-      <!-- Accommodation -->
-      <div class="review-card">
-        <div class="card-img-container">
-          <img src={"/images/pav-aloja-01.webp"} alt="Accommodation" />
-        </div>
-        <h3 data-key="feat_acc_title">{t("featured.accommodation.title")}</h3>
-        <p data-key="feat_acc_desc">{t("featured.accommodation.desc")}</p>
-      </div>
-
-      <!-- Restaurants -->
-      <div class="review-card">
-        <div class="card-img-container">
-          <img src={"/images/PAV-Comida.webp"} alt="Restaurants" />
-        </div>
-        <h3 data-key="feat_rest_title">{t("featured.restaurants.title")}</h3>
-        <p data-key="feat_rest_desc">{t("featured.restaurants.desc")}</p>
-      </div>
+      ))}
     </div>
   </div>
 </section>

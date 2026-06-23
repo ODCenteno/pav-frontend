@@ -13,12 +13,14 @@ import {
   transformTeamMember,
   transformOrganization,
   transformSiteContent,
+  transformHomepage,
   type StrapiItem,
   type CategoryAttributes,
   type ListingAttributes,
   type TeamMemberAttributes,
   type OrganizationAttributes,
   type SiteContentAttributes,
+  type HomepageAttributes,
 } from "../strapiTransformer";
 
 describe("strapiTransformer", () => {
@@ -227,6 +229,161 @@ describe("strapiTransformer", () => {
       expect(out.key).toBe("about-values");
       expect(out.title.es).toBe("Nuestros valores");
       expect((out.extraData as any).mission.es).toBe("M-ES");
+    });
+  });
+
+  describe("transformHomepage", () => {
+    it("transforms a full homepage with all sections", () => {
+      const item: StrapiItem<HomepageAttributes> = {
+        id: 1,
+        attributes: {
+          hero: {
+            title: "Puerto Agua Verde &",
+            titleHighlight: "Rancho San Cosme",
+            description: "Un destino natural donde la tranquilidad...",
+            ctaLabel: "Explorar el destino",
+            ctaLink: "/sitios",
+            images: {
+              data: [
+                { id: 1, attributes: { url: "/uploads/hero1.jpg", alternativeText: "Coast" } },
+                { id: 2, attributes: { url: "/uploads/hero2.jpg", alternativeText: "Nature" } },
+              ],
+            },
+          },
+          destinationsHeader: {
+            title: "Conoce el destino",
+            subtitle: "Descubre la historia y cultura",
+          },
+          destinations: [
+            {
+              title: "Puerto Agua Verde",
+              text: "Un pequeño rincón de BCS...",
+              image: { data: { id: 3, attributes: { url: "/uploads/pav.jpg", alternativeText: "Puerto" } } },
+            },
+            {
+              title: "Rancho San Cosme",
+              text: "Un espacio histórico...",
+              image: { data: { id: 4, attributes: { url: "/uploads/rancho.jpg", alternativeText: "Rancho" } } },
+            },
+          ],
+          highlightsHeader: {
+            title: "Lo más destacado",
+            subtitle: "Descubre las mejores opciones",
+          },
+          highlights: [
+            {
+              title: "Experiencias",
+              description: "Actividades únicas...",
+              image: { data: { id: 5, attributes: { url: "/uploads/exp.jpg", alternativeText: "Experiences" } } },
+              link: "/experiencias",
+            },
+          ],
+          quickFactsHeader: {
+            title: "Lo esencial",
+            subtitle: "Datos rápidos",
+          },
+          quickFacts: [
+            { title: "A 2h de Loreto", value: "98 km", description: "Trayecto aproximado de 2 horas." },
+            { title: "Mejor época", value: "Mayo–junio", description: "Ventana para actividades." },
+          ],
+          quickFactsImage1: { data: { id: 6, attributes: { url: "/uploads/qf1.jpg", alternativeText: "QF1" } } },
+          quickFactsImage2: { data: { id: 7, attributes: { url: "/uploads/qf2.jpg", alternativeText: "QF2" } } },
+          mapSection: {
+            title: "Mapa del Destino",
+            description: "Explora los puntos clave...",
+            buttonLabel: "Ver Mapa",
+            buttonUrl: "https://osm.org/map",
+            image: { data: { id: 8, attributes: { url: "/uploads/map.jpg", alternativeText: "Mapa" } } },
+          },
+          finalCta: {
+            title: "Tu viaje comienza aquí",
+            description: "Planea tu estancia...",
+            buttonLabel: "Comenzar",
+            buttonLink: "/sitios",
+          },
+        },
+      };
+
+      const out = transformHomepage(item, "es");
+
+      // Hero
+      expect(out.hero.title).toBe("Puerto Agua Verde &");
+      expect(out.hero.titleHighlight).toBe("Rancho San Cosme");
+      expect(out.hero.description).toContain("tranquilidad");
+      expect(out.hero.ctaLabel).toBe("Explorar el destino");
+      expect(out.hero.images).toHaveLength(2);
+      expect(out.hero.images[0].url).toContain("/uploads/hero1.jpg");
+      expect(out.hero.images[0].alt).toBe("Coast");
+
+      // Destinations header
+      expect(out.destinations.header.title).toBe("Conoce el destino");
+      expect(out.destinations.items).toHaveLength(2);
+      expect(out.destinations.items[0].title).toBe("Puerto Agua Verde");
+      expect(out.destinations.items[0].image).toContain("/uploads/pav.jpg");
+
+      // Highlights
+      expect(out.highlights.header.title).toBe("Lo más destacado");
+      expect(out.highlights.items[0].link).toBe("/experiencias");
+
+      // QuickFacts
+      expect(out.quickFacts.header.title).toBe("Lo esencial");
+      expect(out.quickFacts.items).toHaveLength(2);
+      expect(out.quickFacts.images).toHaveLength(2);
+      expect(out.quickFacts.images[0]).toContain("/uploads/qf1.jpg");
+
+      // Map
+      expect(out.mapSection.title).toBe("Mapa del Destino");
+      expect(out.mapSection.buttonUrl).toBe("https://osm.org/map");
+      expect(out.mapSection.image).toContain("/uploads/map.jpg");
+
+      // CTA
+      expect(out.finalCta.title).toBe("Tu viaje comienza aquí");
+      expect(out.finalCta.buttonLink).toBe("/sitios");
+    });
+
+    it("handles missing optional fields gracefully", () => {
+      const item: StrapiItem<HomepageAttributes> = {
+        id: 1,
+        attributes: {},
+      };
+
+      const out = transformHomepage(item, "es");
+
+      expect(out.hero.title).toBe("");
+      expect(out.hero.images).toHaveLength(0);
+      expect(out.destinations.items).toHaveLength(0);
+      expect(out.highlights.items).toHaveLength(0);
+      expect(out.quickFacts.items).toHaveLength(0);
+      expect(out.quickFacts.images).toHaveLength(2);
+      expect(out.mapSection.title).toBe("");
+      expect(out.finalCta.title).toBe("");
+    });
+
+    it("handles flat (non-wrapped) item format from Strapi v5", () => {
+      const item = {
+        id: 1,
+        hero: {
+          title: "Test",
+          titleHighlight: "Highlight",
+          description: "Desc",
+          ctaLabel: "CTA",
+          ctaLink: "/link",
+        },
+        destinationsHeader: { title: "Header", subtitle: "Sub" },
+        destinations: [],
+        highlightsHeader: { title: "H", subtitle: "S" },
+        highlights: [],
+        quickFactsHeader: { title: "Q", subtitle: "S" },
+        quickFacts: [],
+        mapSection: { title: "Map", description: "D", buttonLabel: "Btn", buttonUrl: "#" },
+        finalCta: { title: "CTA", description: "D", buttonLabel: "B", buttonLink: "#" },
+      } as any;
+
+      const out = transformHomepage(item, "es");
+
+      expect(out.hero.title).toBe("Test");
+      expect(out.hero.titleHighlight).toBe("Highlight");
+      expect(out.destinations.header.title).toBe("Header");
     });
   });
 });
