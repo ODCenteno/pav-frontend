@@ -532,15 +532,34 @@ export async function getGlobalSettings(): Promise<{
 
 // ---------- homepage ----------
 
+/**
+ * Every component/media field on the Homepage single type that must be
+ * populated. Strapi v5 does NOT return components by default — each one
+ * must be listed explicitly here. Components that nest media use dot
+ * notation (e.g. `hero.images`) to deep-populate the relation.
+ *
+ * Keep this list in sync with the `HomepageAttributes` interface in
+ * `src/utils/strapiTransformer.ts` and the backend schema at
+ * `pav-backend/src/api/homepage/content-types/homepage/schema.json`.
+ */
+const HOMEPAGE_POPULATE = {
+  'populate[0]': 'hero.images',
+  'populate[1]': 'destinations.image',
+  'populate[2]': 'highlights.image',
+  'populate[3]': 'quickFactsImage1',
+  'populate[4]': 'quickFactsImage2',
+  'populate[5]': 'mapSection.image',
+  'populate[6]': 'destinationsHeader',
+  'populate[7]': 'highlightsHeader',
+  'populate[8]': 'quickFactsHeader',
+  'populate[9]': 'quickFacts',
+  'populate[10]': 'finalCta',
+} as const;
+
 export async function getHomepage(locale: string = 'es'): Promise<HomepageData | null> {
   return safe(async () => {
     const item = await strapiGetOne<HomepageAttributes>('/homepage', {
-      'populate[0]': 'hero.images',
-      'populate[1]': 'destinations.image',
-      'populate[2]': 'highlights.image',
-      'populate[3]': 'quickFactsImage1',
-      'populate[4]': 'quickFactsImage2',
-      'populate[5]': 'mapSection.image',
+      ...HOMEPAGE_POPULATE,
       locale,
     });
     if (!item) return null;
@@ -550,8 +569,90 @@ export async function getHomepage(locale: string = 'es'): Promise<HomepageData |
 
 export async function getHomepageWithFallback(locale: string = 'es'): Promise<HomepageData> {
   const fromCms = await getHomepage(locale);
-  if (fromCms) return fromCms;
+  if (fromCms) {
+    return mergeHomepage(fromCms, getHomepageFallback(locale));
+  }
   return getHomepageFallback(locale);
+}
+
+/**
+ * Merge CMS homepage data with the local fallback. Any field that the CMS
+ * returns empty (blank string, empty array, missing image URL) is replaced
+ * with the corresponding fallback value so the page never renders blank.
+ *
+ * This handles the case where some sections are populated in Strapi but
+ * others are not (e.g. media never uploaded, a component left empty).
+ */
+function mergeHomepage(cms: HomepageData, fb: HomepageData): HomepageData {
+  const str = (a: string, b: string) => (a && a.trim() ? a : b);
+  const arr = <T>(a: T[], b: T[]) => (a && a.length > 0 ? a : b);
+
+  return {
+    hero: {
+      title: str(cms.hero.title, fb.hero.title),
+      titleHighlight: str(cms.hero.titleHighlight, fb.hero.titleHighlight),
+      description: str(cms.hero.description, fb.hero.description),
+      ctaLabel: str(cms.hero.ctaLabel, fb.hero.ctaLabel),
+      ctaLink: str(cms.hero.ctaLink, fb.hero.ctaLink),
+      images: arr(cms.hero.images, fb.hero.images).map((img, i) => ({
+        url: str(img.url, fb.hero.images[i]?.url || ''),
+        alt: str(img.alt, fb.hero.images[i]?.alt || ''),
+      })),
+    },
+    destinations: {
+      header: {
+        title: str(cms.destinations.header.title, fb.destinations.header.title),
+        subtitle: str(cms.destinations.header.subtitle, fb.destinations.header.subtitle),
+      },
+      items: arr(cms.destinations.items, fb.destinations.items).map((d, i) => ({
+        title: str(d.title, fb.destinations.items[i]?.title || ''),
+        text: str(d.text, fb.destinations.items[i]?.text || ''),
+        image: str(d.image, fb.destinations.items[i]?.image || ''),
+        alt: str(d.alt, fb.destinations.items[i]?.alt || ''),
+      })),
+    },
+    highlights: {
+      header: {
+        title: str(cms.highlights.header.title, fb.highlights.header.title),
+        subtitle: str(cms.highlights.header.subtitle, fb.highlights.header.subtitle),
+      },
+      items: arr(cms.highlights.items, fb.highlights.items).map((h, i) => ({
+        title: str(h.title, fb.highlights.items[i]?.title || ''),
+        description: str(h.description, fb.highlights.items[i]?.description || ''),
+        image: str(h.image, fb.highlights.items[i]?.image || ''),
+        alt: str(h.alt, fb.highlights.items[i]?.alt || ''),
+        link: h.link || fb.highlights.items[i]?.link,
+      })),
+    },
+    quickFacts: {
+      header: {
+        title: str(cms.quickFacts.header.title, fb.quickFacts.header.title),
+        subtitle: str(cms.quickFacts.header.subtitle, fb.quickFacts.header.subtitle),
+      },
+      items: arr(cms.quickFacts.items, fb.quickFacts.items).map((q, i) => ({
+        title: str(q.title, fb.quickFacts.items[i]?.title || ''),
+        value: str(q.value, fb.quickFacts.items[i]?.value || ''),
+        description: str(q.description, fb.quickFacts.items[i]?.description || ''),
+      })),
+      images: cms.quickFacts.images.map((url, i) =>
+        str(url, fb.quickFacts.images[i] || '')
+      ),
+    },
+    mapSection: {
+      title: str(cms.mapSection.title, fb.mapSection.title),
+      description: str(cms.mapSection.description, fb.mapSection.description),
+      buttonLabel: str(cms.mapSection.buttonLabel, fb.mapSection.buttonLabel),
+      buttonUrl: str(cms.mapSection.buttonUrl, fb.mapSection.buttonUrl),
+      image: str(cms.mapSection.image, fb.mapSection.image),
+      alt: str(cms.mapSection.alt || '', fb.mapSection.alt || ''),
+    },
+    finalCta: {
+      title: str(cms.finalCta.title, fb.finalCta.title),
+      description: str(cms.finalCta.description, fb.finalCta.description),
+      buttonLabel: str(cms.finalCta.buttonLabel, fb.finalCta.buttonLabel),
+      buttonLink: str(cms.finalCta.buttonLink, fb.finalCta.buttonLink),
+    },
+  };
 }
 
 const HOMEPAGE_FALLBACK_ES: HomepageData = {

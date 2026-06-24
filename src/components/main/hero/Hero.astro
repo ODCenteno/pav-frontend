@@ -17,12 +17,12 @@ const t = useTranslations(locale);
   <div class="container hero-container">
     <div class="hero-content">
       <h1 data-key="hero_title">
-        {data.title}
+        {data.title}{" "}
         {data.titleHighlight && <span class="highlight-text">{data.titleHighlight}</span>}
       </h1>
       <p data-key="hero_desc">{data.description}</p>
       <div class="hero-actions">
-        <a class="btn btn-accent" href={data.ctaLink || navigation.sites(locale)} data-key="hero_cta">{data.ctaLabel || t("hero.cta")}</a></li>
+        <a class="btn btn-accent" href={data.ctaLink || navigation.sites(locale)} data-key="hero_cta">{data.ctaLabel || t("hero.cta")}</a>
       </div>
     </div>
     <div class="hero-images">

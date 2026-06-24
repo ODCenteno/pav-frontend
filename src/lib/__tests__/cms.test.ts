@@ -26,6 +26,8 @@ import {
   getGuidePage,
   getListingsWithFallback,
   getAboutPageWithFallback,
+  getHomepage,
+  getHomepageWithFallback,
   clearCmsCache,
   CmsError,
 } from "../cms";
@@ -502,6 +504,108 @@ describe("cms client", () => {
       fetchMock.mockRejectedValueOnce(new Error("ECONNREFUSED"));
       const items = await getListings("es");
       expect(items).toEqual([]);
+    });
+  });
+
+  describe("getHomepage", () => {
+    it("requests all component fields via populate (regression: v5 omits unpopulated components)", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      fetchMock.mockResolvedValueOnce(
+        strapiOk({ id: 1, hero: { title: "T" } })
+      );
+      await getHomepage("es");
+      const url = fetchMock.mock.calls[0][0] as string;
+      const required = [
+        "hero.images",
+        "destinations.image",
+        "highlights.image",
+        "quickFactsImage1",
+        "quickFactsImage2",
+        "mapSection.image",
+        "destinationsHeader",
+        "highlightsHeader",
+        "quickFactsHeader",
+        "quickFacts",
+        "finalCta",
+      ];
+      // The populate params should include the component-only fields
+      const queryString = decodeURIComponent(url.split("?")[1] || "");
+      for (const field of required) {
+        expect(queryString).toContain(field);
+      }
+    });
+
+    it("returns null when homepage not found", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      fetchMock.mockResolvedValueOnce(strapiNotFound());
+      const data = await getHomepage("es");
+      expect(data).toBeNull();
+    });
+  });
+
+  describe("getHomepageWithFallback", () => {
+    it("returns full fallback when CMS is unreachable", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      fetchMock.mockResolvedValueOnce(strapiNotFound());
+      const data = await getHomepageWithFallback("es");
+      expect(data.hero.title).toBeTruthy();
+      expect(data.quickFacts.items.length).toBeGreaterThan(0);
+      expect(data.finalCta.title).toBeTruthy();
+      expect(data.destinations.header.title).toBeTruthy();
+    });
+
+    it("fills empty CMS fields from fallback (field-level merge)", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      // CMS returns hero + destinations but leaves headers/quickFacts/finalCta empty
+      fetchMock.mockResolvedValueOnce(
+        strapiOk({
+          id: 1,
+          hero: {
+            title: "CMS Hero",
+            titleHighlight: "Highlight",
+            description: "Desc",
+            ctaLabel: "Go",
+            ctaLink: "/go",
+            images: {
+              data: [{ id: 1, attributes: { url: "/uploads/hero.jpg", alternativeText: "H" } }],
+            },
+          },
+          // destinations present with text but image missing
+          destinations: [
+            { id: 1, title: "PAV", text: "Text" },
+          ],
+          // These components are missing (as they were before the populate fix)
+          destinationsHeader: null,
+          highlightsHeader: null,
+          quickFactsHeader: null,
+          quickFacts: null,
+          quickFactsImage1: null,
+          quickFactsImage2: null,
+          finalCta: null,
+        })
+      );
+      const data = await getHomepageWithFallback("es");
+
+      // CMS values preserved
+      expect(data.hero.title).toBe("CMS Hero");
+      expect(data.hero.images[0].url).toContain("/uploads/hero.jpg");
+      expect(data.destinations.items[0].title).toBe("PAV");
+
+      // Empty fields fall back to local
+      expect(data.destinations.header.title).toBeTruthy(); // fallback
+      expect(data.destinations.items[0].image).toBeTruthy(); // fallback image
+      expect(data.quickFacts.items.length).toBeGreaterThan(0); // fallback
+      expect(data.quickFacts.images[0]).toMatch(/^\/images\//); // fallback image
+      expect(data.finalCta.title).toBeTruthy(); // fallback
+      expect(data.highlights.items.length).toBeGreaterThan(0); // fallback
+    });
+
+    it("returns English fallback for en locale when CMS empty", async () => {
+      (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
+      fetchMock.mockResolvedValueOnce(strapiNotFound());
+      const data = await getHomepageWithFallback("en");
+      expect(data.hero.ctaLink).toContain("/en/");
+      expect(data.finalCta.buttonLink).toContain("/en/");
     });
   });
 });

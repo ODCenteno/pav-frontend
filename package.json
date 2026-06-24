@@ -20,14 +20,14 @@
   "packageManager": "pnpm@10.25.0",
   "dependencies": {
     "@astrojs/check": "^0.9.9",
-    "@astrojs/cloudflare": "^13.3.1",
-    "@astrojs/markdoc": "^1.0.4",
+    "@astrojs/cloudflare": "^14.0.0",
+    "@astrojs/markdoc": "^2.0.0",
     "@astrojs/partytown": "^2.1.7",
-    "@astrojs/react": "^5.0.4",
-    "@astrojs/sitemap": "^3.7.2",
+    "@astrojs/react": "^6.0.0",
+    "@astrojs/sitemap": "^3.7.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "astro": "^6.2.2",
+    "astro": "^7.0.2",
     "leaflet": "^1.9.4",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
@@ -43,6 +43,6 @@
     "prettier": "3.6.2",
     "prettier-plugin-astro": "0.14.1",
     "vitest": "^4.1.8",
-    "wrangler": "^4.88.0"
+    "wrangler": "^4.104.0"
   }
 }
