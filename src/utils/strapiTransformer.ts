@@ -15,6 +15,15 @@ import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
 import type { HomepageData } from '../types/homepage.type';
 import type { LocalizedString } from '../types/i18n.type';
+import type {
+  CommunityMember,
+  CommunityMemberSummary,
+  StoryBlock,
+  StoryTheme,
+  ProductItem,
+  RelatedMemberRef,
+} from '../types/community.type';
+import type { SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
 
 export interface StrapiItem<T = any> {
@@ -107,6 +116,51 @@ export interface ListingAttributes {
     connectivityNotes?: string | { es: string; en: string };
   };
   relatedListings?: { data: StrapiItem<ListingAttributes>[] };
+  members?: { data: StrapiItem<CommunityMemberAttributes>[] };
+  stories?: StoryBlockAttributes[];
+  products?: ProductItemAttributes[];
+  social?: SocialLinkAttributes[];
+}
+
+export interface SocialLinkAttributes {
+  platform: string;
+  handle?: string;
+  url?: string;
+}
+
+export interface StoryBlockAttributes {
+  title?: string | { es: string; en: string };
+  narrative?: string | any[];
+  highlightQuote?: string | { es: string; en: string };
+  era?: string;
+  theme?: string;
+  storyteller?: string;
+  image?: StrapiMedia;
+  gallery?: StrapiMediaArray;
+}
+
+export interface ProductItemAttributes {
+  name?: string | { es: string; en: string };
+  description?: string | { es: string; en: string };
+}
+
+export interface CommunityMemberAttributes {
+  name: string;
+  slug: string;
+  role?: string | { es: string; en: string };
+  locality?: string;
+  bio?: string | any[];
+  pullQuote?: string | { es: string; en: string };
+  photo?: StrapiMedia;
+  gallery?: StrapiMediaArray;
+  social?: SocialLinkAttributes[];
+  phone?: string;
+  whatsapp?: string;
+  listings?: { data: StrapiItem<ListingAttributes>[] };
+  relatedMembers?: { data: StrapiItem<CommunityMemberAttributes>[] };
+  legacyNote?: string | { es: string; en: string };
+  isFeatured?: boolean;
+  order?: number;
 }
 
 export interface TeamMemberAttributes {
@@ -336,12 +390,19 @@ export function transformCategory(item: StrapiItem<CategoryAttributes>): Categor
   };
 }
 
-export function transformListing(item: StrapiItem<ListingAttributes>, locale: string = 'es'): Listing {
+export function transformListing(
+  item: StrapiItem<ListingAttributes>,
+  locale: string = 'es',
+  esItem?: StrapiItem<ListingAttributes> | null,
+): Listing {
   const a = unwrap(item);
+  const esAttrs = esItem ? unwrap(esItem) : null;
   const id = String(item.id ?? item.documentId ?? a.slug);
   const slug = a.slug;
   const mainImageUrl = mediaUrl(a.mainImage);
   const galleryUrls = mediaUrls(a.gallery);
+  const storiesRaw = a.stories || [];
+  const productsRaw = a.products || [];
 
   // Extract category relation - handle both Strapi v4 wrapped {data: ...} and v5 flat format
   const catRaw = a.category as any;
@@ -388,6 +449,16 @@ export function transformListing(item: StrapiItem<ListingAttributes>, locale: st
       es: navigation.siteDetail(slug, 'es'),
       en: navigation.siteDetail(slug, 'en'),
     },
+    members: a.members?.data?.length
+      ? a.members.data.map((m) => transformCommunityMemberSummary(m, locale))
+      : undefined,
+    stories: storiesRaw.length
+      ? storiesRaw.map((s, i) => transformStory(s, locale, esAttrs?.stories?.[i]))
+      : undefined,
+    products: productsRaw.length
+      ? productsRaw.map((p, i) => transformProduct(p, locale, esAttrs?.products?.[i]))
+      : undefined,
+    social: a.social?.length ? transformSocialLinks(a.social) : undefined,
   };
 }
 
@@ -409,6 +480,121 @@ function asString(value: string | any[] | undefined): string {
       .join('\n\n');
   }
   return '';
+}
+
+function strFallback(value: string | undefined, fallback: string | undefined): string {
+  const v = (value || '').trim();
+  return v || (fallback || '').trim();
+}
+
+function pickLocalized(
+  value: string | { es: string; en: string } | undefined,
+  locale: string,
+  fallback?: string | { es: string; en: string },
+): string {
+  const current = typeof value === 'object' ? (locale.startsWith('en') ? value.en : value.es) : (value || '');
+  const fb = typeof fallback === 'object'
+    ? (locale.startsWith('en') ? fallback.en : fallback.es)
+    : (fallback || '');
+  return strFallback(current, fb);
+}
+
+export function transformSocialLinks(raw: SocialLinkAttributes[]): SocialLink[] {
+  return (raw || []).map((s) => ({
+    platform: (s.platform as SocialLink['platform']) || 'other',
+    handle: s.handle || undefined,
+    url: s.url || undefined,
+  }));
+}
+
+export function transformStory(
+  raw: StoryBlockAttributes,
+  locale: string = 'es',
+  esRaw?: StoryBlockAttributes,
+): StoryBlock {
+  return {
+    title: pickLocalized(raw.title, locale, esRaw?.title),
+    narrative: strFallback(asString(raw.narrative), asString(esRaw?.narrative)),
+    highlightQuote: pickLocalized(raw.highlightQuote, locale, esRaw?.highlightQuote) || undefined,
+    era: raw.era || undefined,
+    theme: (raw.theme as StoryTheme) || undefined,
+    storyteller: raw.storyteller || undefined,
+    imageUrl: mediaUrl(raw.image) || undefined,
+    galleryUrls: mediaUrls(raw.gallery),
+  };
+}
+
+export function transformProduct(
+  raw: ProductItemAttributes,
+  locale: string = 'es',
+  esRaw?: ProductItemAttributes,
+): ProductItem {
+  return {
+    name: pickLocalized(raw.name, locale, esRaw?.name),
+    description: pickLocalized(raw.description, locale, esRaw?.description) || undefined,
+  };
+}
+
+export function transformCommunityMemberSummary(
+  item: StrapiItem<CommunityMemberAttributes>,
+  locale: string = 'es',
+): CommunityMemberSummary {
+  const a = unwrap(item);
+  const id = String(item.id ?? item.documentId ?? a.slug);
+  return {
+    id,
+    slug: a.slug,
+    name: a.name || '',
+    role: pickLocalized(a.role, locale) || undefined,
+    pullQuote: pickLocalized(a.pullQuote, locale) || undefined,
+    legacyNote: pickLocalized(a.legacyNote, locale) || undefined,
+    photo: mediaUrl(a.photo) || undefined,
+  };
+}
+
+export function transformCommunityMember(
+  item: StrapiItem<CommunityMemberAttributes>,
+  locale: string = 'es',
+  esItem?: StrapiItem<CommunityMemberAttributes> | null,
+): CommunityMember {
+  const a = unwrap(item);
+  const es = esItem ? unwrap(esItem) : null;
+  const id = String(item.id ?? item.documentId ?? a.slug);
+
+  const listingSlugs = (a.listings?.data || []).map((l) => {
+    const la = unwrap(l);
+    return la.slug || String(l.id ?? l.documentId);
+  });
+
+  const relatedMembers: RelatedMemberRef[] = (a.relatedMembers?.data || []).map((m) => {
+    const ma = unwrap(m);
+    return {
+      id: String(m.id ?? m.documentId ?? ma.slug),
+      name: ma.name || '',
+      slug: ma.slug || undefined,
+      legacyNote: pickLocalized(ma.legacyNote, locale) || undefined,
+    };
+  });
+
+  return {
+    id,
+    slug: a.slug,
+    name: a.name || '',
+    role: pickLocalized(a.role, locale, es?.role) || undefined,
+    locality: (a.locality as CommunityMember['locality']) || undefined,
+    bio: strFallback(asString(a.bio), asString(es?.bio)),
+    pullQuote: pickLocalized(a.pullQuote, locale, es?.pullQuote) || undefined,
+    legacyNote: pickLocalized(a.legacyNote, locale, es?.legacyNote) || undefined,
+    photo: mediaUrl(a.photo) || undefined,
+    galleryUrls: mediaUrls(a.gallery),
+    social: a.social?.length ? transformSocialLinks(a.social) : [],
+    phone: a.phone || undefined,
+    whatsapp: a.whatsapp || undefined,
+    listingSlugs,
+    relatedMembers,
+    isFeatured: a.isFeatured,
+    order: a.order,
+  };
 }
 
 export function transformTeamMember(item: StrapiItem<TeamMemberAttributes>): TeamMember {

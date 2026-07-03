@@ -1,0 +1,23 @@
+---
+import "./productList.css";
+import type { ProductItem } from "@/types/community.type";
+
+interface Props {
+  title: string;
+  products: ProductItem[];
+}
+
+const { title, products } = Astro.props;
+---
+
+<section class="product-list container">
+  <h2 class="product-list__title">{title}</h2>
+  <div class="product-list__grid">
+    {products.map((product) => (
+      <div class="product-list__card">
+        <h3 class="product-list__name">{product.name}</h3>
+        {product.description && <p class="product-list__desc">{product.description}</p>}
+      </div>
+    ))}
+  </div>
+</section>

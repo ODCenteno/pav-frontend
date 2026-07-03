@@ -1,0 +1,43 @@
+---
+import "./memberStrip.css";
+import type { CommunityMemberSummary } from "@/types/community.type";
+
+interface Props {
+  title: string;
+  members: CommunityMemberSummary[];
+}
+
+const { title, members } = Astro.props;
+---
+
+<section class="member-strip container">
+  <h2 class="member-strip__title">{title}</h2>
+  <div class="member-strip__grid">
+    {members.map((member) => (
+      <article class="member-strip__card">
+        {member.photo ? (
+          <img
+            class="member-strip__photo"
+            src={member.photo}
+            alt={member.name}
+            loading="lazy"
+          />
+        ) : (
+          <div class="member-strip__photo member-strip__photo--placeholder">
+            {member.name.charAt(0)}
+          </div>
+        )}
+        <div class="member-strip__info">
+          <h3 class="member-strip__name">{member.name}</h3>
+          {member.role && <p class="member-strip__role">{member.role}</p>}
+          {member.pullQuote && (
+            <blockquote class="member-strip__quote">{member.pullQuote}</blockquote>
+          )}
+          {member.legacyNote && (
+            <span class="member-strip__legacy">{member.legacyNote}</span>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

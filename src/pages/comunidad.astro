@@ -1,0 +1,79 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
+import CommunityMemberCard from "@/components/community/CommunityMemberCard.astro";
+import { useTranslations } from "@/i18n/utils";
+import { getCommunityMembersWithFallback } from "@/lib/cms";
+import type { CommunityMember } from "@/types/community.type";
+import "./comunidad.css";
+
+export const prerender = true;
+
+const locale = "es";
+const t = useTranslations(locale);
+
+const members = await getCommunityMembersWithFallback(locale);
+
+const localityOrder = ['agua-verde', 'rancho-san-cosme'] as const;
+const grouped = members.reduce<Record<string, CommunityMember[]>>((acc, member) => {
+  const loc = member.locality || 'other';
+  if (!acc[loc]) acc[loc] = [];
+  acc[loc].push(member);
+  return acc;
+}, {});
+
+const sortedLocalities = Object.keys(grouped).sort((a, b) => {
+  const aIdx = localityOrder.indexOf(a as typeof localityOrder[number]);
+  const bIdx = localityOrder.indexOf(b as typeof localityOrder[number]);
+  if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+  if (aIdx === -1) return 1;
+  if (bIdx === -1) return -1;
+  return aIdx - bIdx;
+});
+
+const featuredMembers = members.filter(m => m.isFeatured);
+const regularMembers = members.filter(m => !m.isFeatured);
+---
+
+<BaseLayout
+  siteTitle={t("communityPage.siteTitle")}
+  ogTitle={t("communityPage.ogTitle")}
+  siteDescription={t("communityPage.siteDescription")}
+  ogDescription={t("communityPage.ogDescription")}
+>
+  <HeroPage
+    slot="Hero"
+    title={t("communityPage.heroTitle")}
+    description={t("communityPage.heroDesc")}
+    backgroundImage=""
+  />
+
+  {featuredMembers.length > 0 && (
+    <section class="comunidad-featured section-padding container">
+      <div class="comunidad-grid">
+        {featuredMembers.map(member => (
+          <CommunityMemberCard member={member} locale={locale} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {sortedLocalities.map(locality => (
+    <section class="comunidad-section section-padding container">
+      <h2 class="comunidad-section__title">
+        {t(`communityPage.localityLabels.${locality}`)}
+      </h2>
+      <div class="comunidad-grid">
+        {(grouped[locality] || []).map(member => (
+          <CommunityMemberCard member={member} locale={locale} />
+        ))}
+      </div>
+    </section>
+  ))}
+
+  {members.length === 0 && (
+    <section class="comunidad-empty section-padding container">
+      <p>{t("gallery.noResults")}</p>
+    </section>
+  )}
+</BaseLayout>

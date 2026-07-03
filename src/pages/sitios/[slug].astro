@@ -6,6 +6,10 @@ import SiteInfoPanel from "../../components/site-detail/SiteInfoPanel.astro";
 import SiteTips from "../../components/site-detail/SiteTips.astro";
 import SiteGallery from "../../components/site-detail/SiteGallery.astro";
 import RelatedSites from "../../components/site-detail/RelatedSites.astro";
+import MemberStrip from "../../components/site-detail/MemberStrip.astro";
+import StoryTimeline from "../../components/site-detail/StoryTimeline.astro";
+import ProductList from "../../components/site-detail/ProductList.astro";
+import SocialLinks from "../../components/site-detail/SocialLinks.astro";
 import StickyActionBar from "../../components/site-detail/StickyActionBar.tsx";
 import { useTranslations } from "../../i18n/utils";
 import { getListingsWithFallback } from "../../lib/cms";
@@ -54,6 +58,10 @@ const labels = {
   tips: t("siteDetailPage.labels.tips"),
   gallery: t("siteDetailPage.labels.gallery") || "Gallery",
   related: t("siteDetailPage.labels.related") || "Related Sites",
+  behind: t("siteDetailPage.labels.behind"),
+  stories: t("siteDetailPage.labels.stories"),
+  products: t("siteDetailPage.labels.products"),
+  follow: t("siteDetailPage.labels.follow"),
 };
 
 const contactActions = {
@@ -74,7 +82,25 @@ const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
     <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
   </SiteSummary>
 
+  {item.members && item.members.length > 0 && (
+    <MemberStrip title={labels.behind} members={item.members} />
+  )}
+
   <SiteInfoPanel labels={labels} schedule={schedule} price={item.pricing?.price} amenities={amenities} />
+
+  {item.social && item.social.length > 0 && (
+    <section class="container site-social">
+      <SocialLinks title={labels.follow} social={item.social} />
+    </section>
+  )}
+
+  {item.stories && item.stories.length > 0 && (
+    <StoryTimeline title={labels.stories} stories={item.stories} />
+  )}
+
+  {item.products && item.products.length > 0 && (
+    <ProductList title={labels.products} products={item.products} />
+  )}
 
   {(bestTime || (bring && bring.length > 0)) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} />}
 

@@ -222,7 +222,11 @@
       "amenities": "Amenities",
       "contact": "Contact",
       "tips": "Good to know",
-      "related": "You may also like"
+      "related": "You may also like",
+      "behind": "Who's behind it",
+      "stories": "Our story",
+      "products": "Products & services",
+      "follow": "Follow us"
     },
     "map": {
       "open": "Open in map"
@@ -397,5 +401,24 @@
       "title": "Privacy Notice",
       "placeholder": "The privacy notice content will be loaded here once it is available in the content management system."
     }
+  },
+  "communityPage": {
+    "siteTitle": "Meet the Community | Puerto Agua Verde",
+    "ogTitle": "Meet the Community",
+    "siteDescription": "The people behind Puerto Agua Verde and Rancho San Cosme. Artisans, guides, entrepreneurs and families that bring the destination to life.",
+    "ogDescription": "Meet the people, families and entrepreneurs that make Puerto Agua Verde a unique place.",
+    "heroTitle": "Meet the Community",
+    "heroDesc": "Behind every experience, restaurant and service are real stories of people, families and entrepreneurs who keep the identity of Puerto Agua Verde and Rancho San Cosme alive.",
+    "localityLabels": {
+      "agua-verde": "Puerto Agua Verde",
+      "rancho-san-cosme": "Rancho San Cosme"
+    },
+    "familyLabel": "Family",
+    "thirdGeneration": "3rd generation",
+    "secondGeneration": "2nd generation",
+    "firstGeneration": "1st generation",
+    "noSocial": "No social media",
+    "viewListing": "View site",
+    "relatedMembersLabel": "Related family"
   }
 }

@@ -15,6 +15,7 @@ import type { Listing } from '../types/listing.type';
 import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
 import type { HomepageData } from '../types/homepage.type';
+import type { CommunityMember } from '../types/community.type';
 import {
   transformCategory,
   transformListing,
@@ -22,6 +23,7 @@ import {
   transformOrganization,
   transformSiteContent,
   transformHomepage,
+  transformCommunityMember,
   unwrap,
   type StrapiItem,
   type CategoryAttributes,
@@ -30,6 +32,7 @@ import {
   type OrganizationAttributes,
   type SiteContentAttributes,
   type HomepageAttributes,
+  type CommunityMemberAttributes,
 } from '../utils/strapiTransformer';
 
 export async function getSiteSettings() {
@@ -300,11 +303,32 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
       'populate[1]': 'mainImage',
       'populate[2]': 'gallery',
       'populate[3]': 'relatedListings',
+      'populate[4]': 'members.photo',
+      'populate[5]': 'stories.image',
+      'populate[6]': 'stories.gallery',
+      'populate[7]': 'products',
+      'populate[8]': 'social',
       'pagination[pageSize]': '1',
       locale,
     });
     if (res.data.length === 0) return null;
-    return transformListing(res.data[0], locale);
+
+    // EN fallback: fetch ES version so empty EN narrative fields
+    // (stories, products) fall back to Spanish content.
+    let esItem: StrapiItem<ListingAttributes> | null = null;
+    if (locale.startsWith('en')) {
+      const esRes = await strapiGet<ListingAttributes>('/listings', {
+        'filters[slug][$eq]': slug,
+        'filters[publishedAt][$notNull]': 'true',
+        'populate[0]': 'stories',
+        'populate[1]': 'products',
+        locale: 'es',
+        'pagination[pageSize]': '1',
+      });
+      esItem = esRes.data.length > 0 ? esRes.data[0] : null;
+    }
+
+    return transformListing(res.data[0], locale, esItem);
   });
 }
 
@@ -374,6 +398,85 @@ export async function getOrganizations(locale: string = 'es'): Promise<Organizat
       return res.data.map(transformOrganization);
     })) ?? []
   );
+}
+
+// ---------- community members ----------
+
+export async function getCommunityMembers(locale: string = 'es'): Promise<CommunityMember[]> {
+  return (
+    (await safe(async () => {
+      const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
+        'filters[publishedAt][$notNull]': 'true',
+        'populate[0]': 'photo',
+        'populate[1]': 'listings',
+        sort: 'order:asc',
+        'pagination[pageSize]': '100',
+        locale,
+      });
+      return res.data.map((item) => transformCommunityMember(item, locale));
+    })) ?? []
+  );
+}
+
+export async function getFeaturedCommunityMembers(
+  locale: string = 'es',
+  limit: number = 6,
+): Promise<CommunityMember[]> {
+  return (
+    (await safe(async () => {
+      const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
+        'filters[publishedAt][$notNull]': 'true',
+        'filters[isFeatured][$eq]': 'true',
+        'populate[0]': 'photo',
+        sort: 'order:asc',
+        'pagination[pageSize]': String(limit),
+        locale,
+      });
+      return res.data.map((item) => transformCommunityMember(item, locale));
+    })) ?? []
+  );
+}
+
+export async function getCommunityMembersWithFallback(locale: string = 'es'): Promise<CommunityMember[]> {
+  const fromCms = await getCommunityMembers(locale);
+  if (fromCms.length > 0) return fromCms;
+  return [];
+}
+
+export async function getCommunityMemberBySlug(
+  slug: string,
+  locale: string = 'es',
+): Promise<CommunityMember | null> {
+  return safe(async () => {
+    const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
+      'filters[slug][$eq]': slug,
+      'filters[publishedAt][$notNull]': 'true',
+      'populate[0]': 'photo',
+      'populate[1]': 'gallery',
+      'populate[2]': 'social',
+      'populate[3]': 'listings',
+      'populate[4]': 'relatedMembers.photo',
+      'pagination[pageSize]': '1',
+      locale,
+    });
+    if (res.data.length === 0) return null;
+
+    // EN fallback: when locale is 'en', also fetch the ES version so empty EN
+    // narrative fields (bio, role, pullQuote, legacyNote) can fall back to ES.
+    let esItem: StrapiItem<CommunityMemberAttributes> | null = null;
+    if (locale.startsWith('en')) {
+      const esRes = await strapiGet<CommunityMemberAttributes>('/community-members', {
+        'filters[slug][$eq]': slug,
+        'filters[publishedAt][$notNull]': 'true',
+        'populate[0]': 'photo',
+        locale: 'es',
+        'pagination[pageSize]': '1',
+      });
+      esItem = esRes.data.length > 0 ? esRes.data[0] : null;
+    }
+
+    return transformCommunityMember(res.data[0], locale, esItem);
+  });
 }
 
 // ---------- site content ----------
@@ -913,7 +1016,7 @@ export async function getAboutPage(locale: string = 'es'): Promise<AboutPageData
 }
 
 // Re-export the transformer types so callers can type their own data.
-export type { StrapiItem, CategoryAttributes, ListingAttributes, TeamMemberAttributes, OrganizationAttributes, SiteContentAttributes };
+export type { StrapiItem, CategoryAttributes, ListingAttributes, TeamMemberAttributes, OrganizationAttributes, SiteContentAttributes, CommunityMemberAttributes };
 
 // ---------- dev-fallback aware wrappers ----------
 //

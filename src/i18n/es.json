@@ -223,7 +223,11 @@
       "amenities": "Amenidades",
       "contact": "Contacto",
       "tips": "Información importante",
-      "related": "También te puede interesar"
+      "related": "También te puede interesar",
+      "behind": "Quién está detrás",
+      "stories": "Nuestra historia",
+      "products": "Productos y servicios",
+      "follow": "Síguenos"
     },
     "map": {
       "open": "Abrir en el mapa"
@@ -399,5 +403,24 @@
       "title": "Aviso de Privacidad",
       "placeholder": "El contenido del aviso de privacidad se cargará aquí una vez que esté disponible en el sistema de gestión de contenidos."
     }
+  },
+  "communityPage": {
+    "siteTitle": "Conoce a la comunidad | Puerto Agua Verde",
+    "ogTitle": "Conoce a la comunidad",
+    "siteDescription": "Las personas detrás de Puerto Agua Verde y Rancho San Cosme. Artesanos, guías, emprendedores y familias que dan vida al destino.",
+    "ogDescription": "Conoce a las personas, familias y emprendedores que hacen de Puerto Agua Verde un lugar único.",
+    "heroTitle": "Conoce a la comunidad",
+    "heroDesc": "Detrás de cada experiencia, restaurante y servicio hay historias reales de personas, familias y emprendedores que mantienen viva la identidad de Puerto Agua Verde y Rancho San Cosme.",
+    "localityLabels": {
+      "agua-verde": "Puerto Agua Verde",
+      "rancho-san-cosme": "Rancho San Cosme"
+    },
+    "familyLabel": "Familia",
+    "thirdGeneration": "3ª generación",
+    "secondGeneration": "2ª generación",
+    "firstGeneration": "1ª generación",
+    "noSocial": "Sin redes sociales",
+    "viewListing": "Ver sitio",
+    "relatedMembersLabel": "Familia relacionada"
   }
 }

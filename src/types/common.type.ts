@@ -44,3 +44,9 @@ export interface Recommendations {
   accessibilityNotes?: LocalizedString;
   connectivityNotes?: LocalizedString;
 }
+
+export interface SocialLink {
+  platform: 'instagram' | 'facebook' | 'tiktok' | 'whatsapp' | 'web' | 'other';
+  handle?: string;
+  url?: string;
+}

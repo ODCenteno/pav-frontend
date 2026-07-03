@@ -1,0 +1,55 @@
+---
+import "./socialLinks.css";
+import SvgIcon from "../icons/SvgIcon.astro";
+import type { SocialLink } from "@/types/common.type";
+
+interface Props {
+  title: string;
+  social: SocialLink[];
+}
+
+const { title, social } = Astro.props;
+
+const platformIcon: Record<string, string> = {
+  instagram: "instagram",
+  facebook: "facebook",
+  whatsapp: "whatsapp",
+};
+
+function socialUrl(link: SocialLink): string {
+  if (link.url) return link.url;
+  if (link.platform === "instagram" && link.handle) {
+    const h = link.handle.replace(/^@/, "");
+    return `https://instagram.com/${h}`;
+  }
+  if (link.platform === "whatsapp" && link.handle) {
+    return `https://wa.me/${link.handle.replace(/\D/g, "")}`;
+  }
+  return link.handle ? `#${link.handle}` : "#";
+}
+---
+
+<div class="social-links">
+  <span class="social-links__title">{title}</span>
+  <div class="social-links__icons">
+    {social.map((link) => {
+      const iconName = platformIcon[link.platform];
+      const href = socialUrl(link);
+      return (
+        <a
+          class="social-links__link"
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={link.platform}
+        >
+          {iconName ? (
+            <SvgIcon name={iconName as any} class="social-links__icon" />
+          ) : (
+            <span class="social-links__text">{link.handle || link.platform}</span>
+          )}
+        </a>
+      );
+    })}
+  </div>
+</div>

@@ -1,7 +1,8 @@
 import type { LocalizedString } from './i18n.type';
 import type { Category } from './category.type';
-import type { Location, ContactInfo, Pricing, Media, Schedule, Recommendations } from './common.type';
+import type { Location, ContactInfo, Pricing, Media, Schedule, Recommendations, SocialLink } from './common.type';
 import type { OrganizationMeta } from './organization.type';
+import type { CommunityMemberSummary, StoryBlock, ProductItem } from './community.type';
 
 export interface Listing {
   id: string;
@@ -39,4 +40,10 @@ export interface Listing {
     es: string;
     en: string;
   };
+
+  // Community & storytelling fields (additive, optional)
+  members?: CommunityMemberSummary[];
+  stories?: StoryBlock[];
+  products?: ProductItem[];
+  social?: SocialLink[];
 }

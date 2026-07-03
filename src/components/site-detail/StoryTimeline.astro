@@ -1,0 +1,62 @@
+---
+import "./storyTimeline.css";
+import type { StoryBlock, StoryTheme } from "@/types/community.type";
+
+interface Props {
+  title: string;
+  stories: StoryBlock[];
+}
+
+const { title, stories } = Astro.props;
+
+const themeLabels: Record<StoryTheme, string> = {
+  origin: "Origen",
+  craft: "Oficio",
+  legacy: "Legado",
+  sustainability: "Sostenibilidad",
+  community: "Comunidad",
+};
+---
+
+<section class="story-timeline container">
+  <h2 class="story-timeline__title">{title}</h2>
+
+  <div class="story-timeline__rail">
+    {stories.map((story) => (
+      <article class={`story-timeline__entry${story.theme ? ` theme--${story.theme}` : ""}`}>
+        <div class="story-timeline__marker">
+          <span class="story-timeline__dot"></span>
+        </div>
+
+        <div class="story-timeline__content">
+          {story.era && <span class="story-timeline__era">{story.era}</span>}
+          {story.theme && <span class="story-timeline__theme">{themeLabels[story.theme]}</span>}
+
+          <h3 class="story-timeline__heading">{story.title}</h3>
+          {story.storyteller && <p class="story-timeline__storyteller">{story.storyteller}</p>}
+
+          {story.imageUrl && (
+            <img
+              class="story-timeline__image"
+              src={story.imageUrl}
+              alt={story.title}
+              loading="lazy"
+            />
+          )}
+
+          {story.narrative && (
+            <div class="story-timeline__narrative">
+              {story.narrative.split("\n\n").map((para) => (
+                <p>{para}</p>
+              ))}
+            </div>
+          )}
+
+          {story.highlightQuote && (
+            <blockquote class="story-timeline__pullquote">{story.highlightQuote}</blockquote>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
