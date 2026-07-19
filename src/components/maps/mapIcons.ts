@@ -24,32 +24,14 @@ export function createCustomIcon(color: string): L.DivIcon {
   });
 }
 
-export function createPopupContent(title: string, href?: string): string {
+export function createPopupContent(title: string, href?: string, linkLabel: string = 'Ver sitio →'): string {
   if (href) {
     return `
       <div class="map-popup">
         <span class="map-popup__title">${title}</span>
-        <a href="${href}" class="map-popup__link">Ver sitio →</a>
+        <a href="${href}" class="map-popup__link">${linkLabel}</a>
       </div>
     `;
   }
   return `<div class="map-popup"><span class="map-popup__title">${title}</span></div>`;
-}
-
-export function getMarkersByCategory(
-  items: MarkerItem[],
-  locale: string = "es"
-): L.Marker[] {
-  return items.map((item) => {
-    const icon = createCustomIcon(item.categoryColor);
-    const marker = L.marker([item.lat, item.lng], { icon });
-
-    const popupContent = createPopupContent(
-      item.title,
-      item.href ? `/${locale}${item.href}` : undefined
-    );
-    marker.bindPopup(popupContent);
-
-    return marker;
-  });
 }

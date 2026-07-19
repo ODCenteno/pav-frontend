@@ -1,4 +1,6 @@
 ---
+export const prerender = true;
+
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Hero from "@/components/main/hero/Hero.astro";
 import PopupManager from "@/components/popup/PopupManager.astro";
@@ -32,6 +34,6 @@ const mapListings = featuredListings
   <Destinations header={homepage.destinations.header} items={homepage.destinations.items} />
   <Highlights header={homepage.highlights.header} items={homepage.highlights.items} />
   <QuickFacts header={homepage.quickFacts.header} items={homepage.quickFacts.items} images={homepage.quickFacts.images} />
-  <MapSection data={homepage.mapSection} listings={mapListings} />
+  <MapSection data={homepage.mapSection} listings={mapListings} locale={locale} />
   <CtaSection data={homepage.finalCta} />
 </BaseLayout>

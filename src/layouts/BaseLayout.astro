@@ -5,6 +5,7 @@ import { ClientRouter } from "astro:transitions";
 import Header from "@/components/header/Header.astro";
 import Footer from "@/components/footer/Footer.astro";
 import MenuOverlay from "@/components/menuOverlay/MenuOverlay.astro";
+import OfflineReadyToast from "@/components/pwa/OfflineReadyToast.astro";
 import { useTranslations } from "@/i18n/utils";
 import { getSiteSettings } from "@/lib/cms";
 
@@ -64,7 +65,7 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
 
     <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="manifest" href={currentLocale === "en" ? "/en/manifest.webmanifest" : "/manifest.webmanifest"} />
     <meta name="google" content="notranslate" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -103,6 +104,7 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
       <slot />
     </main>
     <Footer />
+    <OfflineReadyToast />
 
     <script>
       if ('serviceWorker' in navigator && import.meta.env.PROD) {

@@ -334,6 +334,8 @@ export interface MapSectionAttributes {
   buttonLabel?: string;
   buttonUrl?: string;
   image?: StrapiMedia;
+  centerPoint?: GeoPointAttributes;
+  zoom?: number;
 }
 
 export interface CtaSectionAttributes {
@@ -810,6 +812,12 @@ export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: 
       buttonUrl: mapSection.buttonUrl || '',
       image: mapImage,
       alt: getAltFromMedia(mapSection.image),
+      centerPoint: (() => {
+        const cp = mapSection.centerPoint?.geoPoint;
+        if (cp?.lat != null && cp?.lng != null) return { lat: cp.lat, lng: cp.lng };
+        return undefined;
+      })(),
+      zoom: mapSection.zoom,
     },
     finalCta: {
       title: localized(finalCta.title, locale)[l],

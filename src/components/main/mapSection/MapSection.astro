@@ -16,7 +16,7 @@ interface Props {
   listings?: ListingMarker[];
 }
 
-const { data, listings = [] } = Astro.props;
+const { data, listings = [], locale = 'es' } = Astro.props;
 ---
 
 <section class="map-section">
@@ -24,8 +24,8 @@ const { data, listings = [] } = Astro.props;
     <MapView
       client:only="react"
       markers={listings}
-      center={[25.512, -111.075]}
-      zoom={12}
+      center={data.centerPoint ? [data.centerPoint.lat, data.centerPoint.lng] : [25.512, -111.075]}
+      zoom={data.zoom || 12}
       height="100%"
     />
     <div class="container map-content">

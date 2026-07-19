@@ -10,6 +10,8 @@ interface MapViewProps {
   height?: number | string;
   fullScreen?: boolean;
   className?: string;
+  locale?: string;
+  linkLabel?: string;
 }
 
 export default function MapView({
@@ -19,6 +21,7 @@ export default function MapView({
   height = 250,
   fullScreen = false,
   className = "",
+  linkLabel = "Ver sitio →",
 }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<any>(null);
@@ -52,7 +55,8 @@ export default function MapView({
         const icon = createCustomIcon(marker.categoryColor);
         const popupContent = createPopupContent(
           marker.title,
-          marker.href ? `/${marker.href}` : undefined
+          marker.href,
+          linkLabel
         );
 
         L.marker([marker.lat, marker.lng], { icon })

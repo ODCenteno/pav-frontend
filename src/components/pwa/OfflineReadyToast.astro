@@ -1,0 +1,125 @@
+---
+/**
+ * OfflineReadyToast.astro
+ *
+ * Listens for service-worker messages and shows a transient one-time toast
+ *   • `PRECACHE_COMPLETE`  → background cache finished, "Ready offline ✓"
+ *   • `SW_UPDATED`         → new service worker installed, prompt to reload
+ *
+ * Auto-hides after a short delay. Dismissed by the user via close button.
+ */
+---
+
+<div
+  id="offline-ready-toast"
+  class="offline-toast"
+  role="status"
+  aria-live="polite"
+  hidden
+>
+  <span class="offline-toast__icon" aria-hidden="true">✓</span>
+  <span class="offline-toast__message" id="offline-ready-toast__message"></span>
+  <button
+    type="button"
+    class="offline-toast__close"
+    id="offline-ready-toast__close"
+    aria-label="Dismiss"
+  >
+    ×
+  </button>
+</div>
+
+<script is:inline>
+  (() => {
+    const toast = document.getElementById('offline-ready-toast');
+    const message = document.getElementById('offline-ready-toast__message');
+    const close = document.getElementById('offline-ready-toast__close');
+    if (!toast || !message || !close) return;
+
+    const lang = (document.documentElement.lang || 'es').startsWith('en') ? 'en' : 'es';
+
+    const TEXTS = {
+      precacheComplete: {
+        es: 'Listo sin conexión ✓ — puedes explorar la guía incluso sin señal.',
+        en: 'Ready offline ✓ — you can explore the guide even without signal.',
+      },
+      swUpdated: {
+        es: 'Hay una nueva versión disponible. Recarga para actualizar.',
+        en: 'A new version is available. Reload to update.',
+      },
+    };
+
+    let hideTimer = null;
+    const showFor = (text, sticky) => {
+      message.textContent = text;
+      toast.hidden = false;
+      if (hideTimer) clearTimeout(hideTimer);
+      if (!sticky) hideTimer = setTimeout(() => (toast.hidden = true), 6000);
+    };
+
+    close.addEventListener('click', () => {
+      toast.hidden = true;
+      if (hideTimer) clearTimeout(hideTimer);
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (!event.data || !event.data.type) return;
+        if (event.data.type === 'PRECACHE_COMPLETE') {
+          showFor(TEXTS.precacheComplete[lang], false);
+        }
+        if (event.data.type === 'SW_UPDATED') {
+          showFor(TEXTS.swUpdated[lang], true);
+        }
+      });
+    }
+  })();
+</script>
+
+<style is:global>
+  .offline-toast {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background: var(--color-charcoal, #1a1a1a);
+    color: var(--color-white, #fff);
+    border-radius: var(--radius-md, 0.75rem);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    font-size: var(--text-sm, 0.875rem);
+    max-width: 90vw;
+  }
+
+  .offline-toast__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--color-primary, #5a8a80);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .offline-toast__close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.125rem;
+    line-height: 1;
+    padding: 0 0.25rem;
+    opacity: 0.7;
+  }
+
+  .offline-toast__close:hover {
+    opacity: 1;
+  }
+</style>

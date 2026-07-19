@@ -40,6 +40,8 @@ export interface MapSectionData {
   buttonUrl: string;
   image: string;
   alt?: string;
+  centerPoint?: { lat: number; lng: number };
+  zoom?: number;
 }
 
 export interface CtaData {

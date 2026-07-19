@@ -1,0 +1,227 @@
+---
+/**
+ * InstallApp.astro — PWA install prompt block.
+ *
+ * Surfaces the `beforeinstallprompt` event in a deterministic, server-rendered
+ * block that follows the actual menu links. Visible only when:
+ *   • the browser dispatches `beforeinstallprompt` (Chrome / Edge / Android)
+ *   • the app hasn't already been installed (display-mode ≠ standalone)
+ *   • the user has not dismissed the prompt in this session
+ *
+ * iOS Safari does NOT fire `beforeinstallprompt`, so this block falls back to
+ * a "Share → Add to Home Screen" instruction when reached via iOS.
+ *
+ * The button is a real <button type="button">, focusable, dismissable, and
+ * keyboard-accessible. All copy comes from `installPrompt.*` translations.
+ */
+import { useTranslations } from "@/i18n/utils";
+import SvgIcon from "../icons/SvgIcon.astro";
+
+const locale = Astro.currentLocale || "es";
+const t = useTranslations(locale);
+const lang = locale.startsWith("en") ? "en" : "es";
+---
+
+<section class="install-prompt" id="install-prompt" hidden aria-live="polite">
+  <div class="install-prompt__content">
+    <span class="install-prompt__icon" aria-hidden="true">
+      <SvgIcon name="compass" class="install-prompt__icon-svg" />
+    </span>
+    <h3 class="install-prompt__title">{t("installPrompt.title")}</h3>
+    <p class="install-prompt__body">{t("installPrompt.body")}</p>
+
+    <div class="install-prompt__actions">
+      <button
+        type="button"
+        id="install-prompt__cta"
+        class="install-prompt__cta btn btn-accent"
+        hidden
+      >
+        {t("installPrompt.cta")}
+      </button>
+      <button
+        type="button"
+        id="install-prompt__dismiss"
+        class="install-prompt__dismiss btn btn-outline btn-sm"
+      >
+        {t("installPrompt.dismiss")}
+      </button>
+    </div>
+
+    <p
+      class="install-prompt__hint"
+      id="install-prompt__ios-hint"
+      hidden
+    >
+      <strong>{t("installPrompt.iosTitle")}</strong>
+      {t("installPrompt.iosBody")}
+    </p>
+
+    <p
+      class="install-prompt__status"
+      id="install-prompt__status"
+      role="status"
+      hidden
+    ></p>
+  </div>
+</section>
+
+<script
+  is:inline
+  define:vars={{
+    ctaLabel: t("installPrompt.cta"),
+    installedLabel: t("installPrompt.installed"),
+    failedLabel: t("installPrompt.failed"),
+    iosTitle: t("installPrompt.iosTitle"),
+    iosBody: t("installPrompt.iosBody"),
+    lang,
+  }}
+>
+  (() => {
+    const STORAGE_KEY = "pwa_install_prompt_dismissed";
+    const prompt = document.getElementById("install-prompt");
+    const cta = document.getElementById("install-prompt__cta");
+    const dismiss = document.getElementById("install-prompt__dismiss");
+    const iosHint = document.getElementById("install-prompt__ios-hint");
+    const status = document.getElementById("install-prompt__status");
+    if (!prompt || !cta || !dismiss) return;
+
+    const alreadyDismissed = () => sessionStorage.getItem(STORAGE_KEY) === "1";
+    const isInstalled = () =>
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.matchMedia("(display-mode: fullscreen)").matches ||
+      // iOS Safari exposes the install via navigator.standalone
+      (typeof navigator !== "undefined" && navigator.standalone === true);
+    const isIOS = () => {
+      const ua = navigator.userAgent || "";
+      return /iPad|iPhone|iPod/.test(ua) || (ua.includes("Mac") && "ontouchend" in document);
+    };
+    const show = () => {
+      if (alreadyDismissed()) return;
+      prompt.hidden = false;
+    };
+    const setStatus = (text) => {
+      if (!status) return;
+      status.textContent = text;
+      status.hidden = false;
+    };
+
+    // Already installed? Show "you're set" message instead of install button.
+    if (isInstalled()) {
+      setStatus(installedLabel);
+      show();
+      return;
+    }
+
+    // iOS: no beforeinstallprompt event — show manual instructions.
+    if (isIOS()) {
+      if (iosHint) iosHint.hidden = false;
+      show();
+    }
+
+    // Chrome / Edge / Android: capture deferred prompt and wait for user action.
+    let deferredPrompt = null;
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      cta.hidden = false;
+      show();
+    });
+
+    cta.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      try {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice.outcome === "accepted") {
+          setStatus(installedLabel);
+        } else {
+          setStatus(failedLabel);
+        }
+      } catch {
+        setStatus(failedLabel);
+      } finally {
+        deferredPrompt = null;
+        cta.hidden = true;
+      }
+    });
+
+    dismiss.addEventListener("click", () => {
+      sessionStorage.setItem(STORAGE_KEY, "1");
+      prompt.hidden = true;
+    });
+
+    // Hide once the app is actually installed.
+    window.addEventListener("appinstalled", () => {
+      setStatus(installedLabel);
+      cta.hidden = true;
+    });
+  })();
+</script>
+
+<style>
+  .install-prompt {
+    margin-top: 2rem;
+    padding: 1.25rem 1rem;
+    width: 100%;
+    border-radius: var(--radius-md, 0.75rem);
+    background: color-mix(in srgb, var(--color-primary, #5a8a80) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primary, #5a8a80) 20%, transparent);
+    color: var(--color-on-surface, #1a1a1a);
+    text-align: center;
+  }
+
+  .install-prompt__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .install-prompt__icon {
+    color: var(--color-primary, #5a8a80);
+    display: inline-flex;
+  }
+
+  .install-prompt__icon-svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .install-prompt__title {
+    font-size: var(--text-base, 1rem);
+    margin: 0;
+    color: var(--color-on-surface, #1a1a1a);
+  }
+
+  .install-prompt__body,
+  .install-prompt__hint,
+  .install-prompt__status {
+    font-size: var(--text-sm, 0.875rem);
+    line-height: 1.4;
+    color: var(--color-on-surface-variant, #555);
+    margin: 0;
+  }
+
+  .install-prompt__actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .install-prompt__cta,
+  .install-prompt__dismiss {
+    min-width: 120px;
+  }
+
+  .install-prompt__hint {
+    background: color-mix(in srgb, var(--color-charcoal, #1a1a1a) 5%, transparent);
+    border-radius: var(--radius-sm, 0.375rem);
+    padding: 0.625rem 0.75rem;
+    margin-top: 0.5rem;
+    text-align: left;
+    width: 100%;
+  }
+</style>

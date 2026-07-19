@@ -396,6 +396,16 @@
     "tipTitle": "Tip for your next visit:",
     "tipText": "Download the site as an app to access content offline and load faster."
   },
+  "installPrompt": {
+    "title": "Take the guide with you",
+    "body": "Install the app to explore Puerto Agua Verde and Rancho San Cosme offline, even where there's no signal.",
+    "cta": "Install app",
+    "dismiss": "Later",
+    "iosTitle": "On iPhone",
+    "iosBody": "Tap Share and then \"Add to Home Screen\" to install the app.",
+    "installed": "The app is already installed. Find it on your home screen.",
+    "failed": "We couldn't install the app. Try again from your browser menu."
+  },
   "legal": {
     "privacy": {
       "title": "Privacy Notice",

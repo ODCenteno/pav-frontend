@@ -1,135 +1,201 @@
-const CACHE_NAME = 'pav-static-v1';
+/**
+ * Puerto Agua Verde PWA Service Worker
+ *
+ * Caching layers (all versioned with the pav-* prefix so they purge on upgrade):
+ *   - pav-shell-v2     Pre-rendered HTML shell + offline fallback page
+ *   - pav-fonts-v1     Google Fonts CSS + woff/ttf files
+ *   - pav-images-v1    PNG/JPG/WebP/SVG assets
+ *   - pav-api-v1       Cross-origin API responses (e.g. R2 / Strapi media)
+ *
+ * The `caches.match` priority for navigations is:
+ *   1. Stale-while-revalidate: cache hit → respond instantly + refresh in bg
+ *   2. Cache miss + network fail → /offline fallback → /
+ *
+ * The previous SW called self.skipWaiting() inside the install handler, which
+ * bypassed the update banner UX. We intentionally let the install complete and
+ * wait for the page to postMessage({ type: 'SKIP_WAITING' }) so the user can
+ * choose when to activate the new version.
+ */
+
+/* eslint-disable no-restricted-globals */
+
+const CACHE_SHELL = 'pav-shell-v2';
+const CACHE_FONTS = 'pav-fonts-v1';
+const CACHE_IMAGES = 'pav-images-v1';
+const CACHE_API = 'pav-api-v1';
+
 const OFFLINE_URL = '/offline';
 
-const PRECACHE_URLS = [
+const SHELL_URLS = [
   '/',
   '/offline',
   '/sitios',
   '/experiencias',
   '/acerca',
   '/guide',
+  '/en/',
+  '/en/sitios',
+  '/en/experiencias',
+  '/en/acerca',
+  '/en/guide',
 ];
 
-self.addEventListener('message', function(event) {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-self.addEventListener('install', function(event) {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return Promise.all(
-        PRECACHE_URLS.map(function(url) {
-          return cache.add(url).catch(function() {
-            console.warn('Failed to precache:', url);
-          });
-        })
-      );
-    })
+    caches
+      .open(CACHE_SHELL)
+      .then((cache) =>
+        Promise.all(
+          SHELL_URLS.map((url) =>
+            cache.add(new Request(url, { cache: 'reload' })).catch(() => {
+              // Pre-cache failures are non-fatal: pages will fall through to network.
+              console.warn('[sw] pre-cache failed:', url);
+            }),
+          ),
+        ),
+      ),
   );
-  return self.skipWaiting();
+  // NOTE: deliberately NOT calling self.skipWaiting() here.
+  // The new SW waits until the page sends postMessage({ type: 'SKIP_WAITING' }),
+  // which the BaseLayout update banner triggers on user click.
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(
         keys
-          .filter(function(key) {
-            return key !== CACHE_NAME && key.startsWith('pav-');
-          })
-          .map(function(key) {
-            return caches.delete(key);
-          })
+          .filter((key) => key.startsWith('pav-') && key !== CACHE_SHELL && key !== CACHE_FONTS && key !== CACHE_IMAGES && key !== CACHE_API)
+          .map((key) => caches.delete(key)),
       );
-    }).then(function() {
-      return self.clients.claim();
-    })
+      await self.clients.claim();
+      // Background-precache listing detail pages so every site works offline
+      // after the user has visited the site at least once online.
+      precacheListings().catch((error) => {
+        console.warn('[sw] background precache failed:', error);
+      });
+    })(),
   );
 });
 
-self.addEventListener('fetch', function(event) {
-  var request = event.request;
-  var url = new URL(request.url);
+async function precacheListings() {
+  const response = await fetch('/api/data/listings-index.json', { cache: 'no-cache' });
+  if (!response.ok) return;
+  const data = await response.json().catch(() => null);
+  if (!data || !Array.isArray(data.items)) return;
+
+  const cache = await caches.open(CACHE_SHELL);
+  const urls = data.items.map((item) =>
+    item.locale === 'en' ? `/en/sitios/${item.slug}` : `/sitios/${item.slug}`,
+  );
+  await Promise.all(
+    urls.map((url) =>
+      cache.add(url).catch(() => {
+        // Pre-cache failures (e.g. network blip) don't propagate; next visit
+        // hits the network and caches the page on demand.
+      }),
+    ),
+  );
+
+  const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  for (const client of clients) {
+    client.postMessage({ type: 'PRECACHE_COMPLETE', count: urls.length });
+  }
+}
+
+/**
+ * Generic stale-while-revalidate cache for any same-origin or allowed
+ * cross-origin resource. Returns the cached response immediately if present,
+ * fires a background fetch to refresh the cache, and falls back to the cached
+ * response if the network is offline.
+ */
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const networkPromise = fetch(request)
+    .then((response) => {
+      if (response && response.ok) {
+        cache.put(request, response.clone());
+      }
+      return response;
+    })
+    .catch(() => cached);
+
+  return cached || networkPromise;
+}
+
+function isFontAsset(url) {
+  return url.hostname.endsWith('fonts.googleapis.com') || url.hostname.endsWith('fonts.gstatic.com');
+}
+
+function isImageAsset(url) {
+  return /\.(png|jpe?g|webp|avif|gif|svg)$/i.test(url.pathname);
+}
+
+function isApiRequest(url) {
+  return url.pathname.startsWith('/api/');
+}
+
+async function handleNavigationRequest(request) {
+  // SWR for HTML navigations: instant cached shell + background refresh.
+  const cache = await caches.open(CACHE_SHELL);
+  const cached = await cache.match(request);
+  const networkPromise = fetch(request)
+    .then((response) => {
+      if (response && response.ok) {
+        cache.put(request, response.clone());
+      }
+      return response;
+    })
+    .catch(() => null);
+
+  if (cached) {
+    networkPromise.catch(() => {});
+    return cached;
+  }
+
+  const networkResponse = await networkPromise;
+  if (networkResponse) return networkResponse;
+
+  // Network failed AND nothing cached: serve offline fallback (shell always has it).
+  const offlinePage = await cache.match(OFFLINE_URL);
+  if (offlinePage) return offlinePage;
+  const root = await cache.match('/');
+  if (root) return root;
+
+  return new Response('Offline', { status: 503, statusText: 'Offline' });
+}
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Only handle GET — POST/PUT/DELETE etc. always hit the network.
+  if (request.method !== 'GET') return;
 
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(function() {
-        return caches.match(request).then(function(cachedResponse) {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          return caches.match(OFFLINE_URL).then(function(offlinePage) {
-            if (offlinePage) {
-              return offlinePage;
-            }
-            return caches.match('/');
-          });
-        });
-      })
-    );
+    event.respondWith(handleNavigationRequest(request));
     return;
   }
 
-  if (url.href.indexOf('fonts.googleapis.com') !== -1 || url.href.indexOf('fonts.gstatic.com') !== -1) {
-    event.respondWith(
-      caches.open('google-fonts-cache').then(function(cache) {
-        return cache.match(request).then(function(response) {
-          if (response) {
-            return response;
-          }
-          return fetch(request).then(function(networkResponse) {
-            if (networkResponse.ok) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(function() {
-            return response;
-          });
-        });
-      })
-    );
+  if (isFontAsset(url)) {
+    event.respondWith(staleWhileRevalidate(request, CACHE_FONTS));
     return;
   }
 
-  if (/\.(?:png|jpg|jpeg|webp|avif|gif|svg)$/i.test(request.url)) {
-    event.respondWith(
-      caches.open('images-cache').then(function(cache) {
-        return cache.match(request).then(function(response) {
-          if (response) {
-            return response;
-          }
-          return fetch(request).then(function(networkResponse) {
-            if (networkResponse.ok) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(function() {
-            return response;
-          });
-        });
-      })
-    );
+  if (isImageAsset(url)) {
+    event.respondWith(staleWhileRevalidate(request, CACHE_IMAGES));
     return;
   }
 
-  if (url.pathname.indexOf('/api/') !== -1) {
-    event.respondWith(
-      caches.open('api-cache').then(function(cache) {
-        return cache.match(request).then(function(response) {
-          var fetchPromise = fetch(request).then(function(networkResponse) {
-            if (networkResponse.ok) {
-              cache.put(request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(function() {
-            return response;
-          });
-          return response || fetchPromise;
-        });
-      })
-    );
-    return;
+  if (isApiRequest(url)) {
+    event.respondWith(staleWhileRevalidate(request, CACHE_API));
   }
 });

@@ -398,6 +398,16 @@
     "tipTitle": "Consejo para tu próxima visita:",
     "tipText": "Descarga el sitio como app para acceder a contenido sin conexión y cargar más rápido."
   },
+  "installPrompt": {
+    "title": "Lleva la guía contigo",
+    "body": "Instala la app para explorar Puerto Agua Verde y Rancho San Cosme sin conexión, incluso donde no llega la señal.",
+    "cta": "Instalar app",
+    "dismiss": "Más tarde",
+    "iosTitle": "En iPhone",
+    "iosBody": "Toca Compartir y luego \"Añadir a pantalla de inicio\" para instalar la app.",
+    "installed": "La app ya está instalada. Búscala en tu pantalla de inicio.",
+    "failed": "No pudimos instalar la app. Inténtalo de nuevo desde el menú del navegador."
+  },
   "legal": {
     "privacy": {
       "title": "Aviso de Privacidad",

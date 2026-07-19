@@ -668,6 +668,7 @@ const HOMEPAGE_POPULATE = {
   'populate[8]': 'quickFactsHeader',
   'populate[9]': 'quickFacts',
   'populate[10]': 'finalCta',
+  'populate[11]': 'mapSection.centerPoint',
 } as const;
 
 const GUIDE_PAGE_POPULATE = {
@@ -889,6 +890,8 @@ const HOMEPAGE_FALLBACK_ES: HomepageData = {
     buttonUrl: 'https://www.openstreetmap.org/?#map=15/25.51204/-111.07577&layers=C',
     image: '/images/landing/mapa-OSM.webp',
     alt: 'Mapa de Puerto Agua Verde',
+    centerPoint: { lat: 25.51204, lng: -111.07577 },
+    zoom: 12,
   },
   finalCta: {
     title: 'Tu viaje comienza aquí',
@@ -982,6 +985,8 @@ const HOMEPAGE_FALLBACK_EN: HomepageData = {
     buttonUrl: 'https://www.openstreetmap.org/?#map=15/25.51204/-111.07577&layers=C',
     image: '/images/landing/mapa-OSM.webp',
     alt: 'Puerto Agua Verde map',
+    centerPoint: { lat: 25.51204, lng: -111.07577 },
+    zoom: 12,
   },
   finalCta: {
     title: 'Your journey begins here',

@@ -3,6 +3,7 @@ import "./menuOverlay.css";
 import { useTranslations } from "@/i18n/utils";
 import { navigation } from "@/utils/navigation";
 import SvgIcon from "../icons/SvgIcon.astro";
+import InstallApp from "./InstallApp.astro";
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
@@ -41,6 +42,8 @@ if (alternateLocaleCode) {
         )
       }
     </ul>
+
+    <InstallApp />
   </nav>
 </div>
 
