@@ -23,6 +23,9 @@ import {
   transformOrganization,
   transformSiteContent,
   transformHomepage,
+  transformAboutPage,
+  transformGuidePage,
+  transformExperiencesPage,
   transformCommunityMember,
   unwrap,
   type StrapiItem,
@@ -32,6 +35,9 @@ import {
   type OrganizationAttributes,
   type SiteContentAttributes,
   type HomepageAttributes,
+  type AboutPageAttributes,
+  type GuidePageAttributes,
+  type ExperiencesPageAttributes,
   type CommunityMemberAttributes,
 } from '../utils/strapiTransformer';
 
@@ -49,10 +55,10 @@ async function _getSiteSettingsCms(): Promise<{
   const gs = await getGlobalSettings();
   if (gs) return gs as any;
   return {
-    contact: { email: "info@puertoaguaverde.mx", phone: "+52 614 123 4567", phoneRaw: "+526141234567", whatsapp: "526141234567", address: "Puerto Agua Verde, BCS, México" },
-    social: { instagram: "https://instagram.com/puertoaguaverde", facebook: "https://facebook.com/puertoaguaverde", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
+    contact: { email: "info@guiacomunidadesloretanas.com", phone: "+52 614 123 4567", phoneRaw: "+526141234567", whatsapp: "526141234567", address: "Puerto Agua Verde, BCS, México" },
+    social: { instagram: "https://instagram.com/guiacomunidadesloretanas", facebook: "https://facebook.com/guiacomunidadesloretanas", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
     metadata: { siteName: "Puerto Agua Verde", defaultTitle: "Puerto Agua Verde - Community Directory", defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme." },
-    seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "", author: "ODCenteno", themeColor: "#5A8A80" },
+    seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "https://guiacomunidadesloretanas.com", author: "ODCenteno", themeColor: "#5A8A80" },
     branding: { logoImage: "", logoShortName: "Agua Verde" },
   };
 }
@@ -71,10 +77,10 @@ export async function getSiteSettingsDirect(): Promise<{
     console.warn('[siteSettings] Failed to fetch from Strapi, using defaults:', error);
   }
   return {
-    contact: { email: "info@puertoaguaverde.mx", phone: "+52 614 123 4567", phoneRaw: "+526141234567", whatsapp: "526141234567", address: "Puerto Agua Verde, BCS, México" },
-    social: { instagram: "https://instagram.com/puertoaguaverde", facebook: "https://facebook.com/puertoaguaverde", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
+    contact: { email: "info@guiacomunidadesloretanas.com", phone: "+52 614 123 4567", phoneRaw: "+526141234567", whatsapp: "526141234567", address: "Puerto Agua Verde, BCS, México" },
+    social: { instagram: "https://instagram.com/guiacomunidadesloretanas", facebook: "https://facebook.com/guiacomunidadesloretanas", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
     metadata: { siteName: "Puerto Agua Verde", defaultTitle: "Puerto Agua Verde - Community Directory", defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme." },
-    seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "", author: "ODCenteno", themeColor: "#5A8A80" },
+    seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "https://guiacomunidadesloretanas.com", author: "ODCenteno", themeColor: "#5A8A80" },
     branding: { logoImage: "", logoShortName: "Agua Verde" },
   };
 }
@@ -265,7 +271,6 @@ export async function getCategories(locale: string = 'es'): Promise<Category[]> 
   return (
     (await safe(async () => {
       const res = await strapiGet<CategoryAttributes>('/categories', {
-        'filters[isActive][$eq]': 'true',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -285,6 +290,7 @@ export async function getListings(locale: string = 'es'): Promise<Listing[]> {
         'populate[0]': 'category',
         'populate[1]': 'mainImage',
         'populate[2]': 'gallery',
+        'populate[3]': 'location',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -306,9 +312,10 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
       'populate[4]': 'members.photo',
       'populate[5]': 'stories.image',
       'populate[6]': 'stories.gallery',
-      'populate[7]': 'products',
-      'populate[8]': 'social',
-      'pagination[pageSize]': '1',
+        'populate[7]': 'products',
+        'populate[8]': 'social',
+        'populate[9]': 'location',
+        'pagination[pageSize]': '1',
       locale,
     });
     if (res.data.length === 0) return null;
@@ -340,6 +347,7 @@ export async function getListingsByCategorySlug(categorySlug: string, locale: st
         'filters[publishedAt][$notNull]': 'true',
         'populate[0]': 'category',
         'populate[1]': 'mainImage',
+        'populate[2]': 'location',
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -357,6 +365,7 @@ export async function getFeaturedListings(locale: string = 'es', limit: number =
         'filters[publishedAt][$notNull]': 'true',
         'populate[0]': 'category',
         'populate[1]': 'mainImage',
+        'populate[2]': 'location',
         sort: 'order:asc',
         'pagination[pageSize]': String(limit),
         locale,
@@ -588,18 +597,20 @@ export async function getGlobalSettings(): Promise<{
     if (!item) return null;
     const a = unwrap(item);
     const strapiBaseUrl = STRAPI_URL.replace(/\/$/, '');
-    const ogImageData = a.seoOgImage?.data;
-    const ogImageUrl = ogImageData?.attributes?.url
-      ? ogImageData.attributes.url.startsWith('http')
-        ? ogImageData.attributes.url
-        : `${strapiBaseUrl}${ogImageData.attributes.url}`
-      : '';
-    const logoImageData = a.logoImage?.data;
-    const logoImageUrl = logoImageData?.attributes?.url
-      ? logoImageData.attributes.url.startsWith('http')
-        ? logoImageData.attributes.url
-        : `${strapiBaseUrl}${logoImageData.attributes.url}`
-      : '';
+    const ogImageData = a.seoOgImage as any;
+    const ogImageUrl = (() => {
+      const raw = ogImageData?.attributes?.url ?? ogImageData?.url ?? '';
+      if (!raw) return '';
+      if (raw.startsWith('http')) return raw;
+      return `${strapiBaseUrl}${raw}`;
+    })();
+    const logoImageData = a.logoImage as any;
+    const logoImageUrl = (() => {
+      const raw = logoImageData?.attributes?.url ?? logoImageData?.url ?? '';
+      if (!raw) return '';
+      if (raw.startsWith('http')) return raw;
+      return `${strapiBaseUrl}${raw}`;
+    })();
     return {
       contact: {
         email: a.contactEmail,
@@ -657,6 +668,42 @@ const HOMEPAGE_POPULATE = {
   'populate[8]': 'quickFactsHeader',
   'populate[9]': 'quickFacts',
   'populate[10]': 'finalCta',
+} as const;
+
+const GUIDE_PAGE_POPULATE = {
+  'populate[0]': 'hero.images',
+  'populate[1]': 'intro',
+  'populate[2]': 'historyHeader',
+  'populate[3]': 'historyMilestones',
+  'populate[4]': 'fishingHeader',
+  'populate[5]': 'fishingRules',
+  'populate[6]': 'protectedArea',
+  'populate[7]': 'influenceHeader',
+  'populate[8]': 'recommendationsHeader',
+  'populate[9]': 'recommendations',
+  'populate[10]': 'directionsHeader',
+  'populate[11]': 'directions',
+  'populate[12]': 'directions.image',
+  'populate[13]': 'drivingTips',
+  'populate[14]': 'amenitiesHeader',
+  'populate[15]': 'amenities',
+  'populate[16]': 'touristMapHeader',
+  'populate[17]': 'touristMapImage',
+  'populate[18]': 'finalCta',
+} as const;
+
+const ABOUT_PAGE_POPULATE = {
+  'populate[0]': 'hero.images',
+  'populate[1]': 'values',
+  'populate[2]': 'collaboration',
+  'populate[3]': 'finalCta',
+} as const;
+
+const EXPERIENCES_PAGE_POPULATE = {
+  'populate[0]': 'hero.images',
+  'populate[1]': 'introHeader',
+  'populate[2]': 'featuredHeader',
+  'populate[3]': 'finalCta',
 } as const;
 
 export async function getHomepage(locale: string = 'es'): Promise<HomepageData | null> {
@@ -974,49 +1021,32 @@ export interface AboutPageData {
 }
 
 export async function getAboutPage(locale: string = 'es'): Promise<AboutPageData> {
-  // Batch the 4 site-content keys into a single API call
-  const [siteContents, team, organizations] = await Promise.all([
-    getSiteContents(
-      ['about-intro', 'about-values', 'about-community', 'about-collaboration'],
-      locale
-    ),
+  const [aboutPage, team, organizations] = await Promise.all([
+    strapiGetOne<AboutPageAttributes>('/about-page', {
+      ...ABOUT_PAGE_POPULATE,
+      locale,
+    }),
     getTeamMembers(locale),
     getOrganizations(locale),
   ]);
 
-  const [intro, values, community, collaboration] = siteContents;
-  const loc = locale.startsWith('en') ? 'en' : 'es';
+  if (!aboutPage) {
+    return { intro: null, values: null, community: null, collaboration: null, team, organizations };
+  }
 
+  const transformed = transformAboutPage(aboutPage, locale);
   return {
-    intro: intro
-      ? { title: intro.title[loc] || intro.title.es, text: intro.text[loc] || intro.text.es }
-      : null,
-    values: values?.extraData
-      ? {
-          mission: (values.extraData as any).mission,
-          vision: (values.extraData as any).vision,
-          values: (values.extraData as any).values,
-        }
-      : null,
-    community: community
-      ? { title: community.title[loc] || community.title.es, text: community.text[loc] || community.text.es }
-      : null,
-    collaboration: collaboration?.extraData
-      ? {
-          title: (collaboration.extraData as any).title || collaboration.title[loc] || collaboration.title.es,
-          desc: (collaboration.extraData as any).desc || collaboration.text[loc] || collaboration.text.es,
-          btnPrimary: (collaboration.extraData as any).btnPrimary,
-          btnSecondary: (collaboration.extraData as any).btnSecondary,
-          links: (collaboration.extraData as any).links || { primary: '#', secondary: '#' },
-        }
-      : null,
+    intro: transformed.intro,
+    values: transformed.values,
+    community: transformed.community,
+    collaboration: transformed.collaboration,
     team,
     organizations,
   };
 }
 
 // Re-export the transformer types so callers can type their own data.
-export type { StrapiItem, CategoryAttributes, ListingAttributes, TeamMemberAttributes, OrganizationAttributes, SiteContentAttributes, CommunityMemberAttributes };
+export type { StrapiItem, CategoryAttributes, ListingAttributes, TeamMemberAttributes, OrganizationAttributes, SiteContentAttributes, HomepageAttributes, AboutPageAttributes, GuidePageAttributes, ExperiencesPageAttributes, CommunityMemberAttributes };
 
 // ---------- dev-fallback aware wrappers ----------
 //
@@ -1051,7 +1081,6 @@ export function deriveCategoriesFromListings(listings: Listing[]): Category[] {
         slug,
         name: (c?.name as any) || { es: slug, en: slug },
         order: c?.order ?? 0,
-        isActive: true,
       });
     }
   }
@@ -1172,133 +1201,54 @@ export interface GuidePageData {
   cta: { title: string; desc: string; btn: string } | null;
 }
 
-function pickLocale<T extends { es: string; en: string } | undefined>(v: T, locale: string): string {
-  if (!v) return '';
-  return locale.startsWith('en') ? v.en : v.es;
+export interface ExperiencesPageData {
+  hero: {
+    title: string;
+    titleHighlight: string;
+    description: string;
+    ctaLabel: string;
+    ctaLink: string;
+    images: { url: string; alt: string }[];
+  };
+  introHeader: { title: string; subtitle: string } | null;
+  featuredHeader: { title: string; subtitle: string } | null;
+  finalCta: { title: string; description: string; buttonLabel: string; buttonLink: string } | null;
 }
 
-function pickLocaleList<T extends { es: string[]; en: string[] } | undefined>(v: T, locale: string): string[] {
-  if (!v) return [];
-  return locale.startsWith('en') ? v.en : v.es;
+export async function getExperiencesPage(locale: string = 'es'): Promise<ExperiencesPageData | null> {
+  const page = await strapiGetOne<ExperiencesPageAttributes>('/experiences-page', {
+    ...EXPERIENCES_PAGE_POPULATE,
+    locale,
+  });
+  if (!page) return null;
+  return transformExperiencesPage(page, locale);
+}
+
+export async function getExperiencesPageWithFallback(locale: string = 'es'): Promise<ExperiencesPageData | null> {
+  const fromCms = await getExperiencesPage(locale);
+  if (fromCms) return fromCms;
+  if (!USE_DEV_FALLBACK) return null;
+  return null;
 }
 
 export async function getGuidePage(locale: string = 'es'): Promise<GuidePageData> {
-  const keys = [
-    'guide-hero',
-    'guide-bay',
-    'guide-history',
-    'guide-fishing',
-    'guide-conap',
-    'guide-influence',
-    'guide-recommendations',
-    'guide-directions',
-    'guide-amenities',
-    'guide-tourist-map',
-    'guide-cta',
-  ];
-  const [hero, bay, history, fishing, conap, influence, recommendations, directions, amenities, touristMap, cta] = await getSiteContents(keys, locale);
-
-  return {
-    hero: hero
-      ? { title: pickLocale(hero.title, locale), desc: pickLocale(hero.text, locale), image: (hero.extraData as any)?.image || '' }
-      : null,
-    intro: bay && bay.extraData
-      ? {
-          ranchTitle: pickLocale((bay.extraData as any).ranchTitle, locale),
-          ranchText: pickLocale((bay.extraData as any).ranchText, locale),
-          portTitle: pickLocale((bay.extraData as any).portTitle, locale),
-          portText: pickLocale((bay.extraData as any).portText, locale),
-        }
-      : null,
-    history: history && history.extraData
-      ? {
-          title: pickLocale(history.title, locale),
-          text: pickLocale(history.text, locale),
-          milestones: ((history.extraData as any).milestones || []).map((m: any) => ({
-            year: m.year,
-            es: m.es,
-            en: m.en,
-          })),
-        }
-      : null,
-    fishing: fishing && fishing.extraData
-      ? {
-          title: pickLocale(fishing.title, locale),
-          text: pickLocale(fishing.text, locale),
-          rules: pickLocaleList((fishing.extraData as any).rules, locale),
-        }
-      : null,
-    protected: conap && conap.extraData
-      ? {
-          title: pickLocale(conap.title, locale),
-          text: pickLocale(conap.text, locale),
-          linkLabel: pickLocale((conap.extraData as any).link?.label, locale),
-          linkHref: (conap.extraData as any).link?.href || 'https://descubreanp.conanp.gob.mx/',
-        }
-      : null,
-    influence: influence
-      ? { title: pickLocale(influence.title, locale), text: pickLocale(influence.text, locale) }
-      : null,
-    recommendations: recommendations && recommendations.extraData
-      ? {
-          title: pickLocale(recommendations.title, locale),
-          items: pickLocaleList((recommendations.extraData as any).items, locale),
-        }
-      : null,
-    directions: directions && directions.extraData
-      ? {
-          title: pickLocale(directions.title, locale),
-          loreto: {
-            label: pickLocale((directions.extraData as any).loreto?.label, locale),
-            desc: pickLocale((directions.extraData as any).loreto?.desc, locale),
-            distance: (directions.extraData as any).loreto?.distance || '',
-            time: (directions.extraData as any).loreto?.time || '',
-            image: (directions.extraData as any).loreto?.image || '',
-          },
-          laPaz: {
-            label: pickLocale((directions.extraData as any).laPaz?.label, locale),
-            desc: pickLocale((directions.extraData as any).laPaz?.desc, locale),
-            distance: (directions.extraData as any).laPaz?.distance || '',
-            time: (directions.extraData as any).laPaz?.time || '',
-            image: (directions.extraData as any).laPaz?.image || '',
-          },
-          drivingTipsTitle: pickLocale((directions.extraData as any).drivingTipsTitle, locale),
-          drivingTips: pickLocaleList((directions.extraData as any).drivingTips, locale),
-        }
-      : null,
-    amenities: amenities && amenities.extraData
-      ? {
-          title: pickLocale(amenities.title, locale),
-          items: ((amenities.extraData as any).items || []).map((item: any) => ({
-            icon: item.icon,
-            title: pickLocale(item.title, locale),
-            text: pickLocale(item.text, locale),
-          })),
-        }
-      : null,
-    touristMap: touristMap
-      ? {
-          title: pickLocale(touristMap.title, locale),
-          image: (touristMap.extraData as any)?.image || '',
-          caption: pickLocale(touristMap.text, locale),
-        }
-      : null,
-    cta: cta
-      ? {
-          title: pickLocale(cta.title, locale),
-          desc: pickLocale(cta.text, locale),
-          btn: pickLocale((cta.extraData as any)?.btn, locale),
-        }
-      : null,
-  };
+  const guidePage = await strapiGetOne<GuidePageAttributes>('/guide-page', {
+    ...GUIDE_PAGE_POPULATE,
+    locale,
+  });
+  if (!guidePage) {
+    return {
+      hero: null, intro: null, history: null, fishing: null,
+      protected: null, influence: null, recommendations: null,
+      directions: null, amenities: null, touristMap: null, cta: null,
+    };
+  }
+  return transformGuidePage(guidePage, locale);
 }
 
 export async function getGuidePageWithFallback(locale: string = 'es'): Promise<GuidePageData> {
   const fromCms = await getGuidePage(locale);
   if (fromCms.hero || fromCms.intro) return fromCms;
   if (!USE_DEV_FALLBACK) return fromCms;
-  // The dev fallback is the existing guideData.js; the page can keep using
-  // that file directly when the CMS returns nothing. This function just
-  // returns the empty result here; the page does its own fallback below.
   return fromCms;
 }

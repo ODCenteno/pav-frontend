@@ -10,7 +10,7 @@ export default defineConfig({
     imageService: 'cloudflare',
     runtime: { mode: 'off' },
   }),
-  site: "https://pav-frontend.pixie-cemodan.workers.dev/",
+  site: "https://guiacomunidadesloretanas.com/",
   integrations: [react(), sitemap()],
 
   i18n: {

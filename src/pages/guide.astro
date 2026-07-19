@@ -30,6 +30,7 @@ import {
 import { navigation } from "@/utils/navigation";
 
 const locale = Astro.currentLocale || "es";
+const lang = locale.startsWith("en") ? "en" : "es";
 const t = useTranslations(locale);
 
 const guide = await getGuidePageWithFallback(locale);
@@ -136,8 +137,8 @@ const touristMapData = guide.touristMap
 >
   <HeroPage
     slot="Hero"
-    title={t("guidePage.hero.title")}
-    description={t("guidePage.hero.desc")}
+    title={hero.title[lang]}
+    description={hero.desc[lang]}
     backgroundImage={hero.image}
   />
 

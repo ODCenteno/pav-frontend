@@ -1,6 +1,5 @@
 ---
 import "./guideRecommendations.css";
-import SvgIcon from "../icons/SvgIcon.astro";
 
 interface Props {
   data: {
@@ -25,9 +24,6 @@ const items = data.items[lang] || [];
         <li class="guide-recommendations__item">
           <span class="guide-recommendations__num" aria-hidden="true">{String(idx + 1).padStart(2, "0")}</span>
           <p class="guide-recommendations__text">{item}</p>
-          <span class="guide-recommendations__icon" aria-hidden="true">
-            <SvgIcon name="leaf" class="guide-recommendations__icon-svg" />
-          </span>
         </li>
       ))}
     </ul>

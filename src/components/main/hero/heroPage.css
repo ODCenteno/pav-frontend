@@ -57,9 +57,9 @@
     .hero-page {
         min-height: 55dvh;
     }
-    
+
     .hero-page__container {
-        padding: var(--space-2xl) 0;
+        padding: var(--space-2xl) var(--space-2xl);
     }
 }
 

@@ -84,7 +84,7 @@ describe("cms client", () => {
         strapiOk([
           {
             id: 1,
-            attributes: { name: "Experiencias", slug: "experiences", order: 1, isActive: true },
+            attributes: { name: "Experiencias", slug: "experiences", order: 1 },
           },
         ])
       );
@@ -191,97 +191,50 @@ describe("cms client", () => {
       expect(data.directions).toBeNull();
     });
 
-    it("builds view model from extraData JSON for all sections", async () => {
+    it("builds view model from single-type API", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
-      // getGuidePage now uses a single batched request via getSiteContents
       fetchMock.mockResolvedValueOnce(
-        strapiOk([
-          { id: 1, attributes: { key: "guide-hero", title: "GH", text: "GD", extraData: { image: "/img.png" } } },
-          {
-            id: 2,
-            attributes: {
-              key: "guide-bay",
-              title: "",
-              text: "",
-              extraData: {
-                ranchTitle: { es: "RS", en: "RE" },
-                ranchText: { es: "RS-T", en: "RE-T" },
-                portTitle: { es: "PS", en: "PE" },
-                portText: { es: "PS-T", en: "PE-T" },
-              },
+        strapiOk({
+          id: 1,
+          documentId: "guide-1",
+          attributes: {
+            hero: { title: "GH", description: "GD", images: [{ url: "/img.png", alternativeText: "Hero" }] },
+            intro: {
+              ranchTitle: { es: "RS", en: "RE" },
+              ranchText: { es: "RS-T", en: "RE-T" },
+              portTitle: { es: "PS", en: "PE" },
+              portText: { es: "PS-T", en: "PE-T" },
             },
+            historyHeader: { title: { es: "HT", en: "HT" }, subtitle: { es: "HS", en: "HS" } },
+            historyMilestones: [{ year: "1900", text: { es: "ES", en: "EN" } }],
+            historyText: { es: "H-T", en: "H-T" },
+            fishingHeader: { title: { es: "FT", en: "FT" }, subtitle: { es: "FS", en: "FS" } },
+            fishingText: { es: "F-T", en: "F-T" },
+            fishingRules: [{ text: { es: "r1", en: "r1-en" } }],
+            protectedArea: { title: { es: "PT", en: "PT" }, text: { es: "C-T", en: "C-T" }, linkLabel: { es: "L", en: "L" }, linkHref: "https://example.com" },
+            influenceHeader: { title: { es: "IT", en: "IT" }, subtitle: { es: "IS", en: "IS" } },
+            influenceText: { es: "I-T", en: "I-T" },
+            recommendationsHeader: { title: { es: "RT", en: "RT" }, subtitle: { es: "RS", en: "RS" } },
+            recommendations: [{ text: { es: "a", en: "a-en" } }],
+            directionsHeader: { title: { es: "DT", en: "DT" }, subtitle: { es: "DS", en: "DS" } },
+            directions: [
+              { label: { es: "Loreto", en: "Loreto" }, description: { es: "L-D", en: "L-D" }, distance: "98 km", time: "~2 h", image: { url: "/loreto.png", alternativeText: "Loreto" } },
+              { label: { es: "La Paz", en: "La Paz" }, description: { es: "LP-D", en: "LP-D" }, distance: "360 km", time: "~5 h", image: { url: "/lapaz.png", alternativeText: "La Paz" } },
+            ],
+            drivingTipsHeader: { es: "T", en: "T" },
+            drivingTips: [{ text: { es: "t1", en: "t1-en" } }],
+            amenitiesHeader: { title: { es: "AT", en: "AT" }, subtitle: { es: "AS", en: "AS" } },
+            amenities: [{ icon: "wifi", title: { es: "W", en: "W" }, text: { es: "WT", en: "WT" } }],
+            touristMapHeader: { title: { es: "MT", en: "MT" }, subtitle: { es: "MS", en: "MS" } },
+            touristMapImage: { url: "/map.png", alternativeText: "Map" },
+            touristMapCaption: { es: "C", en: "C" },
+            finalCta: { title: { es: "CT", en: "CT" }, description: { es: "CD", en: "CD" }, buttonLabel: { es: "B", en: "B" }, buttonLink: "/contact" },
           },
-          {
-            id: 3,
-            attributes: {
-              key: "guide-history",
-              title: { es: "HT", en: "HT" },
-              text: { es: "H-T", en: "H-T" },
-              extraData: { milestones: [{ year: "1900", es: "ES", en: "EN" }] },
-            },
-          },
-          {
-            id: 4,
-            attributes: {
-              key: "guide-fishing",
-              title: { es: "FT", en: "FT" },
-              text: { es: "F-T", en: "F-T" },
-              extraData: { rules: { es: ["r1"], en: ["r1-en"] } },
-            },
-          },
-          {
-            id: 5,
-            attributes: {
-              key: "guide-conap",
-              title: { es: "CT", en: "CT" },
-              text: { es: "C-T", en: "C-T" },
-              extraData: { link: { label: { es: "L", en: "L" }, href: "https://example.com" } },
-            },
-          },
-          { id: 6, attributes: { key: "guide-influence", title: { es: "IT", en: "IT" }, text: { es: "I-T", en: "I-T" } } },
-          {
-            id: 7,
-            attributes: {
-              key: "guide-recommendations",
-              title: { es: "RT", en: "RT" },
-              text: "",
-              extraData: { items: { es: ["a"], en: ["a-en"] } },
-            },
-          },
-          {
-            id: 8,
-            attributes: {
-              key: "guide-directions",
-              title: { es: "DT", en: "DT" },
-              text: "",
-              extraData: {
-                loreto: { label: { es: "L", en: "L" }, desc: { es: "D", en: "D" }, distance: "98 km", time: "~2 h", image: "/loreto.png" },
-                laPaz: { label: { es: "L", en: "L" }, desc: { es: "D", en: "D" }, distance: "360 km", time: "~5 h", image: "/lapaz.png" },
-                drivingTipsTitle: { es: "T", en: "T" },
-                drivingTips: { es: ["t1"], en: ["t1-en"] },
-              },
-            },
-          },
-          {
-            id: 9,
-            attributes: {
-              key: "guide-amenities",
-              title: { es: "AT", en: "AT" },
-              text: "",
-              extraData: {
-                items: [
-                  { icon: "wifi", title: { es: "W", en: "W" }, text: { es: "WT", en: "WT" } },
-                ],
-              },
-            },
-          },
-          { id: 10, attributes: { key: "guide-tourist-map", title: { es: "MT", en: "MT" }, text: { es: "C", en: "C" }, extraData: { image: "/map.png" } } },
-          { id: 11, attributes: { key: "guide-cta", title: { es: "CT", en: "CT" }, text: { es: "CD", en: "CD" }, extraData: { btn: { es: "B", en: "B" } } } },
-        ])
+        })
       );
 
       const data = await getGuidePage("es");
-      expect(data.hero?.image).toBe("/img.png");
+      expect(data.hero?.image).toBe("http://localhost:1337/img.png");
       expect(data.intro?.ranchTitle).toBe("RS");
       expect(data.history?.milestones[0].es).toBe("ES");
       expect(data.fishing?.rules[0]).toBe("r1");
@@ -290,7 +243,7 @@ describe("cms client", () => {
       expect(data.recommendations?.items[0]).toBe("a");
       expect(data.directions?.loreto.distance).toBe("98 km");
       expect(data.amenities?.items[0].icon).toBe("wifi");
-      expect(data.touristMap?.image).toBe("/map.png");
+      expect(data.touristMap?.image).toBe("http://localhost:1337/map.png");
       expect(data.cta?.btn).toBe("B");
     });
   });
@@ -375,42 +328,36 @@ describe("cms client", () => {
   });
 
   describe("getAboutPage", () => {
-    it("builds view model from extraData JSON", async () => {
+    it("builds view model from single-type API", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
-      // getAboutPage now uses a single batched request for site-content
+      // about-page single type
       fetchMock.mockResolvedValueOnce(
-        strapiOk([
-          { id: 1, attributes: { key: "about-intro", title: "T", text: "Txt" } },
-          {
-            id: 2,
-            attributes: {
-              key: "about-values",
-              title: "",
-              text: "",
-              extraData: {
-                mission: { title: "M", text: "MT" },
-                vision: { title: "V", text: "VT" },
-                values: { title: "VAL", items: ["a", "b"] },
-              },
+        strapiOk({
+          id: 1,
+          documentId: "about-1",
+          attributes: {
+            introTitle: { es: "T", en: "T" },
+            introText: { es: "Txt", en: "Txt" },
+            values: {
+              missionTitle: { es: "M", en: "M" },
+              missionText: { es: "MT", en: "MT" },
+              visionTitle: { es: "V", en: "V" },
+              visionText: { es: "VT", en: "VT" },
+              valuesTitle: { es: "VAL", en: "VAL" },
+              valuesItems: [{ es: "a", en: "a" }, { es: "b", en: "b" }],
+            },
+            communityTitle: { es: "C", en: "C" },
+            communityText: { es: "CT", en: "CT" },
+            collaboration: {
+              title: { es: "CO2", en: "CO2" },
+              description: { es: "COT2", en: "COT2" },
+              primaryButtonLabel: { es: "BP", en: "BP" },
+              primaryButtonLink: "/a",
+              secondaryButtonLabel: { es: "BS", en: "BS" },
+              secondaryButtonLink: "/b",
             },
           },
-          { id: 3, attributes: { key: "about-community", title: "C", text: "CT" } },
-          {
-            id: 4,
-            attributes: {
-              key: "about-collaboration",
-              title: "CO",
-              text: "COT",
-              extraData: {
-                title: "CO2",
-                desc: "COT2",
-                btnPrimary: "BP",
-                btnSecondary: "BS",
-                links: { primary: "/a", secondary: "/b" },
-              },
-            },
-          },
-        ])
+        })
       );
       // team
       fetchMock.mockResolvedValueOnce(strapiOk([{ id: 1, attributes: { name: "M1" } }]));

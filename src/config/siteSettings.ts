@@ -8,15 +8,15 @@ import type { GlobalSettings } from "@/types/site-content.type";
 
 export const siteSettings: GlobalSettings = {
   contact: {
-    email: "info@puertoaguaverde.mx",
+    email: "info@guiacomunidadesloretanas.com",
     phone: "+52 614 123 4567",
     phoneRaw: "+526141234567",
     whatsapp: "526141234567",
     address: "Puerto Agua Verde, BCS, México",
   },
   social: {
-    instagram: "https://instagram.com/puertoaguaverde",
-    facebook: "https://facebook.com/puertoaguaverde",
+    instagram: "https://instagram.com/guiacomunidadesloretanas",
+    facebook: "https://facebook.com/guiacomunidadesloretanas",
     googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde",
   },
   metadata: {
@@ -27,7 +27,7 @@ export const siteSettings: GlobalSettings = {
   seo: {
     keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios",
     ogImage: "",
-    ogUrl: "",
+    ogUrl: "https://guiacomunidadesloretanas.com",
     author: "ODCenteno",
     themeColor: "#5A8A80",
   },

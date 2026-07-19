@@ -9,6 +9,7 @@
 .qwen/
 GEMINI.md
 STRAPI_PLAN.md
+PAWA-OFFLINE-PLAN.md
 *.orig
 .astro/
 agents/
@@ -189,6 +190,11 @@ dist
 ### Node Patch ###
 # Serverless Webpack directories
 .webpack/
+
+### Wrangler / Cloudflare ###
+.wrangler/
+wrangler.jsonc
+dist/server/.wrangler/
 
 # Optional stylelint cache
 

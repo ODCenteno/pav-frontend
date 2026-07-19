@@ -4,16 +4,28 @@ import HeroPage from "@/components/main/hero/HeroPage.astro";
 import ExpFeatured from "@/components/main/experiences/ExpFeatured.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback } from "@/lib/cms";
+import { getListingsWithFallback, getExperiencesPageWithFallback } from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 
-const allListings = await getListingsWithFallback(locale);
+const [experiencesPage, allListings] = await Promise.all([
+  getExperiencesPageWithFallback(locale),
+  getListingsWithFallback(locale),
+]);
+
 const featuredExperiences = allListings
   .filter((item) => item.category?.slug === "experiences")
   .slice(0, 3);
+
+const heroBgImage = experiencesPage?.hero.images?.[0]?.url || "/images/pav-landscape-12.webp";
+const heroTitle = experiencesPage?.hero.title || t("experiencesPage.heroTitle");
+const heroDesc = experiencesPage?.hero.description || t("experiencesPage.heroDesc");
+const introTitle = experiencesPage?.introHeader?.title || t("experiencesPage.introTitle");
+const introDesc = experiencesPage?.introHeader?.subtitle || t("experiencesPage.introDesc");
+const featuredTitle = experiencesPage?.featuredHeader?.title || t("experiencesPage.featuredTitle");
+const featuredDesc = experiencesPage?.featuredHeader?.subtitle;
 ---
 
 <BaseLayout
@@ -24,17 +36,26 @@ const featuredExperiences = allListings
 >
   <HeroPage
     slot="Hero"
-    title={t("experiencesPage.heroTitle")}
-    description={t("experiencesPage.heroDesc")}
-    backgroundImage="/images/pav-landscape-12.webp"
+    title={heroTitle}
+    description={heroDesc}
+    backgroundImage={heroBgImage}
   />
 
   <section class="experiences-intro section-padding">
     <div class="container text-center">
-      <h2>{t("experiencesPage.introTitle")}</h2>
-      <p class="max-w-700">{t("experiencesPage.introDesc")}</p>
+      <h2>{introTitle}</h2>
+      <p class="max-w-700">{introDesc}</p>
     </div>
   </section>
+
+  {featuredExperiences.length > 0 && (
+    <section class="experiences-featured-header">
+      <div class="container text-center">
+        <h2>{featuredTitle}</h2>
+        {featuredDesc && <p class="max-w-700">{featuredDesc}</p>}
+      </div>
+    </section>
+  )}
 
   <div class="experiences-list">
     {featuredExperiences.map((exp, index) => (
@@ -46,12 +67,14 @@ const featuredExperiences = allListings
     ))}
   </div>
 
-  <ExpCTA
-    title={t("experiencesPage.ctaTitle")}
-    description={t("experiencesPage.ctaDesc")}
-    btnText={t("experiencesPage.ctaBtn")}
-    href={navigation.sites(locale)}
-  />
+  {experiencesPage?.finalCta && (
+    <ExpCTA
+      title={experiencesPage.finalCta.title}
+      description={experiencesPage.finalCta.description}
+      btnText={experiencesPage.finalCta.buttonLabel}
+      href={experiencesPage.finalCta.buttonLink || navigation.sites(locale)}
+    />
+  )}
 </BaseLayout>
 
 <style>

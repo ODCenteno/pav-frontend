@@ -8,11 +8,22 @@ import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
 import { useTranslations } from "@/i18n/utils";
-import { getHomepageWithFallback } from "@/lib/cms";
+import { getHomepageWithFallback, getFeaturedListingsWithFallback } from "@/lib/cms";
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 const homepage = await getHomepageWithFallback(locale);
+const featuredListings = await getFeaturedListingsWithFallback(locale);
+
+const mapListings = featuredListings
+  .filter((item) => item.location?.lat != null && item.location?.lng != null)
+  .map((item) => ({
+    lat: item.location!.lat,
+    lng: item.location!.lng,
+    title: item.name[locale] || item.name.es || "",
+    href: `/sitios/${item.slug}`,
+    categoryColor: item.category?.color || "#68a299",
+  }));
 ---
 
 <BaseLayout siteTitle={t("page.index.siteTitle")} ogTitle={t("page.index.ogTitle")} siteDescription={t("page.index.siteDescription")} ogDescription={t("page.index.ogDescription")}>
@@ -21,6 +32,6 @@ const homepage = await getHomepageWithFallback(locale);
   <Destinations header={homepage.destinations.header} items={homepage.destinations.items} />
   <Highlights header={homepage.highlights.header} items={homepage.highlights.items} />
   <QuickFacts header={homepage.quickFacts.header} items={homepage.quickFacts.items} images={homepage.quickFacts.images} />
-  <MapSection data={homepage.mapSection} />
+  <MapSection data={homepage.mapSection} listings={mapListings} />
   <CtaSection data={homepage.finalCta} />
 </BaseLayout>

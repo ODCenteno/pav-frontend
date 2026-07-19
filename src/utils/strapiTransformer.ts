@@ -33,8 +33,19 @@ export interface StrapiItem<T = any> {
   [key: string]: any;
 }
 
+export interface StrapiFile {
+  id: number;
+  documentId?: string;
+  url: string;
+  alternativeText?: string;
+  width?: number;
+  height?: number;
+  mime?: string;
+  [key: string]: any;
+}
+
 export interface StrapiMedia {
-  data: {
+  data?: {
     id: number;
     documentId?: string;
     attributes?: {
@@ -45,10 +56,18 @@ export interface StrapiMedia {
       mime?: string;
     };
   } | null;
+  id?: number;
+  url?: string;
+  alternativeText?: string;
+  width?: number;
+  height?: number;
+  mime?: string;
+  formats?: Record<string, { url: string; width?: number; height?: number }>;
+  [key: string]: any;
 }
 
 export interface StrapiMediaArray {
-  data: Array<{
+  data?: Array<{
     id: number;
     documentId?: string;
     attributes?: {
@@ -56,6 +75,74 @@ export interface StrapiMediaArray {
       alternativeText?: string;
     };
   }>;
+  id?: number;
+  url?: string;
+  alternativeText?: string;
+  [key: string]: any;
+}
+
+export interface StrapiMediaFlat {
+  id: number;
+  documentId?: string;
+  url?: string;
+  alternativeText?: string;
+  width?: number;
+  height?: number;
+  mime?: string;
+  formats?: Record<string, { url: string; width?: number; height?: number }>;
+  [key: string]: any;
+}
+
+function getUrlFromMedia(media: StrapiMediaFlat | StrapiMedia | StrapiMediaArray | any): string {
+  if (!media) return '';
+  if (typeof media === 'object') {
+    if ('url' in media && media.url) return media.url;
+    if ('attributes' in media && typeof (media as any).attributes === 'object') {
+      const a = (media as any).attributes;
+      if (a && typeof a === 'object' && 'url' in a && a.url) return a.url;
+    }
+    if ('data' in media) {
+      const d = (media as any).data;
+      if (Array.isArray(d)) {
+        return d[0]?.attributes?.url || d[0]?.url || '';
+      }
+      if (d && typeof d === 'object') {
+        return (d as any).attributes?.url || (d as any).url || '';
+      }
+    }
+  }
+  return '';
+}
+
+function getAltFromMedia(media: StrapiMediaFlat | StrapiMedia | StrapiMediaArray | any): string {
+  if (!media) return '';
+  if ('alternativeText' in media && media.alternativeText) return media.alternativeText;
+  if ('attributes' in media && typeof (media as any).attributes === 'object') {
+    const a = (media as any).attributes;
+    if (a && typeof a === 'object' && 'alternativeText' in a && a.alternativeText) return a.alternativeText;
+  }
+  if ('data' in media) {
+    const d = (media as any).data;
+    if (Array.isArray(d)) return d[0]?.alternativeText || d[0]?.attributes?.alternativeText || '';
+    if (d && typeof d === 'object') return (d as any).alternativeText || (d as any).attributes?.alternativeText || '';
+  }
+  return '';
+}
+
+function mediaUrl(media: StrapiMedia | StrapiMediaFlat | undefined): string {
+  const url = getUrlFromMedia(media);
+  return resolveMediaUrl(url);
+}
+
+function mediaUrls(media: StrapiMediaArray | StrapiMediaFlat[] | undefined): string[] {
+  if (!media) return [];
+  if (Array.isArray(media)) {
+    return media.map(m => resolveMediaUrl(getUrlFromMedia(m))).filter(Boolean);
+  }
+  if ('data' in media && Array.isArray(media.data)) {
+    return media.data.map((m: any) => resolveMediaUrl(getUrlFromMedia(m))).filter(Boolean);
+  }
+  return [];
 }
 
 export interface StrapiRelation<T> {
@@ -67,11 +154,53 @@ export interface StrapiRelation<T> {
 export interface CategoryAttributes {
   name: string;
   slug: string;
-  icon?: string;
   color?: string;
-  order?: number;
-  isActive?: boolean;
-  description?: string;
+}
+
+export interface TagItemAttributes {
+  label_es?: string;
+  label_en?: string;
+}
+
+export interface ContactInfoAttributes {
+  whatsapp?: string;
+  phone?: string;
+  email?: string;
+  instagram?: string;
+  facebook?: string;
+}
+
+export interface GeoPointAttributes {
+  geoPoint?: { lat?: number; lng?: number };
+}
+
+export interface HoursAttributes {
+  text_es?: string;
+  text_en?: string;
+}
+
+export interface VisitInfoAttributes {
+  bestTime_es?: string;
+  bestTime_en?: string;
+  bring_es?: string;
+  bring_en?: string;
+  accessibilityNotes_es?: string;
+  accessibilityNotes_en?: string;
+  connectivityNotes_es?: string;
+  connectivityNotes_en?: string;
+}
+
+export interface LocalizedTextAttributes {
+  text_es?: string;
+  text_en?: string;
+}
+
+export interface LinksAttributes {
+  email?: string;
+  website?: string;
+  instagram?: string;
+  facebook?: string;
+  linkedin?: string;
 }
 
 export interface ListingAttributes {
@@ -83,38 +212,13 @@ export interface ListingAttributes {
   gallery?: StrapiMediaArray;
   price?: string;
   isFeatured?: boolean;
-  order?: number;
   category?: StrapiRelation<CategoryAttributes>;
-  tags?: string[];
-  contact?: {
-    whatsapp?: string;
-    phone?: string;
-    email?: string;
-    website?: string;
-    instagram?: string;
-    facebook?: string;
-  };
-  locationURL?: string;
-  location?: {
-    lat?: number;
-    lng?: number;
-    name?: string | { es: string; en: string };
-    address?: string | { es: string; en: string };
-    locality?: string;
-    googleMapsUrl?: string;
-    openStreetMapUrl?: string;
-  };
-  schedule?: {
-    isAlwaysOpen?: boolean;
-    text?: string | { es: string; en: string };
-  };
-  amenities?: string[];
-  recommendations?: {
-    bestTimeToVisit?: string | { es: string; en: string };
-    whatToBring?: string[] | { es: string[]; en: string[] };
-    accessibilityNotes?: string | { es: string; en: string };
-    connectivityNotes?: string | { es: string; en: string };
-  };
+  tags?: TagItemAttributes[];
+  contact?: ContactInfoAttributes;
+  location?: GeoPointAttributes;
+  schedule?: HoursAttributes;
+  amenities?: TagItemAttributes[];
+  recommendations?: VisitInfoAttributes;
   relatedListings?: { data: StrapiItem<ListingAttributes>[] };
   members?: { data: StrapiItem<CommunityMemberAttributes>[] };
   stories?: StoryBlockAttributes[];
@@ -165,15 +269,10 @@ export interface CommunityMemberAttributes {
 
 export interface TeamMemberAttributes {
   name: string;
-  role?: { es: string; en: string };
-  shortBio?: { es: string; en: string };
+  role?: LocalizedTextAttributes;
+  shortBio?: LocalizedTextAttributes;
   photo?: StrapiMedia;
-  links?: {
-    email?: string;
-    instagram?: string;
-    linkedin?: string;
-    website?: string;
-  };
+  links?: LinksAttributes;
   order?: number;
   isFeatured?: boolean;
 }
@@ -181,13 +280,9 @@ export interface TeamMemberAttributes {
 export interface OrganizationAttributes {
   name: string;
   type?: 'community' | 'institution' | 'partner' | 'collective' | 'business';
-  shortDescription?: { es: string; en: string };
+  shortDescription?: LocalizedTextAttributes;
   logo?: StrapiMedia;
-  links?: {
-    website?: string;
-    instagram?: string;
-    facebook?: string;
-  };
+  links?: LinksAttributes;
   order?: number;
   isFeatured?: boolean;
 }
@@ -276,17 +371,14 @@ export function unwrap<T>(item: StrapiItem<T>): T {
 }
 
 function localized(value: string | { es: string; en: string } | undefined, locale: string = 'es'): LocalizedString {
-  // When Strapi returns a single localized value, mirror it in both slots so
-  // the frontend's `useTranslations` helper can pick by language. A more
-  // sophisticated pipeline would call Strapi twice and merge.
+  if (Array.isArray(value)) {
+    const text = asString(value);
+    return { es: text, en: text };
+  }
   if (value && typeof value === 'object') {
-    // Already a LocalizedString — pass through.
     return { es: (value as any).es || '', en: (value as any).en || '' };
   }
   const v = (value as string) || '';
-  if (locale.startsWith('en')) {
-    return { es: v, en: v };
-  }
   return { es: v, en: v };
 }
 
@@ -320,38 +412,46 @@ function localeSuffixedArray(obj: any, key: string): LocalizedString[] | undefin
   return es.map((item, i) => ({ es: item, en: en[i] ?? item }));
 }
 
-function normalizeLocation(raw: any, locale: string): any {
+/**
+ * Build a LocalizedString[] from locale-suffixed text fields where each line
+ * is a separate item (one item per line).
+ */
+function textLinesToLocalized(obj: any, key: string): LocalizedString[] | undefined {
+  if (!obj) return undefined;
+  const esText = obj[`${key}_es`] || '';
+  const enText = obj[`${key}_en`] || esText;
+  const esLines = esText.split('\n').map((s: string) => s.trim()).filter(Boolean);
+  const enLines = enText.split('\n').map((s: string) => s.trim()).filter(Boolean);
+  if (esLines.length === 0) return undefined;
+  return esLines.map((item: string, i: number) => ({ es: item, en: enLines[i] ?? item }));
+}
+
+/**
+ * Convert a LocalizedText component ({ text_es, text_en }) to a LocalizedString.
+ */
+function fromLocalizedText(comp: any): LocalizedString | undefined {
+  if (!comp) return undefined;
+  const es = comp.text_es || '';
+  const en = comp.text_en || es;
+  if (!es && !en) return undefined;
+  return { es, en };
+}
+
+function normalizeLocation(raw: any): any {
   if (!raw) return undefined;
 
-  // Positional array shape: [lat, lng] or [lat, lng, ...]
-  if (Array.isArray(raw)) {
-    const [lat, lng] = raw;
-    if (typeof lat !== 'number' || typeof lng !== 'number') return undefined;
-    return {
-      lat: lat || 0,
-      lng: lng || 0,
-      name: undefined,
-      address: { es: '', en: '' },
-    };
+  if (raw.attributes != null) {
+    return normalizeLocation(raw.attributes);
   }
 
-  // Object shape
+  const coords = raw.geoPoint ?? { lat: raw.lat, lng: raw.lng };
+  const numLat = Number(coords.lat);
+  const numLng = Number(coords.lng);
+
+  if (isNaN(numLat) || isNaN(numLng)) return undefined;
   return {
-    lat: typeof raw.lat === 'number' ? raw.lat : 0,
-    lng: typeof raw.lng === 'number' ? raw.lng : 0,
-    name: raw.name
-      ? typeof raw.name === 'string'
-        ? localized(raw.name, locale)
-        : raw.name
-      : undefined,
-    address: raw.address
-      ? typeof raw.address === 'string'
-        ? localized(raw.address, locale)
-        : raw.address
-      : { es: '', en: '' },
-    locality: raw.locality,
-    googleMapsUrl: raw.googleMapsUrl,
-    openStreetMapUrl: raw.openStreetMapUrl,
+    lat: numLat,
+    lng: numLng,
   };
 }
 
@@ -359,18 +459,6 @@ function resolveMediaUrl(url: string): string {
   if (!url) return '';
   if (url.startsWith('http')) return url;
   return `${STRAPI_BASE_URL}${url}`;
-}
-
-function mediaUrl(media: StrapiMedia | undefined): string {
-  if (!media?.data) return '';
-  return resolveMediaUrl(media.data.attributes?.url || '');
-}
-
-function mediaUrls(media: StrapiMediaArray | undefined): string[] {
-  if (!media?.data) return [];
-  return media.data
-    .map((m) => resolveMediaUrl(m.attributes?.url || ''))
-    .filter(Boolean);
 }
 
 // ---------- transformers ----------
@@ -382,11 +470,7 @@ export function transformCategory(item: StrapiItem<CategoryAttributes>): Categor
     id,
     slug: a.slug,
     name: localized(a.name),
-    description: a.description ? localized(a.description) : undefined,
-    icon: a.icon,
     color: a.color,
-    order: a.order,
-    isActive: a.isActive ?? true,
   };
 }
 
@@ -417,9 +501,8 @@ export function transformListing(
     description: a.description ? localized(asString(a.description), locale) : undefined,
     categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
     category: catItem ? transformCategory(catItem) : undefined,
-    tags: (a.tags || []).map((t) => localized(t, locale)),
-    locationURL: a.locationURL || undefined,
-    location: normalizeLocation(a.location, locale),
+    tags: (a.tags || []).map((t) => localized({ es: t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
+    location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
     media: mainImageUrl || galleryUrls.length > 0
@@ -427,19 +510,16 @@ export function transformListing(
       : undefined,
     image: mainImageUrl,
     isFeatured: a.isFeatured,
-    order: a.order,
-    status: 'published',
     schedule: a.schedule
       ? {
-          isAlwaysOpen: a.schedule.isAlwaysOpen,
           text: localeSuffixed(a.schedule, 'text'),
         }
       : undefined,
-    amenities: (a.amenities || []).map((t) => localized(t, locale)),
+    amenities: (a.amenities || []).map((t) => localized({ es: t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
     recommendations: a.recommendations
       ? {
           bestTimeToVisit: localeSuffixed(a.recommendations, 'bestTime'),
-          whatToBring: localeSuffixedArray(a.recommendations, 'bring'),
+          whatToBring: textLinesToLocalized(a.recommendations, 'bring'),
           accessibilityNotes: localeSuffixed(a.recommendations, 'accessibilityNotes'),
           connectivityNotes: localeSuffixed(a.recommendations, 'connectivityNotes'),
         }
@@ -465,19 +545,23 @@ export function transformListing(
 function asString(value: string | any[] | undefined): string {
   if (typeof value === 'string') return value;
   if (Array.isArray(value)) {
-    // Strapi v5 richtext is a blocks array. Convert to plain text for now;
-    // pages that need HTML can switch to a richtext renderer later.
     return value
       .map((block: any) => {
         if (typeof block === 'string') return block;
-        if (block?.children) {
-          return block.children
-            .map((child: any) => child?.text || '')
-            .join('');
-        }
-        return '';
+        return extractTextFromBlock(block);
       })
+      .filter(Boolean)
       .join('\n\n');
+  }
+  return '';
+}
+
+function extractTextFromBlock(block: any): string {
+  if (!block) return '';
+  if (typeof block === 'string') return block;
+  if (block.text !== undefined) return String(block.text ?? '');
+  if (block.children) {
+    return block.children.map(extractTextFromBlock).join('');
   }
   return '';
 }
@@ -603,8 +687,8 @@ export function transformTeamMember(item: StrapiItem<TeamMemberAttributes>): Tea
   return {
     id,
     name: a.name,
-    role: a.role || { es: '', en: '' },
-    shortBio: a.shortBio,
+    role: fromLocalizedText(a.role) || { es: '', en: '' },
+    shortBio: fromLocalizedText(a.shortBio),
     photo: mediaUrl(a.photo) || undefined,
     links: a.links,
     order: a.order,
@@ -619,7 +703,7 @@ export function transformOrganization(item: StrapiItem<OrganizationAttributes>):
     id,
     name: a.name,
     type: a.type,
-    shortDescription: a.shortDescription,
+    shortDescription: fromLocalizedText(a.shortDescription),
     logo: mediaUrl(a.logo) || undefined,
     links: a.links,
     order: a.order,
@@ -643,92 +727,451 @@ export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, lo
 
 export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: string = 'es'): HomepageData {
   const a = unwrap(item);
+  const l = locale.startsWith('en') ? 'en' : 'es';
 
   const hero = a.hero || {};
-  const heroImages = hero.images?.data || [];
+  const heroImagesRaw: any[] = (
+    Array.isArray(hero.images)
+      ? hero.images
+      : hero.images?.data || []
+  ) as any[];
 
   const destinationsHeader = a.destinationsHeader || {};
   const destinationsItems = (a.destinations || []).map((d: any) => ({
-    title: localized(d.title, locale).es,
-    text: localized(d.text, locale).es,
-    image: d.image?.data ? resolveMediaUrl(d.image.data.attributes?.url || '') : '',
-    alt: d.image?.data?.attributes?.alternativeText || '',
+    title: localized(d.title, locale)[l],
+    text: localized(d.text, locale)[l],
+    image: resolveMediaUrl(getUrlFromMedia(d.image)),
+    alt: getAltFromMedia(d.image),
   }));
 
   const highlightsHeader = a.highlightsHeader || {};
   const highlightsItems = (a.highlights || []).map((h: any) => ({
-    title: localized(h.title, locale).es,
-    description: localized(h.description, locale).es,
-    image: h.image?.data ? resolveMediaUrl(h.image.data.attributes?.url || '') : '',
-    alt: h.image?.data?.attributes?.alternativeText || '',
+    title: localized(h.title, locale)[l],
+    description: localized(h.description, locale)[l],
+    image: resolveMediaUrl(getUrlFromMedia(h.image)),
+    alt: getAltFromMedia(h.image),
     link: h.link || undefined,
   }));
 
   const quickFactsHeader = a.quickFactsHeader || {};
   const quickFactsItems = (a.quickFacts || []).map((q: any) => ({
-    title: localized(q.title, locale).es,
-    value: localized(q.value, locale).es,
-    description: localized(q.description, locale).es,
+    title: localized(q.title, locale)[l],
+    value: localized(q.value, locale)[l],
+    description: localized(q.description, locale)[l],
   }));
   const quickFactsImages = [
-    a.quickFactsImage1?.data ? resolveMediaUrl(a.quickFactsImage1.data.attributes?.url || '') : '',
-    a.quickFactsImage2?.data ? resolveMediaUrl(a.quickFactsImage2.data.attributes?.url || '') : '',
+    resolveMediaUrl(getUrlFromMedia(a.quickFactsImage1)),
+    resolveMediaUrl(getUrlFromMedia(a.quickFactsImage2)),
   ];
 
   const mapSection = a.mapSection || {};
-  const mapImage = mapSection.image?.data
-    ? resolveMediaUrl(mapSection.image.data.attributes?.url || '')
-    : '';
+  const mapImage = resolveMediaUrl(getUrlFromMedia(mapSection.image));
 
   const finalCta = a.finalCta || {};
 
   return {
     hero: {
-      title: localized(hero.title, locale).es,
-      titleHighlight: localized(hero.titleHighlight, locale).es,
-      description: localized(hero.description, locale).es,
-      ctaLabel: localized(hero.ctaLabel, locale).es,
+      title: localized(hero.title, locale)[l],
+      titleHighlight: localized(hero.titleHighlight, locale)[l],
+      description: localized(hero.description, locale)[l],
+      ctaLabel: localized(hero.ctaLabel, locale)[l],
       ctaLink: hero.ctaLink || '/sitios',
-      images: heroImages.map((img: any) => ({
-        url: resolveMediaUrl(img.attributes?.url || ''),
-        alt: img.attributes?.alternativeText || '',
+      images: heroImagesRaw.map((img: any) => ({
+        url: resolveMediaUrl(getUrlFromMedia(img)),
+        alt: getAltFromMedia(img),
       })),
     },
     destinations: {
       header: {
-        title: localized(destinationsHeader.title, locale).es,
-        subtitle: localized(destinationsHeader.subtitle, locale).es,
+        title: localized(destinationsHeader.title, locale)[l],
+        subtitle: localized(destinationsHeader.subtitle, locale)[l],
       },
       items: destinationsItems,
     },
     highlights: {
       header: {
-        title: localized(highlightsHeader.title, locale).es,
-        subtitle: localized(highlightsHeader.subtitle, locale).es,
+        title: localized(highlightsHeader.title, locale)[l],
+        subtitle: localized(highlightsHeader.subtitle, locale)[l],
       },
       items: highlightsItems,
     },
     quickFacts: {
       header: {
-        title: localized(quickFactsHeader.title, locale).es,
-        subtitle: localized(quickFactsHeader.subtitle, locale).es,
+        title: localized(quickFactsHeader.title, locale)[l],
+        subtitle: localized(quickFactsHeader.subtitle, locale)[l],
       },
       items: quickFactsItems,
       images: quickFactsImages,
     },
     mapSection: {
-      title: localized(mapSection.title, locale).es,
-      description: localized(mapSection.description, locale).es,
-      buttonLabel: localized(mapSection.buttonLabel, locale).es,
+      title: localized(mapSection.title, locale)[l],
+      description: localized(mapSection.description, locale)[l],
+      buttonLabel: localized(mapSection.buttonLabel, locale)[l],
       buttonUrl: mapSection.buttonUrl || '',
       image: mapImage,
-      alt: mapSection.image?.data?.attributes?.alternativeText || '',
+      alt: getAltFromMedia(mapSection.image),
     },
     finalCta: {
-      title: localized(finalCta.title, locale).es,
-      description: localized(finalCta.description, locale).es,
-      buttonLabel: localized(finalCta.buttonLabel, locale).es,
+      title: localized(finalCta.title, locale)[l],
+      description: localized(finalCta.description, locale)[l],
+      buttonLabel: localized(finalCta.buttonLabel, locale)[l],
       buttonLink: finalCta.buttonLink || '#',
     },
+  };
+}
+
+// ---------- about page ----------
+
+export interface AboutPageAttributes {
+  internalLabel?: string;
+  hero?: {
+    title?: string | { es: string; en: string };
+    titleHighlight?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    ctaLabel?: string | { es: string; en: string };
+    ctaLink?: string;
+    images?: any;
+  };
+  introTitle?: string | { es: string; en: string };
+  introText?: string | { es: string; en: string };
+  values?: {
+    missionTitle?: string | { es: string; en: string };
+    missionText?: string | { es: string; en: string };
+    visionTitle?: string | { es: string; en: string };
+    visionText?: string | { es: string; en: string };
+    valuesTitle?: string | { es: string; en: string };
+    valuesItems?: Array<string | { es: string; en: string }>;
+  };
+  communityTitle?: string | { es: string; en: string };
+  communityText?: string | { es: string; en: string };
+  collaboration?: {
+    title?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    primaryButtonLabel?: string | { es: string; en: string };
+    primaryButtonLink?: string;
+    secondaryButtonLabel?: string | { es: string; en: string };
+    secondaryButtonLink?: string;
+  };
+  finalCta?: {
+    title?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    buttonLabel?: string | { es: string; en: string };
+    buttonLink?: string;
+  };
+}
+
+export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale: string = 'es') {
+  const a = unwrap(item);
+  const l = locale.startsWith('en') ? 'en' : 'es';
+
+  const hero = a.hero || {};
+  const heroImagesRaw: any[] = (
+    Array.isArray(hero.images)
+      ? hero.images
+      : hero.images?.data || []
+  ) as any[];
+
+  const values = a.values || {};
+
+  return {
+    hero: {
+      title: localized(hero.title, locale)[l],
+      titleHighlight: localized(hero.titleHighlight, locale)[l],
+      description: localized(hero.description, locale)[l],
+      ctaLabel: localized(hero.ctaLabel, locale)[l],
+      ctaLink: hero.ctaLink || '/sitios',
+      images: heroImagesRaw.map((img: any) => ({
+        url: resolveMediaUrl(getUrlFromMedia(img)),
+        alt: getAltFromMedia(img),
+      })),
+    },
+    intro: {
+      title: localized(a.introTitle, locale)[l],
+      text: localized(a.introText, locale)[l],
+    },
+    values: {
+      mission: {
+        title: localized(values.missionTitle, locale)[l],
+        text: localized(values.missionText, locale)[l],
+      },
+      vision: {
+        title: localized(values.visionTitle, locale)[l],
+        text: localized(values.visionText, locale)[l],
+      },
+      values: {
+        title: localized(values.valuesTitle, locale)[l],
+        items: (values.valuesItems || []).map((item) =>
+          typeof item === 'object' ? (item as any)[l] || (item as any).es || '' : item || ''
+        ),
+      },
+    },
+    community: {
+      title: localized(a.communityTitle, locale)[l],
+      text: localized(a.communityText, locale)[l],
+    },
+    collaboration: a.collaboration
+      ? {
+          title: localized(a.collaboration.title, locale)[l],
+          desc: localized(a.collaboration.description, locale)[l],
+          btnPrimary: localized(a.collaboration.primaryButtonLabel, locale)[l],
+          btnSecondary: localized(a.collaboration.secondaryButtonLabel, locale)[l],
+          links: {
+            primary: a.collaboration.primaryButtonLink || '#',
+            secondary: a.collaboration.secondaryButtonLink || '#',
+          },
+        }
+      : null,
+    finalCta: a.finalCta
+      ? {
+          title: localized(a.finalCta.title, locale)[l],
+          description: localized(a.finalCta.description, locale)[l],
+          buttonLabel: localized(a.finalCta.buttonLabel, locale)[l],
+          buttonLink: a.finalCta.buttonLink || '#',
+        }
+      : null,
+  };
+}
+
+// ---------- guide page ----------
+
+export interface GuidePageAttributes {
+  internalLabel?: string;
+  hero?: {
+    title?: string | { es: string; en: string };
+    titleHighlight?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    ctaLabel?: string | { es: string; en: string };
+    ctaLink?: string;
+    images?: any;
+  };
+  intro?: {
+    ranchTitle?: string | { es: string; en: string };
+    ranchText?: string | { es: string; en: string };
+    portTitle?: string | { es: string; en: string };
+    portText?: string | { es: string; en: string };
+  };
+  historyHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  historyMilestones?: Array<{ year?: string; text?: string | { es: string; en: string } }>;
+  historyText?: string | { es: string; en: string };
+  fishingHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  fishingText?: string | { es: string; en: string };
+  fishingRules?: Array<{ text?: string | { es: string; en: string } }>;
+  protectedArea?: {
+    title?: string | { es: string; en: string };
+    text?: string | { es: string; en: string };
+    linkLabel?: string | { es: string; en: string };
+    linkHref?: string;
+  };
+  influenceHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  influenceText?: string | { es: string; en: string };
+  recommendationsHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  recommendations?: Array<{ text?: string | { es: string; en: string } }>;
+  directionsHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  directions?: Array<{
+    label?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    distance?: string;
+    time?: string;
+    image?: any;
+  }>;
+  drivingTipsHeader?: string | { es: string; en: string };
+  drivingTips?: Array<{ text?: string | { es: string; en: string } }>;
+  amenitiesHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  amenities?: Array<{
+    icon?: 'wifi' | 'signal' | 'toilet' | 'parking' | 'water';
+    title?: string | { es: string; en: string };
+    text?: string | { es: string; en: string };
+  }>;
+  touristMapHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  touristMapImage?: any;
+  touristMapCaption?: string | { es: string; en: string };
+  finalCta?: {
+    title?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    buttonLabel?: string | { es: string; en: string };
+    buttonLink?: string;
+  };
+}
+
+export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale: string = 'es') {
+  const a = unwrap(item);
+  const l = locale.startsWith('en') ? 'en' : 'es';
+
+  const hero = a.hero || {};
+  const heroImagesRaw: any[] = (
+    Array.isArray(hero.images)
+      ? hero.images
+      : hero.images?.data || []
+  ) as any[];
+
+  return {
+    hero: {
+      title: localized(hero.title, locale)[l],
+      desc: localized(hero.description, locale)[l],
+      image: heroImagesRaw[0]
+        ? resolveMediaUrl(getUrlFromMedia(heroImagesRaw[0]))
+        : '',
+    },
+    intro: a.intro
+      ? {
+          ranchTitle: localized(a.intro.ranchTitle, locale)[l],
+          ranchText: localized(a.intro.ranchText, locale)[l],
+          portTitle: localized(a.intro.portTitle, locale)[l],
+          portText: localized(a.intro.portText, locale)[l],
+        }
+      : null,
+    history: {
+      title: localized(a.historyHeader?.title, locale)[l],
+      text: localized(a.historyText, locale)[l],
+      milestones: (a.historyMilestones || []).map((m) => ({
+        year: m.year || '',
+        es: typeof m.text === 'object' ? (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
+        en: typeof m.text === 'object' ? (m.text as any).en || (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
+      })),
+    },
+    fishing: {
+      title: localized(a.fishingHeader?.title, locale)[l],
+      text: localized(a.fishingText, locale)[l],
+      rules: (a.fishingRules || []).map((r) =>
+        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any).es || '' : r.text || ''
+      ),
+    },
+    protected: a.protectedArea
+      ? {
+          title: localized(a.protectedArea.title, locale)[l],
+          text: localized(a.protectedArea.text, locale)[l],
+          linkLabel: localized(a.protectedArea.linkLabel, locale)[l],
+          linkHref: a.protectedArea.linkHref || '#',
+        }
+      : null,
+    influence: {
+      title: localized(a.influenceHeader?.title, locale)[l],
+      text: localized(a.influenceText, locale)[l],
+    },
+    recommendations: {
+      title: localized(a.recommendationsHeader?.title, locale)[l],
+      items: (a.recommendations || []).map((r) =>
+        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any).es || '' : r.text || ''
+      ),
+    },
+    directions: {
+      title: localized(a.directionsHeader?.title, locale)[l],
+      loreto: (() => {
+        const r = (a.directions || [])[0];
+        return r
+          ? {
+              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any).es || '' : r.label || '',
+              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any).es || '' : r.description || '',
+              distance: r.distance || '',
+              time: r.time || '',
+              image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
+            }
+          : { label: '', desc: '', distance: '', time: '', image: '' };
+      })(),
+      laPaz: (() => {
+        const r = (a.directions || [])[1];
+        return r
+          ? {
+              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any).es || '' : r.label || '',
+              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any).es || '' : r.description || '',
+              distance: r.distance || '',
+              time: r.time || '',
+              image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
+            }
+          : { label: '', desc: '', distance: '', time: '', image: '' };
+      })(),
+      drivingTipsTitle: localized(a.drivingTipsHeader, locale)[l],
+      drivingTips: (a.drivingTips || []).map((t) =>
+        typeof t.text === 'object' ? (t.text as any)[l] || (t.text as any).es || '' : t.text || ''
+      ),
+    },
+    amenities: {
+      title: localized(a.amenitiesHeader?.title, locale)[l],
+      items: (a.amenities || []).map((am) => ({
+        icon: am.icon || 'wifi',
+        title: typeof am.title === 'object' ? (am.title as any)[l] || (am.title as any).es || '' : am.title || '',
+        text: typeof am.text === 'object' ? (am.text as any)[l] || (am.text as any).es || '' : am.text || '',
+      })),
+    },
+    touristMap: {
+      title: localized(a.touristMapHeader?.title, locale)[l],
+      image: a.touristMapImage ? resolveMediaUrl(getUrlFromMedia(a.touristMapImage)) : '',
+      caption: localized(a.touristMapCaption, locale)[l],
+    },
+    cta: a.finalCta
+      ? {
+          title: localized(a.finalCta.title, locale)[l],
+          desc: localized(a.finalCta.description, locale)[l],
+          btn: localized(a.finalCta.buttonLabel, locale)[l],
+        }
+      : null,
+  };
+}
+
+// ---------- experiences page ----------
+
+export interface ExperiencesPageAttributes {
+  internalLabel?: string;
+  hero?: {
+    title?: string | { es: string; en: string };
+    titleHighlight?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    ctaLabel?: string | { es: string; en: string };
+    ctaLink?: string;
+    images?: any;
+  };
+  introHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  featuredHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  finalCta?: {
+    title?: string | { es: string; en: string };
+    description?: string | { es: string; en: string };
+    buttonLabel?: string | { es: string; en: string };
+    buttonLink?: string;
+  };
+}
+
+export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttributes>, locale: string = 'es') {
+  const a = unwrap(item);
+  const l = locale.startsWith('en') ? 'en' : 'es';
+
+  const hero = a.hero || {};
+  const heroImagesRaw: any[] = (
+    Array.isArray(hero.images)
+      ? hero.images
+      : hero.images?.data || []
+  ) as any[];
+
+  return {
+    hero: {
+      title: localized(hero.title, locale)[l],
+      titleHighlight: localized(hero.titleHighlight, locale)[l],
+      description: localized(hero.description, locale)[l],
+      ctaLabel: localized(hero.ctaLabel, locale)[l],
+      ctaLink: hero.ctaLink || '/sitios',
+      images: heroImagesRaw.map((img: any) => ({
+        url: resolveMediaUrl(getUrlFromMedia(img)),
+        alt: getAltFromMedia(img),
+      })),
+    },
+    introHeader: a.introHeader
+      ? {
+          title: localized(a.introHeader.title, locale)[l],
+          subtitle: localized(a.introHeader.subtitle, locale)[l],
+        }
+      : null,
+    featuredHeader: a.featuredHeader
+      ? {
+          title: localized(a.featuredHeader.title, locale)[l],
+          subtitle: localized(a.featuredHeader.subtitle, locale)[l],
+        }
+      : null,
+    finalCta: a.finalCta
+      ? {
+          title: localized(a.finalCta.title, locale)[l],
+          description: localized(a.finalCta.description, locale)[l],
+          buttonLabel: localized(a.finalCta.buttonLabel, locale)[l],
+          buttonLink: a.finalCta.buttonLink || '#',
+        }
+      : null,
   };
 }

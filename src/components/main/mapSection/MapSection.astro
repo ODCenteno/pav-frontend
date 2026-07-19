@@ -1,21 +1,39 @@
 ---
 import "./mapSection.css";
+import MapView from "@/components/maps/MapView.tsx";
 import type { MapSectionData } from "@/types/homepage.type";
+
+interface ListingMarker {
+  lat: number;
+  lng: number;
+  title: string;
+  href: string;
+  categoryColor: string;
+}
 
 interface Props {
   data: MapSectionData;
+  listings?: ListingMarker[];
 }
 
-const { data } = Astro.props;
+const { data, listings = [] } = Astro.props;
 ---
 
 <section class="map-section">
-  <div class="map-bg">
-    <img src={data.image} alt={data.alt || data.title} quality={80} />
-  </div>
-  <div class="container map-content">
-    <h2 data-key="map_title">{data.title}</h2>
-    <p class="map-description" data-key="map_desc">{data.description}</p>
-    <a href={data.buttonUrl} target="_blank" rel="noopener noreferrer" class="btn btn-accent">{data.buttonLabel}</a>
+  <div class="map-full">
+    <MapView
+      client:only="react"
+      markers={listings}
+      center={[25.512, -111.075]}
+      zoom={12}
+      height="100%"
+    />
+    <div class="container map-content">
+      <div class="map-content__card">
+        <h2 data-key="map_title">{data.title}</h2>
+        <p class="map-description" data-key="map_desc">{data.description}</p>
+        <a href={data.buttonUrl} target="_blank" rel="noopener noreferrer" class="btn btn-accent">{data.buttonLabel}</a>
+      </div>
+    </div>
   </div>
 </section>

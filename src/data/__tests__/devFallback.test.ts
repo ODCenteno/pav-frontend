@@ -48,12 +48,12 @@ describe("data/devFallback", () => {
       expect(withImage!.media!.mainImageUrl).toMatch(/^\/images\//);
     });
 
-    it("builds a Location with address when lat/lng present", () => {
+    it("builds a Location with lat/lng when present", () => {
       const items = getListingsFallback();
       const withLoc = items.find((i) => i.location?.lat);
       expect(withLoc).toBeDefined();
-      expect(withLoc!.location!.address).toBeDefined();
-      expect(typeof withLoc!.location!.address!.es).toBe("string");
+      expect(withLoc!.location!.lat).toBeDefined();
+      expect(withLoc!.location!.lng).toBeDefined();
     });
   });
 

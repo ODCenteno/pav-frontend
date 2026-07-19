@@ -88,7 +88,7 @@ export const collaborationData = {
   btnPrimary: "Ponerte en contacto",
   btnSecondary: "Seguir el proyecto",
   links: {
-    primary: "mailto:info@puertoaguaverde.mx",
-    secondary: "https://instagram.com/puertoaguaverde"
+    primary: "mailto:info@guiacomunidadesloretanas.com",
+    secondary: "https://instagram.com/guiacomunidadesloretanas"
   }
 };

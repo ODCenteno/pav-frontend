@@ -58,19 +58,13 @@ export function getListingsFallback(): Listing[] {
             whatToBring: localizedArray(item.recommendations.bring_es, item.recommendations.bring_en),
           }
         : undefined,
-      contact: item.contact,
+      contact: item.contact
+        ? (({ website, ...rest }) => rest)(item.contact)
+        : undefined,
       location: item.location && item.location.lat != null && item.location.lng != null
         ? {
             lat: item.location.lat,
             lng: item.location.lng,
-            address: localizedFromPair(
-              item.location.address_es ?? item.location.name_es ?? item.location.name ?? '',
-              item.location.address_en ?? item.location.name_en ?? item.location.name ?? ''
-            ),
-            name: localizedFromPair(
-              item.location.name_es ?? item.location.name ?? '',
-              item.location.name_en ?? item.location.name ?? ''
-            ),
           }
         : undefined,
       pricing: item.price ? { price: item.price } : undefined,

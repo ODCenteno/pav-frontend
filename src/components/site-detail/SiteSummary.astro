@@ -1,5 +1,11 @@
 ---
 import "./siteSummary.css";
+import MapView from "@/components/maps/MapView.tsx";
+
+interface Location {
+  lat: number;
+  lng: number;
+}
 
 interface Props {
   description: string | undefined;
@@ -12,10 +18,14 @@ interface Props {
     whatsapp?: string;
     phone?: string;
   };
-  mapUrl?: string;
+  location?: Location;
+  categoryColor?: string;
 }
 
-const { description, labels, contactActions, mapUrl } = Astro.props;
+const { description, labels, contactActions, location, categoryColor } = Astro.props;
+
+const hasLocation = location?.lat != null && location?.lng != null;
+const markerColor = categoryColor || "#68a299";
 ---
 
 <section class="site-summary container">
@@ -28,18 +38,20 @@ const { description, labels, contactActions, mapUrl } = Astro.props;
     </div>
 
     <aside class="site-summary__sidebar">
-      {mapUrl && (
+      {hasLocation && (
         <div class="map-container">
-          <iframe
-            src={mapUrl}
-            width="100%"
-            height="250"
-            class="map-iframe"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-            title={labels.about}
-          ></iframe>
+          <MapView
+            client:only="react"
+            markers={[{
+              lat: location.lat,
+              lng: location.lng,
+              title: "",
+              categoryColor: markerColor,
+            }]}
+            center={[location.lat, location.lng]}
+            zoom={14}
+            height={250}
+          />
         </div>
       )}
       <div class="quick-actions-card">

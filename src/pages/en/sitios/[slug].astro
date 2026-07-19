@@ -16,7 +16,6 @@ import { useTranslations } from "../../../i18n/utils";
 import { getListingsWithFallback } from "../../../lib/cms";
 import type { Listing } from "../../../types/listing.type";
 import { navigation } from "@/utils/navigation";
-import { buildMapsEmbedUrl } from "@/utils/maps";
 
 export const prerender = true;
 
@@ -40,7 +39,8 @@ const title = item.name[locale];
 const description = item.description?.[locale];
 const categoryLabel = item.category?.name?.[locale] || "";
 const tags = (item.tags || []).map(tag => tag[locale]);
-const mapUrl = buildMapsEmbedUrl(item.location, item.locationURL, locale);
+const location = item.location;
+const categoryColor = item.category?.color || "#68a299";
 
 const labels = {
   about: t("siteDetailPage.labels.about"),
@@ -71,6 +71,8 @@ const schedule = item.schedule?.text?.[locale];
 const amenities = (item.amenities || []).map(a => a[locale]);
 const bestTime = item.recommendations?.bestTimeToVisit?.[locale];
 const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
+const accessibility = item.recommendations?.accessibilityNotes?.[locale];
+const connectivity = item.recommendations?.connectivityNotes?.[locale];
 ---
 
 <BaseLayout
@@ -91,7 +93,8 @@ const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
     description={description}
     labels={labels}
     contactActions={contactActions}
-    mapUrl={mapUrl}
+    location={location}
+    categoryColor={categoryColor}
   >
     <SiteGallery
       title={labels.gallery}
@@ -125,11 +128,13 @@ const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
     <ProductList title={labels.products} products={item.products} />
   )}
 
-  {(bestTime || (bring && bring.length > 0)) && (
+  {(bestTime || (bring && bring.length > 0) || accessibility || connectivity) && (
     <SiteTips
       labels={labels}
       bestTime={bestTime}
       whatToBring={bring}
+      accessibility={accessibility}
+      connectivity={connectivity}
     />
   )}
 

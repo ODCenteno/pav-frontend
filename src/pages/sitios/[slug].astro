@@ -16,7 +16,6 @@ import { getListingsWithFallback } from "../../lib/cms";
 import type { Listing } from "../../types/listing.type";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { navigation } from "@/utils/navigation";
-import { buildMapsEmbedUrl } from "@/utils/maps";
 
 export const prerender = true;
 
@@ -41,7 +40,7 @@ const description = item.description?.[locale];
 const categoryLabel = item.category?.name?.[locale] || "";
 const tags = (item.tags || []).map(tag => tag[locale]);
 const location = item.location;
-const mapUrl = buildMapsEmbedUrl(location, item.locationURL, locale);
+const categoryColor = item.category?.color || "#68a299";
 
 
 const labels = {
@@ -73,12 +72,14 @@ const schedule = item.schedule?.text?.[locale];
 const amenities = (item.amenities || []).map(a => a[locale]);
 const bestTime = item.recommendations?.bestTimeToVisit?.[locale];
 const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
+const accessibility = item.recommendations?.accessibilityNotes?.[locale];
+const connectivity = item.recommendations?.connectivityNotes?.[locale];
 ---
 
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
   <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} tags={tags} labels={labels} />
 
-  <SiteSummary description={description} labels={labels} contactActions={contactActions} mapUrl={mapUrl}>
+  <SiteSummary description={description} labels={labels} contactActions={contactActions} location={location} categoryColor={categoryColor}>
     <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
   </SiteSummary>
 
@@ -102,7 +103,7 @@ const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
     <ProductList title={labels.products} products={item.products} />
   )}
 
-  {(bestTime || (bring && bring.length > 0)) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} />}
+  {(bestTime || (bring && bring.length > 0) || accessibility || connectivity) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} accessibility={accessibility} connectivity={connectivity} />}
 
   <RelatedSites title={labels.related} relatedIds={item.relatedSites} currentLang={locale} />
 
