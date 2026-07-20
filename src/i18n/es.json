@@ -211,7 +211,9 @@
       "contact": "Contactar",
       "favorite": "Guardar",
       "favoriteActive": "Guardado",
-      "share": "Compartir"
+      "share": "Compartir",
+      "call": "Llamar",
+      "email": "Correo"
     },
     "labels": {
       "about": "Sobre este lugar",
@@ -227,7 +229,11 @@
       "behind": "Quién está detrás",
       "stories": "Nuestra historia",
       "products": "Productos y servicios",
-      "follow": "Síguenos"
+      "follow": "Síguenos",
+      "bestTime": "Mejor época para visitar",
+      "whatToBring": "Qué llevar",
+      "accessibility": "Accesibilidad",
+      "connectivity": "Conectividad"
     },
     "map": {
       "open": "Abrir en el mapa"
@@ -407,6 +413,9 @@
     "iosBody": "Toca Compartir y luego \"Añadir a pantalla de inicio\" para instalar la app.",
     "installed": "La app ya está instalada. Búscala en tu pantalla de inicio.",
     "failed": "No pudimos instalar la app. Inténtalo de nuevo desde el menú del navegador."
+  },
+  "installHint": {
+    "body": "Consejo: instala el sitio como app para visitarlo sin conexión y guardar tus lugares favoritos."
   },
   "legal": {
     "privacy": {

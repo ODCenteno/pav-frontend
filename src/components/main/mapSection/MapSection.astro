@@ -1,43 +1,82 @@
 ---
+/**
+ * MapSection.astro — Homepage map block.
+ *
+ * Mobile-first, three-block vertical stack:
+ *   1. Header (eyebrow + title + description)
+ *   2. Map (primary element, full-bleed width)
+ *   3. Section CTA → external map / full listings
+ *
+ * Markers come from CMS featured listings and render enhanced popups
+ * (image thumb + title + short description + link) when tapped.
+ */
 import "./mapSection.css";
 import MapView from "@/components/maps/MapView.tsx";
+import type { MarkerItem } from "@/components/maps/mapIcons";
 import type { MapSectionData } from "@/types/homepage.type";
-
-interface ListingMarker {
-  lat: number;
-  lng: number;
-  title: string;
-  href: string;
-  categoryColor: string;
-}
 
 interface Props {
   data: MapSectionData;
-  listings?: ListingMarker[];
+  listings?: MarkerItem[];
   locale?: string;
 }
 
-const { data, listings = [], locale = 'es' } = Astro.props;
+const { data, listings = [], locale = "es" } = Astro.props;
+
+const lang = locale.startsWith("en") ? "en" : "es";
+
+const FALLBACK_CENTER: [number, number] = [25.512, -111.075];
+const center: [number, number] =
+  data.centerPoint && typeof data.centerPoint.lat === "number" && typeof data.centerPoint.lng === "number"
+    ? [data.centerPoint.lat, data.centerPoint.lng]
+    : FALLBACK_CENTER;
+
+const zoom = typeof data.zoom === "number" ? data.zoom : 12;
+
+const title = (data.title ?? "").trim();
+const description = (data.description ?? "").trim();
+const buttonLabel = (data.buttonLabel ?? "").trim();
+const ctaHref = (data.buttonUrl ?? "").trim() || "#";
 ---
 
-<section class="map-section">
-  <div class="map-full">
+<section class="map-section section-padding" aria-labelledby="map-section-title">
+  <div class="container map-section__header">
+    <p class="map-section__eyebrow">Mapa del destino</p>
+    <h2
+      id="map-section-title"
+      class="map-section__title"
+      data-key="map_title"
+    >
+      {title || (lang === "en" ? "Explore the destination" : "Explora el destino")}
+    </h2>
+    {description && (
+      <p class="map-section__description" data-key="map_desc">
+        {description}
+      </p>
+    )}
+  </div>
+
+  <div class="map-section__map">
     <MapView
       client:only="react"
       markers={listings}
-      center={data.centerPoint ? [data.centerPoint.lat, data.centerPoint.lng] : [25.512, -111.075]}
-      zoom={data.zoom || 12}
-      height={560}
+      center={center}
+      zoom={zoom}
+      height="100%"
+      locale={locale}
+      linkLabel={lang === "en" ? "View site" : "Ver sitio"}
     />
   </div>
 
-  <div class="map-overlay">
-    <div class="container">
-      <div class="map-content-card">
-        <h2 data-key="map_title">{data.title || 'Mapa del Destino'}</h2>
-        <p class="map-description" data-key="map_desc">{data.description || 'Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme.'}</p>
-        <a href={data.buttonUrl || '#'} target="_blank" rel="noopener noreferrer" class="btn btn-accent">{data.buttonLabel || 'Ver Mapa en OpenStreetMap'}</a>
-      </div>
-    </div>
+  <div class="container map-section__cta">
+    <a
+      href={ctaHref}
+      class="btn btn-accent map-section__btn"
+      target="_blank"
+      rel="noopener noreferrer"
+      data-key="map_btn"
+    >
+      {buttonLabel || (lang === "en" ? "Open full map" : "Abrir mapa completo")}
+    </a>
   </div>
 </section>

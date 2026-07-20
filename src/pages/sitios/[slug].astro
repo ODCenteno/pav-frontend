@@ -12,26 +12,24 @@ import ProductList from "../../components/site-detail/ProductList.astro";
 import SocialLinks from "../../components/site-detail/SocialLinks.astro";
 import StickyActionBar from "../../components/site-detail/StickyActionBar.tsx";
 import { useTranslations } from "../../i18n/utils";
-import { getListingsWithFallback } from "../../lib/cms";
-import type { Listing } from "../../types/listing.type";
+import { getListingBySlugWithFallback, getListingSlugsWithFallback } from "../../lib/cms";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { navigation } from "@/utils/navigation";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const listings = await getListingsWithFallback("es");
-  return listings.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
+  const slugs = await getListingSlugsWithFallback("es");
+  return slugs.map((slug) => ({ params: { slug } }));
 }
 
-interface Props {
-  item: Listing;
+const { slug } = Astro.params;
+const item = slug ? await getListingBySlugWithFallback(slug, "es") : null;
+
+if (!item) {
+  return new Response("Listing not found", { status: 404 });
 }
 
-const { item } = Astro.props;
 const locale = "es";
 const t = useTranslations(locale);
 
@@ -47,6 +45,8 @@ const labels = {
   about: t("siteDetailPage.labels.about"),
   directions: t("siteDetailPage.actions.directions"),
   contact: t("siteDetailPage.actions.contact"),
+  call: t("siteDetailPage.actions.call"),
+  email: t("siteDetailPage.actions.email"),
   favorite: t("siteDetailPage.actions.favorite"),
   favoriteActive: t("siteDetailPage.actions.favoriteActive"),
   share: t("siteDetailPage.actions.share"),
@@ -61,11 +61,18 @@ const labels = {
   stories: t("siteDetailPage.labels.stories"),
   products: t("siteDetailPage.labels.products"),
   follow: t("siteDetailPage.labels.follow"),
+  bestTimeLabel: t("siteDetailPage.labels.bestTime") || "Mejor época para visitar",
+  bringLabel: t("siteDetailPage.labels.whatToBring") || "Qué llevar",
+  accessibilityLabel: t("siteDetailPage.labels.accessibility") || "Accesibilidad",
+  connectivityLabel: t("siteDetailPage.labels.connectivity") || "Conectividad",
 };
 
 const contactActions = {
   whatsapp: item.contact?.whatsapp,
   phone: item.contact?.phone,
+  email: item.contact?.email,
+  instagram: item.contact?.instagram,
+  facebook: item.contact?.facebook,
 };
 
 const schedule = item.schedule?.text?.[locale];
@@ -77,7 +84,7 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
 ---
 
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
-  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} tags={tags} labels={labels} />
+  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} tags={tags} shortDescription={item.shortDescription?.[locale]} labels={labels} />
 
   <SiteSummary description={description} labels={labels} contactActions={contactActions} location={location} categoryColor={categoryColor}>
     <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
@@ -110,7 +117,7 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
   <ExpCTA title={t("siteDetailPage.cta.title")} description={t("siteDetailPage.cta.desc")} btnText={t("siteDetailPage.cta.btn")} href={navigation.sites(locale)} />
 
   <StickyActionBar
-    client:load
+    client:visible
     id={item.id}
     lat={item.location?.lat}
     lng={item.location?.lng}

@@ -210,7 +210,9 @@
       "contact": "Contact",
       "favorite": "Save",
       "favoriteActive": "Saved",
-      "share": "Share"
+      "share": "Share",
+      "call": "Call",
+      "email": "Email"
     },
     "labels": {
       "about": "About this place",
@@ -226,7 +228,11 @@
       "behind": "Who's behind it",
       "stories": "Our story",
       "products": "Products & services",
-      "follow": "Follow us"
+      "follow": "Follow us",
+      "bestTime": "Best time to visit",
+      "whatToBring": "What to bring",
+      "accessibility": "Accessibility",
+      "connectivity": "Connectivity"
     },
     "map": {
       "open": "Open in map"
@@ -405,6 +411,9 @@
     "iosBody": "Tap Share and then \"Add to Home Screen\" to install the app.",
     "installed": "The app is already installed. Find it on your home screen.",
     "failed": "We couldn't install the app. Try again from your browser menu."
+  },
+  "installHint": {
+    "body": "Tip: install the site as an app to browse offline and save your favorite spots."
   },
   "legal": {
     "privacy": {

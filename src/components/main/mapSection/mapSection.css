@@ -1,108 +1,113 @@
-/* Map section: full-bleed, explicit height so Leaflet can initialize */
+/* ──────────────────────────────────────────────────────────────────
+   MapSection — mobile-first, three-block vertical stack.
+   No overlay, no absolute positioning of map over content.
+   ────────────────────────────────────────────────────────────────── */
+
 .map-section {
-    position: relative;
-    overflow: hidden;
-    height: 520px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    background-color: var(--color-on-surface, #1a1a1a);
+    gap: var(--space-md);
+    background-color: var(--color-bone, #fdfcf8);
+    color: var(--color-on-surface, #1a1a1a);
 }
 
-/* Leaflet map fills entire section */
-.map-full {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+/* 1) Header strip — eyebrow + title + description */
+.map-section__header {
+    text-align: center;
+    max-width: 56rem;
 }
 
-/* Gradient overlay so text is readable over map tiles */
-.map-overlay {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    padding: var(--space-lg) var(--space-md);
-    background: linear-gradient(
-        to top,
-        rgba(10, 15, 20, 0.95) 0%,
-        rgba(10, 15, 20, 0.75) 35%,
-        rgba(10, 15, 20, 0.3) 65%,
-        transparent 100%
-    );
+.map-section__eyebrow {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-primary, #5a8a80);
 }
 
-/* Content card */
-.map-content-card {
-    background: rgba(10, 18, 28, 0.9);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    max-width: 520px;
-    text-align: left;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
-}
-
-.map-content-card h2 {
-    margin-bottom: var(--space-xs);
-    color: #ffffff;
-    font-size: var(--text-lg);
+.map-section__title {
+    margin: 0 0 var(--space-xs);
+    font-family: var(--font-heading, 'Roboto', sans-serif);
+    font-size: var(--text-2xl, 1.5rem);
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.2;
 }
 
-.map-description {
-    font-size: var(--text-sm);
-    color: rgba(255, 255, 255, 0.82);
-    margin-bottom: var(--space-md);
-    line-height: 1.6;
+.map-section__description {
+    margin: 0;
+    font-size: var(--text-base, 1rem);
+    line-height: 1.55;
+    color: var(--color-on-surface-variant, #555);
 }
 
-.map-content-card .btn {
+/* 2) Map — full-bleed width, viewport-relative height */
+.map-section__map {
+    width: 100%;
+    height: min(70vh, 560px);
+    min-height: 420px;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: var(--color-bone, #fdfcf8);
+    /* Override MapView internal border-radius so the map is flush within
+       the section; the section itself sits inside a page padding. */
+}
+
+.map-section__map :global(.map-container) {
+    border-radius: 0;
+    height: 100%;
+}
+
+/* 3) CTA — centered, full-width button on mobile */
+.map-section__cta {
+    display: flex;
+    justify-content: center;
+}
+
+.map-section__btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-xs);
+    justify-content: center;
+    gap: var(--space-2xs, 0.5rem);
+    width: 100%;
+    max-width: 28rem;
+    padding: var(--space-xs, 0.75rem) var(--space-md, 1.5rem);
+    font-size: var(--text-sm, 0.875rem);
     font-weight: 600;
-    font-size: var(--text-sm);
+    line-height: 1.2;
 }
 
-/* Tablet and up */
+/* ──────────────────────────────────────────────────────────────────
+   Desktop
+   ────────────────────────────────────────────────────────────────── */
 @media (min-width: 640px) {
     .map-section {
-        height: 560px;
+        gap: var(--space-lg);
     }
 
-    .map-overlay {
-        padding: var(--space-xl) var(--space-xl);
+    .map-section__title {
+        font-size: var(--text-3xl, 1.75rem);
     }
 
-    .map-content-card h2 {
-        font-size: var(--text-xl);
+    .map-section__map {
+        height: min(60vh, 600px);
+        min-height: 480px;
     }
 
-    .map-content-card {
-        padding: var(--space-xl);
+    .map-section__btn {
+        width: auto;
+        padding: var(--space-sm, 1rem) var(--space-lg, 2rem);
+        font-size: var(--text-base, 1rem);
     }
 }
 
-/* Desktop: content floats bottom-left */
 @media (min-width: 1024px) {
     .map-section {
-        height: 580px;
+        gap: var(--space-xl);
     }
 
-    .map-overlay {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: none;
-        padding: var(--space-2xl);
-    }
-
-    .map-content-card {
-        max-width: 400px;
-        margin-left: 0;
+    .map-section__map {
+        height: min(60vh, 640px);
+        min-height: 520px;
     }
 }

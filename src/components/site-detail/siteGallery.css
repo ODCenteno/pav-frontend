@@ -1,24 +1,48 @@
+/* Site-detail gallery
+   ───────────────────────────────────────────────────────────────
+   Mobile-first 2-column grid, scales to 4 columns on tablet+ so
+   thumbnail-tapping stays ergonomic without sacrificing density. */
+
 .site-gallery__title {
     font-size: var(--text-2xl);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
+    color: var(--color-on-surface, #1a1a1a);
 }
 
-.site-gallery__grid {
+/* Both the Astro-rendered wrapper and the React-island wrapper
+   (`gallery-trigger-wrapper site-gallery__grid`) target the same grid. */
+.site-gallery__grid,
+.gallery-trigger-wrapper.site-gallery__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-xs);
+    gap: var(--space-xs, 0.5rem);
 }
 
 .site-gallery__item {
+    position: relative;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 0.75rem);
+    background-color: var(--color-bone, #fdfcf8);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.site-gallery__item:focus-visible {
+    outline: 2px solid var(--color-primary, #5a8a80);
+    outline-offset: 2px;
+}
+
+.site-gallery__item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .site-gallery__item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
     transition: transform 0.3s ease;
 }
 
@@ -26,9 +50,16 @@
     transform: scale(1.05);
 }
 
-@media (min-width: 768px) {
-    .site-gallery__grid {
+/* Tablet & up: 4 columns with wider gaps for breathing room. */
+@media (min-width: 640px) {
+    .site-gallery__grid,
+    .gallery-trigger-wrapper.site-gallery__grid {
         grid-template-columns: repeat(4, 1fr);
-        gap: var(--space-sm);
+        gap: var(--space-sm, 0.75rem);
+    }
+
+    .site-gallery__title {
+        font-size: var(--text-3xl, 1.5rem);
+        margin-bottom: var(--space-lg, 1.5rem);
     }
 }

@@ -97,6 +97,8 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     <div class="listing-image-container">
       {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
+      {isFeatured && <span class="listing-featured-badge" aria-label={langKey === "en" ? "Featured" : "Destacado"} title={langKey === "en" ? "Featured" : "Destacado"}>★</span>}
+
       <button type="button" class="fav-btn" data-fav-id={item.id} aria-label={favLabel} title={favLabel} onclick="event.stopPropagation(); window.toggleFav(this)">
         <SvgIcon name="bookmark-outline" class="bookmark-icon icon-outline" />
         <SvgIcon name="bookmark-filled" class="bookmark-icon icon-filled" />

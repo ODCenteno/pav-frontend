@@ -820,4 +820,230 @@ describe("strapiTransformer", () => {
       expect(out.introHeader?.title).toBe("Intro");
     });
   });
+
+  // ───────────────────────────────────────────────────────────────────
+  // Regression tests for fixes introduced after the listing-detail audit
+  // (see git history). These guard against the specific v5 shape changes
+  // (bare relation arrays, null values) that broke `/sitios/[slug]`.
+  // ───────────────────────────────────────────────────────────────────
+
+  describe("transformListing — contact.instagram/facebook → social merge", () => {
+    it("adds an instagram social link derived from contact.instagram (bare handle)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, instagram: "@pav_ejemplo" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const ig = out.social?.find((s) => s.platform === "instagram");
+      expect(ig).toBeTruthy();
+      expect(ig?.handle).toBe("pav_ejemplo");
+      expect(ig?.url).toBe("https://instagram.com/pav_ejemplo");
+    });
+
+    it("adds a facebook social link derived from contact.facebook (bare handle)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, facebook: "pav.ejemplo" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const fb = out.social?.find((s) => s.platform === "facebook");
+      expect(fb).toBeTruthy();
+      expect(fb?.handle).toBe("pav.ejemplo");
+      expect(fb?.url).toBe("https://facebook.com/pav.ejemplo");
+    });
+
+    it("uses the explicit URL when contact.instagram is a full URL", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, instagram: "https://instagram.com/pav" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const ig = out.social?.find((s) => s.platform === "instagram");
+      expect(ig?.url).toBe("https://instagram.com/pav");
+    });
+
+    it("merges explicit social entries with contact-derived entries", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, instagram: "@pav", facebook: "pav" },
+          social: [{ platform: "whatsapp", handle: "+521234567890", url: null }],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      expect(out.social).toHaveLength(3);
+      const platforms = out.social!.map((s) => s.platform).sort();
+      expect(platforms).toEqual(["facebook", "instagram", "whatsapp"]);
+    });
+
+    it("ignores empty contact fields without producing ghost social entries", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, instagram: "", facebook: "   " },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      expect(out.social).toBeUndefined();
+    });
+
+    it("dedupes social entries by (platform, url/handle)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, facebook: "pav.ejemplo" },
+          social: [
+            // Two facebooks pointing to the same resolved URL (one from Strapi
+            // explicit, one synthesised from contact.facebook). Should dedupe.
+            { platform: "facebook", handle: "pav.ejemplo", url: "https://facebook.com/pav.ejemplo" },
+            { platform: "facebook", handle: "pav.ejemplo", url: "https://facebook.com/pav.ejemplo" },
+            { platform: "instagram", handle: "pav", url: "https://instagram.com/pav" },
+          ],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const platforms = out.social!.map((s) => s.platform).sort();
+      expect(platforms).toEqual(["facebook", "instagram"]);
+      // The facebook should be the explicit one (kept by indexOf dedupe),
+      // not the contact-derived one.
+      expect(out.social!.find((s) => s.platform === "facebook")?.handle).toBe("pav.ejemplo");
+    });
+
+    it("keeps two entries on the same platform when the URLs differ", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          social: [
+            { platform: "facebook", handle: "primary", url: "https://facebook.com/primary" },
+            { platform: "facebook", handle: "secondary", url: "https://facebook.com/secondary" },
+          ],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const fb = out.social!.filter((s) => s.platform === "facebook");
+      expect(fb).toHaveLength(2);
+    });
+  });
+
+  describe("transformListing — Strapi v5 bare-array relation shape", () => {
+    it("reads members from a bare array (v5) not `{ data: [...] }` (v4)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          members: [
+            { id: 10, name: "Ana", slug: "ana", role: "Guía", locality: "agua-verde" },
+          ],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      expect(out.members).toHaveLength(1);
+      expect(out.members?.[0].name).toBe("Ana");
+      expect(out.members?.[0].role).toBe("Guía");
+    });
+
+    it("reads relatedListings from a bare array (v5)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          relatedListings: [
+            { id: 100, slug: "other-1", title: "Other 1" },
+            { id: 101, slug: "other-2", title: "Other 2" },
+          ],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      expect(out.relatedSites).toEqual(["100", "101"]);
+    });
+
+    it("still supports the Strapi v4 `{ data: [...] }` shape", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          members: {
+            data: [
+              { id: 10, name: "Ana", slug: "ana", role: "Guía", locality: "agua-verde" },
+            ],
+          },
+          relatedListings: {
+            data: [
+              { id: 100, slug: "other-1", title: "Other 1" },
+            ],
+          },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      expect(out.members).toHaveLength(1);
+      expect(out.members?.[0].name).toBe("Ana");
+      expect(out.relatedSites).toEqual(["100"]);
+    });
+  });
+
+  describe("transformListing — null guards (v5 sometimes returns explicit null)", () => {
+    it("does not crash when contact.facebook is null", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, instagram: null, facebook: null },
+        },
+      };
+      expect(() => transformListing(item as any, "es")).not.toThrow();
+      const out = transformListing(item as any, "es");
+      expect(out.social).toBeUndefined();
+    });
+
+    it("does not crash when community-member role/bio is null (per `transformCommunityMemberSummary`)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          members: [
+            {
+              id: 10,
+              name: "Ana",
+              slug: "ana",
+              role: null,
+              locality: "agua-verde",
+              bio: null,
+              pullQuote: null,
+              legacyNote: null,
+              phone: null,
+              whatsapp: null,
+            },
+          ],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      expect(out.members?.[0].name).toBe("Ana");
+      expect(out.members?.[0].role).toBeUndefined();
+    });
+  });
 });

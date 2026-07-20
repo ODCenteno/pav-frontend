@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { MarkerItem } from "./mapIcons";
+import { createPopupContent } from "./mapIcons";
+import { createCustomIcon } from "./mapMarker";
 import "leaflet/dist/leaflet.css";
 import "./mapView.css";
 
@@ -12,6 +14,8 @@ interface MapViewProps {
   className?: string;
   locale?: string;
   linkLabel?: string;
+  /** Auto-fit the map to all visible markers on load. Defaults to true. */
+  fitBounds?: boolean;
 }
 
 export default function MapView({
@@ -21,10 +25,11 @@ export default function MapView({
   height = 250,
   fullScreen = false,
   className = "",
-  linkLabel = "Ver sitio →",
+  linkLabel,
+  fitBounds = true,
 }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const leafletMapRef = useRef<any>(null);
+  const leafletMapRef = useRef<unknown>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -45,36 +50,26 @@ export default function MapView({
       });
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19,
       }).addTo(map);
 
-      const { createCustomIcon, createPopupContent } = await import("./mapIcons");
-
       markers.forEach((marker) => {
-        const icon = createCustomIcon(marker.categoryColor);
-        const popupContent = createPopupContent(
-          marker.title,
-          marker.href,
-          linkLabel
-        );
-
-        L.marker([marker.lat, marker.lng], { icon })
-          .bindPopup(popupContent)
+        const popupHTML = createPopupContent(marker, linkLabel);
+        L.marker([marker.lat, marker.lng], { icon: createCustomIcon(marker.categoryColor) })
+          .bindPopup(popupHTML, { maxWidth: 320, className: "leaflet-popup--pav" })
           .addTo(map);
       });
 
-      if (markers.length === 1) {
-        map.setView(center, zoom);
-      } else if (markers.length > 1) {
+      if (fitBounds && markers.length > 1) {
         const group = L.featureGroup(
-          markers.map((m) =>
-            L.marker([m.lat, m.lng], {
-              icon: createCustomIcon(m.categoryColor),
-            })
-          )
+          markers.map((m) => L.marker([m.lat, m.lng], { icon: createCustomIcon(m.categoryColor) }))
         );
-        map.fitBounds(group.getBounds().pad(0.1));
+        map.fitBounds(group.getBounds(), { padding: [40, 40], maxZoom: 14 });
+      } else if (markers.length === 1) {
+        const only = markers[0];
+        map.setView([only.lat, only.lng], zoom);
       }
 
       leafletMapRef.current = map;
@@ -87,11 +82,12 @@ export default function MapView({
     return () => {
       isMounted = false;
       if (leafletMapRef.current) {
-        leafletMapRef.current.remove();
+        // Leaflet doesn't expose a cleanup type from default import; cast is safe here.
+        (leafletMapRef.current as { remove: () => void }).remove();
         leafletMapRef.current = null;
       }
     };
-  }, [markers, center, zoom]);
+  }, [markers, center, zoom, linkLabel, fitBounds]);
 
   const heightValue = typeof height === "number" ? `${height}px` : height;
 
@@ -99,6 +95,8 @@ export default function MapView({
     <div
       className={`map-container ${fullScreen ? "map-container--full" : ""} ${className}`}
       style={{ height: heightValue }}
+      role="region"
+      aria-label="Mapa interactivo de ubicaciones"
     >
       <div
         ref={mapRef}
@@ -118,6 +116,7 @@ export default function MapView({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />

@@ -1,6 +1,7 @@
 ---
 import "./siteSummary.css";
 import MapView from "@/components/maps/MapView.tsx";
+import { socialUrl } from "@/utils/social";
 
 interface Location {
   lat: number;
@@ -13,10 +14,15 @@ interface Props {
     about: string;
     directions: string;
     contact: string;
+    call: string;
+    email: string;
   };
   contactActions: {
     whatsapp?: string;
     phone?: string;
+    email?: string;
+    instagram?: string;
+    facebook?: string;
   };
   location?: Location;
   categoryColor?: string;
@@ -26,6 +32,18 @@ const { description, labels, contactActions, location, categoryColor } = Astro.p
 
 const hasLocation = location?.lat != null && location?.lng != null;
 const markerColor = categoryColor || "#68a299";
+const directionsUrl = hasLocation
+  ? `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`
+  : undefined;
+
+// Re-use the shared socialUrl() helper so the Contact card's buttons open
+// the same URLs as the icons in the "Follow us" block further down the page.
+const instagramUrl = contactActions.instagram
+  ? socialUrl({ platform: "instagram", handle: contactActions.instagram })
+  : null;
+const facebookUrl = contactActions.facebook
+  ? socialUrl({ platform: "facebook", handle: contactActions.facebook })
+  : null;
 ---
 
 <section class="site-summary container">
@@ -55,13 +73,43 @@ const markerColor = categoryColor || "#68a299";
         </div>
       )}
       <div class="quick-actions-card">
-        <button class="btn btn-primary btn-block mb-sm">
-          {labels.directions}
-        </button>
+        {directionsUrl && (
+          <a href={directionsUrl} class="btn btn-primary btn-block mb-sm" target="_blank" rel="noopener noreferrer">
+            {labels.directions}
+          </a>
+        )}
         {
           contactActions.whatsapp && (
-            <a href={`https://wa.me/${contactActions.whatsapp}`} class="btn btn-outline btn-block" target="_blank">
+            <a href={`https://wa.me/${contactActions.whatsapp}`} class="btn btn-outline btn-block mb-sm" target="_blank" rel="noopener noreferrer">
               {labels.contact}
+            </a>
+          )
+        }
+        {
+          contactActions.phone && (
+            <a href={`tel:${contactActions.phone}`} class="btn btn-outline btn-block mb-sm">
+              {labels.call}
+            </a>
+          )
+        }
+        {
+          contactActions.email && (
+            <a href={`mailto:${contactActions.email}`} class="btn btn-outline btn-block">
+              {labels.email}
+            </a>
+          )
+        }
+        {
+          instagramUrl && (
+            <a href={instagramUrl} class="btn btn-outline btn-block mb-sm" target="_blank" rel="noopener noreferrer">
+              Instagram
+            </a>
+          )
+        }
+        {
+          facebookUrl && (
+            <a href={facebookUrl} class="btn btn-outline btn-block" target="_blank" rel="noopener noreferrer">
+              Facebook
             </a>
           )
         }

@@ -76,6 +76,14 @@
     color: var(--color-on-surface);
 }
 
+.site-hero__subtitle {
+    font-size: var(--text-lg);
+    color: var(--color-on-surface-variant);
+    margin-bottom: var(--space-md);
+    max-width: 65ch;
+    line-height: 1.4;
+}
+
 .site-hero__tags {
     display: flex;
     gap: var(--space-xs);

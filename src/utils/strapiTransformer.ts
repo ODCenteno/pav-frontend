@@ -219,11 +219,27 @@ export interface ListingAttributes {
   schedule?: HoursAttributes;
   amenities?: TagItemAttributes[];
   recommendations?: VisitInfoAttributes;
-  relatedListings?: { data: StrapiItem<ListingAttributes>[] };
-  members?: { data: StrapiItem<CommunityMemberAttributes>[] };
+  // Strapi v4 wraps relations as `{ data: [...] }`; Strapi v5 returns a bare
+  // array / object. The transformer handles both shapes via `relationArray`.
+  relatedListings?: { data: StrapiItem<ListingAttributes>[] } | StrapiItem<ListingAttributes>[];
+  members?: { data: StrapiItem<CommunityMemberAttributes>[] } | StrapiItem<CommunityMemberAttributes>[];
   stories?: StoryBlockAttributes[];
   products?: ProductItemAttributes[];
   social?: SocialLinkAttributes[];
+}
+
+/**
+ * Normalise Strapi v4 (`{ data: [...] }`) and v5 (bare array) relation shapes.
+ * Returns `undefined` when the input is empty so callers can skip rendering.
+ */
+function relationArray<T>(raw: unknown): T[] | undefined {
+  if (raw == null) return undefined;
+  if (Array.isArray(raw)) return raw as T[];
+  if (typeof raw === 'object' && 'data' in (raw as Record<string, unknown>)) {
+    const data = (raw as { data: unknown }).data;
+    if (Array.isArray(data)) return data as T[];
+  }
+  return undefined;
 }
 
 export interface SocialLinkAttributes {
@@ -372,7 +388,7 @@ export function unwrap<T>(item: StrapiItem<T>): T {
   return item as unknown as T;
 }
 
-function localized(value: string | { es: string; en: string } | undefined, locale: string = 'es'): LocalizedString {
+function localized(value: string | { es: string; en: string } | null | undefined, locale: string = 'es'): LocalizedString {
   if (Array.isArray(value)) {
     const text = asString(value);
     return { es: text, en: text };
@@ -489,6 +505,8 @@ export function transformListing(
   const galleryUrls = mediaUrls(a.gallery);
   const storiesRaw = a.stories || [];
   const productsRaw = a.products || [];
+  const membersRaw = relationArray<StrapiItem<CommunityMemberAttributes>>(a.members) ?? [];
+  const relatedRaw = relationArray<StrapiItem<ListingAttributes>>(a.relatedListings) ?? [];
 
   // Extract category relation - handle both Strapi v4 wrapped {data: ...} and v5 flat format
   const catRaw = a.category as any;
@@ -526,13 +544,15 @@ export function transformListing(
           connectivityNotes: localeSuffixed(a.recommendations, 'connectivityNotes'),
         }
       : undefined,
-    relatedSites: a.relatedListings?.data?.map((r) => String(r.id ?? r.documentId)) ?? undefined,
+    relatedSites: relatedRaw.length
+      ? relatedRaw.map((r) => String(r.id ?? r.documentId))
+      : undefined,
     href: {
       es: navigation.siteDetail(slug, 'es'),
       en: navigation.siteDetail(slug, 'en'),
     },
-    members: a.members?.data?.length
-      ? a.members.data.map((m) => transformCommunityMemberSummary(m, locale))
+    members: membersRaw.length
+      ? membersRaw.map((m) => transformCommunityMemberSummary(m, locale))
       : undefined,
     stories: storiesRaw.length
       ? storiesRaw.map((s, i) => transformStory(s, locale, esAttrs?.stories?.[i]))
@@ -540,7 +560,25 @@ export function transformListing(
     products: productsRaw.length
       ? productsRaw.map((p, i) => transformProduct(p, locale, esAttrs?.products?.[i]))
       : undefined,
-    social: a.social?.length ? transformSocialLinks(a.social) : undefined,
+    social: (() => {
+      // Merge explicit `social` entries with any contact-derived links so a
+      // listing always surfaces every reachable handle in one place. Dedupe
+      // by (platform, url-or-handle) so a contact.instagram that matches an
+      // explicit entry doesn't render twice; explicit wins (it appears
+      // first in the merged array, so the later contact-derived duplicate is
+      // filtered out by indexOf).
+      const explicit = a.social ?? [];
+      const contactDerived = contactToSocialLinks(a.contact);
+      const merged = [...explicit, ...contactDerived];
+      const seen = new Set<string>();
+      const deduped = merged.filter((link) => {
+        const key = `${link.platform}::${link.url ?? link.handle ?? ""}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      return deduped.length ? transformSocialLinks(deduped) : undefined;
+    })(),
   };
 }
 
@@ -574,12 +612,14 @@ function strFallback(value: string | undefined, fallback: string | undefined): s
 }
 
 function pickLocalized(
-  value: string | { es: string; en: string } | undefined,
+  value: string | { es: string; en: string } | null | undefined,
   locale: string,
-  fallback?: string | { es: string; en: string },
+  fallback?: string | { es: string; en: string } | null,
 ): string {
-  const current = typeof value === 'object' ? (locale.startsWith('en') ? value.en : value.es) : (value || '');
-  const fb = typeof fallback === 'object'
+  const current = value && typeof value === 'object'
+    ? (locale.startsWith('en') ? value.en : value.es)
+    : (value || '');
+  const fb = fallback && typeof fallback === 'object'
     ? (locale.startsWith('en') ? fallback.en : fallback.es)
     : (fallback || '');
   return strFallback(current, fb);
@@ -591,6 +631,40 @@ export function transformSocialLinks(raw: SocialLinkAttributes[]): SocialLink[] 
     handle: s.handle || undefined,
     url: s.url || undefined,
   }));
+}
+
+/**
+ * Convert a listing's `contact` component fields (`instagram`, `facebook`)
+ * into SocialLink entries. Empty / falsy values are skipped. The handle is
+ * accepted as either a bare username (no leading @) or a full URL.
+ */
+function contactToSocialLinks(contact?: ContactInfoAttributes): SocialLinkAttributes[] {
+  if (!contact) return [];
+  const out: SocialLinkAttributes[] = [];
+
+  const instagram = (contact.instagram || '').trim();
+  if (instagram) {
+    out.push({
+      platform: 'instagram',
+      handle: instagram.replace(/^@/, ''),
+      url: instagram.startsWith('http')
+        ? instagram
+        : `https://instagram.com/${instagram.replace(/^@/, '')}`,
+    });
+  }
+
+  const facebook = (contact.facebook || '').trim();
+  if (facebook) {
+    out.push({
+      platform: 'facebook',
+      handle: facebook,
+      url: facebook.startsWith('http')
+        ? facebook
+        : `https://facebook.com/${facebook}`,
+    });
+  }
+
+  return out;
 }
 
 export function transformStory(

@@ -88,6 +88,45 @@ export async function getSiteSettingsDirect(): Promise<{
 const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
 
+/**
+ * Full populate spec for a listing — used by both `getListings` (list views)
+ * and `getListingBySlug` (detail views) so the resulting view-model always
+ * contains every field (members, stories, products, social, recommendations,
+ * schedule, amenities, contact, relatedListings).
+ *
+ * Keep this list in sync with the schema. Index values are stable — adding
+ * new entries at the end is safe.
+ */
+export const LISTING_FULL_POPULATE: Record<string, string> = {
+  'populate[0]': 'category',
+  'populate[1]': 'mainImage',
+  'populate[2]': 'gallery',
+  'populate[3]': 'location',
+  'populate[4]': 'tags',
+  'populate[5]': 'contact',
+  'populate[6]': 'schedule',
+  'populate[7]': 'amenities',
+  'populate[8]': 'recommendations',
+  'populate[9]': 'relatedListings',
+  'populate[10]': 'members.photo',
+  'populate[11]': 'stories.image',
+  'populate[12]': 'stories.gallery',
+  'populate[13]': 'products',
+  'populate[14]': 'social',
+};
+
+/**
+ * Populate spec for listing list pages (cards, maps, filters) where only the
+ * summary fields are needed and full populates would bloat the response.
+ */
+export const LISTING_SLIM_POPULATE: Record<string, string> = {
+  'populate[0]': 'category',
+  'populate[1]': 'mainImage',
+  'populate[2]': 'gallery',
+  'populate[3]': 'location',
+  'populate[4]': 'tags',
+};
+
 // Cache TTL: 60 seconds - balances freshness with performance
 const CACHE_TTL_MS = 60_000;
 
@@ -287,10 +326,7 @@ export async function getListings(locale: string = 'es'): Promise<Listing[]> {
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[0]': 'category',
-        'populate[1]': 'mainImage',
-        'populate[2]': 'gallery',
-        'populate[3]': 'location',
+        ...LISTING_SLIM_POPULATE,
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -305,17 +341,8 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
     const res = await strapiGet<ListingAttributes>('/listings', {
       'filters[slug][$eq]': slug,
       'filters[publishedAt][$notNull]': 'true',
-      'populate[0]': 'category',
-      'populate[1]': 'mainImage',
-      'populate[2]': 'gallery',
-      'populate[3]': 'relatedListings',
-      'populate[4]': 'members.photo',
-      'populate[5]': 'stories.image',
-      'populate[6]': 'stories.gallery',
-        'populate[7]': 'products',
-        'populate[8]': 'social',
-        'populate[9]': 'location',
-        'pagination[pageSize]': '1',
+      ...LISTING_FULL_POPULATE,
+      'pagination[pageSize]': '1',
       locale,
     });
     if (res.data.length === 0) return null;
@@ -1129,6 +1156,34 @@ function dedupedListingsFetch(locale: string): Promise<Listing[]> {
 
 export async function getListingsWithFallback(locale: string = 'es'): Promise<Listing[]> {
   return dedupedListingsFetch(locale);
+}
+
+/**
+ * Lightweight slug-only fetcher for `getStaticPaths`. Returns the list of
+ * published listing slugs for the given locale — a single slim CMS call
+ * (no populates) regardless of how many listings exist. Detail pages then
+ * call `getListingBySlugWithFallback(slug, locale)` per route for the full
+ * view-model with all relations populated.
+ */
+export async function getListingSlugsWithFallback(locale: string = 'es'): Promise<string[]> {
+  const fromCms = await safe(async () => {
+    const res = await strapiGet<ListingAttributes>('/listings', {
+      'filters[publishedAt][$notNull]': 'true',
+      sort: 'order:asc',
+      'pagination[pageSize]': '100',
+      locale,
+      fields: ['slug'],
+    });
+    return res.data
+      .map((item) => unwrap(item).slug)
+      .filter((s): s is string => typeof s === 'string' && s.length > 0);
+  });
+
+  if (fromCms && fromCms.length > 0) return fromCms;
+  if (!USE_DEV_FALLBACK) return [];
+  return getListingsFallback()
+    .map((l) => l.slug)
+    .filter((s): s is string => typeof s === 'string' && s.length > 0);
 }
 
 export async function getListingBySlugWithFallback(slug: string, locale: string = 'es'): Promise<Listing | null> {

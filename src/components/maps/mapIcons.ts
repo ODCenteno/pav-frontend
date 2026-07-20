@@ -1,4 +1,9 @@
-import L from "leaflet";
+/**
+ * Map popup HTML builder.
+ *
+ * Pure string assembly — no Leaflet, no DOM, no globals. Safe to import
+ * from server code, fixtures, and unit tests.
+ */
 
 export interface MarkerItem {
   lat: number;
@@ -6,32 +11,76 @@ export interface MarkerItem {
   title: string;
   href?: string;
   categoryColor: string;
+  /** Optional thumbnail shown in the popup. URL-ready (already resolved). */
+  image?: string;
+  /** Optional one-line summary shown under the title in the popup. */
+  description?: string;
 }
 
-export function createCustomIcon(color: string): L.DivIcon {
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36" fill="none">
-      <path d="M14 0C6.268 0 0 6.268 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.268 21.732 0 14 0z" fill="${color}"/>
-      <circle cx="14" cy="14" r="5" fill="white"/>
-    </svg>
-  `;
-  return L.divIcon({
-    html: svg,
-    className: "custom-map-marker",
-    iconSize: [28, 36],
-    iconAnchor: [14, 36],
-    popupAnchor: [0, -38],
-  });
+export interface PopupContentInput {
+  title: string;
+  href?: string;
+  image?: string;
+  description?: string;
 }
 
-export function createPopupContent(title: string, href?: string, linkLabel: string = 'Ver sitio →'): string {
-  if (href) {
-    return `
-      <div class="map-popup">
-        <span class="map-popup__title">${title}</span>
-        <a href="${href}" class="map-popup__link">${linkLabel}</a>
+const DEFAULT_LINK_LABEL = "Ver sitio";
+
+export function createPopupContent(
+  item: PopupContentInput,
+  linkLabel: string = DEFAULT_LINK_LABEL
+): string {
+  const { title, href, image, description } = item;
+
+  // Map title + description go through `escapeText` to neutralize any HTML;
+  // href/image go through `escapeAttr` so attribute syntax stays valid.
+  const safeTitle = escapeText(title);
+  const safeDescription = description ? escapeText(description) : "";
+  const safeHref = href ? escapeAttr(href) : "";
+  const safeImage = image ? escapeAttr(image) : "";
+
+  const imageMarkup = safeImage
+    ? `<img class="map-popup__image" src="${safeImage}" alt="" loading="lazy" decoding="async" />`
+    : "";
+
+  const descriptionMarkup = safeDescription
+    ? `<p class="map-popup__description">${safeDescription}</p>`
+    : "";
+
+  const linkMarkup = safeHref
+    ? `<a href="${safeHref}" class="map-popup__link">${escapeText(linkLabel)} &rarr;</a>`
+    : "";
+
+  return `
+    <article class="map-popup">
+      ${imageMarkup}
+      <div class="map-popup__body">
+        <h3 class="map-popup__title">${safeTitle}</h3>
+        ${descriptionMarkup}
+        ${linkMarkup}
       </div>
-    `;
-  }
-  return `<div class="map-popup"><span class="map-popup__title">${title}</span></div>`;
+    </article>
+  `;
+}
+
+/* ────────────────────────────────────────────────────────────────────
+   HTML escaping helpers — keep user-supplied CMS text safe for inline
+   insertion into both text content and attribute values.
+   ──────────────────────────────────────────────────────────────────── */
+function escapeText(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escapeAttr(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

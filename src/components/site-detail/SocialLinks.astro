@@ -2,6 +2,7 @@
 import "./socialLinks.css";
 import SvgIcon from "../icons/SvgIcon.astro";
 import type { SocialLink } from "@/types/common.type";
+import { socialUrl } from "@/utils/social";
 
 interface Props {
   title: string;
@@ -15,18 +16,6 @@ const platformIcon: Record<string, string> = {
   facebook: "facebook",
   whatsapp: "whatsapp",
 };
-
-function socialUrl(link: SocialLink): string {
-  if (link.url) return link.url;
-  if (link.platform === "instagram" && link.handle) {
-    const h = link.handle.replace(/^@/, "");
-    return `https://instagram.com/${h}`;
-  }
-  if (link.platform === "whatsapp" && link.handle) {
-    return `https://wa.me/${link.handle.replace(/\D/g, "")}`;
-  }
-  return link.handle ? `#${link.handle}` : "#";
-}
 ---
 
 <div class="social-links">

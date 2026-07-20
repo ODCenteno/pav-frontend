@@ -76,7 +76,7 @@
 }
 
 html, body {
-    overflow-x: hidden; /* Prevent horizontal page scroll */
+    overflow-x: clip; /* Prevent horizontal page scroll without breaking position: sticky */
     width: 100%;
 }
 
@@ -317,4 +317,44 @@ p {
     .footer-grid {
         grid-template-columns: 2fr 1fr 1fr 1fr;
     }
+}
+
+/* ==========================================================================
+   StickyActionBar (site detail pages only — mobile only)
+   Critical positioning lives here (not in the React component's CSS import)
+   so the bar is styled correctly even before the React island hydrates.
+   ========================================================================== */
+
+.sticky-action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-white);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    padding: var(--space-xs) var(--space-md) calc(var(--space-xs) + env(safe-area-inset-bottom));
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+}
+
+.sticky-action-bar__container {
+    width: 100%;
+    max-width: var(--container-width);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xs);
+}
+
+@media (min-width: 1024px) {
+    .sticky-action-bar { display: none; }
+}
+
+.site-detail-spacer {
+    height: 0;
+    padding-bottom: 72px;
+}
+
+@media (min-width: 1024px) {
+    .site-detail-spacer { padding-bottom: 0; }
 }

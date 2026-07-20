@@ -4,6 +4,10 @@ import "./siteTips.css";
 interface Props {
   labels: {
     tips: string;
+    bestTimeLabel: string;
+    bringLabel: string;
+    accessibilityLabel: string;
+    connectivityLabel: string;
   };
   bestTime?: string;
   whatToBring?: string[];
@@ -17,18 +21,18 @@ const { labels, bestTime, whatToBring, accessibility, connectivity } = Astro.pro
 <section class="site-tips container">
   <div class="site-tips__container">
     <h2 class="site-tips__title">{labels.tips}</h2>
-    
+
     <div class="site-tips__grid">
       {bestTime && (
         <div class="site-tips__item">
-          <h3 class="site-tips__label">Best time to visit</h3>
+          <h3 class="site-tips__label">{labels.bestTimeLabel}</h3>
           <p class="site-tips__value">{bestTime}</p>
         </div>
       )}
 
       {whatToBring && whatToBring.length > 0 && (
         <div class="site-tips__item">
-          <h3 class="site-tips__label">What to bring</h3>
+          <h3 class="site-tips__label">{labels.bringLabel}</h3>
           <ul class="site-tips__list">
             {whatToBring.map(item => <li>{item}</li>)}
           </ul>
@@ -37,14 +41,14 @@ const { labels, bestTime, whatToBring, accessibility, connectivity } = Astro.pro
 
       {accessibility && (
         <div class="site-tips__item">
-          <h3 class="site-tips__label">Accessibility</h3>
+          <h3 class="site-tips__label">{labels.accessibilityLabel}</h3>
           <p class="site-tips__value">{accessibility}</p>
         </div>
       )}
 
       {connectivity && (
         <div class="site-tips__item">
-          <h3 class="site-tips__label">Connectivity</h3>
+          <h3 class="site-tips__label">{labels.connectivityLabel}</h3>
           <p class="site-tips__value">{connectivity}</p>
         </div>
       )}

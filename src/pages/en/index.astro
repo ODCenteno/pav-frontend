@@ -25,6 +25,11 @@ const mapListings = featuredListings
     title: item.name[locale] || item.name.es || "",
     href: `/en/sitios/${item.slug}`,
     categoryColor: item.category?.color || "#68a299",
+    image: item.image || undefined,
+    description:
+      item.shortDescription?.[locale as "es" | "en"] ||
+      item.shortDescription?.es ||
+      undefined,
   }));
 ---
 

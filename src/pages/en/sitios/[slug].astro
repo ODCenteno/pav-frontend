@@ -13,25 +13,23 @@ import SocialLinks from "../../../components/site-detail/SocialLinks.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import StickyActionBar from "../../../components/site-detail/StickyActionBar.tsx";
 import { useTranslations } from "../../../i18n/utils";
-import { getListingsWithFallback } from "../../../lib/cms";
-import type { Listing } from "../../../types/listing.type";
+import { getListingBySlugWithFallback, getListingSlugsWithFallback } from "../../../lib/cms";
 import { navigation } from "@/utils/navigation";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const listings = await getListingsWithFallback("en");
-  return listings.map((item) => ({
-    params: { slug: item.slug },
-    props: { item },
-  }));
+  const slugs = await getListingSlugsWithFallback("en");
+  return slugs.map((slug) => ({ params: { slug } }));
 }
 
-interface Props {
-  item: Listing;
+const { slug } = Astro.params;
+const item = slug ? await getListingBySlugWithFallback(slug, "en") : null;
+
+if (!item) {
+  return new Response("Listing not found", { status: 404 });
 }
 
-const { item } = Astro.props;
 const locale = "en";
 const t = useTranslations(locale);
 
@@ -46,6 +44,8 @@ const labels = {
   about: t("siteDetailPage.labels.about"),
   directions: t("siteDetailPage.actions.directions"),
   contact: t("siteDetailPage.actions.contact"),
+  call: t("siteDetailPage.actions.call"),
+  email: t("siteDetailPage.actions.email"),
   favorite: t("siteDetailPage.actions.favorite"),
   favoriteActive: t("siteDetailPage.actions.favoriteActive"),
   share: t("siteDetailPage.actions.share"),
@@ -60,11 +60,18 @@ const labels = {
   stories: t("siteDetailPage.labels.stories"),
   products: t("siteDetailPage.labels.products"),
   follow: t("siteDetailPage.labels.follow"),
+  bestTimeLabel: t("siteDetailPage.labels.bestTime") || "Best time to visit",
+  bringLabel: t("siteDetailPage.labels.whatToBring") || "What to bring",
+  accessibilityLabel: t("siteDetailPage.labels.accessibility") || "Accessibility",
+  connectivityLabel: t("siteDetailPage.labels.connectivity") || "Connectivity",
 };
 
 const contactActions = {
   whatsapp: item.contact?.whatsapp,
   phone: item.contact?.phone,
+  email: item.contact?.email,
+  instagram: item.contact?.instagram,
+  facebook: item.contact?.facebook,
 };
 
 const schedule = item.schedule?.text?.[locale];
@@ -86,6 +93,7 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
     categoryLabel={categoryLabel}
     image={item.media?.mainImageUrl || ""}
     tags={tags}
+    shortDescription={item.shortDescription?.[locale]}
     labels={labels}
   />
 
@@ -152,7 +160,7 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
   />
 
   <StickyActionBar
-    client:load
+    client:visible
     id={item.id}
     whatsapp={item.contact?.whatsapp}
     lat= {item.location?.lat}
