@@ -58,8 +58,8 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
 
       // Fallback dummy data
       const content = data || {
-        name: { es: "Detalles", en: "Details" },
-        description: { es: "Cargando información...", en: "Loading info..." },
+        name: { 'es-MX': "Detalles", en: "Details" },
+        description: { 'es-MX': "Cargando información...", en: "Loading info..." },
       };
 
       const lang = getLang();

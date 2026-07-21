@@ -26,10 +26,10 @@ describe("data/devFallback", () => {
       const items = getListingsFallback();
       for (const item of items.slice(0, 5)) {
         expect(item.name).toBeDefined();
-        expect(typeof item.name.es).toBe("string");
+        expect(typeof item.name['es-MX']).toBe("string");
         expect(typeof item.name.en).toBe("string");
         expect(typeof item.slug).toBe("string");
-        expect(item.href?.es).toContain("/sitios/");
+        expect(item.href?.['es-MX']).toContain("/sitios/");
         expect(item.href?.en).toContain("/en/sitios/");
       }
     });
@@ -38,7 +38,7 @@ describe("data/devFallback", () => {
       const items = getListingsFallback();
       const withTags = items.find((i) => i.tags && i.tags.length > 0);
       expect(withTags).toBeDefined();
-      expect(typeof withTags!.tags![0].es).toBe("string");
+      expect(typeof withTags!.tags![0]['es-MX']).toBe("string");
     });
 
     it("builds media with mainImageUrl and galleryUrls", () => {

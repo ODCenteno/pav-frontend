@@ -11,7 +11,7 @@ interface Props {
   locale: string;
 }
 
-const { title, description, team = [], locale = "es" } = Astro.props;
+const { title, description, team = [], locale = "es-MX" } = Astro.props;
 const t = useTranslations(locale);
 
 const displayTitle = title || t("aboutPage.team.title");

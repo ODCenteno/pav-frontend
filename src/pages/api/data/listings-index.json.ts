@@ -9,7 +9,7 @@
  * which keeps the offline path fully self-contained.
  *
  * Output shape:
- *   { count: number, items: Array<{ slug: string, locale: 'es' | 'en' }> }
+ *   { count: number, items: Array<{ slug: string, locale: 'es-MX' | 'en' }> }
  */
 import type { APIRoute } from 'astro';
 import { getListingsWithFallback } from '@/lib/cms';
@@ -18,7 +18,7 @@ export const prerender = true;
 
 interface IndexItem {
   slug: string;
-  locale: 'es' | 'en';
+  locale: 'es-MX' | 'en';
 }
 
 export const GET: APIRoute = async () => {
@@ -29,7 +29,7 @@ export const GET: APIRoute = async () => {
 
   const items: IndexItem[] = [];
   for (const listing of esListings) {
-    if (listing.slug) items.push({ slug: listing.slug, locale: 'es' });
+    if (listing.slug) items.push({ slug: listing.slug, locale: 'es-MX' });
   }
   for (const listing of enListings) {
     if (listing.slug) items.push({ slug: listing.slug, locale: 'en' });

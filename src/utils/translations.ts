@@ -2,7 +2,7 @@ import type { LocalizedString } from '../types/i18n.type';
 
 /**
  * Extracts the correct translation from a LocalizedString object.
- * @param field The object with translations { es: '...', en: '...' }.
+ * @param field The object with translations { 'es-MX': '...', en: '...' }.
  * @param locale The current locale ('es-MX' or 'en-US').
  * @returns The string in the correct language or a fallback.
  */

@@ -38,94 +38,94 @@ const t = useTranslations(locale);
 const guide = await getGuidePageWithFallback(locale);
 
 const hero = guide.hero
-  ? { title: { es: guide.hero.title, en: guide.hero.title }, desc: { es: guide.hero.desc, en: guide.hero.desc }, image: guide.hero.image }
+  ? { title: { 'es-MX': guide.hero.title, en: guide.hero.title }, desc: { 'es-MX': guide.hero.desc, en: guide.hero.desc }, image: guide.hero.image }
   : fallbackHero;
 
 const introData = guide.intro
   ? {
-      ranchTitle: { es: guide.intro.ranchTitle, en: guide.intro.ranchTitle },
-      ranchText: { es: guide.intro.ranchText, en: guide.intro.ranchText },
-      portTitle: { es: guide.intro.portTitle, en: guide.intro.portTitle },
-      portText: { es: guide.intro.portText, en: guide.intro.portText },
+      ranchTitle: { 'es-MX': guide.intro.ranchTitle, en: guide.intro.ranchTitle },
+      ranchText: { 'es-MX': guide.intro.ranchText, en: guide.intro.ranchText },
+      portTitle: { 'es-MX': guide.intro.portTitle, en: guide.intro.portTitle },
+      portText: { 'es-MX': guide.intro.portText, en: guide.intro.portText },
     }
   : fallbackIntro;
 
 const historyData = guide.history
   ? {
-      title: { es: guide.history.title, en: guide.history.title },
-      text: { es: guide.history.text, en: guide.history.text },
+      title: { 'es-MX': guide.history.title, en: guide.history.title },
+      text: { 'es-MX': guide.history.text, en: guide.history.text },
       milestones: guide.history.milestones,
     }
   : fallbackHistory;
 
 const fishingData = guide.fishing
   ? {
-      title: { es: guide.fishing.title, en: guide.fishing.title },
-      text: { es: guide.fishing.text, en: guide.fishing.text },
-      rules: { es: guide.fishing.rules, en: guide.fishing.rules },
+      title: { 'es-MX': guide.fishing.title, en: guide.fishing.title },
+      text: { 'es-MX': guide.fishing.text, en: guide.fishing.text },
+      rules: { 'es-MX': guide.fishing.rules, en: guide.fishing.rules },
     }
   : fallbackFishing;
 
 const protectedAreaData = guide.protected
   ? {
-      title: { es: guide.protected.title, en: guide.protected.title },
-      text: { es: guide.protected.text, en: guide.protected.text },
+      title: { 'es-MX': guide.protected.title, en: guide.protected.title },
+      text: { 'es-MX': guide.protected.text, en: guide.protected.text },
       link: {
-        label: { es: guide.protected.linkLabel, en: guide.protected.linkLabel },
+        label: { 'es-MX': guide.protected.linkLabel, en: guide.protected.linkLabel },
         href: guide.protected.linkHref,
       },
     }
   : fallbackProtected;
 
 const influenceData = guide.influence
-  ? { title: { es: guide.influence.title, en: guide.influence.title }, text: { es: guide.influence.text, en: guide.influence.text } }
+  ? { title: { 'es-MX': guide.influence.title, en: guide.influence.title }, text: { 'es-MX': guide.influence.text, en: guide.influence.text } }
   : fallbackInfluence;
 
 const recommendationsData = guide.recommendations
   ? {
-      title: { es: guide.recommendations.title, en: guide.recommendations.title },
-      items: { es: guide.recommendations.items, en: guide.recommendations.items },
+      title: { 'es-MX': guide.recommendations.title, en: guide.recommendations.title },
+      items: { 'es-MX': guide.recommendations.items, en: guide.recommendations.items },
     }
   : fallbackRecommendations;
 
 const directionsData = guide.directions
   ? {
-      title: { es: guide.directions.title, en: guide.directions.title },
+      title: { 'es-MX': guide.directions.title, en: guide.directions.title },
       loreto: {
-        label: { es: guide.directions.loreto.label, en: guide.directions.loreto.label },
-        desc: { es: guide.directions.loreto.desc, en: guide.directions.loreto.desc },
+        label: { 'es-MX': guide.directions.loreto.label, en: guide.directions.loreto.label },
+        desc: { 'es-MX': guide.directions.loreto.desc, en: guide.directions.loreto.desc },
         distance: guide.directions.loreto.distance,
         time: guide.directions.loreto.time,
         image: guide.directions.loreto.image,
       },
       laPaz: {
-        label: { es: guide.directions.laPaz.label, en: guide.directions.laPaz.label },
-        desc: { es: guide.directions.laPaz.desc, en: guide.directions.laPaz.desc },
+        label: { 'es-MX': guide.directions.laPaz.label, en: guide.directions.laPaz.label },
+        desc: { 'es-MX': guide.directions.laPaz.desc, en: guide.directions.laPaz.desc },
         distance: guide.directions.laPaz.distance,
         time: guide.directions.laPaz.time,
         image: guide.directions.laPaz.image,
       },
-      drivingTipsTitle: { es: guide.directions.drivingTipsTitle, en: guide.directions.drivingTipsTitle },
-      drivingTips: { es: guide.directions.drivingTips, en: guide.directions.drivingTips },
+      drivingTipsTitle: { 'es-MX': guide.directions.drivingTipsTitle, en: guide.directions.drivingTipsTitle },
+      drivingTips: { 'es-MX': guide.directions.drivingTips, en: guide.directions.drivingTips },
     }
   : fallbackDirections;
 
 const amenitiesData = guide.amenities
   ? {
-      title: { es: guide.amenities.title, en: guide.amenities.title },
+      title: { 'es-MX': guide.amenities.title, en: guide.amenities.title },
       items: guide.amenities.items.map((a) => ({
         icon: a.icon as 'wifi' | 'signal' | 'toilet' | 'parking' | 'water',
-        title: { es: a.title, en: a.title },
-        text: { es: a.text, en: a.text },
+        title: { 'es-MX': a.title, en: a.title },
+        text: { 'es-MX': a.text, en: a.text },
       })),
     }
   : fallbackAmenities;
 
 const touristMapData = guide.touristMap
   ? {
-      title: { es: guide.touristMap.title, en: guide.touristMap.title },
+      title: { 'es-MX': guide.touristMap.title, en: guide.touristMap.title },
       image: guide.touristMap.image,
-      caption: { es: guide.touristMap.caption, en: guide.touristMap.caption },
+      caption: { 'es-MX': guide.touristMap.caption, en: guide.touristMap.caption },
     }
   : fallbackTouristMap;
 ---

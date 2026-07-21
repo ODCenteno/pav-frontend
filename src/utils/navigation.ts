@@ -5,14 +5,14 @@ import { getRelativeLocaleUrl } from "astro:i18n";
  * This prepares the app for CMS integration where slugs might be dynamic.
  */
 export const navigation = {
-  home: (locale: string = "es") => getRelativeLocaleUrl(locale, ""),
-  experiences: (locale: string = "es") => getRelativeLocaleUrl(locale, "experiencias"),
-  sites: (locale: string = "es") => getRelativeLocaleUrl(locale, "sitios"),
-  siteDetail: (slug: string, locale: string = "es") => getRelativeLocaleUrl(locale, `sitios/${slug}`),
-  about: (locale: string = "es") => getRelativeLocaleUrl(locale, "acerca"),
-  guide: (locale: string = "es") => getRelativeLocaleUrl(locale, "guide"),
-  legal: (slug: string = "privacy-notice", locale: string = "es") => getRelativeLocaleUrl(locale, `legal/${slug}`),
-  homeAnchor: (anchor: string, locale: string = "es") => {
+  home: (locale: string = "es-MX") => getRelativeLocaleUrl(locale, ""),
+  experiences: (locale: string = "es-MX") => getRelativeLocaleUrl(locale, "experiencias"),
+  sites: (locale: string = "es-MX") => getRelativeLocaleUrl(locale, "sitios"),
+  siteDetail: (slug: string, locale: string = "es-MX") => getRelativeLocaleUrl(locale, `sitios/${slug}`),
+  about: (locale: string = "es-MX") => getRelativeLocaleUrl(locale, "acerca"),
+  guide: (locale: string = "es-MX") => getRelativeLocaleUrl(locale, "guide"),
+  legal: (slug: string = "privacy-notice", locale: string = "es-MX") => getRelativeLocaleUrl(locale, `legal/${slug}`),
+  homeAnchor: (anchor: string, locale: string = "es-MX") => {
     const home = getRelativeLocaleUrl(locale, "");
     // Ensure we don't end up with // if home is /
     const base = home.endsWith("/") ? home.slice(0, -1) : home;

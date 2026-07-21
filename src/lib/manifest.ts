@@ -42,7 +42,7 @@ const SHORTCUTS = [
   },
 ];
 
-export function manifest(locale: 'es' | 'en' | 'es-MX') {
+export function manifest(locale: 'es-MX' | 'en' | 'es-MX') {
   const isEnglish = locale.startsWith('en');
 
   const localized: WebManifestInput = isEnglish

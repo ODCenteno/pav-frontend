@@ -306,7 +306,7 @@ async function safe<T>(fn: () => Promise<T>): Promise<T | null> {
 
 // ---------- categories ----------
 
-export async function getCategories(locale: string = 'es'): Promise<Category[]> {
+export async function getCategories(locale: string = 'es-MX'): Promise<Category[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<CategoryAttributes>('/categories', {
@@ -321,7 +321,7 @@ export async function getCategories(locale: string = 'es'): Promise<Category[]> 
 
 // ---------- listings ----------
 
-export async function getListings(locale: string = 'es'): Promise<Listing[]> {
+export async function getListings(locale: string = 'es-MX'): Promise<Listing[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
@@ -336,7 +336,7 @@ export async function getListings(locale: string = 'es'): Promise<Listing[]> {
   );
 }
 
-export async function getListingBySlug(slug: string, locale: string = 'es'): Promise<Listing | null> {
+export async function getListingBySlug(slug: string, locale: string = 'es-MX'): Promise<Listing | null> {
   return safe(async () => {
     const res = await strapiGet<ListingAttributes>('/listings', {
       'filters[slug][$eq]': slug,
@@ -356,7 +356,7 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
         'filters[publishedAt][$notNull]': 'true',
         'populate[0]': 'stories',
         'populate[1]': 'products',
-        locale: 'es',
+        locale: 'es-MX',
         'pagination[pageSize]': '1',
       });
       esItem = esRes.data.length > 0 ? esRes.data[0] : null;
@@ -366,7 +366,7 @@ export async function getListingBySlug(slug: string, locale: string = 'es'): Pro
   });
 }
 
-export async function getListingsByCategorySlug(categorySlug: string, locale: string = 'es'): Promise<Listing[]> {
+export async function getListingsByCategorySlug(categorySlug: string, locale: string = 'es-MX'): Promise<Listing[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
@@ -384,7 +384,7 @@ export async function getListingsByCategorySlug(categorySlug: string, locale: st
   );
 }
 
-export async function getFeaturedListings(locale: string = 'es', limit: number = 3): Promise<Listing[]> {
+export async function getFeaturedListings(locale: string = 'es-MX', limit: number = 3): Promise<Listing[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<ListingAttributes>('/listings', {
@@ -404,7 +404,7 @@ export async function getFeaturedListings(locale: string = 'es', limit: number =
 
 // ---------- team members ----------
 
-export async function getTeamMembers(locale: string = 'es'): Promise<TeamMember[]> {
+export async function getTeamMembers(locale: string = 'es-MX'): Promise<TeamMember[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<TeamMemberAttributes>('/team-members', {
@@ -421,7 +421,7 @@ export async function getTeamMembers(locale: string = 'es'): Promise<TeamMember[
 
 // ---------- organizations ----------
 
-export async function getOrganizations(locale: string = 'es'): Promise<Organization[]> {
+export async function getOrganizations(locale: string = 'es-MX'): Promise<Organization[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<OrganizationAttributes>('/organizations', {
@@ -438,7 +438,7 @@ export async function getOrganizations(locale: string = 'es'): Promise<Organizat
 
 // ---------- community members ----------
 
-export async function getCommunityMembers(locale: string = 'es'): Promise<CommunityMember[]> {
+export async function getCommunityMembers(locale: string = 'es-MX'): Promise<CommunityMember[]> {
   return (
     (await safe(async () => {
       const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
@@ -455,7 +455,7 @@ export async function getCommunityMembers(locale: string = 'es'): Promise<Commun
 }
 
 export async function getFeaturedCommunityMembers(
-  locale: string = 'es',
+  locale: string = 'es-MX',
   limit: number = 6,
 ): Promise<CommunityMember[]> {
   return (
@@ -473,7 +473,7 @@ export async function getFeaturedCommunityMembers(
   );
 }
 
-export async function getCommunityMembersWithFallback(locale: string = 'es'): Promise<CommunityMember[]> {
+export async function getCommunityMembersWithFallback(locale: string = 'es-MX'): Promise<CommunityMember[]> {
   const fromCms = await getCommunityMembers(locale);
   if (fromCms.length > 0) return fromCms;
   return [];
@@ -481,7 +481,7 @@ export async function getCommunityMembersWithFallback(locale: string = 'es'): Pr
 
 export async function getCommunityMemberBySlug(
   slug: string,
-  locale: string = 'es',
+  locale: string = 'es-MX',
 ): Promise<CommunityMember | null> {
   return safe(async () => {
     const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
@@ -505,7 +505,7 @@ export async function getCommunityMemberBySlug(
         'filters[slug][$eq]': slug,
         'filters[publishedAt][$notNull]': 'true',
         'populate[0]': 'photo',
-        locale: 'es',
+        locale: 'es-MX',
         'pagination[pageSize]': '1',
       });
       esItem = esRes.data.length > 0 ? esRes.data[0] : null;
@@ -517,7 +517,7 @@ export async function getCommunityMemberBySlug(
 
 // ---------- site content ----------
 
-export async function getSiteContent(key: string, locale: string = 'es'): Promise<SiteContent | null> {
+export async function getSiteContent(key: string, locale: string = 'es-MX'): Promise<SiteContent | null> {
   return safe(async () => {
     const item = await strapiGetOne<SiteContentAttributes>('/site-contents', {
       'filters[key][$eq]': key,
@@ -533,7 +533,7 @@ export async function getSiteContent(key: string, locale: string = 'es'): Promis
  * Uses Strapi's `$in` operator to fetch all keys at once instead of
  * making N parallel requests.
  */
-export async function getSiteContents(keys: string[], locale: string = 'es'): Promise<(SiteContent | null)[]> {
+export async function getSiteContents(keys: string[], locale: string = 'es-MX'): Promise<(SiteContent | null)[]> {
   if (keys.length === 0) return [];
 
   const result = await safe(async () => {
@@ -567,12 +567,12 @@ export async function getSiteContents(keys: string[], locale: string = 'es'): Pr
 
 export interface LegalPageAttributes {
   slug: string;
-  title: { es: string; en: string };
-  content: { es: string; en: string };
+  title: { 'es-MX': string; en: string };
+  content: { 'es-MX': string; en: string };
   publishedAt: string | null;
 }
 
-export async function getLegalPage(slug: string, locale: string = 'es'): Promise<{ slug: string; title: string; content: string } | null> {
+export async function getLegalPage(slug: string, locale: string = 'es-MX'): Promise<{ slug: string; title: string; content: string } | null> {
   return safe(async () => {
     const item = await strapiGetOne<LegalPageAttributes>('/legal-pages', {
       'filters[slug][$eq]': slug,
@@ -580,11 +580,11 @@ export async function getLegalPage(slug: string, locale: string = 'es'): Promise
     });
     if (!item) return null;
     const attrs = unwrap(item);
-    const loc = locale.startsWith('en') ? 'en' : 'es';
+    const loc = locale.startsWith('en') ? 'en' : 'es-MX';
     return {
       slug: attrs.slug,
-      title: attrs.title[loc] || attrs.title.es,
-      content: attrs.content[loc] || attrs.content.es,
+      title: attrs.title[loc] || attrs.title['es-MX'],
+      content: attrs.content[loc] || attrs.content['es-MX'],
     };
   });
 }
@@ -734,7 +734,7 @@ const EXPERIENCES_PAGE_POPULATE = {
   'populate[3]': 'finalCta',
 } as const;
 
-export async function getHomepage(locale: string = 'es'): Promise<HomepageData | null> {
+export async function getHomepage(locale: string = 'es-MX'): Promise<HomepageData | null> {
   return safe(async () => {
     const item = await strapiGetOne<HomepageAttributes>('/homepage', {
       ...HOMEPAGE_POPULATE,
@@ -745,7 +745,7 @@ export async function getHomepage(locale: string = 'es'): Promise<HomepageData |
   });
 }
 
-export async function getHomepageWithFallback(locale: string = 'es'): Promise<HomepageData> {
+export async function getHomepageWithFallback(locale: string = 'es-MX'): Promise<HomepageData> {
   const fromCms = await getHomepage(locale);
   if (fromCms) {
     return mergeHomepage(fromCms, getHomepageFallback(locale));
@@ -1052,7 +1052,7 @@ export interface AboutPageData {
   organizations: Organization[];
 }
 
-export async function getAboutPage(locale: string = 'es'): Promise<AboutPageData> {
+export async function getAboutPage(locale: string = 'es-MX'): Promise<AboutPageData> {
   const [aboutPage, team, organizations] = await Promise.all([
     strapiGetOne<AboutPageAttributes>('/about-page', {
       ...ABOUT_PAGE_POPULATE,
@@ -1111,7 +1111,7 @@ export function deriveCategoriesFromListings(listings: Listing[]): Category[] {
       seen.set(slug, {
         id: slug,
         slug,
-        name: (c?.name as any) || { es: slug, en: slug },
+        name: (c?.name as any) || { 'es-MX': slug, en: slug },
         order: c?.order ?? 0,
       });
     }
@@ -1124,7 +1124,7 @@ export function deriveCategoriesFromListings(listings: Listing[]): Category[] {
  * are already loaded. This variant still works but may trigger an extra
  * listings fetch via getListingsFallback().
  */
-export function getCategoriesWithFallback(locale: string = 'es'): Category[] {
+export function getCategoriesWithFallback(locale: string = 'es-MX'): Category[] {
   return deriveCategoriesFromListings(getListingsFallback());
 }
 
@@ -1154,7 +1154,7 @@ function dedupedListingsFetch(locale: string): Promise<Listing[]> {
   return promise;
 }
 
-export async function getListingsWithFallback(locale: string = 'es'): Promise<Listing[]> {
+export async function getListingsWithFallback(locale: string = 'es-MX'): Promise<Listing[]> {
   return dedupedListingsFetch(locale);
 }
 
@@ -1165,14 +1165,14 @@ export async function getListingsWithFallback(locale: string = 'es'): Promise<Li
  * call `getListingBySlugWithFallback(slug, locale)` per route for the full
  * view-model with all relations populated.
  */
-export async function getListingSlugsWithFallback(locale: string = 'es'): Promise<string[]> {
+export async function getListingSlugsWithFallback(locale: string = 'es-MX'): Promise<string[]> {
   const fromCms = await safe(async () => {
     const res = await strapiGet<ListingAttributes>('/listings', {
       'filters[publishedAt][$notNull]': 'true',
       sort: 'order:asc',
       'pagination[pageSize]': '100',
       locale,
-      fields: ['slug'],
+      fields: 'slug',
     });
     return res.data
       .map((item) => unwrap(item).slug)
@@ -1186,35 +1186,35 @@ export async function getListingSlugsWithFallback(locale: string = 'es'): Promis
     .filter((s): s is string => typeof s === 'string' && s.length > 0);
 }
 
-export async function getListingBySlugWithFallback(slug: string, locale: string = 'es'): Promise<Listing | null> {
+export async function getListingBySlugWithFallback(slug: string, locale: string = 'es-MX'): Promise<Listing | null> {
   const fromCms = await getListingBySlug(slug, locale);
   if (fromCms) return fromCms;
   if (!USE_DEV_FALLBACK) return null;
   return getListingsFallback().find((l) => l.slug === slug) ?? null;
 }
 
-export async function getFeaturedListingsWithFallback(locale: string = 'es', limit: number = 3): Promise<Listing[]> {
+export async function getFeaturedListingsWithFallback(locale: string = 'es-MX', limit: number = 3): Promise<Listing[]> {
   const fromCms = await getFeaturedListings(locale, limit);
   if (fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
   return getListingsFallback().filter((l) => l.isFeatured).slice(0, limit);
 }
 
-export async function getTeamWithFallback(locale: string = 'es'): Promise<TeamMember[]> {
+export async function getTeamWithFallback(locale: string = 'es-MX'): Promise<TeamMember[]> {
   const fromCms = await getTeamMembers(locale);
   if (fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
   return getTeamFallback();
 }
 
-export async function getOrganizationsWithFallback(locale: string = 'es'): Promise<Organization[]> {
+export async function getOrganizationsWithFallback(locale: string = 'es-MX'): Promise<Organization[]> {
   const fromCms = await getOrganizations(locale);
   if (fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
   return getOrganizationsFallback();
 }
 
-export async function getAboutPageWithFallback(locale: string = 'es'): Promise<AboutPageData> {
+export async function getAboutPageWithFallback(locale: string = 'es-MX'): Promise<AboutPageData> {
   const fromCms = await getAboutPage(locale);
   if (fromCms.intro || fromCms.community) return fromCms;
   if (!USE_DEV_FALLBACK) return fromCms;
@@ -1244,7 +1244,7 @@ export async function getAboutPageWithFallback(locale: string = 'es'): Promise<A
 export interface GuidePageData {
   hero: { title: string; desc: string; image: string } | null;
   intro: { ranchTitle: string; ranchText: string; portTitle: string; portText: string } | null;
-  history: { title: string; text: string; milestones: { year: string; es: string; en: string }[] } | null;
+  history: { title: string; text: string; milestones: { year: string; 'es-MX': string; en: string }[] } | null;
   fishing: { title: string; text: string; rules: string[] } | null;
   protected: { title: string; text: string; linkLabel: string; linkHref: string } | null;
   influence: { title: string; text: string } | null;
@@ -1275,7 +1275,7 @@ export interface ExperiencesPageData {
   finalCta: { title: string; description: string; buttonLabel: string; buttonLink: string } | null;
 }
 
-export async function getExperiencesPage(locale: string = 'es'): Promise<ExperiencesPageData | null> {
+export async function getExperiencesPage(locale: string = 'es-MX'): Promise<ExperiencesPageData | null> {
   const page = await strapiGetOne<ExperiencesPageAttributes>('/experiences-page', {
     ...EXPERIENCES_PAGE_POPULATE,
     locale,
@@ -1284,14 +1284,14 @@ export async function getExperiencesPage(locale: string = 'es'): Promise<Experie
   return transformExperiencesPage(page, locale);
 }
 
-export async function getExperiencesPageWithFallback(locale: string = 'es'): Promise<ExperiencesPageData | null> {
+export async function getExperiencesPageWithFallback(locale: string = 'es-MX'): Promise<ExperiencesPageData | null> {
   const fromCms = await getExperiencesPage(locale);
   if (fromCms) return fromCms;
   if (!USE_DEV_FALLBACK) return null;
   return null;
 }
 
-export async function getGuidePage(locale: string = 'es'): Promise<GuidePageData> {
+export async function getGuidePage(locale: string = 'es-MX'): Promise<GuidePageData> {
   const guidePage = await strapiGetOne<GuidePageAttributes>('/guide-page', {
     ...GUIDE_PAGE_POPULATE,
     locale,
@@ -1306,7 +1306,7 @@ export async function getGuidePage(locale: string = 'es'): Promise<GuidePageData
   return transformGuidePage(guidePage, locale);
 }
 
-export async function getGuidePageWithFallback(locale: string = 'es'): Promise<GuidePageData> {
+export async function getGuidePageWithFallback(locale: string = 'es-MX'): Promise<GuidePageData> {
   const fromCms = await getGuidePage(locale);
   if (fromCms.hero || fromCms.intro) return fromCms;
   if (!USE_DEV_FALLBACK) return fromCms;

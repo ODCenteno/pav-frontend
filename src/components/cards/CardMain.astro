@@ -15,7 +15,7 @@ const langKey = String(currentLang).toLowerCase().startsWith("en") ? "en" : "es"
 // Helper local (SSR) para leer LocalizedString de forma segura
 function getLocalizedText(value?: LocalizedString, key: "es" | "en" = "es"): string {
   if (!value) return "";
-  // Caso común: { es: "...", en: "..." }
+  // Caso común: { 'es-MX': "...", en: "..." }
   if (typeof value === "object") {
     const v = (value as any)[key] ?? (value as any).es ?? (value as any).en;
     return typeof v === "string" ? v : "";

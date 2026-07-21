@@ -118,7 +118,7 @@ describe("strapiTransformer", () => {
       expect(out.media?.galleryUrls).toHaveLength(2);
       expect(out.pricing?.price).toBe("$60 USD");
       expect(out.isFeatured).toBe(true);
-      expect(out.href).toEqual({ es: expect.stringContaining("/sitios/"), en: expect.stringContaining("/en/sitios/") });
+      expect(out.href).toEqual({ 'es-MX': expect.stringContaining("/sitios/"), en: expect.stringContaining("/en/sitios/") });
     });
 
     it("returns a listing with empty arrays when tags/gallery are missing", () => {
@@ -214,7 +214,7 @@ describe("strapiTransformer", () => {
           title: "Nuestros valores",
           text: "",
           order: 1,
-          extraData: { mission: { es: "M-ES", en: "M-EN" } },
+          extraData: { mission: { 'es-MX': "M-ES", en: "M-EN" } },
         },
       };
       const out = transformSiteContent(item, "es");
@@ -402,7 +402,7 @@ describe("strapiTransformer", () => {
           historyText: "Historia de la región...",
           historyMilestones: [
             { year: "1950", text: "Fundación del rancho" },
-            { year: "1980", text: { es: "Primer turismo", en: "First tourism" } },
+            { year: "1980", text: { 'es-MX': "Primer turismo", en: "First tourism" } },
           ],
           fishingHeader: { title: "Pesca Deportiva", subtitle: "Reglamento" },
           fishingText: "Normas de pesca...",

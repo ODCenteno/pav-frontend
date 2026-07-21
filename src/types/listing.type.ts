@@ -30,7 +30,7 @@ export interface Listing {
   relatedSites?: string[];
 
   href?: {
-    es: string;
+    'es-MX': string;
     en: string;
   };
 

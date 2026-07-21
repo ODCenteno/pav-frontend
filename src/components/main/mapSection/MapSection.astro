@@ -21,7 +21,7 @@ interface Props {
   locale?: string;
 }
 
-const { data, listings = [], locale = "es" } = Astro.props;
+const { data, listings = [], locale = "es-MX" } = Astro.props;
 
 const lang = locale.startsWith("en") ? "en" : "es";
 

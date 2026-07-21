@@ -3,8 +3,8 @@ import "./guideDirections.css";
 import SvgIcon from "../icons/SvgIcon.astro";
 
 interface RouteInfo {
-  label: { es: string; en: string };
-  desc: { es: string; en: string };
+  label: { 'es-MX': string; en: string };
+  desc: { 'es-MX': string; en: string };
   distance: string;
   time: string;
   image: string;
@@ -12,16 +12,16 @@ interface RouteInfo {
 
 interface Props {
   data: {
-    title: { es: string; en: string };
+    title: { 'es-MX': string; en: string };
     loreto: RouteInfo;
     laPaz: RouteInfo;
-    drivingTipsTitle: { es: string; en: string };
-    drivingTips: { es: string[]; en: string[] };
+    drivingTipsTitle: { 'es-MX': string; en: string };
+    drivingTips: { 'es-MX': string[]; en: string[] };
   };
   locale?: string;
 }
 
-const { data, locale = "es" } = Astro.props;
+const { data, locale = "es-MX" } = Astro.props;
 const lang = locale?.startsWith("en") ? "en" : "es";
 const tips = data.drivingTips[lang] || [];
 ---

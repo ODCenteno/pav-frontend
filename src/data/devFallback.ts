@@ -22,16 +22,16 @@ import type { TeamMember, Organization } from '../types/about.type';
 import { navigation } from '../utils/navigation';
 
 function localizedFromPair(es: any, en: any) {
-  return { es: es || '', en: en || '' };
+  return { 'es-MX': es || '', en: en || '' };
 }
 
 function localizedArray(es: string[] | undefined, en: string[] | undefined) {
   const esArr = es || [];
   const enArr = en || [];
   const len = Math.max(esArr.length, enArr.length);
-  const out: { es: string; en: string }[] = [];
+  const out: { 'es-MX': string; en: string }[] = [];
   for (let i = 0; i < len; i++) {
-    out.push({ es: esArr[i] || '', en: enArr[i] || esArr[i] || '' });
+    out.push({ 'es-MX': esArr[i] || '', en: enArr[i] || esArr[i] || '' });
   }
   return out;
 }
@@ -80,7 +80,7 @@ export function getListingsFallback(): Listing[] {
         name: localizedFromPair(item.category_name_es, item.category_name_en),
       },
       href: {
-        es: navigation.siteDetail(item.slug, 'es'),
+        'es-MX': navigation.siteDetail(item.slug, 'es-MX'),
         en: navigation.siteDetail(item.slug, 'en'),
       },
     };

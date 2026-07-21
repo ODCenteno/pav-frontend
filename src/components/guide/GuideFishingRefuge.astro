@@ -4,14 +4,14 @@ import SvgIcon from "../icons/SvgIcon.astro";
 
 interface Props {
   data: {
-    title: { es: string; en: string };
-    text: { es: string; en: string };
-    rules: { es: string[]; en: string[] };
+    title: { 'es-MX': string; en: string };
+    text: { 'es-MX': string; en: string };
+    rules: { 'es-MX': string[]; en: string[] };
   };
   locale?: string;
 }
 
-const { data, locale = "es" } = Astro.props;
+const { data, locale = "es-MX" } = Astro.props;
 const lang = locale?.startsWith("en") ? "en" : "es";
 const rules = data.rules[lang] || [];
 ---

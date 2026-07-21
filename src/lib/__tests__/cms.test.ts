@@ -88,16 +88,16 @@ describe("cms client", () => {
           },
         ])
       );
-      const cats = await getCategories("es");
+      const cats = await getCategories("es-MX");
       expect(cats).toHaveLength(1);
       expect(cats[0].slug).toBe("experiences");
-      expect(cats[0].name.es).toBe("Experiencias");
+      expect(cats[0].name['es-MX']).toBe("Experiencias");
     });
 
     it("returns [] when fetch fails (no throw)", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce(strapiError());
-      const cats = await getCategories("es");
+      const cats = await getCategories("es-MX");
       expect(cats).toEqual([]);
     });
   });
@@ -119,16 +119,16 @@ describe("cms client", () => {
           },
         ])
       );
-      const items = await getListings("es");
+      const items = await getListings("es-MX");
       expect(items).toHaveLength(1);
       expect(items[0].slug).toBe("tour-a");
-      expect(items[0].href?.es).toContain("/sitios/tour-a");
+      expect(items[0].href?.['es-MX']).toContain("/sitios/tour-a");
     });
 
     it("returns [] on error", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce(strapiError());
-      const items = await getListings("es");
+      const items = await getListings("es-MX");
       expect(items).toEqual([]);
     });
   });
@@ -137,7 +137,7 @@ describe("cms client", () => {
     it("returns null when listing not found (404)", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce(strapiNotFound());
-      const item = await getListingBySlug("nonexistent", "es");
+      const item = await getListingBySlug("nonexistent", "es-MX");
       expect(item).toBeNull();
     });
 
@@ -148,14 +148,14 @@ describe("cms client", () => {
           { id: 5, attributes: { title: "X", slug: "x" } },
         ])
       );
-      const item = await getListingBySlug("x", "es");
+      const item = await getListingBySlug("x", "es-MX");
       expect(item?.slug).toBe("x");
     });
 
     it("returns null on network error", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce(strapiError());
-      const item = await getListingBySlug("x", "es");
+      const item = await getListingBySlug("x", "es-MX");
       expect(item).toBeNull();
     });
   });
@@ -171,7 +171,7 @@ describe("cms client", () => {
       // team + orgs
       fetchMock.mockResolvedValueOnce(strapiOk([]));
       fetchMock.mockResolvedValueOnce(strapiOk([]));
-      const data = await getAboutPage("es");
+      const data = await getAboutPage("es-MX");
       expect(data.intro).toBeNull();
       expect(data.values).toBeNull();
       expect(data.community).toBeNull();
@@ -185,7 +185,7 @@ describe("cms client", () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       // getGuidePage now uses a single batched request via getSiteContents
       fetchMock.mockResolvedValueOnce(strapiNotFound());
-      const data = await getGuidePage("es");
+      const data = await getGuidePage("es-MX");
       expect(data.hero).toBeNull();
       expect(data.intro).toBeNull();
       expect(data.directions).toBeNull();
@@ -233,10 +233,10 @@ describe("cms client", () => {
         })
       );
 
-      const data = await getGuidePage("es");
+      const data = await getGuidePage("es-MX");
       expect(data.hero?.image).toBe("http://localhost:1337/img.png");
       expect(data.intro?.ranchTitle).toBe("RS");
-      expect(data.history?.milestones[0].es).toBe("ES");
+      expect(data.history?.milestones[0]['es-MX']).toBe("ES");
       expect(data.fishing?.rules[0]).toBe("r1");
       expect(data.protected?.linkHref).toBe("https://example.com");
       expect(data.influence?.title).toBe("IT");
@@ -265,7 +265,7 @@ describe("cms client", () => {
           { id: 1, attributes: { title: "X", slug: "x", category: { data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } } } } },
         ])
       );
-      const items = await getListingsByCategorySlug("experiences", "es");
+      const items = await getListingsByCategorySlug("experiences", "es-MX");
       expect(items).toHaveLength(1);
       expect(items[0].slug).toBe("x");
     });
@@ -273,7 +273,7 @@ describe("cms client", () => {
     it("returns [] on error", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce(strapiError());
-      const items = await getListingsByCategorySlug("x", "es");
+      const items = await getListingsByCategorySlug("x", "es-MX");
       expect(items).toEqual([]);
     });
   });
@@ -287,7 +287,7 @@ describe("cms client", () => {
           { id: 2, attributes: { title: "F2", slug: "f2", isFeatured: true } },
         ])
       );
-      const items = await getFeaturedListings("es", 2);
+      const items = await getFeaturedListings("es-MX", 2);
       expect(items).toHaveLength(2);
     });
   });
@@ -364,7 +364,7 @@ describe("cms client", () => {
       // orgs
       fetchMock.mockResolvedValueOnce(strapiOk([{ id: 1, attributes: { name: "O1" } }]));
 
-      const data = await getAboutPage("es");
+      const data = await getAboutPage("es-MX");
       expect(data.intro?.title).toBe("T");
       expect(data.intro?.text).toBe("Txt");
       expect(data.values?.mission.title).toBe("M");
@@ -384,7 +384,7 @@ describe("cms client", () => {
       // Both must return empty so the dev fallback path triggers.
       fetchMock.mockResolvedValueOnce(strapiOk([]));
       fetchMock.mockResolvedValueOnce(strapiOk([]));
-      const items = await getListingsWithFallback("es");
+      const items = await getListingsWithFallback("es-MX");
       expect(items.length).toBeGreaterThan(0); // falls back to local
     });
 
@@ -405,7 +405,7 @@ describe("cms client", () => {
           },
         ])
       );
-      const items = await getListingsWithFallback("es");
+      const items = await getListingsWithFallback("es-MX");
       expect(items).toHaveLength(1);
       expect(items[0].category).toBeDefined();
       expect(items[0].category?.slug).toBe("experiences");
@@ -421,7 +421,7 @@ describe("cms client", () => {
       for (let i = 0; i < 3; i++) {
         fetchMock.mockResolvedValueOnce(strapiNotFound());
       }
-      const data = await getAboutPageWithFallback("es");
+      const data = await getAboutPageWithFallback("es-MX");
       expect(data.intro).toBeTruthy();
       expect(data.values).toBeTruthy();
       expect(data.community).toBeTruthy();
@@ -433,7 +433,7 @@ describe("cms client", () => {
     it("returns null when Strapi response has data:null", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockResolvedValueOnce({ ok: true, status: 200, text: () => Promise.resolve(""), json: () => Promise.resolve({ data: null }) } as any);
-      const item = await getListingBySlug("x", "es");
+      const item = await getListingBySlug("x", "es-MX");
       expect(item).toBeNull();
     });
   });
@@ -442,14 +442,14 @@ describe("cms client", () => {
     it("getCategories returns [] on network exception", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockRejectedValueOnce(new Error("ECONNREFUSED"));
-      const cats = await getCategories("es");
+      const cats = await getCategories("es-MX");
       expect(cats).toEqual([]);
     });
 
     it("getListings returns [] on network exception", async () => {
       (import.meta.env as any).STRAPI_URL = "http://localhost:1337";
       fetchMock.mockRejectedValueOnce(new Error("ECONNREFUSED"));
-      const items = await getListings("es");
+      const items = await getListings("es-MX");
       expect(items).toEqual([]);
     });
   });

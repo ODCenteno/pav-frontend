@@ -4,37 +4,37 @@ import { getTranslated } from '../translations';
 describe('translations', () => {
   describe('getTranslated', () => {
     it('should return Spanish translation when locale is es-MX', () => {
-      const field = { es: 'Hola', en: 'Hello' };
+      const field = { 'es-MX': 'Hola', en: 'Hello' };
       const result = getTranslated(field, 'es-MX');
       expect(result).toBe('Hola');
     });
 
     it('should return English translation when locale is en-US', () => {
-      const field = { es: 'Hola', en: 'Hello' };
+      const field = { 'es-MX': 'Hola', en: 'Hello' };
       const result = getTranslated(field, 'en-US');
       expect(result).toBe('Hello');
     });
 
     it('should return English translation when locale starts with en', () => {
-      const field = { es: 'Hola', en: 'Hello' };
+      const field = { 'es-MX': 'Hola', en: 'Hello' };
       const result = getTranslated(field, 'en');
       expect(result).toBe('Hello');
     });
 
     it('should fallback to Spanish when locale is undefined', () => {
-      const field = { es: 'Hola', en: 'Hello' };
+      const field = { 'es-MX': 'Hola', en: 'Hello' };
       const result = getTranslated(field, undefined);
       expect(result).toBe('Hola');
     });
 
     it('should fallback to Spanish when locale is empty string', () => {
-      const field = { es: 'Hola', en: 'Hello' };
+      const field = { 'es-MX': 'Hola', en: 'Hello' };
       const result = getTranslated(field, '');
       expect(result).toBe('Hola');
     });
 
     it('should fallback to Spanish when locale does not match es or en', () => {
-      const field = { es: 'Hola', en: 'Hello' };
+      const field = { 'es-MX': 'Hola', en: 'Hello' };
       const result = getTranslated(field, 'fr-FR');
       expect(result).toBe('Hola');
     });
@@ -50,7 +50,7 @@ describe('translations', () => {
     });
 
     it('should fallback to Spanish when translation key does not exist', () => {
-      const field = { es: 'Hola', en: '' } as any;
+      const field = { 'es-MX': 'Hola', en: '' } as any;
       const result = getTranslated(field, 'en-US');
       expect(result).toBe(''); // en key is empty string
     });

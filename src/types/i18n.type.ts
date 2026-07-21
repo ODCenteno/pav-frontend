@@ -1,5 +1,5 @@
 export interface LocalizedString {
-  es: string;
+  'es-MX': string;
   en: string;
   [key: string]: string;
 }

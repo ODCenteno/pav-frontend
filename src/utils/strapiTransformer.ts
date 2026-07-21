@@ -249,9 +249,9 @@ export interface SocialLinkAttributes {
 }
 
 export interface StoryBlockAttributes {
-  title?: string | { es: string; en: string };
+  title?: string | { 'es-MX': string; en: string };
   narrative?: string | any[];
-  highlightQuote?: string | { es: string; en: string };
+  highlightQuote?: string | { 'es-MX': string; en: string };
   era?: string;
   theme?: string;
   storyteller?: string;
@@ -260,17 +260,17 @@ export interface StoryBlockAttributes {
 }
 
 export interface ProductItemAttributes {
-  name?: string | { es: string; en: string };
-  description?: string | { es: string; en: string };
+  name?: string | { 'es-MX': string; en: string };
+  description?: string | { 'es-MX': string; en: string };
 }
 
 export interface CommunityMemberAttributes {
   name: string;
   slug: string;
-  role?: string | { es: string; en: string };
+  role?: string | { 'es-MX': string; en: string };
   locality?: string;
   bio?: string | any[];
-  pullQuote?: string | { es: string; en: string };
+  pullQuote?: string | { 'es-MX': string; en: string };
   photo?: StrapiMedia;
   gallery?: StrapiMediaArray;
   social?: SocialLinkAttributes[];
@@ -278,7 +278,7 @@ export interface CommunityMemberAttributes {
   whatsapp?: string;
   listings?: { data: StrapiItem<ListingAttributes>[] };
   relatedMembers?: { data: StrapiItem<CommunityMemberAttributes>[] };
-  legacyNote?: string | { es: string; en: string };
+  legacyNote?: string | { 'es-MX': string; en: string };
   isFeatured?: boolean;
   order?: number;
 }
@@ -388,16 +388,16 @@ export function unwrap<T>(item: StrapiItem<T>): T {
   return item as unknown as T;
 }
 
-function localized(value: string | { es: string; en: string } | null | undefined, locale: string = 'es'): LocalizedString {
+function localized(value: string | { 'es-MX': string; en: string } | null | undefined, locale: string = 'es-MX'): LocalizedString {
   if (Array.isArray(value)) {
     const text = asString(value);
-    return { es: text, en: text };
+    return { 'es-MX': text, en: text };
   }
   if (value && typeof value === 'object') {
-    return { es: (value as any).es || '', en: (value as any).en || '' };
+    return { 'es-MX': (value as any).es || '', en: (value as any).en || '' };
   }
   const v = (value as string) || '';
-  return { es: v, en: v };
+  return { 'es-MX': v, en: v };
 }
 
 /**
@@ -415,7 +415,7 @@ function localeSuffixed(obj: any, key: string): LocalizedString | undefined {
   const es = obj[`${key}_es`];
   const en = obj[`${key}_en`] ?? es;
   if (es == null && en == null) return undefined;
-  return { es: String(es ?? ''), en: String(en ?? '') };
+  return { 'es-MX': String(es ?? ''), en: String(en ?? '') };
 }
 
 /**
@@ -427,7 +427,7 @@ function localeSuffixedArray(obj: any, key: string): LocalizedString[] | undefin
   const es: string[] = Array.isArray(obj[`${key}_es`]) ? obj[`${key}_es`] : [];
   const en: string[] = Array.isArray(obj[`${key}_en`]) ? obj[`${key}_en`] : es;
   if (es.length === 0) return undefined;
-  return es.map((item, i) => ({ es: item, en: en[i] ?? item }));
+  return es.map((item, i) => ({ 'es-MX': item, en: en[i] ?? item }));
 }
 
 /**
@@ -441,7 +441,7 @@ function textLinesToLocalized(obj: any, key: string): LocalizedString[] | undefi
   const esLines = esText.split('\n').map((s: string) => s.trim()).filter(Boolean);
   const enLines = enText.split('\n').map((s: string) => s.trim()).filter(Boolean);
   if (esLines.length === 0) return undefined;
-  return esLines.map((item: string, i: number) => ({ es: item, en: enLines[i] ?? item }));
+  return esLines.map((item: string, i: number) => ({ 'es-MX': item, en: enLines[i] ?? item }));
 }
 
 /**
@@ -452,7 +452,7 @@ function fromLocalizedText(comp: any): LocalizedString | undefined {
   const es = comp.text_es || '';
   const en = comp.text_en || es;
   if (!es && !en) return undefined;
-  return { es, en };
+  return { 'es-MX': es, en };
 }
 
 function normalizeLocation(raw: any): any {
@@ -494,7 +494,7 @@ export function transformCategory(item: StrapiItem<CategoryAttributes>): Categor
 
 export function transformListing(
   item: StrapiItem<ListingAttributes>,
-  locale: string = 'es',
+  locale: string = 'es-MX',
   esItem?: StrapiItem<ListingAttributes> | null,
 ): Listing {
   const a = unwrap(item);
@@ -521,7 +521,7 @@ export function transformListing(
     description: a.description ? localized(asString(a.description), locale) : undefined,
     categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
     category: catItem ? transformCategory(catItem) : undefined,
-    tags: (a.tags || []).map((t) => localized({ es: t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
+    tags: (a.tags || []).map((t) => localized({ 'es-MX': t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
     location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
@@ -535,7 +535,7 @@ export function transformListing(
           text: localeSuffixed(a.schedule, 'text'),
         }
       : undefined,
-    amenities: (a.amenities || []).map((t) => localized({ es: t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
+    amenities: (a.amenities || []).map((t) => localized({ 'es-MX': t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
     recommendations: a.recommendations
       ? {
           bestTimeToVisit: localeSuffixed(a.recommendations, 'bestTime'),
@@ -548,7 +548,7 @@ export function transformListing(
       ? relatedRaw.map((r) => String(r.id ?? r.documentId))
       : undefined,
     href: {
-      es: navigation.siteDetail(slug, 'es'),
+      'es-MX': navigation.siteDetail(slug, 'es-MX'),
       en: navigation.siteDetail(slug, 'en'),
     },
     members: membersRaw.length
@@ -612,15 +612,15 @@ function strFallback(value: string | undefined, fallback: string | undefined): s
 }
 
 function pickLocalized(
-  value: string | { es: string; en: string } | null | undefined,
+  value: string | { 'es-MX': string; en: string } | null | undefined,
   locale: string,
-  fallback?: string | { es: string; en: string } | null,
+  fallback?: string | { 'es-MX': string; en: string } | null,
 ): string {
   const current = value && typeof value === 'object'
-    ? (locale.startsWith('en') ? value.en : value.es)
+    ? (locale.startsWith('en') ? value.en : value['es-MX'])
     : (value || '');
   const fb = fallback && typeof fallback === 'object'
-    ? (locale.startsWith('en') ? fallback.en : fallback.es)
+    ? (locale.startsWith('en') ? fallback.en : fallback['es-MX'])
     : (fallback || '');
   return strFallback(current, fb);
 }
@@ -669,7 +669,7 @@ function contactToSocialLinks(contact?: ContactInfoAttributes): SocialLinkAttrib
 
 export function transformStory(
   raw: StoryBlockAttributes,
-  locale: string = 'es',
+  locale: string = 'es-MX',
   esRaw?: StoryBlockAttributes,
 ): StoryBlock {
   return {
@@ -686,7 +686,7 @@ export function transformStory(
 
 export function transformProduct(
   raw: ProductItemAttributes,
-  locale: string = 'es',
+  locale: string = 'es-MX',
   esRaw?: ProductItemAttributes,
 ): ProductItem {
   return {
@@ -697,7 +697,7 @@ export function transformProduct(
 
 export function transformCommunityMemberSummary(
   item: StrapiItem<CommunityMemberAttributes>,
-  locale: string = 'es',
+  locale: string = 'es-MX',
 ): CommunityMemberSummary {
   const a = unwrap(item);
   const id = String(item.id ?? item.documentId ?? a.slug);
@@ -714,7 +714,7 @@ export function transformCommunityMemberSummary(
 
 export function transformCommunityMember(
   item: StrapiItem<CommunityMemberAttributes>,
-  locale: string = 'es',
+  locale: string = 'es-MX',
   esItem?: StrapiItem<CommunityMemberAttributes> | null,
 ): CommunityMember {
   const a = unwrap(item);
@@ -763,7 +763,7 @@ export function transformTeamMember(item: StrapiItem<TeamMemberAttributes>): Tea
   return {
     id,
     name: a.name,
-    role: fromLocalizedText(a.role) || { es: '', en: '' },
+    role: fromLocalizedText(a.role) || { 'es-MX': '', en: '' },
     shortBio: fromLocalizedText(a.shortBio),
     photo: mediaUrl(a.photo) || undefined,
     links: a.links,
@@ -787,7 +787,7 @@ export function transformOrganization(item: StrapiItem<OrganizationAttributes>):
   };
 }
 
-export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, locale: string = 'es'): SiteContent {
+export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, locale: string = 'es-MX'): SiteContent {
   const a = unwrap(item);
   const id = String(item.id ?? item.documentId ?? a.key);
   return {
@@ -801,7 +801,7 @@ export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, lo
   };
 }
 
-export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: string = 'es'): HomepageData {
+export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: string = 'es-MX'): HomepageData {
   const a = unwrap(item);
   const l = locale.startsWith('en') ? 'en' : 'es';
 
@@ -907,42 +907,42 @@ export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: 
 export interface AboutPageAttributes {
   internalLabel?: string;
   hero?: {
-    title?: string | { es: string; en: string };
-    titleHighlight?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    ctaLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    titleHighlight?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    ctaLabel?: string | { 'es-MX': string; en: string };
     ctaLink?: string;
     images?: any;
   };
-  introTitle?: string | { es: string; en: string };
-  introText?: string | { es: string; en: string };
+  introTitle?: string | { 'es-MX': string; en: string };
+  introText?: string | { 'es-MX': string; en: string };
   values?: {
-    missionTitle?: string | { es: string; en: string };
-    missionText?: string | { es: string; en: string };
-    visionTitle?: string | { es: string; en: string };
-    visionText?: string | { es: string; en: string };
-    valuesTitle?: string | { es: string; en: string };
-    valuesItems?: Array<string | { es: string; en: string }>;
+    missionTitle?: string | { 'es-MX': string; en: string };
+    missionText?: string | { 'es-MX': string; en: string };
+    visionTitle?: string | { 'es-MX': string; en: string };
+    visionText?: string | { 'es-MX': string; en: string };
+    valuesTitle?: string | { 'es-MX': string; en: string };
+    valuesItems?: Array<string | { 'es-MX': string; en: string }>;
   };
-  communityTitle?: string | { es: string; en: string };
-  communityText?: string | { es: string; en: string };
+  communityTitle?: string | { 'es-MX': string; en: string };
+  communityText?: string | { 'es-MX': string; en: string };
   collaboration?: {
-    title?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    primaryButtonLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    primaryButtonLabel?: string | { 'es-MX': string; en: string };
     primaryButtonLink?: string;
-    secondaryButtonLabel?: string | { es: string; en: string };
+    secondaryButtonLabel?: string | { 'es-MX': string; en: string };
     secondaryButtonLink?: string;
   };
   finalCta?: {
-    title?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    buttonLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    buttonLabel?: string | { 'es-MX': string; en: string };
     buttonLink?: string;
   };
 }
 
-export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale: string = 'es') {
+export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale: string = 'es-MX') {
   const a = unwrap(item);
   const l = locale.startsWith('en') ? 'en' : 'es';
 
@@ -1019,63 +1019,63 @@ export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale
 export interface GuidePageAttributes {
   internalLabel?: string;
   hero?: {
-    title?: string | { es: string; en: string };
-    titleHighlight?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    ctaLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    titleHighlight?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    ctaLabel?: string | { 'es-MX': string; en: string };
     ctaLink?: string;
     images?: any;
   };
   intro?: {
-    ranchTitle?: string | { es: string; en: string };
-    ranchText?: string | { es: string; en: string };
-    portTitle?: string | { es: string; en: string };
-    portText?: string | { es: string; en: string };
+    ranchTitle?: string | { 'es-MX': string; en: string };
+    ranchText?: string | { 'es-MX': string; en: string };
+    portTitle?: string | { 'es-MX': string; en: string };
+    portText?: string | { 'es-MX': string; en: string };
   };
-  historyHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
-  historyMilestones?: Array<{ year?: string; text?: string | { es: string; en: string } }>;
-  historyText?: string | { es: string; en: string };
-  fishingHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
-  fishingText?: string | { es: string; en: string };
-  fishingRules?: Array<{ text?: string | { es: string; en: string } }>;
+  historyHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  historyMilestones?: Array<{ year?: string; text?: string | { 'es-MX': string; en: string } }>;
+  historyText?: string | { 'es-MX': string; en: string };
+  fishingHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  fishingText?: string | { 'es-MX': string; en: string };
+  fishingRules?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
   protectedArea?: {
-    title?: string | { es: string; en: string };
-    text?: string | { es: string; en: string };
-    linkLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    text?: string | { 'es-MX': string; en: string };
+    linkLabel?: string | { 'es-MX': string; en: string };
     linkHref?: string;
   };
-  influenceHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
-  influenceText?: string | { es: string; en: string };
-  recommendationsHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
-  recommendations?: Array<{ text?: string | { es: string; en: string } }>;
-  directionsHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  influenceHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  influenceText?: string | { 'es-MX': string; en: string };
+  recommendationsHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  recommendations?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
+  directionsHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
   directions?: Array<{
-    label?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
+    label?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
     distance?: string;
     time?: string;
     image?: any;
   }>;
-  drivingTipsHeader?: string | { es: string; en: string };
-  drivingTips?: Array<{ text?: string | { es: string; en: string } }>;
-  amenitiesHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  drivingTipsHeader?: string | { 'es-MX': string; en: string };
+  drivingTips?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
+  amenitiesHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
   amenities?: Array<{
     icon?: 'wifi' | 'signal' | 'toilet' | 'parking' | 'water';
-    title?: string | { es: string; en: string };
-    text?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    text?: string | { 'es-MX': string; en: string };
   }>;
-  touristMapHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  touristMapHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
   touristMapImage?: any;
-  touristMapCaption?: string | { es: string; en: string };
+  touristMapCaption?: string | { 'es-MX': string; en: string };
   finalCta?: {
-    title?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    buttonLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    buttonLabel?: string | { 'es-MX': string; en: string };
     buttonLink?: string;
   };
 }
 
-export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale: string = 'es') {
+export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale: string = 'es-MX') {
   const a = unwrap(item);
   const l = locale.startsWith('en') ? 'en' : 'es';
 
@@ -1107,7 +1107,7 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
       text: localized(a.historyText, locale)[l],
       milestones: (a.historyMilestones || []).map((m) => ({
         year: m.year || '',
-        es: typeof m.text === 'object' ? (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
+        'es-MX': typeof m.text === 'object' ? (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
         en: typeof m.text === 'object' ? (m.text as any).en || (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
       })),
     },
@@ -1195,24 +1195,24 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
 export interface ExperiencesPageAttributes {
   internalLabel?: string;
   hero?: {
-    title?: string | { es: string; en: string };
-    titleHighlight?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    ctaLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    titleHighlight?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    ctaLabel?: string | { 'es-MX': string; en: string };
     ctaLink?: string;
     images?: any;
   };
-  introHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
-  featuredHeader?: { title?: string | { es: string; en: string }; subtitle?: string | { es: string; en: string } };
+  introHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  featuredHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
   finalCta?: {
-    title?: string | { es: string; en: string };
-    description?: string | { es: string; en: string };
-    buttonLabel?: string | { es: string; en: string };
+    title?: string | { 'es-MX': string; en: string };
+    description?: string | { 'es-MX': string; en: string };
+    buttonLabel?: string | { 'es-MX': string; en: string };
     buttonLink?: string;
   };
 }
 
-export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttributes>, locale: string = 'es') {
+export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttributes>, locale: string = 'es-MX') {
   const a = unwrap(item);
   const l = locale.startsWith('en') ? 'en' : 'es';
 
