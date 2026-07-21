@@ -10,11 +10,11 @@ import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
 import SitesExplorer from "@/components/main/categories/SitesExplorer.tsx";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback } from "@/lib/cms";
+import { getListingsWithFallback, toStrapiLocale} from "@/lib/cms";
 import type { Listing } from "@/types/listing.type";
 import { navigation } from "@/utils/navigation";
 
-const locale = Astro.currentLocale ?? "es";
+const locale = toStrapiLocale(Astro.currentLocale ?? "es");
 const t = useTranslations(locale);
 
 const allSites: Listing[] = await getListingsWithFallback(locale);

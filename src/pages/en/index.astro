@@ -22,13 +22,13 @@ const mapListings = featuredListings
   .map((item) => ({
     lat: item.location!.lat,
     lng: item.location!.lng,
-    title: item.name[locale] || item.name.es || "",
+    title: item.name[locale] || item.name['es-MX'] || "",
     href: `/en/sitios/${item.slug}`,
     categoryColor: item.category?.color || "#68a299",
     image: item.image || undefined,
     description:
-      item.shortDescription?.[locale as "es" | "en"] ||
-      item.shortDescription?.es ||
+      item.shortDescription?.[locale] ||
+      item.shortDescription?.['es-MX'] ||
       undefined,
   }));
 ---

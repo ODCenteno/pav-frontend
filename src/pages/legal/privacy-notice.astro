@@ -3,9 +3,9 @@ export const prerender = true;
 
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { useTranslations } from "@/i18n/utils";
-import { getLegalPage } from "@/lib/cms";
+import { getLegalPage, toStrapiLocale } from "@/lib/cms";
 
-const locale = Astro.currentLocale || 'es';
+const locale = toStrapiLocale(Astro.currentLocale || 'es');
 const t = useTranslations(locale);
 
 const legalData = await getLegalPage('privacy-notice', locale);

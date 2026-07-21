@@ -15,7 +15,7 @@ import GuideTouristMap from "@/components/guide/GuideTouristMap.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
 import { useTranslations } from "@/i18n/utils";
-import { getGuidePageWithFallback } from "@/lib/cms";
+import { getGuidePageWithFallback, toStrapiLocale} from "@/lib/cms";
 import {
   heroData as fallbackHero,
   introData as fallbackIntro,
@@ -31,8 +31,8 @@ import {
 } from "@/data/guideData";
 import { navigation } from "@/utils/navigation";
 
-const locale = Astro.currentLocale || "es";
-const lang = locale.startsWith("en") ? "en" : "es";
+const locale = toStrapiLocale(Astro.currentLocale || "es");
+const lang = locale.startsWith("en") ? "en" : "es-MX";
 const t = useTranslations(locale);
 
 const guide = await getGuidePageWithFallback(locale);

@@ -43,8 +43,8 @@ describe("strapiTransformer", () => {
       const out = transformCategory(item);
       expect(out.id).toBe("1");
       expect(out.slug).toBe("experiences");
-      expect(out.name.es).toBe("Experiencias");
-      expect(out.name.en).toBe("Experiencias");
+expect(out.name['es-MX']).toBe("Experiencias");
+expect(out.name.en).toBe("Experiencias");
       expect(out.color).toBe("#E87A5D");
     });
 
@@ -56,7 +56,7 @@ describe("strapiTransformer", () => {
       } as any;
       const out = transformCategory(item);
       expect(out.slug).toBe("restaurants");
-      expect(out.name.es).toBe("Restaurantes");
+      expect(out.name['es-MX']).toBe("Restaurantes");
     });
 
     it("returns empty slots when name is undefined", () => {
@@ -65,7 +65,7 @@ describe("strapiTransformer", () => {
         attributes: { slug: "x" } as any,
       };
       const out = transformCategory(item);
-      expect(out.name.es).toBe("");
+      expect(out.name['es-MX']).toBe("");
       expect(out.name.en).toBe("");
     });
   });
@@ -104,13 +104,13 @@ describe("strapiTransformer", () => {
       const out = transformListing(item, "es");
       expect(out.id).toBe("10");
       expect(out.slug).toBe("tour-isla-catalana");
-      expect(out.name.es).toBe("Tour Isla Catalana");
+      expect(out.name['es-MX']).toBe("Tour Isla Catalana");
       expect(out.name.en).toBe("Tour Isla Catalana");
-      expect(out.shortDescription?.es).toBe("Half-day tour with snorkeling.");
+      expect(out.shortDescription?.['es-MX']).toBe("Half-day tour with snorkeling.");
       expect(out.categoryId).toBe("experiences");
       expect(out.category?.slug).toBe("experiences");
       expect(out.tags).toHaveLength(2);
-      expect(out.tags?.[0].es).toBe("Aventura");
+      expect(out.tags?.[0]['es-MX']).toBe("Aventura");
       expect(out.location?.lat).toBe(25.5);
       expect(out.location?.lng).toBe(-111.0);
       expect(out.image).toContain("/uploads/isla.jpg");
@@ -147,8 +147,8 @@ describe("strapiTransformer", () => {
         attributes: { title: "X", slug: "x", description: blocks as any },
       };
       const out = transformListing(item, "es");
-      expect(out.description?.es).toContain("Hello");
-      expect(out.description?.es).toContain("World");
+      expect(out.description?.['es-MX']).toContain("Hello");
+      expect(out.description?.['es-MX']).toContain("World");
     });
   });
 
@@ -169,7 +169,7 @@ describe("strapiTransformer", () => {
       const out = transformTeamMember(item);
       expect(out.id).toBe("1");
       expect(out.name).toBe("Juan Pérez");
-      expect(out.role?.es).toBe("Coordinador");
+      expect(out.role?.['es-MX']).toBe("Coordinador");
       expect(out.photo).toContain("/uploads/juan.jpg");
       expect(out.links?.email).toBe("juan@example.com");
     });
@@ -221,8 +221,8 @@ describe("strapiTransformer", () => {
       expect(out.id).toBe("1");
       expect(out.documentId).toBe("abc");
       expect(out.key).toBe("about-values");
-      expect(out.title.es).toBe("Nuestros valores");
-      expect((out.extraData as any).mission.es).toBe("M-ES");
+      expect(out.title['es-MX']).toBe("Nuestros valores");
+      expect((out.extraData as any).mission['es-MX']).toBe("M-ES");
     });
   });
 

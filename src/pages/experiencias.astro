@@ -6,10 +6,10 @@ import HeroPage from "@/components/main/hero/HeroPage.astro";
 import ExpFeatured from "@/components/main/experiences/ExpFeatured.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback, getExperiencesPageWithFallback } from "@/lib/cms";
+import { getListingsWithFallback, getExperiencesPageWithFallback, toStrapiLocale} from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
 
-const locale = Astro.currentLocale || "es";
+const locale = toStrapiLocale(Astro.currentLocale || "es");
 const t = useTranslations(locale);
 
 const [experiencesPage, allListings] = await Promise.all([

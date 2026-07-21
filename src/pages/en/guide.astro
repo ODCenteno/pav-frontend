@@ -32,7 +32,7 @@ import {
 import { navigation } from "@/utils/navigation";
 
 const locale = Astro.currentLocale || "en";
-const lang = locale.startsWith("en") ? "en" : "es";
+const lang = locale.startsWith("en") ? "en" : "es-MX";
 const t = useTranslations(locale);
 
 const guide = await getGuidePageWithFallback(locale);

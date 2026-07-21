@@ -12,10 +12,10 @@ import CollaborationBlock from "@/components/about/CollaborationBlock.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 
 import { useTranslations } from "@/i18n/utils";
-import { getAboutPageWithFallback } from "@/lib/cms";
+import { getAboutPageWithFallback, toStrapiLocale} from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
 
-const locale = Astro.currentLocale || "es";
+const locale = toStrapiLocale(Astro.currentLocale || "es");
 const t = useTranslations(locale);
 
 const about = await getAboutPageWithFallback(locale);

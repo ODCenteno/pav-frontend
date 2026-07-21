@@ -89,6 +89,18 @@ const STRAPI_URL = import.meta.env.STRAPI_URL || 'http://localhost:1337';
 const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN || '';
 
 /**
+ * Map Astro's locale code to Strapi's locale code.
+ * Astro uses short codes ("es", "en"); Strapi uses full codes ("es-MX", "en").
+ */
+const ASTRO_TO_STRAPI_LOCALE: Record<string, string> = {
+  es: 'es-MX',
+  en: 'en',
+};
+export function toStrapiLocale(locale: string): string {
+  return ASTRO_TO_STRAPI_LOCALE[locale] || locale;
+}
+
+/**
  * Full populate spec for a listing — used by both `getListings` (list views)
  * and `getListingBySlug` (detail views) so the resulting view-model always
  * contains every field (members, stories, products, social, recommendations,

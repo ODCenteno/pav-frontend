@@ -521,7 +521,7 @@ export function transformListing(
     description: a.description ? localized(asString(a.description), locale) : undefined,
     categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
     category: catItem ? transformCategory(catItem) : undefined,
-    tags: (a.tags || []).map((t) => localized({ 'es-MX': t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
+    tags: (a.tags || []).map((t) => localized({ es: t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
     location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
@@ -803,7 +803,7 @@ export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, lo
 
 export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: string = 'es-MX'): HomepageData {
   const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es';
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
 
   const hero = a.hero || {};
   const heroImagesRaw: any[] = (
@@ -944,7 +944,7 @@ export interface AboutPageAttributes {
 
 export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale: string = 'es-MX') {
   const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es';
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
 
   const hero = a.hero || {};
   const heroImagesRaw: any[] = (
@@ -1077,7 +1077,7 @@ export interface GuidePageAttributes {
 
 export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale: string = 'es-MX') {
   const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es';
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
 
   const hero = a.hero || {};
   const heroImagesRaw: any[] = (
@@ -1214,7 +1214,7 @@ export interface ExperiencesPageAttributes {
 
 export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttributes>, locale: string = 'es-MX') {
   const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es';
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
 
   const hero = a.hero || {};
   const heroImagesRaw: any[] = (

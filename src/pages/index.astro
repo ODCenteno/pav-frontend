@@ -10,9 +10,9 @@ import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
 import { useTranslations } from "@/i18n/utils";
-import { getHomepageWithFallback, getFeaturedListingsWithFallback } from "@/lib/cms";
+import { getHomepageWithFallback, getFeaturedListingsWithFallback, toStrapiLocale} from "@/lib/cms";
 
-const locale = Astro.currentLocale || "es";
+const locale = toStrapiLocale(Astro.currentLocale || "es");
 const t = useTranslations(locale);
 const homepage = await getHomepageWithFallback(locale);
 const featuredListings = await getFeaturedListingsWithFallback(locale);
@@ -22,13 +22,13 @@ const mapListings = featuredListings
   .map((item) => ({
     lat: item.location!.lat,
     lng: item.location!.lng,
-    title: item.name[locale] || item.name.es || "",
+    title: item.name[locale] || item.name['es-MX'] || "",
     href: `/sitios/${item.slug}`,
     categoryColor: item.category?.color || "#68a299",
     image: item.image || undefined,
     description:
-      item.shortDescription?.[locale as "es" | "en"] ||
-      item.shortDescription?.es ||
+      item.shortDescription?.[locale] ||
+      item.shortDescription?.['es-MX'] ||
       undefined,
   }));
 ---
