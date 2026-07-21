@@ -14,7 +14,7 @@
 
 # Permissions-Policy - Restrict browser features
 /*
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 # Content-Security-Policy - Mitigate XSS and injection attacks
 # Note: Adjust CSP directives based on actual resource usage

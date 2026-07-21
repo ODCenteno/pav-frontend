@@ -44,5 +44,11 @@
     "prettier-plugin-astro": "0.14.1",
     "vitest": "^4.1.8",
     "wrangler": "^4.104.0"
+  },
+  "overrides": {
+    "minimatch": "^10.0.3",
+    "flatted": "^3.4.0",
+    "picomatch": "^4.0.4",
+    "rollup": "^4.53.4"
   }
 }

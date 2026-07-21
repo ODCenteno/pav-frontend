@@ -136,9 +136,13 @@ async function staleWhileRevalidate(request, cacheName) {
       }
       return response;
     })
-    .catch(() => cached);
+    .catch(() => null);
 
-  return cached || networkPromise;
+  if (cached) {
+    networkPromise.catch(() => {});
+    return cached;
+  }
+  return networkPromise ?? new Response('Offline', { status: 503, statusText: 'Offline' });
 }
 
 function isFontAsset(url) {
@@ -205,7 +209,9 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isImageAsset(url)) {
-    event.respondWith(staleWhileRevalidate(request, CACHE_IMAGES));
+    if (url.origin === self.location.origin) {
+      event.respondWith(staleWhileRevalidate(request, CACHE_IMAGES));
+    }
     return;
   }
 
