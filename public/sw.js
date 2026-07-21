@@ -44,7 +44,17 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+  if (event.data?.type === 'BROADCAST_SW_UPDATED') {
+    broadcastSwUpdated();
+  }
 });
+
+async function broadcastSwUpdated() {
+  const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  for (const client of clients) {
+    client.postMessage({ type: 'SW_UPDATED' });
+  }
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -179,6 +189,10 @@ self.addEventListener('fetch', (event) => {
 
   // Only handle GET — POST/PUT/DELETE etc. always hit the network.
   if (request.method !== 'GET') return;
+
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    return;
+  }
 
   if (request.mode === 'navigate') {
     event.respondWith(handleNavigationRequest(request));

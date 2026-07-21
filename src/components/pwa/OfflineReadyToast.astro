@@ -49,8 +49,13 @@
       },
     };
 
+    const dismissed = new Set();
     let hideTimer = null;
-    const showFor = (text, sticky) => {
+    let currentType = null;
+
+    const showFor = (text, type, sticky) => {
+      if (dismissed.has(type)) return;
+      currentType = type;
       message.textContent = text;
       toast.hidden = false;
       if (hideTimer) clearTimeout(hideTimer);
@@ -58,6 +63,7 @@
     };
 
     close.addEventListener('click', () => {
+      if (currentType) dismissed.add(currentType);
       toast.hidden = true;
       if (hideTimer) clearTimeout(hideTimer);
     });
@@ -66,10 +72,10 @@
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
         if (event.data.type === 'PRECACHE_COMPLETE') {
-          showFor(TEXTS.precacheComplete[lang], false);
+          showFor(TEXTS.precacheComplete[lang], 'PRECACHE_COMPLETE', false);
         }
         if (event.data.type === 'SW_UPDATED') {
-          showFor(TEXTS.swUpdated[lang], true);
+          showFor(TEXTS.swUpdated[lang], 'SW_UPDATED', true);
         }
       });
     }

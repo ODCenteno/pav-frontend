@@ -56,7 +56,7 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
     <meta name="keywords" content={keywords} />
     <meta name="robots" content="index, follow" />
 
-    <link rel="icon" href="/favicon.png" type="image/x-icon" />
+    <link rel="icon" href="/favicon/favicon-32x32.png" type="image/png" />
     <meta name="theme-color" content={themeColor} />
     <ClientRouter />
 
@@ -72,13 +72,10 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content={siteName} />
 
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png" />
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-chrome-192x192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
     <meta name="msapplication-TileColor" content="#2b5797" />
 
     <meta property="og:locale" content={ogLocale} />
@@ -118,21 +115,14 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
                 if (newWorker) {
                   newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                      const updateBanner = document.createElement('div');
-                      updateBanner.className = 'pwa-update-banner';
-                      const bannerText = document.documentElement.lang === 'en'
-                        ? 'A new version is available'
-                        : 'Hay una nueva versión disponible';
-                      const btnText = document.documentElement.lang === 'en' ? 'Update' : 'Actualizar';
-                      updateBanner.innerHTML = `
-                        <p>${bannerText}</p>
-                        <button id="pwa-update-btn">${btnText}</button>
-                      `;
-                      document.body.appendChild(updateBanner);
-
-                      document.getElementById('pwa-update-btn')?.addEventListener('click', () => {
-                        newWorker.postMessage({ type: 'SKIP_WAITING' });
-                        window.location.reload();
+                      if (navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({ type: 'BROADCAST_SW_UPDATED' });
+                      }
+                      newWorker.addEventListener('statechange', function onActivated() {
+                        if (newWorker.state === 'activated') {
+                          newWorker.removeEventListener('statechange', onActivated);
+                          window.location.reload();
+                        }
                       });
                     }
                   });
@@ -148,37 +138,3 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
     </script>
   </body>
 </html>
-
-<style is:global>
-  .pwa-update-banner {
-    position: fixed;
-    bottom: var(--space-md);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-on-surface);
-    color: var(--color-white);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    z-index: 9999;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .pwa-update-banner p {
-    color: var(--color-white);
-    margin: 0;
-    font-size: var(--text-sm);
-  }
-
-  .pwa-update-banner button {
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: var(--text-sm);
-  }
-</style>
