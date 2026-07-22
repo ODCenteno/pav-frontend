@@ -3,7 +3,7 @@ import "./categories.css";
 import type { Listing } from "@/types/listing.type.ts";
 import type { LocalizedString } from "@/types/i18n.type.ts";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback, deriveCategoriesFromListings } from "@/lib/cms";
+import { getListingsWithFallback, deriveCategoriesFromListings, toStrapiLocale } from "@/lib/cms";
 import type { Category } from "@/types/category.type.ts";
 
 import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
@@ -17,12 +17,12 @@ const t = useTranslations(locale);
 function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
   if (!value) return "";
   const isEn = loc.toLowerCase().startsWith("en");
-  const key = isEn ? "en" : "es";
-  const v = (value as any)?.[key] ?? (value as any)?.es ?? (value as any)?.en;
+  const key = isEn ? "en" : "es-MX";
+  const v = (value as any)?.[key] ?? (value as any)?.["es-MX"] ?? (value as any)?.en;
   return typeof v === "string" ? v : "";
 }
 
-const allListings: Listing[] = await getListingsWithFallback(locale);
+const allListings: Listing[] = await getListingsWithFallback(toStrapiLocale(locale));
 const allCategories: Category[] = deriveCategoriesFromListings(allListings);
 
 // Build a category lookup from the CMS-driven list

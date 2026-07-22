@@ -31,13 +31,9 @@
 
 <script is:inline>
   (() => {
-    const toast = document.getElementById('offline-ready-toast');
-    const message = document.getElementById('offline-ready-toast__message');
-    const close = document.getElementById('offline-ready-toast__close');
-    if (!toast || !message || !close) return;
-
-    const lang = (document.documentElement.lang || 'es').startsWith('en') ? 'en' : 'es';
-
+    // View-transition safe: re-bind on every page load (initial + after
+    // <ClientRouter /> swaps). Without this the close button loses its
+    // click handler after navigation and becomes unclosable.
     const TEXTS = {
       precacheComplete: {
         es: 'Listo sin conexión ✓ — puedes explorar la guía incluso sin señal.',
@@ -53,7 +49,13 @@
     let hideTimer = null;
     let currentType = null;
 
+    const getLang = () =>
+      (document.documentElement.lang || 'es').startsWith('en') ? 'en' : 'es';
+
     const showFor = (text, type, sticky) => {
+      const toast = document.getElementById('offline-ready-toast');
+      const message = document.getElementById('offline-ready-toast__message');
+      if (!toast || !message) return;
       if (dismissed.has(type)) return;
       currentType = type;
       message.textContent = text;
@@ -62,15 +64,35 @@
       if (!sticky) hideTimer = setTimeout(() => (toast.hidden = true), 6000);
     };
 
-    close.addEventListener('click', () => {
+    const closeToast = () => {
+      const toast = document.getElementById('offline-ready-toast');
+      if (!toast) return;
       if (currentType) dismissed.add(currentType);
       toast.hidden = true;
       if (hideTimer) clearTimeout(hideTimer);
-    });
+    };
 
+    const bindToast = () => {
+      const close = document.getElementById('offline-ready-toast__close');
+      if (!close || close.dataset.bound === '1') return;
+      close.addEventListener('click', closeToast);
+      close.dataset.bound = '1';
+    };
+
+    // Bind on initial load and on every view-transition page swap.
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindToast, { once: true });
+    } else {
+      bindToast();
+    }
+    document.addEventListener('astro:page-load', bindToast);
+
+    // Single SW message listener — survives across page swaps because it's
+    // bound to the persistent serviceWorker container, not to page DOM.
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
+        const lang = getLang();
         if (event.data.type === 'PRECACHE_COMPLETE') {
           showFor(TEXTS.precacheComplete[lang], 'PRECACHE_COMPLETE', false);
         }
@@ -99,6 +121,10 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     font-size: var(--text-sm, 0.875rem);
     max-width: 90vw;
+  }
+
+  .offline-toast[hidden] {
+    display: none;
   }
 
   .offline-toast__icon {

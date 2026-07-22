@@ -11,11 +11,14 @@ import MapSection from "@/components/main/mapSection/MapSection.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
 import { useTranslations } from "@/i18n/utils";
 import { getHomepageWithFallback, getFeaturedListingsWithFallback, toStrapiLocale} from "@/lib/cms";
+import { assertBuildData } from "@/lib/buildGuard";
 
 const locale = toStrapiLocale(Astro.currentLocale || "es");
 const t = useTranslations(locale);
 const homepage = await getHomepageWithFallback(locale);
 const featuredListings = await getFeaturedListingsWithFallback(locale);
+
+assertBuildData(featuredListings, "/ (featured)", locale);
 
 const mapListings = featuredListings
   .filter((item) => item.location?.lat != null && item.location?.lng != null)

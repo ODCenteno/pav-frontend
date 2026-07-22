@@ -13,11 +13,14 @@ import { useTranslations } from "@/i18n/utils";
 import { getListingsWithFallback, toStrapiLocale} from "@/lib/cms";
 import type { Listing } from "@/types/listing.type";
 import { navigation } from "@/utils/navigation";
+import { assertBuildData } from "@/lib/buildGuard";
 
 const locale = toStrapiLocale(Astro.currentLocale ?? "es");
 const t = useTranslations(locale);
 
 const allSites: Listing[] = await getListingsWithFallback(locale);
+
+assertBuildData(allSites, "/sitios", locale);
 
 const categories = [
   { id: "sites", label: t("sitesPage.filters.beaches") },

@@ -8,6 +8,7 @@ import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { useTranslations } from "@/i18n/utils";
 import { getListingsWithFallback, getExperiencesPageWithFallback, toStrapiLocale} from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
+import { assertBuildData } from "@/lib/buildGuard";
 
 const locale = toStrapiLocale(Astro.currentLocale || "es");
 const t = useTranslations(locale);
@@ -16,6 +17,8 @@ const [experiencesPage, allListings] = await Promise.all([
   getExperiencesPageWithFallback(locale),
   getListingsWithFallback(locale),
 ]);
+
+assertBuildData(allListings, "/experiencias", locale);
 
 const featuredExperiences = allListings
   .filter((item) => item.category?.slug === "experiences")

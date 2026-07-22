@@ -4,27 +4,27 @@ import { useTranslations } from "../../i18n/utils";
 import SvgIcon from "../icons/SvgIcon.astro";
 import { navigation } from "@/utils/navigation";
 import { getSiteSettings } from "@/lib/cms";
-import { getSiteContents } from "@/lib/cms";
+import { getSiteContents, toStrapiLocale } from "@/lib/cms";
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 
 const [settings, footerContents] = await Promise.all([
   getSiteSettings(),
-  getSiteContents(["footer-about", "footer-contact"], locale),
+  getSiteContents(["footer-about", "footer-contact"], toStrapiLocale(locale)),
 ]);
 
 const footerAbout = footerContents[0];
 const footerContact = footerContents[1];
 
-const aboutTitle = footerAbout?.title?.[locale === "en" ? "en" : "es"] || t("footer.aboutTitle");
-const aboutText = footerAbout?.text?.[locale === "en" ? "en" : "es"] || t("footer.desc");
-const aboutThanks = footerAbout?.extraData?.thanks?.[locale === "en" ? "en" : "es"] || t("footer.thanks");
-const aboutRights = footerAbout?.extraData?.rights?.[locale === "en" ? "en" : "es"] || t("footer.rights");
-const aboutLegal = footerAbout?.extraData?.legal?.[locale === "en" ? "en" : "es"] || t("footer.legal");
+const aboutTitle = footerAbout?.title?.[locale === "en" ? "en" : "es-MX"] || t("footer.aboutTitle");
+const aboutText = footerAbout?.text?.[locale === "en" ? "en" : "es-MX"] || t("footer.desc");
+const aboutThanks = footerAbout?.extraData?.thanks?.[locale === "en" ? "en" : "es-MX"] || t("footer.thanks");
+const aboutRights = footerAbout?.extraData?.rights?.[locale === "en" ? "en" : "es-MX"] || t("footer.rights");
+const aboutLegal = footerAbout?.extraData?.legal?.[locale === "en" ? "en" : "es-MX"] || t("footer.legal");
 
-const contactTitle = footerContact?.title?.[locale === "en" ? "en" : "es"] || t("footer.contactTitle");
-const contactNote = footerContact?.extraData?.note?.[locale === "en" ? "en" : "es"] || t("footer.note");
+const contactTitle = footerContact?.title?.[locale === "en" ? "en" : "es-MX"] || t("footer.contactTitle");
+const contactNote = footerContact?.extraData?.note?.[locale === "en" ? "en" : "es-MX"] || t("footer.note");
 
 const currentYear = new Date().getFullYear();
 ---

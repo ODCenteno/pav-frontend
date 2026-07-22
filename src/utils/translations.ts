@@ -10,6 +10,6 @@ export function getTranslated(field: LocalizedString | undefined, locale: string
   if (!field) {
     return '';
   }
-  const langKey = locale?.startsWith('en') ? 'en' : 'es';
-  return field[langKey] ?? field.es; // Fallback to Spanish if the translation doesn't exist
+  const langKey = locale?.startsWith('en') ? 'en' : 'es-MX';
+  return field[langKey] ?? field['es-MX']; // Fallback to Spanish if the translation doesn't exist
 }

@@ -22,7 +22,7 @@ interface Props {
 }
 
 const { data, locale = "es-MX" } = Astro.props;
-const lang = locale?.startsWith("en") ? "en" : "es";
+const lang = locale?.startsWith("en") ? "en" : "es-MX";
 const tips = data.drivingTips[lang] || [];
 ---
 

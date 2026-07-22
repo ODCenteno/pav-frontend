@@ -9,18 +9,16 @@ import { navigation } from "@/utils/navigation";
 // Props
 const { item, currentLang } = Astro.props as { item: Listing; currentLang: string };
 
-// Locale -> key interno ("en" | "es") para LocalizedString
-const langKey = String(currentLang).toLowerCase().startsWith("en") ? "en" : "es";
+// Locale -> key interno ("en" | "es-MX") para LocalizedString
+const langKey = String(currentLang).toLowerCase().startsWith("en") ? "en" : "es-MX";
 
 // Helper local (SSR) para leer LocalizedString de forma segura
-function getLocalizedText(value?: LocalizedString, key: "es" | "en" = "es"): string {
+function getLocalizedText(value?: LocalizedString, key: string = "es-MX"): string {
   if (!value) return "";
-  // Caso común: { 'es-MX': "...", en: "..." }
   if (typeof value === "object") {
-    const v = (value as any)[key] ?? (value as any).es ?? (value as any).en;
+    const v = (value as any)[key] ?? (value as any)["es-MX"] ?? (value as any).en;
     return typeof v === "string" ? v : "";
   }
-  // Por si en algún momento llega como string directo
   return typeof value === "string" ? value : "";
 }
 
