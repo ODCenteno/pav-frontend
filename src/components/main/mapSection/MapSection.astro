@@ -23,7 +23,7 @@ interface Props {
 
 const { data, listings = [], locale = "es-MX" } = Astro.props;
 
-const lang = locale.startsWith("en") ? "en" : "es";
+const lang = locale.startsWith("en") ? "en" : "es-MX";
 
 const FALLBACK_CENTER: [number, number] = [25.512, -111.075];
 const center: [number, number] =

@@ -35,7 +35,15 @@ export interface Recommendations {
 }
 
 export interface SocialLink {
-  platform: 'instagram' | 'facebook' | 'tiktok' | 'whatsapp' | 'web' | 'other';
+  platform:
+    | 'instagram'
+    | 'facebook'
+    | 'tiktok'
+    | 'whatsapp'
+    | 'web'
+    | 'phone'
+    | 'email'
+    | 'other';
   handle?: string;
   url?: string;
 }

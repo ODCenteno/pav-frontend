@@ -137,6 +137,7 @@ export const LISTING_SLIM_POPULATE: Record<string, string> = {
   'populate[2]': 'gallery',
   'populate[3]': 'location',
   'populate[4]': 'tags',
+  'populate[5]': 'contact',
 };
 
 // Cache TTL: 60 seconds - balances freshness with performance

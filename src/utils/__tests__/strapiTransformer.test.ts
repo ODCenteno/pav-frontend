@@ -943,6 +943,60 @@ expect(out.name.en).toBe("Experiencias");
       const fb = out.social!.filter((s) => s.platform === "facebook");
       expect(fb).toHaveLength(2);
     });
+
+    it("drops empty social entries (handle=null AND url=null) before merging", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, facebook: "pav.ejemplo" },
+          // Strapi leftover placeholder — no handle, no url
+          social: [{ platform: "facebook", handle: null, url: null }],
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const fb = out.social!.filter((s) => s.platform === "facebook");
+      // Empty explicit entry is dropped; only the contact-derived entry remains
+      expect(fb).toHaveLength(1);
+      expect(fb[0].url).toBe("https://facebook.com/pav.ejemplo");
+    });
+
+    it("synthesizes a whatsapp SocialLink from contact.whatsapp", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, whatsapp: "+52 161 312 26237" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const wa = out.social!.find((s) => s.platform === "whatsapp");
+      expect(wa).toBeTruthy();
+      expect(wa?.handle).toBe("5216131226237");
+      expect(wa?.url).toBe("https://wa.me/5216131226237");
+    });
+
+    it("synthesizes phone and email SocialLinks from contact fields", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: {
+            id: 9,
+            phone: "613 122 6237",
+            email: "info@example.com",
+          },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const platforms = out.social!.map((s) => s.platform).sort();
+      expect(platforms).toEqual(["email", "phone"]);
+      expect(out.social!.find((s) => s.platform === "phone")?.url).toBe("tel:6131226237");
+      expect(out.social!.find((s) => s.platform === "email")?.url).toBe("mailto:info@example.com");
+    });
   });
 
   describe("transformListing — Strapi v5 bare-array relation shape", () => {

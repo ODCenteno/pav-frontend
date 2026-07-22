@@ -562,17 +562,21 @@ export function transformListing(
       : undefined,
     social: (() => {
       // Merge explicit `social` entries with any contact-derived links so a
-      // listing always surfaces every reachable handle in one place. Dedupe
-      // by (platform, url-or-handle) so a contact.instagram that matches an
-      // explicit entry doesn't render twice; explicit wins (it appears
-      // first in the merged array, so the later contact-derived duplicate is
-      // filtered out by indexOf).
-      const explicit = a.social ?? [];
+      // listing always surfaces every reachable handle in one place.
+      //   - Empty explicit entries (handle=null AND url=null) are dropped so
+      //     stale placeholders from prior CMS edits don't render empty icons.
+      //   - Dedup by (platform, resolved-url) so a non-empty explicit entry
+      //     for the same (platform, url) as a contact-derived entry wins and
+      //     the duplicate is filtered out. Explicit entries are kept first.
+      const explicit = (a.social ?? []).filter(
+        (s) => !!(s?.handle?.trim() || s?.url?.trim()),
+      );
       const contactDerived = contactToSocialLinks(a.contact);
       const merged = [...explicit, ...contactDerived];
       const seen = new Set<string>();
       const deduped = merged.filter((link) => {
-        const key = `${link.platform}::${link.url ?? link.handle ?? ""}`;
+        const resolved = (link.url || '').trim() || (link.handle || '').trim();
+        const key = `${link.platform}::${resolved}`;
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
@@ -634,22 +638,60 @@ export function transformSocialLinks(raw: SocialLinkAttributes[]): SocialLink[] 
 }
 
 /**
- * Convert a listing's `contact` component fields (`instagram`, `facebook`)
- * into SocialLink entries. Empty / falsy values are skipped. The handle is
- * accepted as either a bare username (no leading @) or a full URL.
+ * Convert a listing's `contact` component fields into SocialLink entries so a
+ * single `item.social` array feeds every UI surface (cards, detail page,
+ * "Follow us" block). Empty / falsy values are skipped. The `handle` and
+ * `url` fields are accepted as either bare handles/usernames (no leading @)
+ * or full URLs — the URL is synthesized with a sensible platform prefix
+ * when only the handle is provided.
+ *
+ *   - `whatsapp` → `https://wa.me/<digits>`
+ *   - `phone`    → `tel:<digits>`
+ *   - `email`    → `mailto:<email>`
+ *   - `instagram`→ `https://instagram.com/<handle>`
+ *   - `facebook` → `https://facebook.com/<handle or URL>`
  */
 function contactToSocialLinks(contact?: ContactInfoAttributes): SocialLinkAttributes[] {
   if (!contact) return [];
   const out: SocialLinkAttributes[] = [];
 
+  const whatsapp = (contact.whatsapp || '').trim();
+  if (whatsapp) {
+    const digits = whatsapp.replace(/\D/g, '');
+    out.push({
+      platform: 'whatsapp',
+      handle: digits,
+      url: `https://wa.me/${digits}`,
+    });
+  }
+
+  const phone = (contact.phone || '').trim();
+  if (phone) {
+    out.push({
+      platform: 'phone',
+      handle: phone,
+      url: `tel:${phone.replace(/\s+/g, '')}`,
+    });
+  }
+
+  const email = (contact.email || '').trim();
+  if (email) {
+    out.push({
+      platform: 'email',
+      handle: email,
+      url: `mailto:${email}`,
+    });
+  }
+
   const instagram = (contact.instagram || '').trim();
   if (instagram) {
+    const handle = instagram.replace(/^@/, '');
     out.push({
       platform: 'instagram',
-      handle: instagram.replace(/^@/, ''),
+      handle,
       url: instagram.startsWith('http')
         ? instagram
-        : `https://instagram.com/${instagram.replace(/^@/, '')}`,
+        : `https://instagram.com/${handle}`,
     });
   }
 
