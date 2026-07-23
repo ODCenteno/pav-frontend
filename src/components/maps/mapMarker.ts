@@ -27,7 +27,6 @@ export function createCustomIcon(color: string): L.DivIcon {
   });
 }
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 function escapeAttr(value: string): string {
   return value
     .replace(/&/g, "&amp;")

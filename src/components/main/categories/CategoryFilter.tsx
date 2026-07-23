@@ -42,7 +42,6 @@ export default function CategoryFilter({ locale, categories, translations, conta
     const exists = categories.some((c) => c.id === activeCategory);
     if (!exists) setActiveCategory("all");
     // solo cuando cambia categories (SSR puede actualizar)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
 
   useEffect(() => {
