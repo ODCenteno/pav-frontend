@@ -412,9 +412,6 @@
     "installed": "The app is already installed. Find it on your home screen.",
     "failed": "We couldn't install the app. Try again from your browser menu."
   },
-  "installHint": {
-    "body": "Tip: install the site as an app to browse offline and save your favorite spots."
-  },
   "legal": {
     "privacy": {
       "title": "Privacy Notice",

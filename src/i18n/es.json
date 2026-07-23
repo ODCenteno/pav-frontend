@@ -414,9 +414,6 @@
     "installed": "La app ya está instalada. Búscala en tu pantalla de inicio.",
     "failed": "No pudimos instalar la app. Inténtalo de nuevo desde el menú del navegador."
   },
-  "installHint": {
-    "body": "Consejo: instala el sitio como app para visitarlo sin conexión y guardar tus lugares favoritos."
-  },
   "legal": {
     "privacy": {
       "title": "Aviso de Privacidad",

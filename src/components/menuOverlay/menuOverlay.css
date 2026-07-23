@@ -47,41 +47,6 @@
   margin-top: 1.5rem;
 }
 
-/* Always-visible offline install hint */
-.menu-install-hint {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  max-width: 22rem;
-  margin: 0 auto;
-  padding: 0.625rem 0.875rem;
-  text-align: left;
-  border-radius: var(--radius-sm, 8px);
-  background: color-mix(in srgb, var(--color-primary, #5a8a80) 8%, transparent);
-  color: var(--color-on-surface-variant, #555);
-}
-
-.menu-install-hint__icon {
-  flex-shrink: 0;
-  color: var(--color-primary, #5a8a80);
-  display: inline-flex;
-}
-
-.menu-install-hint__icon-svg {
-  width: 18px;
-  height: 18px;
-}
-
-.menu-install-hint__body {
-  margin: 0;
-  font-size: var(--text-xs, 0.75rem);
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .menu-overlay--hidden {
   display: none;
 }
