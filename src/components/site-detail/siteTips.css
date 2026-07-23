@@ -1,51 +1,121 @@
+/* Site-tips section — mirrors the section rhythm of siteInfoPanel /
+   productList / memberStrip / storyTimeline so all detail-page sections
+   share the same visual weight. The title is given a left accent bar and
+   denser typography because the copy here is the "important information"
+   callout (Información importante / Good to know). */
+
 .site-tips {
-    padding-top: var(--space-md);
-    padding-bottom: var(--space-md);
+    padding: var(--space-md) 0;
+    border-top: 1px solid var(--border-color);
 }
 
+/* The previous release rendered the whole section inside a #f9f9f7 inner card;
+   that broke the rhythm against siblings. We now let the section flow with
+   the page background and rely on per-item cards below for visual grouping. */
 .site-tips__container {
-    background-color: #f9f9f7;
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
+    display: block;
 }
 
 .site-tips__title {
-    font-size: var(--text-2xl);
-    margin-bottom: var(--space-lg);
+    position: relative;
+    padding-left: var(--space-md);
+    margin-bottom: var(--space-md);
+    font-size: var(--text-3xl);
+    font-weight: 800;
+    color: var(--color-on-surface);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+/* Green accent bar that draws the eye to the "important information" title.
+   Matches the brand color used elsewhere (cards, focus rings, links). */
+.site-tips__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background-color: var(--color-primary);
+    border-radius: 2px;
 }
 
 .site-tips__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-lg);
+    gap: var(--space-md);
 }
 
+/* Per-item card — consistent with .site-info__item and .product-list__card.
+   Each tip (bestTime / whatToBring / accessibility / connectivity) now uses
+   the same white card treatment so the section no longer reads as a mix of
+   bare paragraphs and pill lists. */
+.site-tips__item {
+    background-color: var(--white);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+/* Label typography — small, uppercase, tracked. Mirrors .site-info__label. */
 .site-tips__label {
-    font-size: var(--text-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    font-weight: 700;
     color: var(--secondary-text);
-    margin-bottom: var(--space-xs);
-    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+/* Brand dot prefix on each tip's label — small visual marker so the four
+   items share an obvious "this is a tip" affordance even at a glance. */
+.site-tips__label::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    flex-shrink: 0;
 }
 
 .site-tips__value {
     font-size: var(--text-base);
     color: var(--color-on-surface);
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0;
 }
 
+/* "Qué llevar" list — flatten the previous pill chips so they read as
+   inline bullets consistent with .site-info__list-item. */
 .site-tips__list {
     list-style: none;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-2xs);
 }
 
 .site-tips__list li {
-    background: var(--white);
-    padding: 0.3rem 0.8rem;
-    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
     font-size: var(--text-sm);
-    border: 1px solid var(--border-color);
+    color: var(--color-on-surface);
+    font-weight: 400;
+}
+
+.site-tips__list li::before {
+    content: "•";
+    color: var(--color-primary);
+    font-weight: bold;
+    line-height: 1;
 }
 
 @media (min-width: 768px) {
