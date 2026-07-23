@@ -1067,10 +1067,10 @@ export interface AboutPageData {
 
 export async function getAboutPage(locale: string = 'es-MX'): Promise<AboutPageData> {
   const [aboutPage, team, organizations] = await Promise.all([
-    strapiGetOne<AboutPageAttributes>('/about-page', {
+    safe(() => strapiGetOne<AboutPageAttributes>('/about-page', {
       ...ABOUT_PAGE_POPULATE,
       locale,
-    }),
+    })),
     getTeamMembers(locale),
     getOrganizations(locale),
   ]);
@@ -1289,10 +1289,10 @@ export interface ExperiencesPageData {
 }
 
 export async function getExperiencesPage(locale: string = 'es-MX'): Promise<ExperiencesPageData | null> {
-  const page = await strapiGetOne<ExperiencesPageAttributes>('/experiences-page', {
+  const page = await safe(() => strapiGetOne<ExperiencesPageAttributes>('/experiences-page', {
     ...EXPERIENCES_PAGE_POPULATE,
     locale,
-  });
+  }));
   if (!page) return null;
   return transformExperiencesPage(page, locale);
 }
@@ -1305,10 +1305,10 @@ export async function getExperiencesPageWithFallback(locale: string = 'es-MX'): 
 }
 
 export async function getGuidePage(locale: string = 'es-MX'): Promise<GuidePageData> {
-  const guidePage = await strapiGetOne<GuidePageAttributes>('/guide-page', {
+  const guidePage = await safe(() => strapiGetOne<GuidePageAttributes>('/guide-page', {
     ...GUIDE_PAGE_POPULATE,
     locale,
-  });
+  }));
   if (!guidePage) {
     return {
       hero: null, intro: null, history: null, fishing: null,

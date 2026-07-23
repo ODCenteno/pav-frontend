@@ -1,3 +1,14 @@
 {
-  "name": "pav-frontend"
+  "name": "pav-frontend",
+  "main": "./dist/server/entry.mjs",
+  "assets": {
+    "directory": "./dist/client"
+  },
+  "compatibility_date": "2026-04-15",
+  "rules": [
+    {
+      "type": "ESModule",
+      "globs": ["**/*.js", "**/*.mjs"]
+    }
+  ]
 }
