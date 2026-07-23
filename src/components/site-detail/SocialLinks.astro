@@ -1,6 +1,6 @@
 ---
 import "./socialLinks.css";
-import SvgIcon from "../icons/SvgIcon.astro";
+import { SOCIAL_CONFIG } from "@/utils/socialConfig";
 import type { SocialLink } from "@/types/common.type";
 import { socialUrl } from "@/utils/social";
 
@@ -11,31 +11,41 @@ interface Props {
 
 const { title, social } = Astro.props;
 
-const platformIcon: Record<string, string> = {
-  instagram: "instagram",
-  facebook: "facebook",
-  whatsapp: "whatsapp",
-  web: "website",
-  website: "website",
-};
+// Normalize a SocialLink.platform into the SOCIAL_CONFIG key space so we
+// reuse the same filled icons that the listing cards render.
+function platformConfig(platform: string) {
+  const key = platform === "web" ? "website" : platform;
+  const cfg = (SOCIAL_CONFIG as Record<string, { icon: string; label: string }>)[key];
+  return cfg ? { key, cfg } : null;
+}
+
+const lang = Astro.currentLocale === 'en' ? 'en' : 'es';
+const phoneLabel = lang === 'en' ? 'Call' : 'Llamar';
+const emailLabel = lang === 'en' ? 'Email' : 'Enviar correo';
+
+function labelFor(platform: string): string {
+  if (platform === 'phone') return phoneLabel;
+  if (platform === 'email') return emailLabel;
+  return platform;
+}
 ---
 
 <div class="social-links">
   <span class="social-links__title">{title}</span>
   <div class="social-links__icons">
     {social.map((link) => {
-      const iconName = platformIcon[link.platform];
+      const matched = platformConfig(link.platform);
       const href = socialUrl(link);
       return (
         <a
-          class="social-links__link"
+          class={`social-links__link social-link-${link.platform}`}
           href={href}
-          target="_blank"
+          target={link.platform === "phone" || link.platform === "email" ? "_self" : "_blank"}
           rel="noopener noreferrer"
-          aria-label={link.platform}
+          aria-label={labelFor(link.platform)}
         >
-          {iconName ? (
-            <SvgIcon name={iconName as any} class="social-links__icon" />
+          {matched ? (
+            <svg viewBox="0 0 24 24" width="20" height="20" class="social-links__icon-svg" set:html={matched.cfg.icon} />
           ) : (
             <span class="social-links__text">{link.handle || link.platform}</span>
           )}
