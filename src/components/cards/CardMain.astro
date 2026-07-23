@@ -108,14 +108,12 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
         {
           tags.length > 0 && (
             <div class="listing-tags" aria-label={langKey === "en" ? "Tags" : "Etiquetas"}>
-              {tags.slice(0, 3).map((tag) => (
+              {tags.slice(0, 2).map((tag) => (
                 <span class="listing-tag">{tag}</span>
               ))}
             </div>
           )
         }
-
-        {price ? <span class="listing-price">{price}</span> : null}
       </div>
 
       <h3 class="listing-title">{title}</h3>

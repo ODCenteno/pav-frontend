@@ -6,10 +6,11 @@
 
 .listing-card {
     width: 100%;
-    height: 480px; /* Fixed height to avoid variation */
+    min-height: 520px; /* Min height for grid alignment; sized to fit 2-line tags + 2-line title + 4-line desc + footer without clipping */
+    height: auto;
     background: var(--white);
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow: visible; /* Allow footer to remain visible when content exceeds min-height (e.g. multi-line tags, long descriptions) */
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     transition: transform var(--transition-base), box-shadow var(--transition-base);
     scroll-snap-align: start;
@@ -30,6 +31,8 @@
     height: 180px;
     width: 100%;
     flex-shrink: 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0; /* Round the top-left and top-right corners to match the card. The bottom corners stay flush with the content area beneath. */
+    overflow: hidden; /* Clip the cover-fitted <img> to the rounded corners */
 }
 
 .listing-image-container img {
@@ -107,6 +110,7 @@
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+    min-height: 0; /* Required for flex shrinking so the footer (with margin-top: auto) always stays at the bottom and never overflows outside the card */
 }
 
 .listing-content__tag-price {
@@ -119,6 +123,7 @@
 
 .listing-tags {
     display: flex;
+    flex-wrap: wrap; /* Allow 2 tags to wrap to 2 rows gracefully without overflowing horizontally */
     gap: 4px;
 }
 
@@ -154,6 +159,7 @@
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 0; /* Allow the description to shrink inside the flex column so the footer never overflows the card */
 }
 
 .listing-footer {
@@ -175,12 +181,14 @@
 @container card (min-width: 600px) {
     .listing-card {
         flex-direction: row;
-        height: 240px; /* Fixed height for row layout */
+        height: 280px; /* Fixed height for row layout — sized to fit tags + 4-line desc + footer */
     }
 
     .listing-image-container {
         width: 40%;
         height: 100%;
+        /* Keep top-left rounded; in row layout the bottom-left also rounds to match the card */
+        border-radius: var(--radius-md) 0 0 var(--radius-md);
     }
 
     .listing-content {
