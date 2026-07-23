@@ -1,6 +1,6 @@
 /* Stories / Destinations */
 .stories {
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-light);
 }
 
 .stories .section-header {

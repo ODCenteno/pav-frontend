@@ -8,6 +8,7 @@
     --color-pebble: #E0E0E0;
     --color-white: #FFFFFF;
     --color-emerald: #5A8A80;
+    --color-emerald-light: #5a8a80ad;
     --color-olive: #8b5e30;
     --color-orange: #e46818;
     --color-gold: #e79112;
@@ -18,6 +19,7 @@
     --color-on-surface: var(--color-charcoal);
     --color-on-surface-variant: var(--color-slate);
     --color-primary: var(--color-emerald);
+    --color-primary-light: var(--color-emerald-light);
     --color-primary-hover: var(--color-coral-dark);
     --color-outline: var(--color-pebble);
 
