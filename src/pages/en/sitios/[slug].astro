@@ -13,18 +13,18 @@ import SocialLinks from "../../../components/site-detail/SocialLinks.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import StickyActionBar from "../../../components/site-detail/StickyActionBar.tsx";
 import { useTranslations } from "../../../i18n/utils";
-import { getListingBySlugWithFallback, getListingSlugsWithFallback } from "../../../lib/cms";
+import { getListingBySlugWithFallback, getListingSlugsWithFallback, toStrapiLocale } from "../../../lib/cms";
 import { navigation } from "@/utils/navigation";
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const slugs = await getListingSlugsWithFallback("en");
+  const slugs = await getListingSlugsWithFallback(toStrapiLocale("en"));
   return slugs.map((slug) => ({ params: { slug } }));
 }
 
 const { slug } = Astro.params;
-const item = slug ? await getListingBySlugWithFallback(slug, "en") : null;
+const item = slug ? await getListingBySlugWithFallback(slug, toStrapiLocale("en")) : null;
 
 if (!item) {
   return new Response("Listing not found", { status: 404 });

@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { org, locale } = Astro.props;
-const description = org?.shortDescription ? (org.shortDescription[locale as "es" | "en"] || org.shortDescription.es) : "";
+const description = org?.shortDescription ? (org.shortDescription[locale as "es-MX" | "en"] || "") : "";
 ---
 
 <div class="org-card">

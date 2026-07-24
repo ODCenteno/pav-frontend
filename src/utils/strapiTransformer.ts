@@ -394,7 +394,7 @@ function localized(value: string | { 'es-MX': string; en: string } | null | unde
     return { 'es-MX': text, en: text };
   }
   if (value && typeof value === 'object') {
-    return { 'es-MX': (value as any).es || '', en: (value as any).en || '' };
+    return { 'es-MX': (value as any)['es-MX'] || (value as any).es || '', en: (value as any).en || '' };
   }
   const v = (value as string) || '';
   return { 'es-MX': v, en: v };
@@ -1025,7 +1025,7 @@ export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale
       values: {
         title: localized(values.valuesTitle, locale)[l],
         items: (values.valuesItems || []).map((item) =>
-          typeof item === 'object' ? (item as any)[l] || (item as any).es || '' : item || ''
+          typeof item === 'object' ? (item as any)[l] || (item as any)['es-MX'] || '' : item || ''
         ),
       },
     },
@@ -1149,15 +1149,15 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
       text: localized(a.historyText, locale)[l],
       milestones: (a.historyMilestones || []).map((m) => ({
         year: m.year || '',
-        'es-MX': typeof m.text === 'object' ? (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
-        en: typeof m.text === 'object' ? (m.text as any).en || (m.text as any).es || '' : typeof m.text === 'string' ? m.text : '',
+        'es-MX': typeof m.text === 'object' ? (m.text as any)['es-MX'] || '' : typeof m.text === 'string' ? m.text : '',
+        en: typeof m.text === 'object' ? (m.text as any).en || (m.text as any)['es-MX'] || '' : typeof m.text === 'string' ? m.text : '',
       })),
     },
     fishing: {
       title: localized(a.fishingHeader?.title, locale)[l],
       text: localized(a.fishingText, locale)[l],
       rules: (a.fishingRules || []).map((r) =>
-        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any).es || '' : r.text || ''
+        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any)['es-MX'] || '' : r.text || ''
       ),
     },
     protected: a.protectedArea
@@ -1175,7 +1175,7 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
     recommendations: {
       title: localized(a.recommendationsHeader?.title, locale)[l],
       items: (a.recommendations || []).map((r) =>
-        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any).es || '' : r.text || ''
+        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any)['es-MX'] || '' : r.text || ''
       ),
     },
     directions: {
@@ -1184,8 +1184,8 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
         const r = (a.directions || [])[0];
         return r
           ? {
-              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any).es || '' : r.label || '',
-              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any).es || '' : r.description || '',
+              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any)['es-MX'] || '' : r.label || '',
+              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any)['es-MX'] || '' : r.description || '',
               distance: r.distance || '',
               time: r.time || '',
               image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
@@ -1196,8 +1196,8 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
         const r = (a.directions || [])[1];
         return r
           ? {
-              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any).es || '' : r.label || '',
-              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any).es || '' : r.description || '',
+              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any)['es-MX'] || '' : r.label || '',
+              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any)['es-MX'] || '' : r.description || '',
               distance: r.distance || '',
               time: r.time || '',
               image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
@@ -1206,15 +1206,15 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
       })(),
       drivingTipsTitle: localized(a.drivingTipsHeader, locale)[l],
       drivingTips: (a.drivingTips || []).map((t) =>
-        typeof t.text === 'object' ? (t.text as any)[l] || (t.text as any).es || '' : t.text || ''
+        typeof t.text === 'object' ? (t.text as any)[l] || (t.text as any)['es-MX'] || '' : t.text || ''
       ),
     },
     amenities: {
       title: localized(a.amenitiesHeader?.title, locale)[l],
       items: (a.amenities || []).map((am) => ({
         icon: am.icon || 'wifi',
-        title: typeof am.title === 'object' ? (am.title as any)[l] || (am.title as any).es || '' : am.title || '',
-        text: typeof am.text === 'object' ? (am.text as any)[l] || (am.text as any).es || '' : am.text || '',
+        title: typeof am.title === 'object' ? (am.title as any)[l] || (am.title as any)['es-MX'] || '' : am.title || '',
+        text: typeof am.text === 'object' ? (am.text as any)[l] || (am.text as any)['es-MX'] || '' : am.text || '',
       })),
     },
     touristMap: {

@@ -11,8 +11,8 @@ interface Props {
 const { member, locale } = Astro.props;
 const t = useTranslations(locale);
 
-const role = member.role ? (member.role[locale as "es" | "en"] || member.role.es) : "";
-const bio = member.shortBio ? (member.shortBio[locale as "es" | "en"] || member.shortBio.es) : "";
+const role = member.role ? (member.role[locale as "es-MX" | "en"] || "") : "";
+const bio = member.shortBio ? (member.shortBio[locale as "es-MX" | "en"] || "") : "";
 ---
 
 <div class="member-card">

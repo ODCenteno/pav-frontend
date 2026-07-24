@@ -18,7 +18,7 @@ function getLocalizedText(item: any, field: string, lang: string): string {
 
   // Try object structure: item.name.en
   if (item[field] && typeof item[field] === "object") {
-    return item[field][lang] || item[field]["es"] || "";
+    return item[field][lang] || item[field]["es-MX"] || "";
   }
 
   // Try legacy flat fields: item.name_en

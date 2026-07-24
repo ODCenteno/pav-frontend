@@ -48,7 +48,7 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
     const popupManagerRoot = document.getElementById("popup-manager-root");
 
     // Helper for safe language detection
-    const getLang = () => document.documentElement.lang.startsWith("es") ? "es" : "en";
+    const getLang = () => document.documentElement.lang.startsWith("en") ? "en" : "es-MX";
 
     // Function to render content into the popup
     function renderPopupContent(data) {
@@ -83,7 +83,7 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
       if (content.pricing?.price) {
         const priceEl = document.createElement("p");
         priceEl.className = "popup-price";
-        priceEl.textContent = getLang() === "es" ? `Precio: ${content.pricing.price}` : `Price: ${content.pricing.price}`;
+        priceEl.textContent = getLang() === "es-MX" ? `Precio: ${content.pricing.price}` : `Price: ${content.pricing.price}`;
         popupContentArea.appendChild(priceEl);
       }
     }
@@ -99,7 +99,7 @@ const {} = Astro.props; // No props needed for now, but good to keep structure
           document.body.style.overflow = "hidden"; // Prevent scroll when open
           
           const lang = getLang();
-          const title = selectedCardData?.name?.[lang] || (lang === "es" ? "Detalles" : "Details");
+          const title = selectedCardData?.name?.[lang] || (lang === "es-MX" ? "Detalles" : "Details");
 
           // Update popup header title
           const popupTitleEl = popupElement.querySelector(".popup__title");
