@@ -12,7 +12,7 @@
  *   { count: number, items: Array<{ slug: string, locale: 'es-MX' | 'en' }> }
  */
 import type { APIRoute } from 'astro';
-import { getListingsWithFallback } from '@/lib/cms';
+import { getListingsWithFallback, toStrapiLocale } from '@/lib/cms';
 
 export const prerender = true;
 
@@ -23,8 +23,8 @@ interface IndexItem {
 
 export const GET: APIRoute = async () => {
   const [esListings, enListings] = await Promise.all([
-    getListingsWithFallback('es'),
-    getListingsWithFallback('en'),
+    getListingsWithFallback(toStrapiLocale('es')),
+    getListingsWithFallback(toStrapiLocale('en')),
   ]);
 
   const items: IndexItem[] = [];

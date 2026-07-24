@@ -4,7 +4,7 @@
  * Caching layers (all versioned with the pav-* prefix so they purge on upgrade):
  *   - pav-shell-v2     Pre-rendered HTML shell + offline fallback page
  *   - pav-fonts-v1     Google Fonts CSS + woff/ttf files
- *   - pav-images-v1    PNG/JPG/WebP/SVG assets
+ *   - pav-images-v2    PNG/JPG/WebP/SVG assets (v2 = cross-origin R2 images)
  *   - pav-api-v1       Cross-origin API responses (e.g. R2 / Strapi media)
  *
  * The `caches.match` priority for navigations is:
@@ -21,7 +21,7 @@
 
 const CACHE_SHELL = 'pav-shell-v2';
 const CACHE_FONTS = 'pav-fonts-v1';
-const CACHE_IMAGES = 'pav-images-v1';
+const CACHE_IMAGES = 'pav-images-v2';
 const CACHE_API = 'pav-api-v1';
 
 const OFFLINE_URL = '/offline';
@@ -131,7 +131,7 @@ async function staleWhileRevalidate(request, cacheName) {
   const cached = await cache.match(request);
   const networkPromise = fetch(request)
     .then((response) => {
-      if (response && response.ok) {
+      if (response && (response.ok || response.type === 'opaque')) {
         cache.put(request, response.clone());
       }
       return response;
@@ -194,10 +194,6 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET — POST/PUT/DELETE etc. always hit the network.
   if (request.method !== 'GET') return;
 
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    return;
-  }
-
   if (request.mode === 'navigate') {
     event.respondWith(handleNavigationRequest(request));
     return;
@@ -209,9 +205,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isImageAsset(url)) {
-    if (url.origin === self.location.origin) {
-      event.respondWith(staleWhileRevalidate(request, CACHE_IMAGES));
-    }
+    event.respondWith(staleWhileRevalidate(request, CACHE_IMAGES));
     return;
   }
 
