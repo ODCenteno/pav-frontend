@@ -191,10 +191,22 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle GET — POST/PUT/DELETE etc. always hit the network.
+  // Only handle same-origin GET requests.
   if (request.method !== 'GET') return;
+  if (url.origin !== self.location.origin) return;
 
-  if (request.mode === 'navigate') {
+  // Treat any same-origin HTML page request as a navigation.
+  // Covers browser navigations (request.mode === 'navigate') AND
+  // Astro View Transitions fetches (request.mode === 'cors' but the
+  // Accept header includes text/html). Without this, View Transitions
+  // bypass the SW entirely and fail offline with "site can't be reached".
+  const accept = request.headers.get('accept') || '';
+  const isHtmlRequest =
+    request.mode === 'navigate' ||
+    request.destination === 'document' ||
+    accept.includes('text/html');
+
+  if (isHtmlRequest) {
     event.respondWith(handleNavigationRequest(request));
     return;
   }
