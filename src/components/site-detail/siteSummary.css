@@ -67,3 +67,7 @@
     margin-top: 16px;
   }
 }
+
+.quick-actions-card__socials {
+  margin-top: var(--space-sm);
+}

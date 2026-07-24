@@ -1,7 +1,7 @@
 ---
 import "./siteSummary.css";
 import MapView from "@/components/maps/MapView.tsx";
-import { socialUrl } from "@/utils/social";
+import Socials from "@/components/cards/Socials.astro";
 
 interface Location {
   lat: number;
@@ -13,9 +13,6 @@ interface Props {
   labels: {
     about: string;
     directions: string;
-    contact: string;
-    call: string;
-    email: string;
   };
   contactActions: {
     whatsapp?: string;
@@ -36,14 +33,6 @@ const directionsUrl = hasLocation
   ? `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`
   : undefined;
 
-// Re-use the shared socialUrl() helper so the Contact card's buttons open
-// the same URLs as the icons in the "Follow us" block further down the page.
-const instagramUrl = contactActions.instagram
-  ? socialUrl({ platform: "instagram", handle: contactActions.instagram })
-  : null;
-const facebookUrl = contactActions.facebook
-  ? socialUrl({ platform: "facebook", handle: contactActions.facebook })
-  : null;
 ---
 
 <section class="site-summary container">
@@ -78,41 +67,9 @@ const facebookUrl = contactActions.facebook
             {labels.directions}
           </a>
         )}
-        {
-          contactActions.whatsapp && (
-            <a href={`https://wa.me/${contactActions.whatsapp}`} class="btn btn-outline btn-block mb-sm" target="_blank" rel="noopener noreferrer">
-              {labels.contact}
-            </a>
-          )
-        }
-        {
-          contactActions.phone && (
-            <a href={`tel:${contactActions.phone}`} class="btn btn-outline btn-block mb-sm">
-              {labels.call}
-            </a>
-          )
-        }
-        {
-          contactActions.email && (
-            <a href={`mailto:${contactActions.email}`} class="btn btn-outline btn-block">
-              {labels.email}
-            </a>
-          )
-        }
-        {
-          instagramUrl && (
-            <a href={instagramUrl} class="btn btn-outline btn-block mb-sm" target="_blank" rel="noopener noreferrer">
-              Instagram
-            </a>
-          )
-        }
-        {
-          facebookUrl && (
-            <a href={facebookUrl} class="btn btn-outline btn-block" target="_blank" rel="noopener noreferrer">
-              Facebook
-            </a>
-          )
-        }
+        <div class="quick-actions-card__socials">
+          <Socials socialInfo={contactActions} detailLink={Astro.url.pathname} />
+        </div>
       </div>
     </aside>
 
