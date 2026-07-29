@@ -192,6 +192,7 @@ dist
 .webpack/
 
 ### Wrangler / Cloudflare ###
+.wrangler/*
 .wrangler/
 wrangler.jsonc
 dist/server/.wrangler/
