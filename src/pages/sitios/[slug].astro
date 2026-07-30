@@ -90,11 +90,15 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
     <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
   </SiteSummary>
 
-  {item.members && item.members.length > 0 && (
-    <MemberStrip title={labels.behind} members={item.members} />
+  {item.products && item.products.length > 0 && (
+    <ProductList title={labels.products} products={item.products} />
   )}
 
   <SiteInfoPanel labels={labels} schedule={schedule} price={item.pricing?.price} amenities={amenities} />
+
+  {item.members && item.members.length > 0 && (
+    <MemberStrip title={labels.behind} members={item.members} />
+  )}
 
   {item.social && item.social.length > 0 && (
     <section class="container site-social">
@@ -102,15 +106,11 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
     </section>
   )}
 
+  {(bestTime || (bring && bring.length > 0) || accessibility || connectivity) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} accessibility={accessibility} connectivity={connectivity} />}
+
   {item.stories && item.stories.length > 0 && (
     <StoryTimeline title={labels.stories} stories={item.stories} />
   )}
-
-  {item.products && item.products.length > 0 && (
-    <ProductList title={labels.products} products={item.products} />
-  )}
-
-  {(bestTime || (bring && bring.length > 0) || accessibility || connectivity) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} accessibility={accessibility} connectivity={connectivity} />}
 
   <RelatedSites title={labels.related} relatedIds={item.relatedSites} currentLang={locale} />
 

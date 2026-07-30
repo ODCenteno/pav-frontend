@@ -70,14 +70,15 @@
 }
 
 .story-timeline__theme {
-  display: inline-block;
-  font-size: var(--text-xs);
-  padding: var(--space-3xs) var(--space-2xs);
+  display: block;
+  font-size: var(--text-sm);
+  padding: var(--space-3xs) var(--space-sm);
   border-radius: var(--radius-full);
-  background: var(--color-surface);
-  color: var(--color-on-surface-variant);
+  background: var(--color-primary);
+  color: var(--white);
   font-weight: 600;
-  margin-left: var(--space-2xs);
+  margin-bottom: var(--space-2xs);
+  width: fit-content;
 }
 
 .story-timeline__heading {

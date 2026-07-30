@@ -59,6 +59,14 @@
   margin-bottom: var(--space-2xs);
 }
 
+.member-strip__bio {
+  font-size: var(--text-sm);
+  color: var(--color-on-surface-variant);
+  line-height: 1.6;
+  margin-bottom: var(--space-2xs);
+  white-space: pre-line;
+}
+
 .member-strip__quote {
   font-size: var(--text-sm);
   color: var(--color-on-surface-variant);

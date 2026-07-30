@@ -748,6 +748,7 @@ export function transformCommunityMemberSummary(
     slug: a.slug,
     name: a.name || '',
     role: pickLocalized(a.role, locale) || undefined,
+    bio: pickLocalized(a.bio, locale) || undefined,
     pullQuote: pickLocalized(a.pullQuote, locale) || undefined,
     legacyNote: pickLocalized(a.legacyNote, locale) || undefined,
     photo: mediaUrl(a.photo) || undefined,

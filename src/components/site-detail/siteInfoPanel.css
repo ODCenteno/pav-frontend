@@ -44,6 +44,7 @@
     font-size: var(--text-base);
     color: var(--color-on-surface);
     font-weight: 500;
+    white-space: pre-line;
 }
 
 .site-info__list {

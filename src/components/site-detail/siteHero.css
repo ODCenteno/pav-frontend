@@ -93,9 +93,9 @@
 .site-hero__tag {
     font-size: var(--text-xs);
     padding: 0.25rem 0.85rem;
-    background-color: var(--color-pebble);
+    background-color: var(--color-primary);
     border-radius: var(--radius-full);
-    color: var(--color-on-surface-variant);
+    color: var(--white);
     font-weight: 500;
 }
 

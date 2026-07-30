@@ -32,6 +32,7 @@ export interface CommunityMemberSummary {
   slug: string;
   name: string;
   role?: string;
+  bio?: string;
   pullQuote?: string;
   legacyNote?: string;
   photo?: string;

@@ -67,20 +67,8 @@
     font-size: var(--text-xs);
     text-transform: uppercase;
     font-weight: 700;
-    color: var(--secondary-text);
+    color: var(--color-primary);
     letter-spacing: 0.05em;
-}
-
-/* Brand dot prefix on each tip's label — small visual marker so the four
-   items share an obvious "this is a tip" affordance even at a glance. */
-.site-tips__label::before {
-    content: "";
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--color-primary);
-    flex-shrink: 0;
 }
 
 .site-tips__value {

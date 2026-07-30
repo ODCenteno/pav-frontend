@@ -111,8 +111,8 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
     />
   </SiteSummary>
 
-  {item.members && item.members.length > 0 && (
-    <MemberStrip title={labels.behind} members={item.members} />
+  {item.products && item.products.length > 0 && (
+    <ProductList title={labels.products} products={item.products} />
   )}
 
   <SiteInfoPanel
@@ -122,18 +122,14 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
     amenities={amenities}
   />
 
+  {item.members && item.members.length > 0 && (
+    <MemberStrip title={labels.behind} members={item.members} />
+  )}
+
   {item.social && item.social.length > 0 && (
     <section class="container site-social">
       <SocialLinks title={labels.follow} social={item.social} />
     </section>
-  )}
-
-  {item.stories && item.stories.length > 0 && (
-    <StoryTimeline title={labels.stories} stories={item.stories} />
-  )}
-
-  {item.products && item.products.length > 0 && (
-    <ProductList title={labels.products} products={item.products} />
   )}
 
   {(bestTime || (bring && bring.length > 0) || accessibility || connectivity) && (
@@ -144,6 +140,10 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
       accessibility={accessibility}
       connectivity={connectivity}
     />
+  )}
+
+  {item.stories && item.stories.length > 0 && (
+    <StoryTimeline title={labels.stories} stories={item.stories} />
   )}
 
   <RelatedSites
