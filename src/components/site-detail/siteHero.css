@@ -62,7 +62,7 @@
 
 .site-hero__breadcrumb {
     font-size: var(--text-sm);
-    color: var(--secondary-text);
+    color: var(--color-primary);
     margin-bottom: var(--space-2xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
