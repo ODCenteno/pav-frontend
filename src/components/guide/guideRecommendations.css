@@ -46,7 +46,8 @@
     color: var(--color-on-surface);
     line-height: 1.6;
     margin: 0;
-}
+
+    white-space: pre-line;}
 
 .guide-recommendations__icon {
     position: absolute;

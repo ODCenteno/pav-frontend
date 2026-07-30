@@ -39,7 +39,8 @@
     font-size: var(--text-base, 1rem);
     line-height: 1.55;
     color: var(--color-on-surface-variant, #555);
-}
+
+    white-space: pre-line;}
 
 /* 2) Map — full-bleed width, viewport-relative height */
 .map-section__map {

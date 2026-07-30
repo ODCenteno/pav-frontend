@@ -23,7 +23,8 @@
     color: var(--secondary-text);
     font-size: var(--text-base);
     margin-bottom: var(--space-md);
-}
+
+    white-space: pre-line;}
 
 .hero-actions {
     display: flex;

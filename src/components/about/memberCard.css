@@ -44,7 +44,8 @@
     color: var(--color-on-surface-variant);
     line-height: 1.5;
     margin-bottom: var(--space-sm);
-}
+
+    white-space: pre-line;}
 
 .member-card__links {
     display: flex;

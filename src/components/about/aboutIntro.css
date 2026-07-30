@@ -14,7 +14,8 @@
     font-size: var(--text-lg);
     color: var(--color-on-surface);
     line-height: 1.7;
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 1024px) {
     .about-intro__grid {

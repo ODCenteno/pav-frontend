@@ -43,7 +43,8 @@
     color: var(--color-on-surface);
     line-height: 1.6;
     margin-bottom: var(--space-md);
-}
+
+    white-space: pre-line;}
 
 .guide-fishing__rules {
     display: flex;

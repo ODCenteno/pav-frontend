@@ -20,4 +20,5 @@
     font-size: var(--text-lg);
     color: var(--color-on-surface);
     line-height: 1.7;
-}
+
+    white-space: pre-line;}

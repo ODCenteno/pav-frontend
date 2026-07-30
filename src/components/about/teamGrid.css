@@ -7,7 +7,8 @@
     font-size: var(--text-base);
     color: var(--secondary-text);
     margin-bottom: var(--space-lg);
-}
+
+    white-space: pre-line;}
 
 .team-grid__list {
     display: grid;

@@ -11,7 +11,8 @@
 .stories-subtitle {
     color: var(--text-color);
     font-size: var(--text-base);
-}
+
+    white-space: pre-line;}
 
 .stories-layout {
     display: flex;
@@ -62,7 +63,8 @@
     -webkit-line-clamp: 3; */
     -webkit-box-orient: vertical;
     /* overflow: hidden; */
-}
+
+    white-space: pre-line;}
 
 .stories-list {
     display: flex;

@@ -30,7 +30,8 @@
 .product-list__desc {
   font-size: var(--text-sm);
   color: var(--color-on-surface-variant);
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 768px) {
   .product-list__grid {

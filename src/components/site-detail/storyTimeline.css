@@ -103,7 +103,8 @@
   font-size: var(--text-base);
   line-height: 1.7;
   margin-bottom: var(--space-sm);
-}
+
+    white-space: pre-line;}
 
 .story-timeline__pullquote {
   font-size: var(--text-lg);
@@ -112,7 +113,8 @@
   border-left: 4px solid var(--color-primary);
   padding-left: var(--space-sm);
   margin-top: var(--space-sm);
-}
+
+    white-space: pre-line;}
 
 .theme--origin .story-timeline__dot { background: var(--color-emerald); }
 .theme--craft .story-timeline__dot { background: var(--color-olive); }

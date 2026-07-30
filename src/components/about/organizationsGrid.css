@@ -6,7 +6,8 @@
 .orgs-grid__description {
     font-size: var(--text-base);
     color: var(--secondary-text);
-}
+
+    white-space: pre-line;}
 
 .orgs-grid__list {
     display: grid;

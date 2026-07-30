@@ -16,7 +16,8 @@
     font-size: var(--text-lg);
     color: var(--color-on-surface);
     line-height: 1.6;
-}
+
+    white-space: pre-line;}
 
 .guide-history__timeline {
     position: relative;
@@ -83,7 +84,8 @@
     font-size: var(--text-base);
     color: var(--color-on-surface);
     line-height: 1.6;
-}
+
+    white-space: pre-line;}
 
 @media (max-width: 640px) {
     .guide-history__item {

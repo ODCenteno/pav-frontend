@@ -43,7 +43,8 @@
     color: var(--secondary-text);
     margin-bottom: var(--space-lg);
     line-height: 1.6;
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 1024px) {
     .exp-featured__grid {

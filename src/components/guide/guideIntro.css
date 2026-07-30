@@ -48,7 +48,8 @@
     font-size: var(--text-base);
     color: var(--color-on-surface);
     line-height: 1.7;
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 768px) {
     .guide-intro__grid {

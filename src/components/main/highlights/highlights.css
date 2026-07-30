@@ -7,7 +7,8 @@
 .highlights-subtitle {
     color: var(--secondary-text);
     font-size: var(--text-base);
-}
+
+    white-space: pre-line;}
 
 .review-card {
     background-color: var(--white);

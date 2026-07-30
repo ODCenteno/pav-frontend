@@ -23,4 +23,5 @@
     color: var(--white);
     opacity: 0.9;
     margin-bottom: var(--space-lg);
-}
+
+    white-space: pre-line;}

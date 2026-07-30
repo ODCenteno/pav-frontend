@@ -65,7 +65,8 @@
     color: var(--color-on-surface);
     line-height: 1.6;
     margin: 0;
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 640px) {
     .guide-amenities__grid {

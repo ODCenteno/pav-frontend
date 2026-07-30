@@ -57,7 +57,8 @@
     color: var(--border-color);
     font-size: 18px;
     margin-bottom: 1rem;
-}
+
+    white-space: pre-line;}
 
 .footer__rights {
     margin-top: 1rem;

@@ -71,7 +71,8 @@
 
 .community-member-card__quote p {
   margin: 0;
-}
+
+    white-space: pre-line;}
 
 .community-member-card__legacy {
   display: inline-flex;

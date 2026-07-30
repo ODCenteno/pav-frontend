@@ -32,7 +32,8 @@
 .community-message__desc {
     font-size: var(--text-base);
     color: var(--white);
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 768px) {
     .community-message__title {

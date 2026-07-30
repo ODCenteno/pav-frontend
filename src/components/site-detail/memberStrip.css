@@ -74,7 +74,8 @@
   border-left: 3px solid var(--color-primary);
   padding-left: var(--space-2xs);
   margin-bottom: var(--space-2xs);
-}
+
+    white-space: pre-line;}
 
 .member-strip__legacy {
   display: inline-block;

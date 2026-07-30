@@ -82,7 +82,8 @@
     margin-bottom: var(--space-md);
     max-width: 65ch;
     line-height: 1.4;
-}
+
+    white-space: pre-line;}
 
 .site-hero__tags {
     display: flex;

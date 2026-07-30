@@ -10,7 +10,8 @@
 .quick-facts__subtitle {
     font-size: var(--text-base);
     color: var(--secondary-text);
-}
+
+    white-space: pre-line;}
 
 .quick-facts__bento {
     display: grid;
@@ -45,7 +46,8 @@
 .fact-accent-1 .quick-facts__card-value,
 .fact-accent-1 .quick-facts__card-desc {
     color: var(--white);
-}
+
+    white-space: pre-line;}
 
 .fact-accent-2 {
     background-color: var(--color-slate);

@@ -9,7 +9,8 @@
     color: var(--color-on-surface);
     line-height: 1.6;
     font-weight: 500;
-}
+
+    white-space: pre-line;}
 
 @media (min-width: 768px) {
     .exp-intro__text {
