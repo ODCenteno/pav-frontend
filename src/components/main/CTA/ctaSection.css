@@ -1,9 +1,45 @@
+/* CtaSection — final call-to-action at end of page */
 .section-padding.text-center {
     text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-lg);
+}
+
+.section-padding.text-center h2 {
+    font-size: var(--text-2xl);
+    margin: 0 0 var(--space-sm);
+    position: relative;
+    display: inline-block;
+    padding-left: var(--space-md);
+}
+
+.section-padding.text-center h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .cta-description {
-    font-size: 18px;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-on-surface-variant);
     margin-bottom: 2rem;
 
     white-space: pre-line;}
+
+/* Primary CTA button — plain primary color (no gradient) */
+.section-padding.text-center .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--white);
+}
+
+.section-padding.text-center .btn-primary:hover {
+    background-color: var(--color-emerald);
+    filter: brightness(1.05);
+}

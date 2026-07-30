@@ -1,15 +1,32 @@
 .quick-facts {
     background-color: var(--white);
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-lg);
 }
 
 .quick-facts__title {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
+    position: relative;
+    padding-left: var(--space-md);
+}
+
+.quick-facts__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .quick-facts__subtitle {
     font-size: var(--text-base);
-    color: var(--secondary-text);
+    color: var(--color-on-surface-variant);
+    line-height: 1.6;
 
     white-space: pre-line;}
 
@@ -20,26 +37,57 @@
 }
 
 .quick-facts__card {
-    background-color: var(--color-bone);
+    position: relative;
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     padding: var(--space-lg);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: var(--shadow-sea);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.quick-facts__card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
+.quick-facts__card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
 }
 
-/* Accent Colors */
+.quick-facts__card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(90, 138, 128, 0.15);
+}
+
+.quick-facts__card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Accent variants — solid colors override the frosted glass for visual emphasis */
 .fact-accent-1 {
     background-color: var(--color-coral);
+    background-image: none;
     color: var(--white);
-    border-color: var(--color-coral-dark);
+    border: none;
+}
+
+.fact-accent-1::before {
+    display: none;
 }
 
 .fact-accent-1 .quick-facts__card-title,
@@ -51,7 +99,13 @@
 
 .fact-accent-2 {
     background-color: var(--color-slate);
+    background-image: none;
     color: var(--white);
+    border: none;
+}
+
+.fact-accent-2::before {
+    display: none;
 }
 
 .fact-accent-2 .quick-facts__card-title,
@@ -74,10 +128,10 @@
 
 .quick-facts__card-title {
     font-size: var(--text-sm);
-    color: var(--secondary-text);
+    color: var(--color-on-surface-variant);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: var(--space-xs);
 }
 
@@ -90,9 +144,10 @@
 }
 
 .quick-facts__card-desc {
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     color: var(--color-on-surface-variant);
     line-height: 1.5;
+    font-weight: 400;
 }
 
 @media (min-width: 768px) {
@@ -105,7 +160,6 @@
         height: auto;
     }
 
-    /* Wide card spans 2 columns */
     .wide {
         grid-column: span 2;
     }

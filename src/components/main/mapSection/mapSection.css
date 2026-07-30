@@ -9,6 +9,8 @@
     gap: var(--space-md);
     background-color: var(--color-bone, #fdfcf8);
     color: var(--color-on-surface, #1a1a1a);
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-lg);
 }
 
 /* 1) Header strip — eyebrow + title + description */
@@ -32,12 +34,27 @@
     font-size: var(--text-2xl, 1.5rem);
     font-weight: 700;
     line-height: 1.2;
+    position: relative;
+    display: inline-block;
+    padding-left: var(--space-md);
+}
+
+.map-section__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .map-section__description {
     margin: 0;
     font-size: var(--text-base, 1rem);
-    line-height: 1.55;
+    line-height: 1.6;
     color: var(--color-on-surface-variant, #555);
 
     white-space: pre-line;}
@@ -50,8 +67,6 @@
     border-radius: 0;
     overflow: hidden;
     background-color: var(--color-bone, #fdfcf8);
-    /* Override MapView internal border-radius so the map is flush within
-       the section; the section itself sits inside a page padding. */
 }
 
 .map-section__map :global(.map-container) {
@@ -76,6 +91,13 @@
     font-size: var(--text-sm, 0.875rem);
     font-weight: 600;
     line-height: 1.2;
+    background-color: var(--color-primary);
+    color: var(--white);
+}
+
+.map-section__btn:hover {
+    background-color: var(--color-emerald);
+    filter: brightness(1.05);
 }
 
 /* ──────────────────────────────────────────────────────────────────

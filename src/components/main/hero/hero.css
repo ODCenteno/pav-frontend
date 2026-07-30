@@ -20,8 +20,9 @@
 }
 
 .hero-content p {
-    color: var(--secondary-text);
+    color: var(--color-on-surface-variant);
     font-size: var(--text-base);
+    line-height: 1.6;
     margin-bottom: var(--space-md);
 
     white-space: pre-line;}
