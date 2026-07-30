@@ -30,9 +30,15 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer class="footer-main">
-  <div class="footer-wave" aria-hidden="true">
+<div class="footer-wave" aria-hidden="true">
     <svg viewBox="0 0 1440 40" preserveAspectRatio="none" fill="none">
-      <path d="M0,15 C240,35 480,-5 720,15 C960,35 1200,-5 1440,15 L1440,0 L0,0 Z" fill="var(--color-bone, #FDFCF8)"></path>
+      <defs>
+        <linearGradient id="footer-wave-gradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FDFCF8" stop-opacity="1"></stop>
+          <stop offset="100%" stop-color="#FDFCF8" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <path d="M0,15 C240,35 480,-5 720,15 C960,35 1200,-5 1440,15 L1440,0 L0,0 Z" fill="url(#footer-wave-gradient)"></path>
     </svg>
   </div>
   <div class="container footer-grid">
