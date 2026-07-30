@@ -12,9 +12,13 @@
 .social-links__title {
     font-size: var(--text-xs);
     text-transform: uppercase;
-    color: var(--color-on-surface-variant);
     letter-spacing: 0.05em;
     font-weight: 700;
+    background: var(--gradient-sea-text);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--color-on-surface-variant);
 }
 
 .social-links__icons {

@@ -18,7 +18,7 @@
   transform: translateY(-50%);
   width: 4px;
   height: 80%;
-  background: var(--gradient-sea-accent);
+  background: var(--gradient-sea-bar);
   border-radius: 2px;
 }
 
@@ -34,7 +34,7 @@
   top: var(--space-sm);
   bottom: var(--space-sm);
   width: 2px;
-  background: var(--gradient-sea-accent);
+  background: var(--gradient-sea-bar);
   opacity: 0.35;
 }
 

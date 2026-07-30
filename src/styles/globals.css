@@ -39,6 +39,8 @@
     --gradient-sea-accent: linear-gradient(90deg, var(--color-emerald) 0%, var(--color-gold) 50%, var(--color-coral) 100%);
     --gradient-sea-badge: linear-gradient(90deg, var(--color-emerald) 0%, var(--color-gold) 100%);
     --gradient-sea-text: linear-gradient(90deg, var(--color-on-surface) 0%, var(--color-emerald) 100%);
+    --gradient-sea-bar: linear-gradient(180deg, var(--color-emerald) 0%, var(--color-gold) 100%);
+    --gradient-sea-dot: linear-gradient(135deg, var(--color-emerald) 0%, var(--color-gold) 100%);
     --shadow-sea: 0 4px 16px rgba(90,138,128,0.08), 0 1px 3px rgba(26,26,26,0.04);
 
     /* Typography */

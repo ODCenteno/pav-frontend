@@ -7,6 +7,7 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   background-color: var(--color-bone, #fdfcf8);
+  isolation: isolate;
 }
 
 .map-container--full {
