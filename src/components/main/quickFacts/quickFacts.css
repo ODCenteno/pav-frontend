@@ -7,20 +7,6 @@
 .quick-facts__title {
     font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
-    position: relative;
-    padding-left: var(--space-md);
-}
-
-.quick-facts__title::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 80%;
-    background: var(--gradient-sea-bar);
-    border-radius: 2px;
 }
 
 .quick-facts__subtitle {

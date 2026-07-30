@@ -13,20 +13,6 @@
 .stories h2 {
     font-size: var(--text-2xl);
     margin: 0;
-    position: relative;
-    padding-left: var(--space-md);
-}
-
-.stories h2::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 80%;
-    background: var(--gradient-sea-bar);
-    border-radius: 2px;
 }
 
 .stories-subtitle {
@@ -46,6 +32,36 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
+    position: relative;
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: var(--shadow-sea);
+    overflow: hidden;
+}
+
+.featured-story::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+}
+
+.featured-story > * {
+    position: relative;
+    z-index: 1;
 }
 
 .story-img {
@@ -53,6 +69,7 @@
     overflow: hidden;
     height: 250px;
     position: relative;
+    box-shadow: 0 8px 20px rgba(26, 26, 26, 0.15), 0 2px 6px rgba(90, 138, 128, 0.1);
 }
 
 .story-img img {
@@ -97,14 +114,18 @@
     align-items: center;
     padding: var(--space-xs);
     border-radius: var(--radius-md);
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 0 4px 12px rgba(26, 26, 26, 0.08), 0 1px 3px rgba(90, 138, 128, 0.06);
     transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .small-story:hover {
-    background: var(--gradient-sea-glass);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: var(--shadow-sea);
+    box-shadow: var(--shadow-sea), 0 6px 16px rgba(26, 26, 26, 0.1);
+    transform: translateY(-1px);
 }
 
 .small-story-img {
@@ -113,6 +134,7 @@
     border-radius: var(--radius-sm);
     overflow: hidden;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(26, 26, 26, 0.12), 0 1px 3px rgba(90, 138, 128, 0.08);
 }
 
 .small-story-img img {

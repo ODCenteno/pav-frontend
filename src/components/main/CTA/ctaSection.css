@@ -8,21 +8,6 @@
 .section-padding.text-center h2 {
     font-size: var(--text-2xl);
     margin: 0 0 var(--space-sm);
-    position: relative;
-    display: inline-block;
-    padding-left: var(--space-md);
-}
-
-.section-padding.text-center h2::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 80%;
-    background: var(--gradient-sea-bar);
-    border-radius: 2px;
 }
 
 .cta-description {

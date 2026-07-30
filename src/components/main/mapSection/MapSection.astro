@@ -56,16 +56,18 @@ const ctaHref = (data.buttonUrl ?? "").trim() || "#";
     )}
   </div>
 
-  <div class="map-section__map">
-    <MapView
-      client:only="react"
-      markers={listings}
-      center={center}
-      zoom={zoom}
-      height="100%"
-      locale={locale}
-      linkLabel={lang === "en" ? "View site" : "Ver sitio"}
-    />
+  <div class="map-section__map-wrapper">
+    <div class="map-section__map">
+      <MapView
+        client:only="react"
+        markers={listings}
+        center={center}
+        zoom={zoom}
+        height="100%"
+        locale={locale}
+        linkLabel={lang === "en" ? "View site" : "Ver sitio"}
+      />
+    </div>
   </div>
 
   <div class="container map-section__cta">

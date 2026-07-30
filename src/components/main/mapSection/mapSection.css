@@ -34,21 +34,6 @@
     font-size: var(--text-2xl, 1.5rem);
     font-weight: 700;
     line-height: 1.2;
-    position: relative;
-    display: inline-block;
-    padding-left: var(--space-md);
-}
-
-.map-section__title::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 80%;
-    background: var(--gradient-sea-bar);
-    border-radius: 2px;
 }
 
 .map-section__description {
@@ -59,18 +44,28 @@
 
     white-space: pre-line;}
 
-/* 2) Map — full-bleed width, viewport-relative height */
+/* 2) Map — wrapped in a padded container with border and shadow */
+.map-section__map-wrapper {
+    padding: var(--space-sm);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(26, 26, 26, 0.1), 0 2px 6px rgba(90, 138, 128, 0.08);
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
 .map-section__map {
     width: 100%;
     height: min(70vh, 560px);
     min-height: 420px;
-    border-radius: 0;
+    border-radius: var(--radius-md);
     overflow: hidden;
     background-color: var(--color-bone, #fdfcf8);
 }
 
 .map-section__map :global(.map-container) {
-    border-radius: 0;
+    border-radius: var(--radius-md);
     height: 100%;
 }
 
@@ -87,17 +82,22 @@
     gap: var(--space-2xs, 0.5rem);
     width: 100%;
     max-width: 28rem;
-    padding: var(--space-xs, 0.75rem) var(--space-md, 1.5rem);
-    font-size: var(--text-sm, 0.875rem);
-    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1.2;
+    min-height: 44px;
+    border-radius: var(--radius-full);
     background-color: var(--color-primary);
     color: var(--white);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .map-section__btn:hover {
     background-color: var(--color-emerald);
     filter: brightness(1.05);
+    transform: translateY(-1px);
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -119,8 +119,6 @@
 
     .map-section__btn {
         width: auto;
-        padding: var(--space-sm, 1rem) var(--space-lg, 2rem);
-        font-size: var(--text-base, 1rem);
     }
 }
 
