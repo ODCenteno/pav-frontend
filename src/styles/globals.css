@@ -32,6 +32,15 @@
     --border-color: var(--color-outline);
     --white: var(--color-white);
 
+    /* Mar de Cortés gradient system */
+    --gradient-sea-glass: linear-gradient(135deg, rgba(253,252,248,0.85) 0%, rgba(232,241,238,0.75) 50%, rgba(90,138,128,0.06) 100%);
+    --gradient-sea-glass-warm: linear-gradient(135deg, rgba(253,252,248,0.85) 0%, rgba(232,241,238,0.75) 50%, rgba(196,77,58,0.06) 100%);
+    --gradient-sea-border: linear-gradient(135deg, rgba(90,138,128,0.4) 0%, rgba(231,145,18,0.3) 50%, rgba(196,77,58,0.4) 100%);
+    --gradient-sea-accent: linear-gradient(90deg, var(--color-emerald) 0%, var(--color-gold) 50%, var(--color-coral) 100%);
+    --gradient-sea-badge: linear-gradient(90deg, var(--color-emerald) 0%, var(--color-gold) 100%);
+    --gradient-sea-text: linear-gradient(90deg, var(--color-on-surface) 0%, var(--color-emerald) 100%);
+    --shadow-sea: 0 4px 16px rgba(90,138,128,0.08), 0 1px 3px rgba(26,26,26,0.04);
+
     /* Typography */
     --font-heading: 'Roboto', sans-serif;
     --font-body: 'Inter', sans-serif;

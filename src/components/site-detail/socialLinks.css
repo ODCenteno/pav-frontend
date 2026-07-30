@@ -1,74 +1,79 @@
 .site-social {
-  padding: var(--space-sm) 0;
-  border-top: 1px solid var(--border-color);
+    padding: var(--space-sm) 0;
+    border-top: 1px solid var(--border-color);
 }
 
 .social-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
 }
 
 .social-links__title {
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  font-weight: 700;
-  color: var(--color-on-surface-variant);
-  letter-spacing: 0.05em;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    color: var(--color-on-surface-variant);
+    letter-spacing: 0.05em;
+    font-weight: 700;
 }
 
 .social-links__icons {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .social-links__link {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #f3f4f6;
-  color: #4b5563;
-  transition: background-color 0.2s, color 0.2s, transform 0.2s;
-  text-decoration: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #4b5563;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    border: 1px solid rgba(90, 138, 128, 0.15);
 }
 
 .social-links__link:hover {
-  transform: translateY(-2px);
+    transform: translateY(-2px);
+    background: var(--gradient-sea-badge);
+    color: var(--white);
 }
 
 .social-links__link.social-link-whatsapp:hover {
-  background-color: #25d366;
-  color: white;
+    background: #25d366;
+    color: var(--white);
 }
 
 .social-links__link.social-link-facebook:hover {
-  background-color: #1877f2;
-  color: white;
+    background: #1877f2;
+    color: var(--white);
 }
 
 .social-links__link.social-link-instagram:hover {
-  background-color: #e1306c;
-  color: white;
+    background: #e1306c;
+    color: var(--white);
 }
 
 .social-links__link.social-link-phone:hover,
 .social-links__link.social-link-email:hover {
-  background-color: #333;
-  color: white;
+    background: #333;
+    color: var(--white);
 }
 
 .social-links__icon-svg {
-  fill: currentColor;
-  width: 20px;
-  height: 20px;
+    fill: currentColor;
+    width: 20px;
+    height: 20px;
 }
 
 .social-links__text {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  padding: 0 var(--space-2xs);
+    font-size: var(--text-sm);
+    padding: 0 var(--space-2xs);
+    font-weight: 600;
 }

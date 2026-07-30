@@ -1,17 +1,13 @@
 /* Site-tips section — mirrors the section rhythm of siteInfoPanel /
    productList / memberStrip / storyTimeline so all detail-page sections
-   share the same visual weight. The title is given a left accent bar and
-   denser typography because the copy here is the "important information"
-   callout (Información importante / Good to know). */
+   share the same visual weight. Frosted glass treatment + gradient
+   accents using the Mar de Cortés design system. */
 
 .site-tips {
     padding: var(--space-md) 0;
     border-top: 1px solid var(--border-color);
 }
 
-/* The previous release rendered the whole section inside a #f9f9f7 inner card;
-   that broke the rhythm against siblings. We now let the section flow with
-   the page background and rely on per-item cards below for visual grouping. */
 .site-tips__container {
     display: block;
 }
@@ -27,8 +23,6 @@
     line-height: 1.2;
 }
 
-/* Green accent bar that draws the eye to the "important information" title.
-   Matches the brand color used elsewhere (cards, focus rings, links). */
 .site-tips__title::before {
     content: "";
     position: absolute;
@@ -37,7 +31,7 @@
     transform: translateY(-50%);
     width: 4px;
     height: 80%;
-    background-color: var(--color-primary);
+    background: var(--gradient-sea-accent);
     border-radius: 2px;
 }
 
@@ -47,18 +41,45 @@
     gap: var(--space-md);
 }
 
-/* Per-item card — consistent with .site-info__item and .product-list__card.
-   Each tip (bestTime / whatToBring / accessibility / connectivity) now uses
-   the same white card treatment so the section no longer reads as a mix of
-   bare paragraphs and pill lists. */
 .site-tips__item {
-    background-color: var(--white);
+    position: relative;
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     padding: var(--space-md);
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: var(--shadow-sea);
+    overflow: hidden;
 }
 
-/* Label typography — small, uppercase, tracked. Mirrors .site-info__label. */
+.site-tips__item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+}
+
+.site-tips__item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-sea-accent);
+    opacity: 0.85;
+}
+
 .site-tips__label {
     display: flex;
     align-items: center;
@@ -69,6 +90,8 @@
     font-weight: 700;
     color: var(--color-primary);
     letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
 }
 
 .site-tips__value {
@@ -77,11 +100,11 @@
     font-weight: 500;
     line-height: 1.5;
     margin: 0;
+    white-space: pre-line;
+    position: relative;
+    z-index: 1;
+}
 
-    white-space: pre-line;}
-
-/* "Qué llevar" list — flatten the previous pill chips so they read as
-   inline bullets consistent with .site-info__list-item. */
 .site-tips__list {
     list-style: none;
     padding: 0;
@@ -89,6 +112,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: var(--space-2xs);
+    position: relative;
+    z-index: 1;
 }
 
 .site-tips__list li {
@@ -101,10 +126,12 @@
 }
 
 .site-tips__list li::before {
-    content: "•";
-    color: var(--color-primary);
-    font-weight: bold;
-    line-height: 1;
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gradient-sea-accent);
+    flex-shrink: 0;
 }
 
 @media (min-width: 768px) {
