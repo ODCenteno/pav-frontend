@@ -1,6 +1,20 @@
 .highlights {
-    border-top: 1px solid var(--border-color);
+    position: relative;
     padding-top: var(--space-lg);
+}
+
+.highlights::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 4'%3E%3Cpath d='M0 2 Q 15 0 30 2 T 60 2' stroke='%23E0E0E0' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: top;
+    background-size: 60px 4px;
+    pointer-events: none;
 }
 
 .highlights-layout {

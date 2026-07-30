@@ -2,7 +2,6 @@
     background-color: var(--text-color);
     color: var(--white);
     padding: 3rem 0 0 0;
-    border-top: 1px solid var(--border-color);
     position: relative;
 }
 

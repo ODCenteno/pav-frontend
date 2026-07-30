@@ -1,6 +1,11 @@
 .hero {
     overflow: hidden;
     position: relative;
+    background: linear-gradient(
+        180deg,
+        var(--color-bone) 0%,
+        rgba(90, 138, 128, 0.06) 100%
+    );
 }
 
 .hero-wave {
