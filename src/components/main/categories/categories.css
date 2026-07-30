@@ -30,9 +30,9 @@
 }
 
 .chip.active, .chip:hover {
-    background-color: var(--color-on-surface);
+    background: var(--gradient-sea-badge);
     color: var(--white);
-    border-color: var(--color-on-surface);
+    border-color: transparent;
 }
 
 /* Header Adjustments */
@@ -107,11 +107,12 @@
 }
 
 .view-all-link:hover {
-    background-color: var(--color-on-surface);
+    background: var(--gradient-sea-badge);
     color: var(--white);
+    border-color: transparent;
     text-decoration: none;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(90, 138, 128, 0.2);
 }
 
 /* Empty State */

@@ -95,7 +95,10 @@
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-on-surface);
+    line-height: 1.5;
 }
 
 .site-info__list-item::before {

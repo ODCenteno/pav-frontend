@@ -111,6 +111,20 @@ const groupedSites = categories
   .category-title {
     font-size: var(--text-2xl);
     margin: 0;
+    position: relative;
+    padding-left: var(--space-md);
+  }
+
+  .category-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
   }
 
   .item-count {

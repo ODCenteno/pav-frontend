@@ -120,9 +120,10 @@
     display: flex;
     align-items: center;
     gap: var(--space-2xs);
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     color: var(--color-on-surface);
-    font-weight: 400;
+    font-weight: 500;
+    line-height: 1.5;
 }
 
 .site-tips__list li::before {

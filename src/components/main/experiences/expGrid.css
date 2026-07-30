@@ -2,6 +2,20 @@
     font-size: var(--text-2xl);
     margin-bottom: var(--space-lg);
     color: var(--color-on-surface);
+    position: relative;
+    padding-left: var(--space-md);
+}
+
+.exp-grid__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .exp-grid__list {
