@@ -44,28 +44,28 @@
 
     white-space: pre-line;}
 
-/* 2) Map — wrapped in a padded container with border and shadow */
+/* 2) Map — wrapper with border and shadow (no inner padding; map is flush with edges) */
 .map-section__map-wrapper {
-    padding: var(--space-sm);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
     box-shadow: 0 8px 24px rgba(26, 26, 26, 0.1), 0 2px 6px rgba(90, 138, 128, 0.08);
     background: var(--gradient-sea-glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    overflow: hidden;
 }
 
 .map-section__map {
     width: 100%;
     height: min(70vh, 560px);
     min-height: 420px;
-    border-radius: var(--radius-md);
+    border-radius: 0;
     overflow: hidden;
     background-color: var(--color-bone, #fdfcf8);
 }
 
 .map-section__map :global(.map-container) {
-    border-radius: var(--radius-md);
+    border-radius: 0;
     height: 100%;
 }
 
