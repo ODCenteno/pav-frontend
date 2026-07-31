@@ -139,9 +139,9 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
   it("renders every field the detail page depends on", () => {
     // Identity
     expect(out.slug).toBe("sitio-ejemplo-carga-assets");
-    expect(out.name.es).toBe("Sitio Ejemplo Carga Assets 22");
-    expect(out.shortDescription?.es).toContain("ejemplo");
-    expect(out.description?.es).toContain("Lorem Ipsum");
+    expect(out.name['es-MX']).toBe("Sitio Ejemplo Carga Assets 22");
+    expect(out.shortDescription?.['es-MX']).toContain("ejemplo");
+    expect(out.description?.['es-MX']).toContain("Lorem Ipsum");
     expect(out.pricing?.price).toBe("500");
     expect(out.isFeatured).toBe(false);
 
@@ -157,19 +157,19 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
     expect(out.contact?.email).toBe("info@example.com");
 
     // Schedule → drives SiteInfoPanel
-    expect(out.schedule?.text?.es).toContain("Lunes");
+    expect(out.schedule?.text?.['es-MX']).toContain("Lunes");
     expect(out.schedule?.text?.en).toContain("Monday");
 
     // Amenities → drives SiteInfoPanel
     expect(out.amenities).toHaveLength(2);
-    expect(out.amenities?.[0].es).toBe("Wifi");
+    expect(out.amenities?.[0]['es-MX']).toBe("Wifi");
 
     // Recommendations → drives SiteTips
-    expect(out.recommendations?.bestTimeToVisit?.es).toBe("La mejor hora");
+    expect(out.recommendations?.bestTimeToVisit?.['es-MX']).toBe("La mejor hora");
     expect(out.recommendations?.whatToBring).toHaveLength(1);
-    expect(out.recommendations?.whatToBring?.[0].es).toBe("Traer cariño");
-    expect(out.recommendations?.accessibilityNotes?.es).toContain("accesibilidad");
-    expect(out.recommendations?.connectivityNotes?.es).toBe("Tenemos wifi");
+    expect(out.recommendations?.whatToBring?.[0]['es-MX']).toBe("Traer cariño");
+    expect(out.recommendations?.accessibilityNotes?.['es-MX']).toContain("accesibilidad");
+    expect(out.recommendations?.connectivityNotes?.['es-MX']).toBe("Tenemos wifi");
 
     // Relations (Strapi v5: bare arrays, not { data: [...] })
     expect(out.relatedSites).toEqual(["245", "211"]);
@@ -189,10 +189,10 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
     expect(out.products).toHaveLength(2);
     expect(out.products?.[0].name).toBe("Elotes curtidos");
 
-    // Social: explicit (2) + contact-derived IG + FB = 4
-    expect(out.social).toHaveLength(4);
+    // Social: explicit (2) + contact-derived (WA + phone + email + IG + FB) = 7
+    expect(out.social).toHaveLength(7);
     const platforms = out.social!.map((s) => s.platform).sort();
-    expect(platforms).toEqual(["facebook", "facebook", "instagram", "instagram"]);
+    expect(platforms).toEqual(["email", "facebook", "facebook", "instagram", "instagram", "phone", "whatsapp"]);
   });
 
   it("derives instagram URL from a bare handle (no @, no http)", () => {

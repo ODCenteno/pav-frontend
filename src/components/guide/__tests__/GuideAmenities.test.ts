@@ -32,7 +32,7 @@ describe("GuideAmenities (component smoke test)", () => {
 
   it("declares a Props interface with localized title and items shape", () => {
     expect(source).toMatch(/interface\s+Props/);
-    expect(source).toMatch(/title:\s*\{\s*es:\s*string;\s*en:\s*string/);
+    expect(source).toMatch(/title:\s*\{\s*'es-MX':\s*string;\s*en:\s*string/);
     expect(source).toMatch(/items:\s*AmenityItem\[\]/);
   });
 
@@ -49,9 +49,9 @@ describe("GuideAmenities (component smoke test)", () => {
     expect(source).toMatch(/\{item\.text\[lang\]\}/);
   });
 
-  it("picks the language from a locale prop defaulting to 'es'", () => {
-    expect(source).toMatch(/locale\s*=\s*"es"/);
-    expect(source).toMatch(/lang\s*=\s*locale\?\.startsWith\(\s*"en"\s*\)\s*\?\s*"en"\s*:\s*"es"/);
+  it("picks the language from a locale prop defaulting to 'es-MX'", () => {
+    expect(source).toMatch(/locale\s*=\s*"es-MX"/);
+    expect(source).toMatch(/lang\s*=\s*locale\?\.startsWith\(\s*"en"\s*\)\s*\?\s*"en"\s*:\s*"es-MX"/);
   });
 
   it("references all required amenity icon names in its source", () => {

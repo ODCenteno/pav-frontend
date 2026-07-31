@@ -56,7 +56,7 @@ describe('translations', () => {
     });
 
     it('should handle field with only Spanish translation', () => {
-      const field = { es: 'Solo español' } as any;
+      const field = { 'es-MX': 'Solo español' } as any;
       const resultEs = getTranslated(field, 'es-MX');
       expect(resultEs).toBe('Solo español');
       const resultEn = getTranslated(field, 'en-US');
