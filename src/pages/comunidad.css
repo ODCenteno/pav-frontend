@@ -1,15 +1,47 @@
 .comunidad-featured {
-  background: var(--color-bone);
+  background-color: var(--color-bone);
+  background-image: var(--gradient-sea-glass);
+  position: relative;
+}
+
+.comunidad-featured::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 4' preserveAspectRatio='none'><path d='M0,2 Q120,0 240,2 T480,2 T720,2 T960,2 T1200,2 T1440,2' stroke='%23E0E0E0' stroke-width='1' fill='none'/></svg>");
+  background-repeat: repeat-x;
+  background-size: 1440px 4px;
 }
 
 .comunidad-section {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid transparent;
+  background-image: var(--gradient-sea-border);
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: top;
+  padding-top: var(--space-lg);
 }
 
 .comunidad-section__title {
   font-size: var(--text-2xl);
   margin-bottom: var(--space-lg);
   color: var(--color-on-surface);
+  position: relative;
+  padding-left: var(--space-md);
+}
+
+.comunidad-section__title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  width: 4px;
+  height: 0.7em;
+  background: var(--gradient-sea-bar);
+  border-radius: 2px;
 }
 
 .comunidad-grid {
@@ -32,5 +64,5 @@
 
 .comunidad-empty {
   text-align: center;
-  color: var(--secondary-text);
+  color: var(--color-on-surface-variant);
 }
