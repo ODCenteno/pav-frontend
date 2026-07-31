@@ -39,14 +39,14 @@ const activeLinks = Object.entries(socialInfo)
 <div class="social-container">
   {activeLinks.map((link) => (
     <a href={link.href} class={`social-link ${link.key}`} aria-label={link.label} target={link.key === "phone" || link.key === "email" ? "_self" : "_blank"} title={link.label} rel="noopener noreferrer" onclick="event.stopPropagation()">
-      <svg viewBox="0 0 24 24" width="20" height="20" class="icon-svg" set:html={link.icon} />
+      <svg viewBox="0 0 24 24" width="18" height="18" class="icon-svg" set:html={link.icon} />
     </a>
   ))}
   
   {/* Always visible share icon */}
   <div class="share-wrapper">
     <button type="button" class="social-link share-btn" aria-label={shareLabel} title={shareLabel} onclick={`event.stopPropagation(); window.copyToClipboard('${detailLink}', this, '${copiedLabel}')`}>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-svg">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M3 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
       <path d="M15 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
@@ -91,8 +91,10 @@ const activeLinks = Object.entries(socialInfo)
 <style>
   .social-container {
     display: flex;
-    gap: 0.6rem;
+    gap: 0.4rem;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .share-wrapper {
@@ -128,41 +130,43 @@ const activeLinks = Object.entries(socialInfo)
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background-color: #f3f4f6;
-    color: #4b5563;
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: var(--shadow-sea);
+    color: var(--color-on-surface-variant);
     transition: all 0.2s ease;
     text-decoration: none;
+    flex-shrink: 0;
   }
 
   .social-link:hover {
     transform: translateY(-2px);
     cursor: pointer;
+    color: var(--white);
   }
 
   .social-link.whatsapp:hover {
     background-color: #25d366;
-    color: white;
   }
   .social-link.facebook:hover {
     background-color: #1877f2;
-    color: white;
   }
   .social-link.instagram:hover {
     background-color: #e1306c;
-    color: white;
   }
   .social-link.phone:hover,
   .social-link.email:hover {
-    background-color: #333;
-    color: white;
+    background-color: var(--color-charcoal);
   }
 
   .social-link.share-btn:hover {
     background-color: var(--color-primary);
-    color: white;
   }
 
   .icon-svg {

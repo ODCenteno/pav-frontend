@@ -99,7 +99,7 @@
 .carousel-container > .listing-card-container {
     scroll-snap-align: start;
     flex-shrink: 0;
-    width: 280px; /* Mobile width */
+    width: 300px; /* Mobile width */
 }
 
 @media (min-width: 768px) {
@@ -107,7 +107,7 @@
         gap: var(--space-md);
     }
     .carousel-container > .listing-card-container {
-        width: 320px; /* Desktop width */
+        width: 340px; /* Desktop width */
     }
 }
 
