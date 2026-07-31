@@ -13,12 +13,12 @@ import {
   ctaData,
 } from "../guideData";
 
-const LOCALES = ["es", "en"] as const;
+const LOCALES = ["es-MX", "en"] as const;
 
 function expectLocalized(value: unknown, key: string) {
   expect(value, `${key} should be defined`).toBeTruthy();
   expect(typeof value).toBe("object");
-  const v = value as { es?: string; en?: string };
+  const v = value as { 'es-MX'?: string; en?: string };
   for (const loc of LOCALES) {
     expect(typeof v[loc], `${key}.${loc} should be a string`).toBe("string");
     expect((v[loc] as string).length, `${key}.${loc} should be non-empty`).toBeGreaterThan(0);

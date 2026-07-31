@@ -27,7 +27,6 @@ import {
   directionsData as fallbackDirections,
   amenitiesData as fallbackAmenities,
   touristMapData as fallbackTouristMap,
-  ctaData as fallbackCta,
 } from "@/data/guideData";
 import { navigation } from "@/utils/navigation";
 
@@ -110,16 +109,26 @@ const directionsData = guide.directions
     }
   : fallbackDirections;
 
-const amenitiesData = guide.amenities
+type AmenityShape = {
+  icon: 'wifi' | 'signal' | 'toilet' | 'parking' | 'water';
+  title: { 'es-MX': string; en: string };
+  text: { 'es-MX': string; en: string };
+};
+
+const cmsAmenities = guide.amenities
   ? {
-      title: { 'es-MX': guide.amenities.title, en: guide.amenities.title },
-      items: guide.amenities.items.map((a) => ({
-        icon: a.icon as 'wifi' | 'signal' | 'toilet' | 'parking' | 'water',
-        title: { 'es-MX': a.title, en: a.title },
-        text: { 'es-MX': a.text, en: a.text },
-      })),
+      title: { 'es-MX': guide.amenities.title, en: guide.amenities.title } as { 'es-MX': string; en: string },
+      items: guide.amenities.items.map(
+        (a): AmenityShape => ({
+          icon: a.icon as AmenityShape['icon'],
+          title: { 'es-MX': a.title, en: a.title } as { 'es-MX': string; en: string },
+          text: { 'es-MX': a.text, en: a.text } as { 'es-MX': string; en: string },
+        })
+      ),
     }
-  : fallbackAmenities;
+  : null;
+
+const amenitiesData = (cmsAmenities ?? fallbackAmenities) as { title: { 'es-MX': string; en: string }; items: AmenityShape[] };
 
 const touristMapData = guide.touristMap
   ? {

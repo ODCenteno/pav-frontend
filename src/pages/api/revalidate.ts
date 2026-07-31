@@ -36,6 +36,7 @@ export const POST: APIRoute = async ({ request }) => {
     return Response.json(
       {
         ok: false,
+        triggered: false,
         reason: 'revalidate env vars are not configured on the frontend',
       } satisfies RevalidateResponse,
       { status: 503 },
@@ -44,9 +45,14 @@ export const POST: APIRoute = async ({ request }) => {
 
   const provided = request.headers.get('X-Webhook-Secret');
   if (provided !== secret) {
-    return Response.json({ ok: false, reason: 'invalid webhook secret' } satisfies RevalidateResponse, {
-      status: 401,
-    });
+    return Response.json(
+      {
+        ok: false,
+        triggered: false,
+        reason: 'invalid webhook secret',
+      } satisfies RevalidateResponse,
+      { status: 401 },
+    );
   }
 
   // Cloudflare's deploy hook endpoint is intentionally simple — it accepts any

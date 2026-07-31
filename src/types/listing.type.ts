@@ -22,6 +22,8 @@ export interface Listing {
 
   isFeatured?: boolean;
 
+  type?: string;
+
   image?: string;
 
   schedule?: Schedule;

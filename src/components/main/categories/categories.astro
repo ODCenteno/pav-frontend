@@ -10,7 +10,7 @@ import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
 import CardMain from "@/components/cards/CardMain.astro";
 import { navigation } from "@/utils/navigation";
 
-const locale = Astro.currentLocale ?? Astro.defaultLocale ?? "es";
+const locale = Astro.currentLocale ?? "es";
 
 const t = useTranslations(locale);
 
@@ -33,10 +33,10 @@ for (const c of allCategories) {
 
 // Map each listing to its category (prefer the populated one, else the lookup)
 const listingData: Listing[] = allListings
-  .filter((item) => item.isFeatured === true)
+  .filter((item): item is Listing => item.isFeatured === true)
   .map((item) => {
     if (item.category) return item;
-    const slug = item.category?.slug || item.categoryId;
+    const slug = item.categoryId;
     const cat = slug ? categoryBySlug.get(slug) : undefined;
     return cat ? { ...item, category: cat } : item;
   });

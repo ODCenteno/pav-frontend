@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MarkerItem } from "./mapIcons";
 import { createPopupContent } from "./mapIcons";
 import { createCustomIcon } from "./mapMarker";

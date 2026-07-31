@@ -3,14 +3,10 @@
  *
  * Kept in a separate file from `mapIcons.ts` so the popup HTML builder
  * has no Leaflet dependency and can be unit-tested in a Node environment.
- *
- * `import type { MarkerItem } from "./mapIcons"` gives the marker factory
- * strong typing without dragging Leaflet into the testable module.
  */
-import type L from "leaflet";
-import type { MarkerItem } from "./mapIcons";
+import L, { type DivIcon } from "leaflet";
 
-export function createCustomIcon(color: string): L.DivIcon {
+export function createCustomIcon(color: string): DivIcon {
   const safeColor = escapeAttr(color);
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="36" viewBox="0 0 28 36" fill="none" aria-hidden="true">
@@ -18,7 +14,7 @@ export function createCustomIcon(color: string): L.DivIcon {
       <circle cx="14" cy="14" r="5" fill="white"/>
     </svg>
   `;
-  return (L as unknown as { divIcon: (opts: unknown) => L.DivIcon }).divIcon({
+  return L.divIcon({
     html: svg,
     className: "custom-map-marker",
     iconSize: [28, 36],

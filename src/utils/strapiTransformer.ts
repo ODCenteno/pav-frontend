@@ -269,7 +269,7 @@ export interface CommunityMemberAttributes {
   slug: string;
   role?: string | { 'es-MX': string; en: string };
   locality?: string;
-  bio?: string | any[];
+  bio?: string | { 'es-MX': string; en: string };
   pullQuote?: string | { 'es-MX': string; en: string };
   photo?: StrapiMedia;
   gallery?: StrapiMediaArray;
@@ -521,7 +521,7 @@ export function transformListing(
     description: a.description ? localized(asString(a.description), locale) : undefined,
     categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
     category: catItem ? transformCategory(catItem) : undefined,
-    tags: (a.tags || []).map((t) => localized({ es: t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
+    tags: (a.tags || []).map((t) => localized({ 'es-MX': t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
     location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
@@ -586,8 +586,11 @@ export function transformListing(
   };
 }
 
-function asString(value: string | any[] | undefined): string {
+function asString(value: string | LocalizedString | any[] | undefined): string {
   if (typeof value === 'string') return value;
+  if (value && typeof value === 'object' && !Array.isArray(value) && ('es-MX' in value || 'en' in value)) {
+    return (value as LocalizedString)['es-MX'] || (value as LocalizedString).en || '';
+  }
   if (Array.isArray(value)) {
     return value
       .map((block: any) => {
