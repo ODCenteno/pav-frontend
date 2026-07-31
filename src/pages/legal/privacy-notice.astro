@@ -36,29 +36,86 @@ const content = legalData?.content || t('legal.privacy.placeholder');
   .legal-header {
     margin-bottom: var(--space-xl);
     padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--color-outline);
+    border-bottom: 1px solid transparent;
+    background-image: var(--gradient-sea-border);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    position: relative;
   }
 
   .legal-header h1 {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     margin-bottom: 0;
+    position: relative;
+    padding-left: var(--space-md);
+  }
+
+  .legal-header h1::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 4px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
   }
 
   .legal-content {
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sea);
+    padding: var(--space-lg);
     font-size: var(--text-base);
     line-height: 1.8;
+    position: relative;
+  }
+
+  .legal-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
   }
 
   .legal-content :global(h2) {
     font-size: var(--text-xl);
     margin-top: var(--space-lg);
     margin-bottom: var(--space-sm);
+    color: var(--color-on-surface);
+    position: relative;
+    padding-left: var(--space-sm);
+  }
+
+  .legal-content :global(h2)::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 3px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
   }
 
   .legal-content :global(h3) {
     font-size: var(--text-lg);
     margin-top: var(--space-md);
     margin-bottom: var(--space-xs);
+    color: var(--color-on-surface);
   }
 
   .legal-content :global(p) {

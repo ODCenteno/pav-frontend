@@ -61,12 +61,35 @@ const t = useTranslations(Astro.currentLocale);
 
   .offline-icon {
     margin-bottom: var(--space-md);
+    background: var(--gradient-sea-dot);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: var(--color-primary);
+    display: inline-block;
+  }
+
+  .offline-icon svg {
+    filter: drop-shadow(0 2px 8px rgba(90, 138, 128, 0.2));
   }
 
   .offline-content h1 {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     margin-bottom: var(--space-sm);
+    position: relative;
+    padding-left: var(--space-md);
+    display: inline-block;
+  }
+
+  .offline-content h1::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 4px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
   }
 
   .offline-content > p {
@@ -87,11 +110,31 @@ const t = useTranslations(Astro.currentLocale);
   }
 
   .offline-tip {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-outline);
-    border-radius: var(--radius-md);
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sea);
     padding: var(--space-md);
     text-align: left;
+    position: relative;
+  }
+
+  .offline-tip::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
   }
 
   .offline-tip p {
