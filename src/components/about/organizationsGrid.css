@@ -1,11 +1,24 @@
 .orgs-grid__title {
     font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
+    position: relative;
+    padding-left: var(--space-md);
+}
+
+.orgs-grid__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 4px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .orgs-grid__description {
     font-size: var(--text-base);
-    color: var(--secondary-text);
+    color: var(--color-on-surface-variant);
 
     white-space: pre-line;}
 

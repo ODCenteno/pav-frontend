@@ -5,9 +5,22 @@
 }
 
 .about-intro__title {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     color: var(--color-on-surface);
     line-height: 1.2;
+    position: relative;
+    padding-left: var(--space-md);
+}
+
+.about-intro__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 4px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .about-intro__text {

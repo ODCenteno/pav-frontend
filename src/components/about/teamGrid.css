@@ -1,11 +1,24 @@
 .team-grid__title {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
+    position: relative;
+    padding-left: var(--space-md);
+}
+
+.team-grid__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 4px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .team-grid__description {
     font-size: var(--text-base);
-    color: var(--secondary-text);
+    color: var(--color-on-surface-variant);
     margin-bottom: var(--space-lg);
 
     white-space: pre-line;}

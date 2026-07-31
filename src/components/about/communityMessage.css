@@ -1,16 +1,45 @@
 .community-message {
     background-color: var(--color-on-surface);
+    background-image:
+        linear-gradient(135deg, rgba(26, 26, 26, 1) 0%, rgba(90, 138, 128, 0.35) 60%, rgba(196, 77, 58, 0.25) 100%),
+        var(--gradient-sea-glass);
     color: var(--white);
     text-align: center;
-    height: 50dvh;
+    min-height: 50dvh;
     display: grid;
     place-items: center;
     align-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.community-message::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 4' preserveAspectRatio='none'><path d='M0,2 Q120,0 240,2 T480,2 T720,2 T960,2 T1200,2 T1440,2' stroke='%23E0E0E0' stroke-width='1' fill='none'/></svg>");
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
+    background-position: top;
+    pointer-events: none;
+}
+
+.community-message::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-sea-accent);
+    opacity: 0.85;
 }
 
 .community-message__content {
     max-width: 800px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .community-message__title {
@@ -27,22 +56,23 @@
     line-height: 1.4;
     font-style: italic;
     margin: 0;
+    color: var(--white);
 }
 
 .community-message__desc {
     font-size: var(--text-base);
     color: var(--white);
+    opacity: 0.9;
 
     white-space: pre-line;}
 
 @media (min-width: 768px) {
     .community-message__title {
-    color: var(--color-primary);
-    font-size: var(--text-xl);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: var(--space-md);
-}
+        font-size: var(--text-xl);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--space-md);
+    }
 
     .community-message__quote {
         font-size: var(--text-3xl);

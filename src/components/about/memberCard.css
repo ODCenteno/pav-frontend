@@ -3,10 +3,48 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    background: var(--white);
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     padding: var(--space-md);
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: var(--shadow-sea);
+    position: relative;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    overflow: hidden;
+}
+
+.member-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+}
+
+.member-card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-sea-accent);
+    opacity: 0.85;
+}
+
+.member-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(90, 138, 128, 0.15), 0 2px 8px rgba(26, 26, 26, 0.06);
 }
 
 .member-card__photo-container {
@@ -15,7 +53,12 @@
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: var(--space-sm);
-    border: 3px solid var(--color-pebble);
+    border: 3px solid var(--color-white);
+    box-shadow:
+        0 2px 8px rgba(90, 138, 128, 0.2),
+        0 0 0 2px rgba(90, 138, 128, 0.15);
+    position: relative;
+    z-index: 1;
 }
 
 .member-card__photo {
@@ -26,8 +69,14 @@
 
 .member-card__name {
     font-size: var(--text-lg);
+    background: var(--gradient-sea-text);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: var(--color-on-surface);
     margin-bottom: 0.2rem;
+    position: relative;
+    z-index: 1;
 }
 
 .member-card__role {
@@ -37,6 +86,8 @@
     margin-bottom: var(--space-xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
 }
 
 .member-card__bio {
@@ -45,16 +96,20 @@
     line-height: 1.5;
     margin-bottom: var(--space-sm);
 
-    white-space: pre-line;}
+    white-space: pre-line;
+    position: relative;
+    z-index: 1;}
 
 .member-card__links {
     display: flex;
     gap: var(--space-sm);
     margin-top: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .member-card__links a {
-    color: var(--secondary-text);
+    color: var(--color-on-surface-variant);
     transition: color 0.2s ease;
 }
 

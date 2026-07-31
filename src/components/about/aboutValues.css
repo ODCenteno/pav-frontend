@@ -1,5 +1,19 @@
 .about-values {
     background-color: var(--color-bone);
+    background-image: var(--gradient-sea-glass);
+    position: relative;
+}
+
+.about-values::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 4' preserveAspectRatio='none'><path d='M0,2 Q120,0 240,2 T480,2 T720,2 T960,2 T1200,2 T1440,2' stroke='%23E0E0E0' stroke-width='1' fill='none'/></svg>");
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
 }
 
 .about-values__grid {
@@ -9,21 +23,59 @@
 }
 
 .value-card {
-    background: var(--white);
+    background: var(--gradient-sea-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     padding: var(--space-lg);
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    transition: transform 0.3s ease;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    box-shadow: var(--shadow-sea);
+    position: relative;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.value-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    padding: 1px;
+    background: var(--gradient-sea-border);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
 }
 
 .value-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(90, 138, 128, 0.15), 0 2px 8px rgba(26, 26, 26, 0.06);
 }
 
 .value-card__title {
     font-size: var(--text-xl);
-    color: var(--color-primary);
+    background: var(--gradient-sea-text);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--color-on-surface);
     margin-bottom: var(--space-sm);
+    position: relative;
+    padding-left: var(--space-sm);
+}
+
+.value-card__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 3px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .value-card__text {
@@ -49,7 +101,10 @@
 
 .value-card__list li::before {
     content: "→";
-    color: var(--color-primary);
+    background: var(--gradient-sea-text);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-weight: bold;
 }
 
