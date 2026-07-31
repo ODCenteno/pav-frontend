@@ -93,6 +93,7 @@ const groupedSites = categories
 <style>
   .sites-explorer {
     background-color: var(--color-surface);
+    background-image: var(--gradient-sea-glass);
   }
 
   .category-section {
@@ -104,7 +105,11 @@ const groupedSites = categories
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: var(--space-md);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid transparent;
+    background-image: var(--gradient-sea-border);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: bottom;
     padding-bottom: var(--space-xs);
   }
 
@@ -129,9 +134,10 @@ const groupedSites = categories
 
   .item-count {
     font-size: var(--text-xs);
-    color: var(--secondary-text);
+    color: var(--color-primary);
     font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .horizontal-carousel {

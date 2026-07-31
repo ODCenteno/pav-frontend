@@ -174,7 +174,7 @@ p {
     cursor: pointer;
     transition: all var(--transition-base);
     border: 1px solid transparent;
-    font-size: 14px;
+    font-size: var(--text-sm);
     min-height: 44px; /* Touch target audit */
     min-width: 44px;
 }
@@ -185,17 +185,19 @@ p {
 }
 
 .btn-primary:hover {
-    background-color: #333;
+    background-color: color-mix(in srgb, var(--color-charcoal) 85%, transparent);
+    box-shadow: var(--shadow-sea);
     transform: translateY(-1px);
 }
 
 .btn-accent {
-    background-color: var(--accent-color);
+    background-color: var(--color-primary);
     color: var(--white);
 }
 
 .btn-accent:hover {
-    background-color: var(--accent-hover);
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-sea);
     transform: translateY(-1px);
 }
 
@@ -212,7 +214,7 @@ p {
 
 .btn-sm {
     padding: 0.2rem 1rem;
-    font-size: 13px;
+    font-size: var(--text-xs);
     min-height: 36px; /* Slightly smaller but still accessible */
 }
 
@@ -223,7 +225,7 @@ p {
     align-items: flex-start;
     margin-bottom: var(--space-md);
     flex-wrap: wrap;
-    gap: var(--space-3sm);
+    gap: var(--space-3xs);
 }
 
 /* Reduced Motion Support */

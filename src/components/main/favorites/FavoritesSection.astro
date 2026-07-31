@@ -69,7 +69,11 @@ const filterEmpty = t("sitesPage.empty");
 <style>
   .favorites-section {
     background-color: var(--color-bone);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid transparent;
+    background-image: var(--gradient-sea-glass-warm), var(--gradient-sea-border);
+    background-size: auto, 100% 1px;
+    background-repeat: no-repeat;
+    background-position: top, bottom;
   }
 
   /* Hide favorite cards by default; JS adds .is-favorite-visible to show them */
@@ -86,8 +90,22 @@ const filterEmpty = t("sitesPage.empty");
   }
 
   .favorites-title {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
+    position: relative;
+    padding-left: var(--space-md);
+  }
+
+  .favorites-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
   }
 
   .favorites-subtitle {
@@ -104,6 +122,7 @@ const filterEmpty = t("sitesPage.empty");
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-lg);
     background: var(--white);
+    background-image: var(--gradient-sea-glass);
   }
 
   .empty-state__content {
@@ -115,6 +134,7 @@ const filterEmpty = t("sitesPage.empty");
   .empty-icon {
     margin-bottom: var(--space-sm);
     opacity: 0.5;
+    color: var(--color-primary);
   }
 
   .filter-container {

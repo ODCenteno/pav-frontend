@@ -13,13 +13,19 @@
     border: 1px solid var(--border-color);
     padding: 0.8rem 1.2rem;
     border-radius: var(--radius-full);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sea);
     max-width: 600px;
     margin: 0 auto;
+    transition: all var(--transition-base);
+}
+
+.search-box:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sea), 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .search-icon {
-    color: var(--secondary-text);
+    color: var(--color-primary);
     margin-right: 0.8rem;
 }
 
@@ -63,10 +69,16 @@
     text-decoration: none;
 }
 
-.chip.active, .chip:hover {
-    background-color: var(--color-on-surface);
+.chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.chip.active {
+    background-color: var(--color-primary);
     color: var(--white);
-    border-color: var(--color-on-surface);
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sea);
 }
 
 .empty-state-message {

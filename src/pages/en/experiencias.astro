@@ -45,15 +45,15 @@ const featuredDesc = experiencesPage?.featuredHeader?.subtitle;
 
   <section class="experiences-intro section-padding">
     <div class="container text-center">
-      <h2>{introTitle}</h2>
+      <h2 class="experiences-title">{introTitle}</h2>
       <p class="max-w-700">{introDesc}</p>
     </div>
   </section>
 
   {featuredExperiences.length > 0 && (
-    <section class="experiences-featured-header">
+    <section class="experiences-featured-header section-padding">
       <div class="container text-center">
-        <h2>{featuredTitle}</h2>
+        <h2 class="experiences-title">{featuredTitle}</h2>
         {featuredDesc && <p class="max-w-700">{featuredDesc}</p>}
       </div>
     </section>
@@ -82,7 +82,55 @@ const featuredDesc = experiencesPage?.featuredHeader?.subtitle;
 <style>
   .experiences-intro {
     background-color: var(--color-surface);
+    background-image: var(--gradient-sea-glass);
   }
+
+  .experiences-featured-header {
+    background-color: var(--color-bone);
+    background-image: var(--gradient-sea-glass-warm);
+    position: relative;
+  }
+
+  .experiences-featured-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 4' preserveAspectRatio='none'><path d='M0,2 Q120,0 240,2 T480,2 T720,2 T960,2 T1200,2 T1440,2' stroke='%23E0E0E0' stroke-width='1' fill='none'/></svg>");
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
+  }
+
+  .experiences-title {
+    position: relative;
+    display: inline-block;
+    padding-left: var(--space-md);
+    margin-bottom: var(--space-md);
+    font-size: var(--text-2xl);
+  }
+
+  .experiences-title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 80%;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
+  }
+
+  .text-center .experiences-title::before {
+    left: var(--space-xs);
+  }
+
+  .text-center .experiences-title {
+    padding-left: calc(var(--space-md) + var(--space-xs));
+  }
+
   .max-w-700 {
     max-width: 700px;
     margin: 0 auto;
