@@ -1,5 +1,19 @@
 .guide-history {
     background-color: var(--color-white);
+    background-image: var(--gradient-sea-glass-warm);
+    position: relative;
+}
+
+.guide-history::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 4' preserveAspectRatio='none'><path d='M0,2 Q120,0 240,2 T480,2 T720,2 T960,2 T1200,2 T1440,2' stroke='%23E0E0E0' stroke-width='1' fill='none'/></svg>");
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
 }
 
 .guide-history__header {
@@ -8,8 +22,21 @@
 }
 
 .guide-history__title {
-    font-size: var(--text-3xl);
+    font-size: var(--text-2xl);
     margin-bottom: var(--space-2xs);
+    position: relative;
+    padding-left: var(--space-md);
+}
+
+.guide-history__title::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    width: 4px;
+    height: 0.7em;
+    background: var(--gradient-sea-bar);
+    border-radius: 2px;
 }
 
 .guide-history__lead {
@@ -36,7 +63,7 @@
     top: 0;
     bottom: 0;
     width: 2px;
-    background-color: var(--color-outline);
+    background: var(--gradient-sea-bar);
     display: none;
 }
 
@@ -47,9 +74,18 @@
     align-items: start;
     gap: var(--space-md);
     padding: var(--space-md);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background-clip: padding-box;
     background-color: var(--color-bone);
+    background-image: var(--gradient-sea-glass);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sea);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.guide-history__item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(90, 138, 128, 0.15), 0 2px 8px rgba(26, 26, 26, 0.06);
 }
 
 .guide-history__year {
@@ -60,7 +96,8 @@
     color: var(--color-primary);
     text-align: right;
     padding-right: var(--space-sm);
-    border-right: 2px solid var(--color-coral);
+    border-right: 2px solid;
+    border-image: var(--gradient-sea-bar) 1;
     align-self: stretch;
 }
 
@@ -68,7 +105,10 @@
     display: none;
     font-size: var(--text-sm);
     font-weight: 700;
-    color: var(--color-coral);
+    background: var(--gradient-sea-text);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: var(--space-2xs);
