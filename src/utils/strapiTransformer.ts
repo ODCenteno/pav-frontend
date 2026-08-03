@@ -168,6 +168,8 @@ export interface ContactInfoAttributes {
   email?: string;
   instagram?: string;
   facebook?: string;
+  tiktok?: string;
+  website?: string;
 }
 
 export interface GeoPointAttributes {
@@ -210,6 +212,7 @@ export interface ListingAttributes {
   description?: string | any[];
   mainImage?: StrapiMedia;
   gallery?: StrapiMediaArray;
+  logo?: StrapiMedia;
   price?: string;
   isFeatured?: boolean;
   category?: StrapiRelation<CategoryAttributes>;
@@ -225,7 +228,6 @@ export interface ListingAttributes {
   members?: { data: StrapiItem<CommunityMemberAttributes>[] } | StrapiItem<CommunityMemberAttributes>[];
   stories?: StoryBlockAttributes[];
   products?: ProductItemAttributes[];
-  social?: SocialLinkAttributes[];
 }
 
 /**
@@ -243,7 +245,7 @@ function relationArray<T>(raw: unknown): T[] | undefined {
 }
 
 export interface SocialLinkAttributes {
-  platform: string;
+  platform: 'whatsapp' | 'phone' | 'email' | 'instagram' | 'facebook' | 'tiktok' | 'web';
   handle?: string;
   url?: string;
 }
@@ -273,9 +275,7 @@ export interface CommunityMemberAttributes {
   pullQuote?: string | { 'es-MX': string; en: string };
   photo?: StrapiMedia;
   gallery?: StrapiMediaArray;
-  social?: SocialLinkAttributes[];
-  phone?: string;
-  whatsapp?: string;
+  contact?: ContactInfoAttributes;
   listings?: { data: StrapiItem<ListingAttributes>[] };
   relatedMembers?: { data: StrapiItem<CommunityMemberAttributes>[] };
   legacyNote?: string | { 'es-MX': string; en: string };
@@ -503,6 +503,7 @@ export function transformListing(
   const slug = a.slug;
   const mainImageUrl = mediaUrl(a.mainImage);
   const galleryUrls = mediaUrls(a.gallery);
+  const logoUrl = mediaUrl(a.logo);
   const storiesRaw = a.stories || [];
   const productsRaw = a.products || [];
   const membersRaw = relationArray<StrapiItem<CommunityMemberAttributes>>(a.members) ?? [];
@@ -512,6 +513,8 @@ export function transformListing(
   const catRaw = a.category as any;
   const catItem: StrapiItem<CategoryAttributes> | null | undefined =
     catRaw && 'data' in catRaw ? (catRaw.data ?? null) : catRaw;
+
+  const derivedSocial = contactToSocialLinks(a.contact);
 
   return {
     id,
@@ -525,8 +528,8 @@ export function transformListing(
     location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
-    media: mainImageUrl || galleryUrls.length > 0
-      ? { mainImageUrl, galleryUrls }
+    media: mainImageUrl || galleryUrls.length > 0 || logoUrl
+      ? { mainImageUrl, galleryUrls, logoUrl }
       : undefined,
     image: mainImageUrl,
     isFeatured: a.isFeatured,
@@ -560,29 +563,7 @@ export function transformListing(
     products: productsRaw.length
       ? productsRaw.map((p, i) => transformProduct(p, locale, esAttrs?.products?.[i]))
       : undefined,
-    social: (() => {
-      // Merge explicit `social` entries with any contact-derived links so a
-      // listing always surfaces every reachable handle in one place.
-      //   - Empty explicit entries (handle=null AND url=null) are dropped so
-      //     stale placeholders from prior CMS edits don't render empty icons.
-      //   - Dedup by (platform, resolved-url) so a non-empty explicit entry
-      //     for the same (platform, url) as a contact-derived entry wins and
-      //     the duplicate is filtered out. Explicit entries are kept first.
-      const explicit = (a.social ?? []).filter(
-        (s) => !!(s?.handle?.trim() || s?.url?.trim()),
-      );
-      const contactDerived = contactToSocialLinks(a.contact);
-      const merged = [...explicit, ...contactDerived];
-      const seen = new Set<string>();
-      const deduped = merged.filter((link) => {
-        const resolved = (link.url || '').trim() || (link.handle || '').trim();
-        const key = `${link.platform}::${resolved}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-      return deduped.length ? transformSocialLinks(deduped) : undefined;
-    })(),
+    social: derivedSocial.length ? derivedSocial : undefined,
   };
 }
 
@@ -632,14 +613,6 @@ function pickLocalized(
   return strFallback(current, fb);
 }
 
-export function transformSocialLinks(raw: SocialLinkAttributes[]): SocialLink[] {
-  return (raw || []).map((s) => ({
-    platform: (s.platform as SocialLink['platform']) || 'other',
-    handle: s.handle || undefined,
-    url: s.url || undefined,
-  }));
-}
-
 /**
  * Convert a listing's `contact` component fields into SocialLink entries so a
  * single `item.social` array feeds every UI surface (cards, detail page,
@@ -653,6 +626,8 @@ export function transformSocialLinks(raw: SocialLinkAttributes[]): SocialLink[] 
  *   - `email`    → `mailto:<email>`
  *   - `instagram`→ `https://instagram.com/<handle>`
  *   - `facebook` → `https://facebook.com/<handle or URL>`
+ *   - `tiktok`   → `https://tiktok.com/@<handle>`
+ *   - `website`  → URL as-is
  */
 function contactToSocialLinks(contact?: ContactInfoAttributes): SocialLinkAttributes[] {
   if (!contact) return [];
@@ -706,6 +681,24 @@ function contactToSocialLinks(contact?: ContactInfoAttributes): SocialLinkAttrib
       url: facebook.startsWith('http')
         ? facebook
         : `https://facebook.com/${facebook}`,
+    });
+  }
+
+  const tiktok = (contact.tiktok || '').trim();
+  if (tiktok) {
+    const handle = tiktok.replace(/^@/, '');
+    out.push({
+      platform: 'tiktok',
+      handle,
+      url: tiktok.startsWith('http') ? tiktok : `https://tiktok.com/@${handle}`,
+    });
+  }
+
+  const website = (contact.website || '').trim();
+  if (website) {
+    out.push({
+      platform: 'web',
+      url: website.startsWith('http') ? website : `https://${website}`,
     });
   }
 
@@ -793,9 +786,7 @@ export function transformCommunityMember(
     legacyNote: pickLocalized(a.legacyNote, locale, es?.legacyNote) || undefined,
     photo: mediaUrl(a.photo) || undefined,
     galleryUrls: mediaUrls(a.gallery),
-    social: a.social?.length ? transformSocialLinks(a.social) : [],
-    phone: a.phone || undefined,
-    whatsapp: a.whatsapp || undefined,
+    social: contactToSocialLinks(a.contact),
     listingSlugs,
     relatedMembers,
     isFeatured: a.isFeatured,
@@ -1249,13 +1240,33 @@ export interface ExperiencesPageAttributes {
     images?: any;
   };
   introHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  featuredHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  sectionsHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
+  sections?: ExperienceBlockAttributes[];
   finalCta?: {
     title?: string | { 'es-MX': string; en: string };
     description?: string | { 'es-MX': string; en: string };
     buttonLabel?: string | { 'es-MX': string; en: string };
     buttonLink?: string;
   };
+}
+
+export interface ExperienceBlockAttributes {
+  title?: string | { 'es-MX': string; en: string };
+  text?: string | any[];
+  image?: StrapiMedia;
+  link?: string;
+  linkLabel?: string | { 'es-MX': string; en: string };
+  layout?: 'image-left' | 'image-right' | 'image-top' | 'text-only';
+}
+
+export interface ExperienceBlock {
+  title: string;
+  text: string;
+  imageUrl: string;
+  imageAlt: string;
+  link: string;
+  linkLabel: string;
+  layout: 'image-left' | 'image-right' | 'image-top' | 'text-only';
 }
 
 export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttributes>, locale: string = 'es-MX') {
@@ -1287,12 +1298,21 @@ export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttribu
           subtitle: localized(a.introHeader.subtitle, locale)[l],
         }
       : null,
-    featuredHeader: a.featuredHeader
+    sectionsHeader: a.sectionsHeader
       ? {
-          title: localized(a.featuredHeader.title, locale)[l],
-          subtitle: localized(a.featuredHeader.subtitle, locale)[l],
+          title: localized(a.sectionsHeader.title, locale)[l],
+          subtitle: localized(a.sectionsHeader.subtitle, locale)[l],
         }
       : null,
+    sections: (a.sections || []).map((s) => ({
+      title: localized(s.title, locale)[l],
+      text: asString(s.text),
+      imageUrl: mediaUrl(s.image),
+      imageAlt: getAltFromMedia(s.image),
+      link: s.link || '',
+      linkLabel: localized(s.linkLabel, locale)[l],
+      layout: (s.layout as ExperienceBlock['layout']) || 'image-left',
+    })),
     finalCta: a.finalCta
       ? {
           title: localized(a.finalCta.title, locale)[l],

@@ -39,6 +39,7 @@ import {
   type GuidePageAttributes,
   type ExperiencesPageAttributes,
   type CommunityMemberAttributes,
+  type ExperienceBlockAttributes,
 } from '../utils/strapiTransformer';
 
 export async function getSiteSettings() {
@@ -113,18 +114,18 @@ export const LISTING_FULL_POPULATE: Record<string, string> = {
   'populate[0]': 'category',
   'populate[1]': 'mainImage',
   'populate[2]': 'gallery',
-  'populate[3]': 'location',
-  'populate[4]': 'tags',
-  'populate[5]': 'contact',
-  'populate[6]': 'schedule',
-  'populate[7]': 'amenities',
-  'populate[8]': 'recommendations',
-  'populate[9]': 'relatedListings',
-  'populate[10]': 'members.photo',
-  'populate[11]': 'stories.image',
-  'populate[12]': 'stories.gallery',
-  'populate[13]': 'products',
-  'populate[14]': 'social',
+  'populate[3]': 'logo',
+  'populate[4]': 'location',
+  'populate[5]': 'tags',
+  'populate[6]': 'contact',
+  'populate[7]': 'schedule',
+  'populate[8]': 'amenities',
+  'populate[9]': 'recommendations',
+  'populate[10]': 'relatedListings',
+  'populate[11]': 'members.photo',
+  'populate[12]': 'stories.image',
+  'populate[13]': 'stories.gallery',
+  'populate[14]': 'products',
 };
 
 /**
@@ -743,8 +744,9 @@ const ABOUT_PAGE_POPULATE = {
 const EXPERIENCES_PAGE_POPULATE = {
   'populate[0]': 'hero.images',
   'populate[1]': 'introHeader',
-  'populate[2]': 'featuredHeader',
-  'populate[3]': 'finalCta',
+  'populate[2]': 'sectionsHeader',
+  'populate[3]': 'sections.image',
+  'populate[4]': 'finalCta',
 } as const;
 
 export async function getHomepage(locale: string = 'es-MX'): Promise<HomepageData | null> {
@@ -1274,6 +1276,16 @@ export interface GuidePageData {
   cta: { title: string; desc: string; btn: string } | null;
 }
 
+export interface ExperienceBlockData {
+  title: string;
+  text: string;
+  imageUrl: string;
+  imageAlt: string;
+  link: string;
+  linkLabel: string;
+  layout: 'image-left' | 'image-right' | 'image-top' | 'text-only';
+}
+
 export interface ExperiencesPageData {
   hero: {
     title: string;
@@ -1284,7 +1296,8 @@ export interface ExperiencesPageData {
     images: { url: string; alt: string }[];
   };
   introHeader: { title: string; subtitle: string } | null;
-  featuredHeader: { title: string; subtitle: string } | null;
+  sectionsHeader: { title: string; subtitle: string } | null;
+  sections: ExperienceBlockData[];
   finalCta: { title: string; description: string; buttonLabel: string; buttonLink: string } | null;
 }
 

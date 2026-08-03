@@ -713,7 +713,11 @@ expect(out.name.en).toBe("Experiencias");
             ],
           },
           introHeader: { title: "Bienvenido", subtitle: "Elige tu aventura" },
-          featuredHeader: { title: "Destacados", subtitle: "Los más populares" },
+          sectionsHeader: { title: "Destacados", subtitle: "Los más populares" },
+          sections: [
+            { title: "Aventura 1", text: "Descripción", layout: "image-left" },
+            { title: "Aventura 2", text: "Descripción 2", layout: "image-right" },
+          ],
           finalCta: {
             title: "Planifica tu Viaje",
             description: "Todo lo que necesitas...",
@@ -732,7 +736,9 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.hero?.images[0].url).toContain("/uploads/exp-hero1.jpg");
       expect(out.introHeader?.title).toBe("Bienvenido");
       expect(out.introHeader?.subtitle).toBe("Elige tu aventura");
-      expect(out.featuredHeader?.title).toBe("Destacados");
+      expect(out.sectionsHeader?.title).toBe("Destacados");
+      expect(out.sections).toHaveLength(2);
+      expect(out.sections[0].title).toBe("Aventura 1");
       expect(out.finalCta?.title).toBe("Planifica tu Viaje");
       expect(out.finalCta?.buttonLink).toBe("/sitios");
     });
@@ -750,7 +756,7 @@ expect(out.name.en).toBe("Experiencias");
             images: [{ id: 1, url: "/uploads/exp-en.jpg" }],
           },
           introHeader: { title: "Welcome", subtitle: "Choose your adventure" },
-          featuredHeader: { title: "Featured", subtitle: "Most popular" },
+          sectionsHeader: { title: "Featured", subtitle: "Most popular" },
         },
       };
 
@@ -759,7 +765,7 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.hero?.title).toBe("Experiences");
       expect(out.hero?.titleHighlight).toBe("Adventures");
       expect(out.introHeader?.title).toBe("Welcome");
-      expect(out.featuredHeader?.subtitle).toBe("Most popular");
+      expect(out.sectionsHeader?.subtitle).toBe("Most popular");
     });
 
     it("handles richtext blocks in hero description", () => {
@@ -796,7 +802,8 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.hero?.title).toBe("");
       expect(out.hero?.images).toHaveLength(0);
       expect(out.introHeader).toBe(null);
-      expect(out.featuredHeader).toBe(null);
+      expect(out.sectionsHeader).toBe(null);
+      expect(out.sections).toHaveLength(0);
       expect(out.finalCta).toBe(null);
     });
 
@@ -874,22 +881,6 @@ expect(out.name.en).toBe("Experiencias");
       expect(ig?.url).toBe("https://instagram.com/pav");
     });
 
-    it("merges explicit social entries with contact-derived entries", () => {
-      const item = {
-        id: 1,
-        attributes: {
-          title: "Test",
-          slug: "test",
-          contact: { id: 9, instagram: "@pav", facebook: "pav" },
-          social: [{ platform: "whatsapp", handle: "+521234567890", url: null }],
-        },
-      };
-      const out = transformListing(item as any, "es");
-      expect(out.social).toHaveLength(3);
-      const platforms = out.social!.map((s) => s.platform).sort();
-      expect(platforms).toEqual(["facebook", "instagram", "whatsapp"]);
-    });
-
     it("ignores empty contact fields without producing ghost social entries", () => {
       const item = {
         id: 1,
@@ -901,65 +892,6 @@ expect(out.name.en).toBe("Experiencias");
       };
       const out = transformListing(item as any, "es");
       expect(out.social).toBeUndefined();
-    });
-
-    it("dedupes social entries by (platform, url/handle)", () => {
-      const item = {
-        id: 1,
-        attributes: {
-          title: "Test",
-          slug: "test",
-          contact: { id: 9, facebook: "pav.ejemplo" },
-          social: [
-            // Two facebooks pointing to the same resolved URL (one from Strapi
-            // explicit, one synthesised from contact.facebook). Should dedupe.
-            { platform: "facebook", handle: "pav.ejemplo", url: "https://facebook.com/pav.ejemplo" },
-            { platform: "facebook", handle: "pav.ejemplo", url: "https://facebook.com/pav.ejemplo" },
-            { platform: "instagram", handle: "pav", url: "https://instagram.com/pav" },
-          ],
-        },
-      };
-      const out = transformListing(item as any, "es");
-      const platforms = out.social!.map((s) => s.platform).sort();
-      expect(platforms).toEqual(["facebook", "instagram"]);
-      // The facebook should be the explicit one (kept by indexOf dedupe),
-      // not the contact-derived one.
-      expect(out.social!.find((s) => s.platform === "facebook")?.handle).toBe("pav.ejemplo");
-    });
-
-    it("keeps two entries on the same platform when the URLs differ", () => {
-      const item = {
-        id: 1,
-        attributes: {
-          title: "Test",
-          slug: "test",
-          social: [
-            { platform: "facebook", handle: "primary", url: "https://facebook.com/primary" },
-            { platform: "facebook", handle: "secondary", url: "https://facebook.com/secondary" },
-          ],
-        },
-      };
-      const out = transformListing(item as any, "es");
-      const fb = out.social!.filter((s) => s.platform === "facebook");
-      expect(fb).toHaveLength(2);
-    });
-
-    it("drops empty social entries (handle=null AND url=null) before merging", () => {
-      const item = {
-        id: 1,
-        attributes: {
-          title: "Test",
-          slug: "test",
-          contact: { id: 9, facebook: "pav.ejemplo" },
-          // Strapi leftover placeholder — no handle, no url
-          social: [{ platform: "facebook", handle: null, url: null }],
-        },
-      };
-      const out = transformListing(item as any, "es");
-      const fb = out.social!.filter((s) => s.platform === "facebook");
-      // Empty explicit entry is dropped; only the contact-derived entry remains
-      expect(fb).toHaveLength(1);
-      expect(fb[0].url).toBe("https://facebook.com/pav.ejemplo");
     });
 
     it("synthesizes a whatsapp SocialLink from contact.whatsapp", () => {
@@ -996,6 +928,51 @@ expect(out.name.en).toBe("Experiencias");
       expect(platforms).toEqual(["email", "phone"]);
       expect(out.social!.find((s) => s.platform === "phone")?.url).toBe("tel:6131226237");
       expect(out.social!.find((s) => s.platform === "email")?.url).toBe("mailto:info@example.com");
+    });
+
+    it("synthesizes a tiktok SocialLink from contact.tiktok", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, tiktok: "@pav_bcs" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const tt = out.social!.find((s) => s.platform === "tiktok");
+      expect(tt).toBeTruthy();
+      expect(tt?.handle).toBe("pav_bcs");
+      expect(tt?.url).toBe("https://tiktok.com/@pav_bcs");
+    });
+
+    it("synthesizes a web SocialLink from contact.website (raw URL)", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, website: "https://minegocio.com" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const web = out.social!.find((s) => s.platform === "web");
+      expect(web).toBeTruthy();
+      expect(web?.url).toBe("https://minegocio.com");
+    });
+
+    it("prepends https:// to a bare website URL", () => {
+      const item = {
+        id: 1,
+        attributes: {
+          title: "Test",
+          slug: "test",
+          contact: { id: 9, website: "minegocio.com" },
+        },
+      };
+      const out = transformListing(item as any, "es");
+      const web = out.social!.find((s) => s.platform === "web");
+      expect(web?.url).toBe("https://minegocio.com");
     });
   });
 

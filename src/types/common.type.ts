@@ -12,6 +12,8 @@ export interface ContactInfo {
   email?: string;
   instagram?: string;
   facebook?: string;
+  tiktok?: string;
+  website?: string;
 }
 
 export interface Pricing {
@@ -21,6 +23,7 @@ export interface Pricing {
 export interface Media {
   mainImageUrl?: string;
   galleryUrls: string[];
+  logoUrl?: string;
 }
 
 export interface Schedule {

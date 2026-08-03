@@ -31,6 +31,7 @@ describe("LISTING populate constants", () => {
       "category",
       "mainImage",
       "gallery",
+      "logo",
       "location",
       "tags",
       "contact",
@@ -42,7 +43,6 @@ describe("LISTING populate constants", () => {
       "stories.image",
       "stories.gallery",
       "products",
-      "social",
     ];
     for (const key of expected) {
       const populateValue = Object.values(LISTING_FULL_POPULATE);

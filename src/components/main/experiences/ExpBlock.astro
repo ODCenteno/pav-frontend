@@ -1,0 +1,39 @@
+---
+import type { ExperienceBlockData } from "@/lib/cms";
+import SvgIcon from "@/components/icons/SvgIcon.astro";
+import "./expBlock.css";
+
+interface Props {
+  block: ExperienceBlockData;
+  locale: string;
+}
+
+const { block, locale } = Astro.props;
+const layout = block.layout || "image-left";
+const hasImage = !!block.imageUrl;
+const hasLink = !!block.link;
+const directionClass =
+  layout === "image-right" ? "exp-block--reverse" :
+  layout === "image-top" ? "exp-block--stacked" :
+  layout === "text-only" ? "exp-block--text-only" : "";
+---
+
+<article class={`exp-block ${directionClass}`} data-layout={layout}>
+  {hasImage && (
+    <div class="exp-block__image-container">
+      <img src={block.imageUrl} alt={block.imageAlt || block.title} class="exp-block__image" loading="lazy" />
+    </div>
+  )}
+
+  <div class="exp-block__content">
+    {block.title && <h2 class="exp-block__title">{block.title}</h2>}
+    {block.text && <div class="exp-block__text">{block.text}</div>}
+
+    {hasLink && block.linkLabel && (
+      <a href={block.link} class="exp-block__cta">
+        {block.linkLabel}
+        <SvgIcon name="arrow-right" class="exp-block__cta-icon" />
+      </a>
+    )}
+  </div>
+</article>

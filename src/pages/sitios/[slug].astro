@@ -84,7 +84,7 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
 ---
 
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
-  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} tags={tags} shortDescription={item.shortDescription?.[locale]} labels={labels} />
+  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} logo={item.media?.logoUrl} tags={tags} shortDescription={item.shortDescription?.[locale]} labels={labels} />
 
   <SiteSummary description={description} labels={labels} contactActions={contactActions} location={location} categoryColor={categoryColor}>
     <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />

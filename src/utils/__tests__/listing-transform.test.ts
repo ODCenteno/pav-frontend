@@ -128,10 +128,6 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
       { id: 3, name: "Elotes curtidos", description: "Del desierto, bien limpio" },
       { id: 4, name: "Caracoles marinos", description: "Con su concha y su limón" },
     ],
-    social: [
-      { platform: "facebook", handle: "ejemploiconico", url: null },
-      { platform: "instagram", handle: "@pav_otro", url: null },
-    ],
   };
 
   const out = transformListing(fixture as any, "es");
@@ -189,10 +185,10 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
     expect(out.products).toHaveLength(2);
     expect(out.products?.[0].name).toBe("Elotes curtidos");
 
-    // Social: explicit (2) + contact-derived (WA + phone + email + IG + FB) = 7
-    expect(out.social).toHaveLength(7);
+    // Social: derived from contact (WA + phone + email + IG + FB) = 5
+    expect(out.social).toHaveLength(5);
     const platforms = out.social!.map((s) => s.platform).sort();
-    expect(platforms).toEqual(["email", "facebook", "facebook", "instagram", "instagram", "phone", "whatsapp"]);
+    expect(platforms).toEqual(["email", "facebook", "instagram", "phone", "whatsapp"]);
   });
 
   it("derives instagram URL from a bare handle (no @, no http)", () => {

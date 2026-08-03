@@ -3,34 +3,25 @@ export const prerender = true;
 
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import HeroPage from "@/components/main/hero/HeroPage.astro";
-import ExpFeatured from "@/components/main/experiences/ExpFeatured.astro";
+import ExpBlock from "@/components/main/experiences/ExpBlock.astro";
 import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback, getExperiencesPageWithFallback, toStrapiLocale} from "@/lib/cms";
+import { getExperiencesPageWithFallback, toStrapiLocale } from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
-import { assertBuildData } from "@/lib/buildGuard";
 
 const locale = toStrapiLocale(Astro.currentLocale || "es");
 const t = useTranslations(locale);
 
-const [experiencesPage, allListings] = await Promise.all([
-  getExperiencesPageWithFallback(locale),
-  getListingsWithFallback(locale),
-]);
-
-assertBuildData(allListings, "/experiencias", locale);
-
-const featuredExperiences = allListings
-  .filter((item) => item.category?.slug === "experiences")
-  .slice(0, 3);
+const experiencesPage = await getExperiencesPageWithFallback(locale);
 
 const heroBgImage = experiencesPage?.hero.images?.[0]?.url || "/images/pav-landscape-12.webp";
 const heroTitle = experiencesPage?.hero.title || t("experiencesPage.heroTitle");
 const heroDesc = experiencesPage?.hero.description || t("experiencesPage.heroDesc");
 const introTitle = experiencesPage?.introHeader?.title || t("experiencesPage.introTitle");
 const introDesc = experiencesPage?.introHeader?.subtitle || t("experiencesPage.introDesc");
-const featuredTitle = experiencesPage?.featuredHeader?.title || t("experiencesPage.featuredTitle");
-const featuredDesc = experiencesPage?.featuredHeader?.subtitle;
+const sectionsTitle = experiencesPage?.sectionsHeader?.title || t("experiencesPage.featuredTitle");
+const sectionsDesc = experiencesPage?.sectionsHeader?.subtitle;
+const sections = experiencesPage?.sections || [];
 ---
 
 <BaseLayout
@@ -46,31 +37,33 @@ const featuredDesc = experiencesPage?.featuredHeader?.subtitle;
     backgroundImage={heroBgImage}
   />
 
-  <section class="experiences-intro section-padding">
-    <div class="container text-center">
-      <h2 class="experiences-title">{introTitle}</h2>
-      <p class="max-w-700">{introDesc}</p>
-    </div>
-  </section>
-
-  {featuredExperiences.length > 0 && (
-    <section class="experiences-featured-header section-padding">
+  {introTitle && (
+    <section class="experiences-intro section-padding">
       <div class="container text-center">
-        <h2 class="experiences-title">{featuredTitle}</h2>
-        {featuredDesc && <p class="max-w-700">{featuredDesc}</p>}
+        <h2 class="experiences-title">{introTitle}</h2>
+        {introDesc && <p class="max-w-700">{introDesc}</p>}
       </div>
     </section>
   )}
 
-  <div class="experiences-list">
-    {featuredExperiences.map((exp, index) => (
-      <ExpFeatured
-        experience={exp}
-        locale={locale}
-        isReversed={index % 2 !== 0}
-      />
-    ))}
-  </div>
+  {sections.length > 0 && (
+    <>
+      {(sectionsTitle || sectionsDesc) && (
+        <section class="experiences-sections-header section-padding">
+          <div class="container text-center">
+            {sectionsTitle && <h2 class="experiences-title">{sectionsTitle}</h2>}
+            {sectionsDesc && <p class="max-w-700">{sectionsDesc}</p>}
+          </div>
+        </section>
+      )}
+
+      <div class="experiences-sections">
+        {sections.map((block) => (
+          <ExpBlock block={block} locale={locale} />
+        ))}
+      </div>
+    </>
+  )}
 
   {experiencesPage?.finalCta && (
     <ExpCTA
@@ -87,13 +80,13 @@ const featuredDesc = experiencesPage?.featuredHeader?.subtitle;
     background-color: var(--color-surface);
   }
 
-  .experiences-featured-header {
+  .experiences-sections-header {
     background-color: var(--color-bone);
     background-image: var(--gradient-sea-glass-warm);
     position: relative;
   }
 
-  .experiences-featured-header::before {
+  .experiences-sections-header::before {
     content: "";
     position: absolute;
     top: 0;

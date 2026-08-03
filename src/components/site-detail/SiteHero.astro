@@ -8,6 +8,7 @@ interface Props {
   title: string;
   categoryLabel: string;
   image: string;
+  logo?: string;
   tags: string[];
   shortDescription?: string;
   labels: {
@@ -17,7 +18,7 @@ interface Props {
   };
 }
 
-const { id, title, categoryLabel, image, tags, shortDescription, labels } = Astro.props;
+const { id, title, categoryLabel, image, logo, tags, shortDescription, labels } = Astro.props;
 ---
 
 <div class="site-hero">
@@ -36,10 +37,15 @@ const { id, title, categoryLabel, image, tags, shortDescription, labels } = Astr
   </div>
 
   <div class="site-hero__info container">
-    <div class="site-hero__breadcrumb">
-      <span>{categoryLabel}</span>
+    <div class="site-hero__identity">
+      {logo && <img src={logo} alt={`${title} logo`} class="site-hero__logo" loading="lazy" />}
+      <div class="site-hero__heading">
+        <div class="site-hero__breadcrumb">
+          <span>{categoryLabel}</span>
+        </div>
+        <h1 class="site-hero__title">{title}</h1>
+      </div>
     </div>
-    <h1 class="site-hero__title">{title}</h1>
     {shortDescription && <p class="site-hero__subtitle">{shortDescription}</p>}
     <div class="site-hero__tags">
       {tags.map(tag => <span class="site-hero__tag">{tag}</span>)}

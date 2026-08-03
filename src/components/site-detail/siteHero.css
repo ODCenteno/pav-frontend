@@ -60,6 +60,30 @@
     padding-bottom: var(--space-md);
 }
 
+.site-hero__identity {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.site-hero__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+    background: var(--color-surface);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+    box-shadow: var(--shadow-sea);
+    flex-shrink: 0;
+}
+
+.site-hero__heading {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
 .site-hero__breadcrumb {
     font-size: var(--text-sm);
     color: var(--color-primary);
@@ -104,5 +128,10 @@
     .site-hero__image-container {
         height: 60dvh;
         max-height: 600px;
+    }
+
+    .site-hero__logo {
+        width: 72px;
+        height: 72px;
     }
 }
