@@ -1,3 +1,20 @@
+.related-sites {
+    position: relative;
+}
+
+.related-sites::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: var(--wave-divider);
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
+    pointer-events: none;
+}
+
 .related-sites__title {
     font-size: var(--text-2xl);
     margin-bottom: var(--space-lg);

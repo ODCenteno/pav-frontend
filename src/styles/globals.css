@@ -41,6 +41,7 @@
     --gradient-sea-text: linear-gradient(90deg, var(--color-on-surface) 0%, var(--color-emerald) 100%);
     --gradient-sea-bar: linear-gradient(180deg, var(--color-emerald) 0%, var(--color-gold) 100%);
     --gradient-sea-dot: linear-gradient(135deg, var(--color-emerald) 0%, var(--color-gold) 100%);
+    --wave-divider: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%204'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0,2%20Q120,0%20240,2%20T480,2%20T720,2%20T960,2%20T1200,2%20T1440,2'%20stroke='%23E0E0E0'%20stroke-width='1'%20fill='none'/%3E%3C/svg%3E");
     --shadow-sea: 0 4px 16px rgba(90,138,128,0.08), 0 1px 3px rgba(26,26,26,0.04);
 
     /* Typography */

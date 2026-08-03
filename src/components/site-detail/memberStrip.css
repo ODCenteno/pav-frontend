@@ -1,6 +1,19 @@
 .member-strip {
   padding: var(--space-md) 0;
-  border-top: 1px solid var(--border-color);
+  position: relative;
+}
+
+.member-strip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-image: var(--wave-divider);
+  background-repeat: repeat-x;
+  background-size: 1440px 4px;
+  pointer-events: none;
 }
 
 .member-strip__title {
@@ -171,7 +184,7 @@
   padding: var(--space-3xs) var(--space-sm);
   border-radius: var(--radius-full);
   color: var(--white);
-  background: var(--gradient-sea-badge);
+  background: var(--color-gold);
   box-shadow: 0 2px 6px rgba(90, 138, 128, 0.25);
   width: fit-content;
   position: relative;

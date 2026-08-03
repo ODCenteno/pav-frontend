@@ -93,7 +93,20 @@ const groupedSites = categories
 <style>
   .sites-explorer {
     background-color: var(--color-surface);
-    background-image: var(--gradient-sea-glass);
+    position: relative;
+  }
+
+  .sites-explorer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: var(--wave-divider);
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
+    pointer-events: none;
   }
 
   .category-section {
@@ -163,6 +176,16 @@ const groupedSites = categories
   @media (min-width: 768px) {
     .carousel-item {
       flex: 0 0 340px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .sites-explorer .container {
+      padding-inline: var(--space-2xs);
+    }
+
+    .horizontal-carousel {
+      gap: var(--space-sm);
     }
   }
 </style>

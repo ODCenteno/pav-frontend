@@ -31,7 +31,7 @@
     white-space: pre-line;}
 
 @media (min-width: 1024px) {
-    .about-intro__grid {
+.about-intro__grid {
         grid-template-columns: 1fr 1.5fr;
         gap: var(--space-md);
         align-items: start;

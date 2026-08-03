@@ -1,6 +1,19 @@
 .story-timeline {
   padding: var(--space-md) 0;
-  border-top: 1px solid var(--border-color);
+  position: relative;
+}
+
+.story-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-image: var(--wave-divider);
+  background-repeat: repeat-x;
+  background-size: 1440px 4px;
+  pointer-events: none;
 }
 
 .story-timeline__title {
@@ -102,7 +115,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--white);
-  background: var(--gradient-sea-badge);
+  background: var(--color-gold);
   padding: var(--space-3xs) var(--space-sm);
   border-radius: var(--radius-full);
   margin-bottom: var(--space-2xs);
@@ -115,7 +128,7 @@
   font-size: var(--text-sm);
   padding: var(--space-3xs) var(--space-sm);
   border-radius: var(--radius-full);
-  background: var(--gradient-sea-accent);
+  background: var(--color-coral);
   color: var(--white);
   font-weight: 600;
   margin-bottom: var(--space-2xs);

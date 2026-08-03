@@ -1,3 +1,20 @@
+.orgs-grid {
+    position: relative;
+}
+
+.orgs-grid::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: var(--wave-divider);
+    background-repeat: repeat-x;
+    background-size: 1440px 4px;
+    pointer-events: none;
+}
+
 .orgs-grid__title {
     font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
@@ -19,6 +36,7 @@
 .orgs-grid__description {
     font-size: var(--text-base);
     color: var(--color-on-surface-variant);
+    margin-bottom: var(--space-lg);
 
     white-space: pre-line;}
 

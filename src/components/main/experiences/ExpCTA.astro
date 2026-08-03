@@ -6,12 +6,13 @@ interface Props {
   description: string;
   btnText: string;
   href: string;
+  padded?: boolean;
 }
 
-const { title, description, btnText, href } = Astro.props;
+const { title, description, btnText, href, padded = true } = Astro.props;
 ---
 
-<section class="exp-cta section-padding">
+<section class:list={["exp-cta", padded && "section-padding"]}>
   <div class="exp-cta__container container">
     <h2 class="exp-cta__title">{title}</h2>
     <p class="exp-cta__desc">{description}</p>

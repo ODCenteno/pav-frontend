@@ -139,7 +139,7 @@
     font-size: var(--text-xs);
     font-weight: 600;
     color: var(--white);
-    background: var(--gradient-sea-badge);
+    background: var(--color-coral);
     padding: 0.2rem 0.5rem;
     border-radius: var(--radius-full);
     width: fit-content;
