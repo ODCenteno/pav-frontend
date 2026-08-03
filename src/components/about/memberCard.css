@@ -95,17 +95,6 @@
     color: var(--color-on-surface-variant);
     line-height: 1.5;
     margin-bottom: var(--space-sm);
-
-    white-space: pre-line;
-    position: relative;
-    z-index: 1;}
-
-.member-card__links {
-    display: flex;
-    gap: var(--space-sm);
-    margin-top: auto;
-    position: relative;
-    z-index: 1;
 }
 
 .member-card__links a {

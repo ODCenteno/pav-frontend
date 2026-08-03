@@ -2,6 +2,7 @@
 import "./collaborationBlock.css";
 
 import { useTranslations } from "@/i18n/utils";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   data?: {
@@ -31,7 +32,7 @@ const links = data?.links || { primary: "#", secondary: "#" };
   <div class="container">
     <div class="collaboration-block__content">
       {title && <h2 class="collaboration-block__title">{title}</h2>}
-      {desc && <p class="collaboration-block__description">{desc}</p>}
+      {desc && <div class="collaboration-block__description prose" set:html={renderMarkdown(desc)} />}
       <div class="collaboration-block__actions">
         {btnPrimary && <a href={links.primary} class="btn btn-primary">{btnPrimary}</a>}
       </div>

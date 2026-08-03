@@ -2,6 +2,7 @@
 import "./communityMessage.css";
 
 import { useTranslations } from "@/i18n/utils";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   data?: {
@@ -23,7 +24,7 @@ const text = data?.text || t("aboutPage.community.text");
     <div class="community-message__content">
       {title && <h2 class="community-message__title">{title}</h2>}
       <blockquote class="community-message__quote">
-        {text && <p class="community-message__desc">{text}</p>}
+        {text && <div class="community-message__desc prose" set:html={renderMarkdown(text)} />}
       </blockquote>
     </div>
   </div>

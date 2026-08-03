@@ -1,6 +1,7 @@
 ---
 import "./memberStrip.css";
 import type { CommunityMemberSummary } from "@/types/community.type";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   title: string;
@@ -36,7 +37,7 @@ const { title, members } = Astro.props;
         {member.pullQuote && (
           <blockquote class="member-strip__quote">{member.pullQuote}</blockquote>
         )}
-        {member.bio && <p class="member-strip__bio">{member.bio}</p>}
+        {member.bio && <div class="member-strip__bio prose" set:html={renderMarkdown(member.bio)} />}
         {member.legacyNote && (
           <span class="member-strip__legacy">{member.legacyNote}</span>
         )}

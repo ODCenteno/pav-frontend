@@ -4,6 +4,7 @@ export const prerender = true;
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { useTranslations } from "@/i18n/utils";
 import { getLegalPage, toStrapiLocale } from "@/lib/cms";
+import { renderMarkdown, stripMarkdown } from "@/utils/markdown";
 
 const locale = toStrapiLocale(Astro.currentLocale || 'es');
 const t = useTranslations(locale);
@@ -11,19 +12,21 @@ const t = useTranslations(locale);
 const legalData = await getLegalPage('privacy-notice', locale);
 
 const title = legalData?.title || t('legal.privacy.title');
-const content = legalData?.content || t('legal.privacy.placeholder');
+const rawContent = legalData?.content || t('legal.privacy.placeholder');
+const content = renderMarkdown(rawContent);
+const metaDescription = stripMarkdown(rawContent).slice(0, 160);
 ---
 
 <BaseLayout
   title={`${title} | Puerto Agua Verde`}
   siteTitle={title}
-  siteDescription={content.slice(0, 160)}
+  siteDescription={metaDescription}
 >
   <section class="section-padding container legal-page">
     <header class="legal-header">
       <h1>{title}</h1>
     </header>
-    <article class="legal-content" set:html={content}></article>
+    <article class="legal-content prose" set:html={content}></article>
   </section>
 </BaseLayout>
 

@@ -5,6 +5,7 @@ import type { LocalizedString } from "../../types/i18n.type";
 import Socials from "./Socials.astro";
 import SvgIcon from "../icons/SvgIcon.astro";
 import { navigation } from "@/utils/navigation";
+import { renderMarkdown, stripMarkdown } from "@/utils/markdown";
 
 // Props
 const { item, currentLang } = Astro.props as { item: Listing; currentLang: string };
@@ -26,6 +27,8 @@ function getLocalizedText(value?: LocalizedString, key: string = "es-MX"): strin
 const title = getLocalizedText(item.name, langKey);
 const shortDesc = getLocalizedText(item.shortDescription, langKey);
 const desc = getLocalizedText(item.description, langKey);
+const descHtml = renderMarkdown(desc);
+const searchDesc = stripMarkdown(desc).toLowerCase();
 
 // Alt text: preferimos shortDescription, si no, title
 const altText = shortDesc || title || "";
@@ -84,7 +87,7 @@ const cardData = {
 const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<div class="listing-card-container" data-category={item.category?.slug || ''} data-name={title.toLowerCase()} data-description={desc.toLowerCase()}>
+<div class="listing-card-container" data-category={item.category?.slug || ''} data-name={title.toLowerCase()} data-description={searchDesc}>
   <article
     class="listing-card"
     data-listing-type={item.type}
@@ -117,7 +120,7 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
       </div>
 
       <h3 class="listing-title">{title}</h3>
-      <p class="listing-desc">{desc}</p>
+      {descHtml && <div class="listing-desc prose" set:html={descHtml} />}
 
       <div class="listing-footer">
         <Socials socialInfo={socialInfo} detailLink={detailLink} />

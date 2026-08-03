@@ -1,6 +1,7 @@
 ---
 import "./storyTimeline.css";
 import type { StoryBlock, StoryTheme } from "@/types/community.type";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   title: string;
@@ -45,11 +46,7 @@ const themeLabels: Record<StoryTheme, string> = {
           )}
 
           {story.narrative && (
-            <div class="story-timeline__narrative">
-              {story.narrative.split("\n\n").map((para) => (
-                <p>{para}</p>
-              ))}
-            </div>
+            <div class="story-timeline__narrative prose" set:html={renderMarkdown(story.narrative)} />
           )}
 
           {story.highlightQuote && (

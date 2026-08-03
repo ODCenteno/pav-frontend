@@ -1,5 +1,6 @@
 ---
 import type { Organization } from "../../types/about.type";
+import { renderMarkdown } from "@/utils/markdown";
 import "./orgCard.css";
 
 interface Props {
@@ -17,7 +18,7 @@ const description = org?.shortDescription ? (org.shortDescription[locale as "es-
   </div>
   <div class="org-card__content">
     <h3 class="org-card__name">{org?.name || "Organization"}</h3>
-    {description && <p class="org-card__description">{description}</p>}
+    {description && <div class="org-card__description prose" set:html={renderMarkdown(description)} />}
     {org?.links?.website && (
       <a href={org.links.website} target="_blank" rel="noopener noreferrer" class="org-card__link">
         Visit website

@@ -219,6 +219,78 @@ p {
     min-height: 36px; /* Slightly smaller but still accessible */
 }
 
+/* Prose — rendered markdown from Strapi rich-text fields.
+   Applied via the `prose` class on any container that uses
+   `set:html={renderMarkdown(...)}`. Sizes headings down, tightens
+   lists, and styles links so author formatting looks intentional
+   in card / section contexts (not full-bleed article). */
+.prose {
+    font-size: var(--text-base);
+    line-height: 1.7;
+    color: var(--color-on-surface);
+}
+.prose > *:first-child { margin-top: 0; }
+.prose > *:last-child { margin-bottom: 0; }
+.prose p { margin-bottom: var(--space-sm); }
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+    color: var(--color-on-surface);
+    line-height: 1.25;
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-xs);
+    font-weight: 700;
+}
+.prose h1 { font-size: var(--text-2xl); }
+.prose h2 { font-size: var(--text-xl); }
+.prose h3 { font-size: var(--text-lg); }
+.prose h4 { font-size: var(--text-base); }
+.prose ul,
+.prose ol {
+    margin: 0 0 var(--space-sm);
+    padding-left: var(--space-md);
+}
+.prose li {
+    margin-bottom: var(--space-2xs);
+    line-height: 1.6;
+}
+.prose li:last-child { margin-bottom: 0; }
+.prose a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+.prose a:hover { color: var(--color-primary-hover); }
+.prose strong { font-weight: 700; color: var(--color-on-surface); }
+.prose em { font-style: italic; }
+.prose blockquote {
+    margin: 0 0 var(--space-sm);
+    padding-left: var(--space-sm);
+    border-left: 3px solid var(--gradient-sea-bar);
+    border-image: var(--gradient-sea-bar) 1;
+    font-style: italic;
+    color: var(--color-on-surface-variant);
+}
+.prose code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+    background: color-mix(in srgb, var(--color-charcoal) 8%, transparent);
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+}
+.prose hr {
+    border: none;
+    height: 1px;
+    background: var(--gradient-sea-border);
+    margin: var(--space-md) 0;
+}
+.prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
 .section-header {
     display: flex;
     flex-direction: column;

@@ -2,6 +2,7 @@
 import "./aboutIntro.css";
 
 import { useTranslations } from "@/i18n/utils";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   data?: {
@@ -24,7 +25,7 @@ const text = data?.text || t("aboutPage.intro.text");
       {title && <h2 class="about-intro__title">{title}</h2>}
     </div>
     <div class="about-intro__content">
-      {text && <p class="about-intro__text">{text}</p>}
+      {text && <div class="about-intro__text prose" set:html={renderMarkdown(text)} />}
     </div>
   </div>
 </section>

@@ -81,8 +81,7 @@
     font-size: var(--text-base);
     color: var(--color-on-surface-variant);
     line-height: 1.6;
-
-    white-space: pre-line;}
+}
 
 .value-card__list {
     list-style: none;

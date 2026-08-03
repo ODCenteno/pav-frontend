@@ -3,6 +3,7 @@ import type { Listing } from "../../../types/listing.type";
 import "./expFeatured.css";
 import { navigation } from "@/utils/navigation";
 import { useTranslations } from "@/i18n/utils";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   experience: Listing;
@@ -41,7 +42,7 @@ const t = useTranslations(locale);
     <div class="exp-featured__content">
       <span class="exp-featured__badge">{t("experiencesPage.featuredBadge")}</span>
       <h2 class="exp-featured__title">{title}</h2>
-      <p class="exp-featured__desc">{description}</p>
+      <div class="exp-featured__desc prose" set:html={renderMarkdown(description)} />
       <a href={detailLink} class="btn btn-outline">{t("experiencesPage.viewMore")}</a>
     </div>
   </div>

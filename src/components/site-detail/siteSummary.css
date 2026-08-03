@@ -23,8 +23,8 @@
     color: var(--color-on-surface);
 }
 
-.site-summary__description p {
-    white-space: pre-line;
+.site-summary__description > *:last-child {
+    margin-bottom: 0;
 }
 
 .site-summary__sidebar {

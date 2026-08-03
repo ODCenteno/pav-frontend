@@ -93,7 +93,6 @@
     font-weight: 500;
     color: var(--color-on-surface-variant);
     line-height: 1.6;
-    white-space: pre-line;
     position: relative;
     z-index: 1;
 }

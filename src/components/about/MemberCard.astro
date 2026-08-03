@@ -1,6 +1,7 @@
 ---
 import type { TeamMember } from "../../types/about.type";
 import { useTranslations } from "../../i18n/utils";
+import { renderMarkdown } from "@/utils/markdown";
 import "./memberCard.css";
 
 interface Props {
@@ -22,7 +23,7 @@ const bio = member.shortBio ? (member.shortBio[locale as "es-MX" | "en"] || "") 
   <div class="member-card__content">
     <h3 class="member-card__name">{member.name || "Team Member"}</h3>
     {role && <p class="member-card__role">{role}</p>}
-    {bio && <p class="member-card__bio">{bio}</p>}
+    {bio && <div class="member-card__bio prose" set:html={renderMarkdown(bio)} />}
     
     <div class="member-card__links">
       {member.links?.instagram && (

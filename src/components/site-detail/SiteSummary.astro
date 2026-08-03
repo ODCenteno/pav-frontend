@@ -2,6 +2,7 @@
 import "./siteSummary.css";
 import MapView from "@/components/maps/MapView.tsx";
 import Socials from "@/components/cards/Socials.astro";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Location {
   lat: number;
@@ -40,7 +41,7 @@ const directionsUrl = hasLocation
     <div class="site-summary__main">
       <h2 class="site-summary__subtitle">{labels.about}</h2>
       <div class="site-summary__description">
-        <p>{description}</p>
+        <div class="prose" set:html={renderMarkdown(description)} />
       </div>
     </div>
 

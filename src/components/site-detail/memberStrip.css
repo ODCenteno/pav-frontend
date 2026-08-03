@@ -172,7 +172,6 @@
   color: var(--color-on-surface-variant);
   line-height: 1.7;
   margin: 0;
-  white-space: pre-line;
   position: relative;
   z-index: 1;
 }

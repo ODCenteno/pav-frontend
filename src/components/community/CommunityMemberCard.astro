@@ -3,6 +3,7 @@ import "./communityMemberCard.css";
 import type { CommunityMember } from "@/types/community.type";
 import { useTranslations } from "@/i18n/utils";
 import { navigation } from "@/utils/navigation";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   member: CommunityMember;
@@ -88,7 +89,7 @@ const listingHrefs = member.listingSlugs.map(slug => navigation.siteDetail(slug,
     )}
 
     {member.bio && (
-      <p class="community-member-card__bio">{member.bio}</p>
+      <div class="community-member-card__bio prose" set:html={renderMarkdown(member.bio)} />
     )}
 
     <div class="community-member-card__footer">

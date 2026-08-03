@@ -58,8 +58,7 @@
     opacity: 0.9;
     margin-bottom: var(--space-sm);
     position: relative;
-
-    white-space: pre-line;}
+}
 
 .collaboration-block__actions {
     display: flex;

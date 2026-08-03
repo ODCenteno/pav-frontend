@@ -2,6 +2,7 @@
 import "./aboutValues.css";
 
 import { useTranslations } from "@/i18n/utils";
+import { renderMarkdown } from "@/utils/markdown";
 
 interface Props {
   mission?: { title: string; text: string };
@@ -44,14 +45,14 @@ const items = Array.isArray(values.items) ? values.items : [];
       {mission?.title && (
         <div class="value-card">
           <h3 class="value-card__title">{mission.title}</h3>
-          <p class="value-card__text">{mission.text}</p>
+          <div class="value-card__text prose" set:html={renderMarkdown(mission.text)} />
         </div>
       )}
       
       {vision?.title && (
         <div class="value-card">
           <h3 class="value-card__title">{vision.title}</h3>
-          <p class="value-card__text">{vision.text}</p>
+          <div class="value-card__text prose" set:html={renderMarkdown(vision.text)} />
         </div>
       )}
       
