@@ -168,7 +168,7 @@
     "searchPlaceholder": "Search places, food, stays or services...",
     "filters": {
       "all": "All",
-      "beaches": "Beaches",
+      "sites": "Sites",
       "food": "Food",
       "stay": "Stay",
       "services": "Services"

@@ -94,12 +94,6 @@
     filter: brightness(1.05);
 }
 
-/* Social icon links — slightly larger in the card context */
-.quick-actions-card__socials .social-link {
-    width: 40px;
-    height: 40px;
-}
-
 .btn-block {
     width: 100%;
     display: flex;

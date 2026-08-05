@@ -212,7 +212,7 @@ export interface ListingAttributes {
   description?: string | any[];
   mainImage?: StrapiMedia;
   gallery?: StrapiMediaArray;
-  logo?: StrapiMedia;
+  logo?: StrapiMediaArray;
   price?: string;
   isFeatured?: boolean;
   category?: StrapiRelation<CategoryAttributes>;
@@ -503,7 +503,7 @@ export function transformListing(
   const slug = a.slug;
   const mainImageUrl = mediaUrl(a.mainImage);
   const galleryUrls = mediaUrls(a.gallery);
-  const logoUrl = mediaUrl(a.logo);
+  const logoUrls = mediaUrls(a.logo);
   const storiesRaw = a.stories || [];
   const productsRaw = a.products || [];
   const membersRaw = relationArray<StrapiItem<CommunityMemberAttributes>>(a.members) ?? [];
@@ -528,8 +528,8 @@ export function transformListing(
     location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
-    media: mainImageUrl || galleryUrls.length > 0 || logoUrl
-      ? { mainImageUrl, galleryUrls, logoUrl }
+    media: mainImageUrl || galleryUrls.length > 0 || logoUrls.length > 0
+      ? { mainImageUrl, galleryUrls, logoUrls }
       : undefined,
     image: mainImageUrl,
     isFeatured: a.isFeatured,

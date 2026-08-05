@@ -168,7 +168,7 @@
     "searchPlaceholder": "Buscar lugares, comida, hospedaje o servicios...",
     "filters": {
       "all": "Todos",
-      "beaches": "Playas",
+      "sites": "Sitios",
       "food": "Comida",
       "stay": "Hospedaje",
       "services": "Servicios"

@@ -23,7 +23,7 @@ export interface Pricing {
 export interface Media {
   mainImageUrl?: string;
   galleryUrls: string[];
-  logoUrl?: string;
+  logoUrls?: string[];
 }
 
 export interface Schedule {
