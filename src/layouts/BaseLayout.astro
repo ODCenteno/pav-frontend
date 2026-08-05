@@ -93,7 +93,7 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
     <meta name="twitter:image:alt" content={ogTitle} />
   </head>
   <body>
-    <Header />
+    <Header logoImage={settings.branding.logoImage} logoShortName={settings.branding.logoShortName} />
     <MenuOverlay />
     <main>
       <slot name="Hero" />

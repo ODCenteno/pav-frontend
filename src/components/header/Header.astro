@@ -6,6 +6,15 @@ import { useTranslations } from "../../i18n/utils";
 import { navigation } from "@/utils/navigation";
 import SvgIcon from "../icons/SvgIcon.astro";
 
+interface Props {
+  logoImage?: string;
+  logoShortName?: string;
+}
+
+const { logoImage, logoShortName } = Astro.props;
+const brandName = logoShortName || "Agua Verde";
+const logoAlt = `${brandName} Logo`;
+
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 
@@ -25,8 +34,10 @@ if (alternateLocaleCode) {
   <div class="container header-container">
     <a href={navigation.home(locale)} class="logo">
       <span class="logo-icon">
-        <Image src={favicon} alt="Puerto Agua Verde Logo" width={32} height={32} />
-      </span><span class="logo-text">Agua Verde</span>
+        {logoImage
+          ? <img src={logoImage} alt={logoAlt} width={32} height={32} class="logo-img" />
+          : <Image src={favicon} alt={logoAlt} width={32} height={32} />}
+      </span><span class="logo-text">{brandName}</span>
     </a>
     
     <!-- Desktop Navigation Only -->

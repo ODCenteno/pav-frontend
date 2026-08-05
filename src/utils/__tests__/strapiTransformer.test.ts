@@ -150,6 +150,59 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.description?.['es-MX']).toContain("Hello");
       expect(out.description?.['es-MX']).toContain("World");
     });
+
+    it("extracts a single-media logo (Strapi v5 { data: { url } } shape) into logoUrls", () => {
+      const item: StrapiItem<ListingAttributes> = {
+        id: 40,
+        attributes: {
+          title: "Proyecto Biznaga",
+          slug: "proyecto-biznaga",
+          mainImage: { id: 1, url: "/uploads/main.webp" },
+          logo: {
+            data: { id: 2, url: "/uploads/biznaga-logo.png" },
+          } as any,
+        },
+      };
+      const out = transformListing(item, "es");
+      expect(out.media?.logoUrls).toHaveLength(1);
+      expect(out.media?.logoUrls?.[0]).toContain("/uploads/biznaga-logo.png");
+    });
+
+    it("extracts a single-media logo with v4 nested attributes wrapper", () => {
+      const item: StrapiItem<ListingAttributes> = {
+        id: 41,
+        attributes: {
+          title: "X",
+          slug: "x",
+          logo: {
+            data: { id: 5, attributes: { url: "/uploads/legacy.png" } },
+          } as any,
+        },
+      };
+      const out = transformListing(item, "es");
+      expect(out.media?.logoUrls).toHaveLength(1);
+      expect(out.media?.logoUrls?.[0]).toContain("/uploads/legacy.png");
+    });
+
+    it("extracts a multiple-media logo (Strapi collection { data: [...] }) into logoUrls", () => {
+      const item: StrapiItem<ListingAttributes> = {
+        id: 42,
+        attributes: {
+          title: "X",
+          slug: "x",
+          logo: {
+            data: [
+              { id: 7, url: "/uploads/logo-a.png" },
+              { id: 8, url: "/uploads/logo-b.png" },
+            ],
+          } as any,
+        },
+      };
+      const out = transformListing(item, "es");
+      expect(out.media?.logoUrls).toHaveLength(2);
+      expect(out.media?.logoUrls?.[0]).toContain("/uploads/logo-a.png");
+      expect(out.media?.logoUrls?.[1]).toContain("/uploads/logo-b.png");
+    });
   });
 
   describe("transformTeamMember", () => {

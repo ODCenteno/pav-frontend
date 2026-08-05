@@ -139,8 +139,19 @@ function mediaUrls(media: StrapiMediaArray | StrapiMediaFlat[] | undefined): str
   if (Array.isArray(media)) {
     return media.map(m => resolveMediaUrl(getUrlFromMedia(m))).filter(Boolean);
   }
-  if ('data' in media && Array.isArray(media.data)) {
-    return media.data.map((m: any) => resolveMediaUrl(getUrlFromMedia(m))).filter(Boolean);
+  if (typeof media === 'object' && 'data' in media) {
+    const d = (media as any).data;
+    if (Array.isArray(d)) {
+      return d.map((m: any) => resolveMediaUrl(getUrlFromMedia(m))).filter(Boolean);
+    }
+    if (d && typeof d === 'object') {
+      const url = resolveMediaUrl(getUrlFromMedia(d));
+      return url ? [url] : [];
+    }
+  }
+  if (typeof media === 'object' && ('url' in media || 'attributes' in media)) {
+    const url = resolveMediaUrl(getUrlFromMedia(media));
+    return url ? [url] : [];
   }
   return [];
 }

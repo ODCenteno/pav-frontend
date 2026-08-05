@@ -38,6 +38,12 @@
     letter-spacing: 0.5px;
 }
 
+.logo-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
 .header-right {
   display: flex;
   align-items: center;
