@@ -66,6 +66,24 @@
     transform: scale(1.05);
 }
 
+.site-gallery__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--white);
+    font-weight: 700;
+    font-size: var(--text-xl);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.site-gallery__item--overflow::after {
+    content: none;
+}
+
 @media (min-width: 640px) {
     .site-gallery__grid,
     .gallery-trigger-wrapper.site-gallery__grid {
