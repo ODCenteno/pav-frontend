@@ -4,6 +4,14 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  repository_dispatch:
+    types: [cms-revalidate]
+
+# Strapi webhooks can fire in bursts (bulk publish/unpublish). Cancel any
+# in-flight deploy and keep only the latest request.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -29,7 +37,7 @@ jobs:
       - name: Verify required secrets
         run: |
           missing=0
-          for v in STRAPI_URL STRAPI_TOKEN REVALIDATE_WEBHOOK_SECRET CF_PAGES_DEPLOY_HOOK_URL; do
+          for v in STRAPI_URL STRAPI_TOKEN REVALIDATE_WEBHOOK_SECRET REVALIDATE_GITHUB_TOKEN; do
             if [ -z "${!v}" ]; then echo "::error::$v is not configured as a GitHub secret"; missing=1; fi
           done
           if [ "$missing" -ne 0 ]; then exit 1; fi
@@ -37,7 +45,7 @@ jobs:
           STRAPI_URL: ${{ secrets.STRAPI_URL }}
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
           REVALIDATE_WEBHOOK_SECRET: ${{ secrets.REVALIDATE_WEBHOOK_SECRET }}
-          CF_PAGES_DEPLOY_HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
+          REVALIDATE_GITHUB_TOKEN: ${{ secrets.REVALIDATE_GITHUB_TOKEN }}
 
       - name: Build
         run: pnpm build
@@ -45,7 +53,7 @@ jobs:
           STRAPI_URL: ${{ secrets.STRAPI_URL }}
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
           REVALIDATE_WEBHOOK_SECRET: ${{ secrets.REVALIDATE_WEBHOOK_SECRET }}
-          CF_PAGES_DEPLOY_HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
+          REVALIDATE_GITHUB_TOKEN: ${{ secrets.REVALIDATE_GITHUB_TOKEN }}
 
       - name: Deploy to Cloudflare
         run: pnpm exec wrangler deploy --config dist/server/wrangler.json
