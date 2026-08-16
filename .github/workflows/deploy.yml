@@ -26,11 +26,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify required secrets
+        run: |
+          missing=0
+          for v in STRAPI_URL STRAPI_TOKEN REVALIDATE_WEBHOOK_SECRET CF_PAGES_DEPLOY_HOOK_URL; do
+            if [ -z "${!v}" ]; then echo "::error::$v is not configured as a GitHub secret"; missing=1; fi
+          done
+          if [ "$missing" -ne 0 ]; then exit 1; fi
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+          REVALIDATE_WEBHOOK_SECRET: ${{ secrets.REVALIDATE_WEBHOOK_SECRET }}
+          CF_PAGES_DEPLOY_HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
+
       - name: Build
         run: pnpm build
         env:
           STRAPI_URL: ${{ secrets.STRAPI_URL }}
           STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+          REVALIDATE_WEBHOOK_SECRET: ${{ secrets.REVALIDATE_WEBHOOK_SECRET }}
+          CF_PAGES_DEPLOY_HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
 
       - name: Deploy to Cloudflare
         run: pnpm exec wrangler deploy --config dist/server/wrangler.json

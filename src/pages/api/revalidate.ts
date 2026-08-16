@@ -11,11 +11,16 @@
  * Without a rebuild, newly-published Strapi entries only show up after the
  * next deploy.
  *
- * Configure:
+ * Configure (GitHub repo → Settings → Secrets and variables → Actions):
  *   - REVALIDATE_WEBHOOK_SECRET  — shared with the Strapi webhook
- *   - CF_PAGES_DEPLOY_HOOK_URL   — Cloudflare Pages → Settings → Build & deployments → Deploy hooks
+ *   - CF_PAGES_DEPLOY_HOOK_URL   — deploy hook URL called to trigger a rebuild
  *
- * Configure in Cloudflare Pages → Settings → Environment variables (Production).
+ * IMPORTANT: these values are read via `import.meta.env`, which Vite inlines
+ * at BUILD time. They must be present as env vars on the `pnpm build` step
+ * (see .github/workflows/deploy.yml); rotating a secret requires a redeploy
+ * for the new value to reach the Worker bundle. When they are missing at
+ * build, the whole webhook body is dead-code-eliminated and the endpoint
+ * always answers 503.
  */
 import type { APIRoute } from 'astro';
 
