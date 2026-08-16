@@ -17,11 +17,11 @@
 ### 2. Technical Architecture
 
 #### 2.1 Core Stack
-- **Frontend Framework:** [Astro.js](https://astro.build/) (v5+)
+- **Frontend Framework:** [Astro.js](https://astro.build/) (v7)
     - Utilizing "Islands Architecture" to ensure high performance and minimal JavaScript delivery, ideal for limited data connections.
 - **Interactivity:** [React](https://react.dev/)
     - Used within Astro Islands for highly interactive features such as the Map, dynamic filters, and favorite management.
-- **CMS (Content Management System):** [Strapi](https://strapi.io/) (Integration in progress)
+- **CMS (Content Management System):** [Strapi](https://strapi.io/) (integrated — content fetched at build time, webhook-triggered rebuilds)
     - Headless CMS to manage localized content, listings, and global site settings dynamically.
 - **Styling:** Vanilla CSS
     - Focused on lightweight, maintainable styles without the overhead of heavy frameworks.
@@ -49,11 +49,11 @@
 ### 2. Arquitectura Técnica
 
 #### 2.1 Stack Principal
-- **Framework Frontend:** [Astro.js](https://astro.build/) (v5+)
+- **Framework Frontend:** [Astro.js](https://astro.build/) (v7)
     - Implementación de "Arquitectura de Islas" para maximizar el rendimiento y minimizar el envío de JavaScript al cliente.
 - **Interactividad:** [React](https://react.dev/)
     - Utilizado específicamente en islas de interactividad como el Mapa, filtros dinámicos y la gestión de favoritos.
-- **CMS (Content Management System):** [Strapi](https://strapi.io/) (Integración en curso)
+- **CMS (Content Management System):** [Strapi](https://strapi.io/) (integrado: el contenido se obtiene en build time, con rebuilds disparados por webhook)
     - CMS Headless para gestionar de forma dinámica el contenido localizado, los sitios y la configuración global.
 - **Estilos:** Vanilla CSS
     - Uso de CSS puro para mantener el sitio ligero y fácil de mantener.
