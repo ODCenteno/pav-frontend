@@ -251,7 +251,8 @@
   "aboutPage": {
     "hero": {
       "title": "A project rooted in place and community",
-      "desc": "Puerto Agua Verde and Rancho San Cosme are destinations shaped by nature, history, and the people who give them life. This project was created to share that richness with visitors in a respectful, clear, and accessible way."
+      "desc": "Puerto Agua Verde and Rancho San Cosme are destinations shaped by nature, history, and the people who give them life. This project was created to share that richness with visitors in a respectful, clear, and accessible way.",
+      "image": "/images/pav-11.jpg"
     },
     "intro": {
       "title": "Sharing our territory with respect and care",
