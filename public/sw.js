@@ -2,7 +2,7 @@
  * Puerto Agua Verde PWA Service Worker
  *
  * Caching layers (all versioned with the pav-* prefix so they purge on upgrade):
- *   - pav-shell-v2     Pre-rendered HTML shell + offline fallback page
+ *   - pav-shell-v3     Pre-rendered HTML shell + offline fallback page
  *   - pav-fonts-v1     Google Fonts CSS + woff/ttf files
  *   - pav-images-v2    PNG/JPG/WebP/SVG assets (v2 = cross-origin R2 images)
  *   - pav-api-v1       Cross-origin API responses (e.g. R2 / Strapi media)
@@ -19,7 +19,7 @@
 
 /* eslint-disable no-restricted-globals */
 
-const CACHE_SHELL = 'pav-shell-v2';
+const CACHE_SHELL = 'pav-shell-v3';
 const CACHE_FONTS = 'pav-fonts-v1';
 const CACHE_IMAGES = 'pav-images-v2';
 const CACHE_API = 'pav-api-v1';
@@ -33,11 +33,14 @@ const SHELL_URLS = [
   '/experiencias',
   '/acerca',
   '/guide',
+  '/comunidad',
+  '/legal/privacy-notice',
   '/en/',
   '/en/sitios',
   '/en/experiencias',
   '/en/acerca',
   '/en/guide',
+  '/en/comunidad',
 ];
 
 self.addEventListener('message', (event) => {
