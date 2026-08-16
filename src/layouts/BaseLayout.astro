@@ -32,7 +32,7 @@ const hrefs = getRelativeLocaleUrlList(path);
 const defaultLocaleUrl = getRelativeLocaleUrl(defaultLocale, path);
 
 const ogLocale = locale === "en" ? "en_US" : "es_ES";
-const ogImage = settings.seo.ogImage || "/some-image.png";
+const ogImage = settings.seo.ogImage || new URL("/images/pav-11.jpg", Astro.site).href;
 const ogUrl = settings.seo.ogUrl || Astro.url.href;
 const themeColor = settings.seo.themeColor || "#5A8A80";
 const keywords = settings.seo.keywords || "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios";
@@ -89,7 +89,7 @@ const siteName = settings.metadata.siteName || "Puerto Agua Verde";
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={ogDescription} />
-    <meta name="twitter:image" content={settings.seo.ogImage || ""} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogTitle} />
   </head>
   <body>
