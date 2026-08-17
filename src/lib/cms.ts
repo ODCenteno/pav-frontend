@@ -1045,6 +1045,13 @@ function getHomepageFallback(locale: string): HomepageData {
 // ---------- composite getters ----------
 
 export interface AboutPageData {
+  hero:
+    | {
+        title: string;
+        description: string;
+        image?: string;
+      }
+    | null;
   intro: { title: string; text: string } | null;
   values:
     | {
@@ -1063,6 +1070,14 @@ export interface AboutPageData {
         links: { primary: string; secondary: string };
       }
     | null;
+  finalCta:
+    | {
+        title: string;
+        description: string;
+        buttonLabel: string;
+        buttonLink: string;
+      }
+    | null;
   team: TeamMember[];
   organizations: Organization[];
 }
@@ -1078,15 +1093,30 @@ export async function getAboutPage(locale: string = 'es-MX'): Promise<AboutPageD
   ]);
 
   if (!aboutPage) {
-    return { intro: null, values: null, community: null, collaboration: null, team, organizations };
+    return { hero: null, intro: null, values: null, community: null, collaboration: null, finalCta: null, team, organizations };
   }
 
   const transformed = transformAboutPage(aboutPage, locale);
+  // Only surface hero/finalCta when the editor actually filled them in;
+  // otherwise pages fall back to their i18n defaults.
+  const heroTitle = transformed.hero.title;
+  const finalCta = transformed.finalCta;
   return {
+    hero: heroTitle
+      ? {
+          title: heroTitle,
+          description: transformed.hero.description,
+          image: transformed.hero.images[0]?.url || undefined,
+        }
+      : null,
     intro: transformed.intro,
     values: transformed.values,
     community: transformed.community,
     collaboration: transformed.collaboration,
+    finalCta:
+      finalCta && (finalCta.title || finalCta.description)
+        ? finalCta
+        : null,
     team,
     organizations,
   };
@@ -1231,10 +1261,12 @@ export async function getOrganizationsWithFallback(locale: string = 'es-MX'): Pr
 
 export async function getAboutPageWithFallback(locale: string = 'es-MX'): Promise<AboutPageData> {
   const fromCms = await getAboutPage(locale);
-  if (fromCms.intro || fromCms.community) return fromCms;
+  if (fromCms.hero || fromCms.intro || fromCms.community) return fromCms;
   if (!USE_DEV_FALLBACK) return fromCms;
   const fallback = getAboutFallback();
   return {
+    // No legacy hero/cta seed data: pages fall back to their i18n defaults.
+    hero: null,
     intro: { title: fallback.introData.title, text: fallback.introData.text },
     values: {
       mission: { title: fallback.valuesData.mission.title, text: fallback.valuesData.mission.text },
@@ -1249,6 +1281,7 @@ export async function getAboutPageWithFallback(locale: string = 'es-MX'): Promis
       btnSecondary: fallback.collaborationData.btnSecondary,
       links: fallback.collaborationData.links || { primary: '#', secondary: '#' },
     },
+    finalCta: null,
     team: getTeamFallback(),
     organizations: getOrganizationsFallback(),
   };

@@ -16,17 +16,22 @@ const t = useTranslations(locale);
 
 const displayTitle = title || t("aboutPage.team.title");
 const displayDescription = description || t("aboutPage.team.desc");
+const hasTeam = Array.isArray(team) && team.length > 0;
 ---
 
-<section class="team-grid section-padding container">
-  <div class="section-header">
-    <h2 class="team-grid__title">{displayTitle}</h2>
-    {displayDescription && <p class="team-grid__description">{displayDescription}</p>}
-  </div>
-  
-  <div class="team-grid__list">
-    {Array.isArray(team) && team.map(member => (
-      <MemberCard member={member} locale={locale} />
-    ))}
-  </div>
-</section>
+{hasTeam && (
+  <section class="team-grid section-padding">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="team-grid__title">{displayTitle}</h2>
+        {displayDescription && <p class="team-grid__description">{displayDescription}</p>}
+      </div>
+
+      <div class="team-grid__list">
+        {team.map(member => (
+          <MemberCard member={member} locale={locale} />
+        ))}
+      </div>
+    </div>
+  </section>
+)}

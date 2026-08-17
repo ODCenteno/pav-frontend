@@ -21,6 +21,8 @@
     --color-primary: var(--color-emerald);
     --color-primary-light: var(--color-emerald-light);
     --color-primary-hover: var(--color-coral-dark);
+    /* Accessible primary tint for dark surfaces (7.7:1 on charcoal) */
+    --color-primary-on-dark: color-mix(in srgb, var(--color-emerald) 65%, var(--color-white));
     --color-outline: var(--color-pebble);
 
     /* Legacy compatibility */
@@ -290,6 +292,19 @@ p {
     height: auto;
     border-radius: var(--radius-md);
 }
+
+/* Prose on dark surfaces (charcoal / dark gradients). Reclaims .prose
+   defaults (dark text) so markdown stays legible over dark backgrounds.
+   Pair with the `prose` class: class="... prose prose-on-dark". */
+.prose-on-dark { color: var(--white); }
+.prose-on-dark h1,
+.prose-on-dark h2,
+.prose-on-dark h3,
+.prose-on-dark h4,
+.prose-on-dark strong { color: var(--white); }
+.prose-on-dark a { color: var(--color-primary-on-dark); }
+.prose-on-dark a:hover { color: var(--white); }
+.prose-on-dark blockquote { color: var(--white); }
 
 .section-header {
     display: flex;

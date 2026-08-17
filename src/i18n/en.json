@@ -278,11 +278,22 @@
     },
     "team": {
       "title": "People behind the project",
-      "desc": "Meet some of the people helping shape, support, and grow this initiative."
+      "desc": "Meet some of the people helping shape, support, and grow this initiative.",
+      "memberFallback": "Team member"
     },
     "organizations": {
       "title": "Organizations and collaborators",
-      "desc": "This project is strengthened by the participation of local groups, community leaders, and partner organizations committed to the destination."
+      "desc": "This project is strengthened by the participation of local groups, community leaders, and partner organizations committed to the destination.",
+      "orgFallback": "Organization",
+      "visitWebsite": "Visit website",
+      "featured": "Featured",
+      "type": {
+        "community": "Community",
+        "institution": "Institution",
+        "partner": "Partner",
+        "collective": "Collective",
+        "business": "Local business"
+      }
     },
     "community": {
       "title": "A guide built with gratitude",

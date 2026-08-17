@@ -16,17 +16,20 @@ const t = useTranslations(locale);
 
 const displayTitle = title || t("aboutPage.organizations.title");
 const displayDescription = description || t("aboutPage.organizations.desc");
+const hasOrganizations = Array.isArray(organizations) && organizations.length > 0;
 ---
 
-<section class="orgs-grid section-padding">
-  <div class="container">
-    <div class="section-header">
-      <h2 class="orgs-grid__title">{displayTitle}</h2>
-      {displayDescription && <p class="orgs-grid__description">{displayDescription}</p>}
-    </div>
+{hasOrganizations && (
+  <section class="orgs-grid section-padding">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="orgs-grid__title">{displayTitle}</h2>
+        {displayDescription && <p class="orgs-grid__description">{displayDescription}</p>}
+      </div>
 
-    <div class="orgs-grid__list">
-      {Array.isArray(organizations) && organizations.map((org) => <OrgCard org={org} locale={locale} />)}
+      <div class="orgs-grid__list">
+        {organizations.map((org) => <OrgCard org={org} locale={locale} />)}
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+)}

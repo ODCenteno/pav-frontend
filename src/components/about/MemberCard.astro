@@ -14,28 +14,68 @@ const t = useTranslations(locale);
 
 const role = member.role ? (member.role[locale as "es-MX" | "en"] || "") : "";
 const bio = member.shortBio ? (member.shortBio[locale as "es-MX" | "en"] || "") : "";
+
+// Strapi may store either a bare handle or a full URL — normalize both.
+// (startsWith instead of a regex: astro-eslint-parser mis-lexes
+// regex + template-literal combinations in frontmatter.)
+const hasProtocol = (v: string) => v.startsWith("http://") || v.startsWith("https://");
+const asUrl = (value?: string) => {
+  const v = value?.trim();
+  if (!v) return undefined;
+  return hasProtocol(v) ? v : `https://${v}`;
+};
+const instagramUrl = (value?: string) => {
+  const v = value?.trim().replace(/^@/, "");
+  if (!v) return undefined;
+  return hasProtocol(v) ? v : `https://instagram.com/${v}`;
+};
+const linkedinUrl = (value?: string) => {
+  const v = value?.trim();
+  if (!v) return undefined;
+  return hasProtocol(v) ? v : `https://www.linkedin.com/in/${v}`;
+};
+
+const instagram = instagramUrl(member.links?.instagram);
+const linkedin = linkedinUrl(member.links?.linkedin);
+const website = asUrl(member.links?.website);
+const email = member.links?.email?.trim();
+const hasLinks = Boolean(instagram || linkedin || website || email);
 ---
 
 <div class="member-card">
-  <div class="member-card__photo-container">
-    {member.photo && <img src={member.photo} alt={member.name} class="member-card__photo" />}
-  </div>
+  {member.photo && (
+    <div class="member-card__photo-container">
+      <img src={member.photo} alt={member.name} class="member-card__photo" />
+    </div>
+  )}
   <div class="member-card__content">
-    <h3 class="member-card__name">{member.name || "Team Member"}</h3>
+    <h3 class="member-card__name">{member.name || t("aboutPage.team.memberFallback")}</h3>
     {role && <p class="member-card__role">{role}</p>}
     {bio && <div class="member-card__bio prose" set:html={renderMarkdown(bio)} />}
-    
-    <div class="member-card__links">
-      {member.links?.instagram && (
-        <a href={`https://instagram.com/${member.links.instagram}`} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-        </a>
-      )}
-      {member.links?.email && (
-        <a href={`mailto:${member.links.email}`} aria-label="Email">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-        </a>
-      )}
-    </div>
+
+    {hasLinks && (
+      <div class="member-card__links">
+        {instagram && (
+          <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+        )}
+        {linkedin && (
+          <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+        )}
+        {website && (
+          <a href={website} target="_blank" rel="noopener noreferrer" aria-label="Website">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          </a>
+        )}
+        {email && (
+          <a href={`mailto:${email}`} aria-label="Email">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </a>
+        )}
+      </div>
+    )}
   </div>
 </div>

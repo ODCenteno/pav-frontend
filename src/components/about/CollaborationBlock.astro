@@ -32,9 +32,10 @@ const links = data?.links || { primary: "#", secondary: "#" };
   <div class="container">
     <div class="collaboration-block__content">
       {title && <h2 class="collaboration-block__title">{title}</h2>}
-      {desc && <div class="collaboration-block__description prose" set:html={renderMarkdown(desc)} />}
+      {desc && <div class="collaboration-block__description prose prose-on-dark" set:html={renderMarkdown(desc)} />}
       <div class="collaboration-block__actions">
         {btnPrimary && <a href={links.primary} class="btn btn-primary">{btnPrimary}</a>}
+        {btnSecondary && <a href={links.secondary} class="btn btn-outline">{btnSecondary}</a>}
       </div>
     </div>
   </div>

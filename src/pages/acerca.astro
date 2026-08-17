@@ -20,6 +20,21 @@ const t = useTranslations(locale);
 
 const about = await getAboutPageWithFallback(locale);
 
+// CMS first, i18n fallback per field: an editor clearing a field in Strapi
+// gets the translated default instead of an empty hero.
+const heroData = {
+  title: about.hero?.title || t("aboutPage.hero.title"),
+  description: about.hero?.description || t("aboutPage.hero.desc"),
+  backgroundImage: about.hero?.image || t("aboutPage.hero.image"),
+};
+
+const ctaData = {
+  title: about.finalCta?.title || t("aboutPage.cta.title"),
+  description: about.finalCta?.description || t("aboutPage.cta.desc"),
+  btnText: about.finalCta?.buttonLabel || t("aboutPage.cta.btn"),
+  href: about.finalCta?.buttonLink || navigation.sites(locale),
+};
+
 const introData = about.intro
   ? { title: about.intro.title, text: about.intro.text }
   : { title: t("aboutPage.intro.title"), text: t("aboutPage.intro.text") };
@@ -62,9 +77,9 @@ const collaborationData = about.collaboration
 >
   <HeroPage
     slot="Hero"
-    title={t("aboutPage.hero.title")}
-    description={t("aboutPage.hero.desc")}
-    backgroundImage={t("aboutPage.hero.image")}
+    title={heroData.title}
+    description={heroData.description}
+    backgroundImage={heroData.backgroundImage}
   />
 
   <AboutIntro data={introData} locale={locale} />
@@ -79,11 +94,11 @@ const collaborationData = about.collaboration
 
   <CollaborationBlock data={collaborationData} locale={locale} />
 
-  <!-- <ExpCTA
-    title={t("aboutPage.cta.title")}
-    description={t("aboutPage.cta.desc")}
-    btnText={t("aboutPage.cta.btn")}
-    href={navigation.sites(locale)}
+  <ExpCTA
+    title={ctaData.title}
+    description={ctaData.description}
+    btnText={ctaData.btnText}
+    href={ctaData.href}
     padded={false}
-  /> -->
+  />
 </BaseLayout>

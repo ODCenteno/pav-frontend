@@ -1,6 +1,5 @@
 .collaboration-block {
     position: relative;
-    padding-top: var(--space-md);
 }
 
 .collaboration-block::before {

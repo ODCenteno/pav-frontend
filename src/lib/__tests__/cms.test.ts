@@ -336,6 +336,11 @@ describe("cms client", () => {
           id: 1,
           documentId: "about-1",
           attributes: {
+            hero: {
+              title: { 'es-MX': "H", en: "H" },
+              description: { 'es-MX': "HD", en: "HD" },
+              images: [{ id: 9, url: "/uploads/about-hero.jpg" }],
+            },
             introTitle: { 'es-MX': "T", en: "T" },
             introText: { 'es-MX': "Txt", en: "Txt" },
             values: {
@@ -356,6 +361,12 @@ describe("cms client", () => {
               secondaryButtonLabel: { 'es-MX': "BS", en: "BS" },
               secondaryButtonLink: "/b",
             },
+            finalCta: {
+              title: { 'es-MX': "FC", en: "FC" },
+              description: { 'es-MX': "FCD", en: "FCD" },
+              buttonLabel: { 'es-MX': "FCB", en: "FCB" },
+              buttonLink: "/sitios",
+            },
           },
         })
       );
@@ -365,12 +376,17 @@ describe("cms client", () => {
       fetchMock.mockResolvedValueOnce(strapiOk([{ id: 1, attributes: { name: "O1" } }]));
 
       const data = await getAboutPage("es-MX");
+      expect(data.hero?.title).toBe("H");
+      expect(data.hero?.description).toBe("HD");
+      expect(data.hero?.image).toContain("about-hero.jpg");
       expect(data.intro?.title).toBe("T");
       expect(data.intro?.text).toBe("Txt");
       expect(data.values?.mission.title).toBe("M");
       expect(data.values?.values.items).toEqual(["a", "b"]);
       expect(data.community?.title).toBe("C");
       expect(data.collaboration?.links.primary).toBe("/a");
+      expect(data.finalCta?.title).toBe("FC");
+      expect(data.finalCta?.buttonLink).toBe("/sitios");
       expect(data.team).toHaveLength(1);
       expect(data.organizations).toHaveLength(1);
     });

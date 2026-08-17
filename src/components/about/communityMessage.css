@@ -29,7 +29,7 @@
 }
 
 .community-message__title {
-    color: var(--color-primary);
+    color: var(--color-primary-on-dark);
     font-size: var(--text-sm);
     text-transform: uppercase;
     letter-spacing: 0.1em;

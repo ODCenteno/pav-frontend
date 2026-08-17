@@ -24,7 +24,7 @@ const text = data?.text || t("aboutPage.community.text");
     <div class="community-message__content">
       {title && <h2 class="community-message__title">{title}</h2>}
       <blockquote class="community-message__quote">
-        {text && <div class="community-message__desc prose" set:html={renderMarkdown(text)} />}
+        {text && <div class="community-message__desc prose prose-on-dark" set:html={renderMarkdown(text)} />}
       </blockquote>
     </div>
   </div>
