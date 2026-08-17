@@ -104,8 +104,19 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      # `astro preview` (the Playwright webServer) serves the production build,
+      # so build first. STRAPI_URL is baked into dist/server/.dev.vars and used
+      # at preview runtime to fetch real content.
+      - name: Build for E2E
+        run: pnpm build
+        env:
+          STRAPI_URL: ${{ secrets.STRAPI_URL }}
+          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+
+      # Only the chromium browser is installed above, so run that project alone
+      # (the config also declares firefox/webkit/mobile for local full runs).
       - name: Run E2E tests
-        run: pnpm test:e2e
+        run: pnpm exec playwright test --project=chromium
 
       - name: Upload test results
         if: always()

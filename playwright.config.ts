@@ -35,7 +35,13 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm dev',
+    // Use `astro preview` (serves the production build) instead of `astro dev`.
+    // In Astro 7 `astro dev` auto-backgrounds itself when there is no TTY
+    // (CI / Playwright), so the CLI process exits immediately and Playwright
+    // fails with "Process from config.webServer exited early". `astro preview`
+    // stays in the foreground and serves real content. Requires a prior
+    // `pnpm build` (the e2e CI job runs it; locally build once first).
+    command: 'pnpm preview',
     url: 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
