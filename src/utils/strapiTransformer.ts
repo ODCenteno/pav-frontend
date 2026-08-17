@@ -282,7 +282,12 @@ export interface CommunityMemberAttributes {
   slug: string;
   role?: string | { 'es-MX': string; en: string };
   locality?: string;
-  bio?: string | { 'es-MX': string; en: string };
+  /**
+   * Strapi `richtext` field. At runtime it arrives as an array of rich-text
+   * blocks (flattened via `asString`), a plain string, or — defensively — a
+   * LocalizedString object. The type includes all three shapes.
+   */
+  bio?: string | { 'es-MX': string; en: string } | any[];
   pullQuote?: string | { 'es-MX': string; en: string };
   photo?: StrapiMedia;
   gallery?: StrapiMediaArray;
@@ -613,6 +618,23 @@ function pickLocalized(
 }
 
 /**
+ * Null-safe extraction of a localized text field that may be a plain string,
+ * a LocalizedString object (`{ 'es-MX', en }`), or `null`.
+ *
+ * Strapi returns `null` for empty optional fields. The previous inline
+ * pattern `typeof x === 'object' ? x[l] ... : ...` crashed on `null` because
+ * `typeof null === 'object'` is true in JavaScript, so `null[l]` threw a
+ * TypeError. This helper guards that whole class of crash while preserving
+ * the existing behavior for string and object inputs: it picks the requested
+ * locale slot and falls back to `es-MX`.
+ */
+function locText(value: any, l: string): string {
+  if (value == null) return '';
+  if (typeof value === 'object') return value[l] || value['es-MX'] || '';
+  return String(value);
+}
+
+/**
  * Convert a listing's `contact` component fields into SocialLink entries so a
  * single `item.social` array feeds every UI surface (cards, detail page,
  * "Follow us" block). Empty / falsy values are skipped. The `handle` and
@@ -743,7 +765,9 @@ export function transformCommunityMemberSummary(
     slug: a.slug,
     name: a.name || '',
     role: pickLocalized(a.role, locale) || undefined,
-    bio: pickLocalized(a.bio, locale) || undefined,
+    // `bio` is a Strapi rich-text field → flatten via asString (same as the
+    // full transformCommunityMember); pickLocalized can't handle block arrays.
+    bio: asString(a.bio) || undefined,
     pullQuote: pickLocalized(a.pullQuote, locale) || undefined,
     legacyNote: pickLocalized(a.legacyNote, locale) || undefined,
     photo: mediaUrl(a.photo) || undefined,
@@ -780,6 +804,10 @@ export function transformCommunityMember(
     name: a.name || '',
     role: pickLocalized(a.role, locale, es?.role) || undefined,
     locality: (a.locality as CommunityMember['locality']) || undefined,
+    // `bio` is a Strapi rich-text field, so it goes through `asString` (which
+    // flattens rich-text blocks) rather than `pickLocalized`. Each item is
+    // already fetched per-locale, so flattening yields the correct language;
+    // `es?.bio` provides the ES fallback when the localized bio is empty.
     bio: strFallback(asString(a.bio), asString(es?.bio)),
     pullQuote: pickLocalized(a.pullQuote, locale, es?.pullQuote) || undefined,
     legacyNote: pickLocalized(a.legacyNote, locale, es?.legacyNote) || undefined,
@@ -1018,9 +1046,7 @@ export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale
       },
       values: {
         title: localized(values.valuesTitle, locale)[l],
-        items: (values.valuesItems || []).map((item) =>
-          typeof item === 'object' ? (item as any)[l] || (item as any)['es-MX'] || '' : item || ''
-        ),
+        items: (values.valuesItems || []).map((item) => locText(item, l)),
       },
     },
     community: {
@@ -1143,16 +1169,14 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
       text: localized(a.historyText, locale)[l],
       milestones: (a.historyMilestones || []).map((m) => ({
         year: m.year || '',
-        'es-MX': typeof m.text === 'object' ? (m.text as any)['es-MX'] || '' : typeof m.text === 'string' ? m.text : '',
-        en: typeof m.text === 'object' ? (m.text as any).en || (m.text as any)['es-MX'] || '' : typeof m.text === 'string' ? m.text : '',
+        'es-MX': locText(m.text, 'es-MX'),
+        en: locText(m.text, 'en'),
       })),
     },
     fishing: {
       title: localized(a.fishingHeader?.title, locale)[l],
       text: localized(a.fishingText, locale)[l],
-      rules: (a.fishingRules || []).map((r) =>
-        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any)['es-MX'] || '' : r.text || ''
-      ),
+      rules: (a.fishingRules || []).map((r) => locText(r.text, l)),
     },
     protected: a.protectedArea
       ? {
@@ -1168,9 +1192,7 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
     },
     recommendations: {
       title: localized(a.recommendationsHeader?.title, locale)[l],
-      items: (a.recommendations || []).map((r) =>
-        typeof r.text === 'object' ? (r.text as any)[l] || (r.text as any)['es-MX'] || '' : r.text || ''
-      ),
+      items: (a.recommendations || []).map((r) => locText(r.text, l)),
     },
     directions: {
       title: localized(a.directionsHeader?.title, locale)[l],
@@ -1178,8 +1200,8 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
         const r = (a.directions || [])[0];
         return r
           ? {
-              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any)['es-MX'] || '' : r.label || '',
-              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any)['es-MX'] || '' : r.description || '',
+              label: locText(r.label, l),
+              desc: locText(r.description, l),
               distance: r.distance || '',
               time: r.time || '',
               image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
@@ -1190,8 +1212,8 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
         const r = (a.directions || [])[1];
         return r
           ? {
-              label: typeof r.label === 'object' ? (r.label as any)[l] || (r.label as any)['es-MX'] || '' : r.label || '',
-              desc: typeof r.description === 'object' ? (r.description as any)[l] || (r.description as any)['es-MX'] || '' : r.description || '',
+              label: locText(r.label, l),
+              desc: locText(r.description, l),
               distance: r.distance || '',
               time: r.time || '',
               image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
@@ -1199,17 +1221,15 @@ export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale
           : { label: '', desc: '', distance: '', time: '', image: '' };
       })(),
       drivingTipsTitle: localized(a.drivingTipsHeader, locale)[l],
-      drivingTips: (a.drivingTips || []).map((t) =>
-        typeof t.text === 'object' ? (t.text as any)[l] || (t.text as any)['es-MX'] || '' : t.text || ''
-      ),
+      drivingTips: (a.drivingTips || []).map((t) => locText(t.text, l)),
     },
     amenities: {
       title: localized(a.amenitiesHeader?.title, locale)[l],
       items: (a.amenities || []).map((am) => ({
-        icon: am.icon || 'wifi',
-        title: typeof am.title === 'object' ? (am.title as any)[l] || (am.title as any)['es-MX'] || '' : am.title || '',
-        text: typeof am.text === 'object' ? (am.text as any)[l] || (am.text as any)['es-MX'] || '' : am.text || '',
-      })),
+          icon: am.icon || 'wifi',
+          title: locText(am.title, l),
+          text: locText(am.text, l),
+        })),
     },
     touristMap: {
       title: localized(a.touristMapHeader?.title, locale)[l],

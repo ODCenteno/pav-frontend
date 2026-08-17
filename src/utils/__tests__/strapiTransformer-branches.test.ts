@@ -596,3 +596,108 @@ describe("id fallback chains", () => {
     expect(out.id).toBe("my-key");
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────
+// Null safety (edge-case 2). Strapi returns null for empty optional fields;
+// `typeof null === 'object'` used to crash the `typeof x === 'object' ? x[l]`
+// ternaries. These tests lock in the locText fix: null → '' without throwing.
+// ─────────────────────────────────────────────────────────────────────
+describe("null safety — guide page fields", () => {
+  const base: any = {
+    id: 1,
+    attributes: {
+      hero: { title: "G", ctaLabel: "Go", ctaLink: "/", images: [] },
+      historyHeader: { title: "H" },
+      historyText: "text",
+    },
+  };
+
+  it("does not throw when historyMilestones[].text is null", () => {
+    const item = {
+      ...base,
+      attributes: {
+        ...base.attributes,
+        historyMilestones: [{ year: "1950", text: null }, { year: "1960" }],
+      },
+    };
+    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
+    const out = transformGuidePage(item as any, "es");
+    expect(out.history?.milestones[0]["es-MX"]).toBe("");
+    expect(out.history?.milestones[0].en).toBe("");
+  });
+
+  it("does not throw when fishingRules/recommendations/drivingTips text is null", () => {
+    const item = {
+      ...base,
+      attributes: {
+        ...base.attributes,
+        fishingHeader: { title: "F" },
+        fishingRules: [{ text: null }],
+        recommendationsHeader: { title: "R" },
+        recommendations: [{ text: null }],
+        drivingTipsHeader: "Tips",
+        drivingTips: [{ text: null }],
+      },
+    };
+    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
+    const out = transformGuidePage(item as any, "es");
+    expect(out.fishing?.rules[0]).toBe("");
+    expect(out.recommendations?.items[0]).toBe("");
+    expect(out.directions?.drivingTips[0]).toBe("");
+  });
+
+  it("does not throw when directions label/description are null", () => {
+    const item = {
+      ...base,
+      attributes: {
+        ...base.attributes,
+        directionsHeader: { title: "D" },
+        directions: [
+          { label: null, description: null, distance: "98 km", time: "2h" },
+          { label: null, description: null },
+        ],
+      },
+    };
+    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
+    const out = transformGuidePage(item as any, "es");
+    expect(out.directions?.loreto.label).toBe("");
+    expect(out.directions?.loreto.desc).toBe("");
+    expect(out.directions?.laPaz.label).toBe("");
+  });
+
+  it("does not throw when amenities title/text are null", () => {
+    const item = {
+      ...base,
+      attributes: {
+        ...base.attributes,
+        amenitiesHeader: { title: "A" },
+        amenities: [{ icon: "wifi", title: null, text: null }],
+      },
+    };
+    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
+    const out = transformGuidePage(item as any, "es");
+    expect(out.amenities?.items[0].title).toBe("");
+    expect(out.amenities?.items[0].text).toBe("");
+    expect(out.amenities?.items[0].icon).toBe("wifi");
+  });
+});
+
+describe("null safety — about page valuesItems", () => {
+  it("does not throw when valuesItems contains null entries", () => {
+    const item: any = {
+      id: 1,
+      attributes: {
+        hero: { title: "About", ctaLabel: "Go", ctaLink: "/", images: [] },
+        values: {
+          valuesTitle: "Valores",
+          valuesItems: [null, { "es-MX": "Respeto", en: "Respect" }, "Plain", null],
+        },
+      },
+    };
+    expect(() => transformAboutPage(item as any, "es")).not.toThrow();
+    const es = transformAboutPage(item as any, "es");
+    expect(es.values?.values?.items).toEqual(["", "Respeto", "Plain", ""]);
+    const en = transformAboutPage(item as any, "en");
+    expect(en.values?.values?.items[1]).toBe("Respect");
+  });
+});
