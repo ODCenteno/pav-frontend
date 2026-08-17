@@ -430,18 +430,6 @@ function localeSuffixed(obj: any, key: string): LocalizedString | undefined {
 }
 
 /**
- * Build a LocalizedString[] from locale-suffixed array keys
- * (e.g. `bring_es`, `bring_en`).
- */
-function localeSuffixedArray(obj: any, key: string): LocalizedString[] | undefined {
-  if (!obj) return undefined;
-  const es: string[] = Array.isArray(obj[`${key}_es`]) ? obj[`${key}_es`] : [];
-  const en: string[] = Array.isArray(obj[`${key}_en`]) ? obj[`${key}_en`] : es;
-  if (es.length === 0) return undefined;
-  return es.map((item, i) => ({ 'es-MX': item, en: en[i] ?? item }));
-}
-
-/**
  * Build a LocalizedString[] from locale-suffixed text fields where each line
  * is a separate item (one item per line).
  */

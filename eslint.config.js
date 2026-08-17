@@ -28,9 +28,6 @@ export default [
       "public/**",
       "**/*.min.js",
       "**/*.d.ts",
-      // Dead code: src/utils/utils.js imports a non-existent translations
-      // module and is never imported anywhere. Ignored so CI passes.
-      "src/utils/utils.js",
     ],
   },
 
