@@ -293,18 +293,25 @@ p {
     border-radius: var(--radius-md);
 }
 
-/* Prose on dark surfaces (charcoal / dark gradients). Reclaims .prose
-   defaults (dark text) so markdown stays legible over dark backgrounds.
-   Pair with the `prose` class: class="... prose prose-on-dark". */
-.prose-on-dark { color: var(--white); }
-.prose-on-dark h1,
-.prose-on-dark h2,
-.prose-on-dark h3,
-.prose-on-dark h4,
-.prose-on-dark strong { color: var(--white); }
-.prose-on-dark a { color: var(--color-primary-on-dark); }
-.prose-on-dark a:hover { color: var(--white); }
-.prose-on-dark blockquote { color: var(--white); }
+/* Prose on dark surfaces (charcoal / dark gradients). Reclaims the .prose
+   defaults AND the global base-element rules (e.g. `p { color: … }`) that
+   force dark text, so markdown stays legible over dark backgrounds.
+   The `.prose.prose-on-dark` double-class raises specificity above both
+   `.prose …` (0,1,1) and the bare `p` rule (0,0,1) regardless of source
+   order. `p`/`li`/`em` are included because they inherit color but are
+   re-colored by base rules. Pair with `prose`: class="... prose prose-on-dark". */
+.prose.prose-on-dark { color: var(--white); }
+.prose.prose-on-dark p,
+.prose.prose-on-dark li,
+.prose.prose-on-dark em,
+.prose.prose-on-dark h1,
+.prose.prose-on-dark h2,
+.prose.prose-on-dark h3,
+.prose.prose-on-dark h4,
+.prose.prose-on-dark strong,
+.prose.prose-on-dark blockquote { color: var(--white); }
+.prose.prose-on-dark a { color: var(--color-primary-on-dark); }
+.prose.prose-on-dark a:hover { color: var(--white); }
 
 .section-header {
     display: flex;
