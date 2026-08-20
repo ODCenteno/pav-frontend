@@ -21,6 +21,8 @@ import type {
   StoryBlock,
   StoryTheme,
   ProductItem,
+  AmenityItem,
+  RecommendationItem,
   RelatedMemberRef,
 } from '../types/community.type';
 import type { SocialLink } from '../types/common.type';
@@ -169,8 +171,14 @@ export interface CategoryAttributes {
 }
 
 export interface TagItemAttributes {
+  label?: string;
+  /**
+   * Temporary expand/contract bridge: the pre-migration API returns dual
+   * `label_es`/`label_en` fields, and an entry's own-locale value always
+   * lives in the `_es` column. Remove once the backend contract deploy is
+   * stable in production.
+   */
   label_es?: string;
-  label_en?: string;
 }
 
 export interface ContactInfoAttributes {
@@ -188,24 +196,83 @@ export interface GeoPointAttributes {
 }
 
 export interface HoursAttributes {
+  text?: string;
+  /** Temporary expand/contract bridge (see TagItemAttributes.label_es). */
   text_es?: string;
-  text_en?: string;
 }
 
-export interface VisitInfoAttributes {
+export interface AmenityItemAttributes {
+  label?: string;
+  content?: string;
+  /** Temporary expand/contract bridge (see TagItemAttributes.label_es). */
+  label_es?: string;
+}
+
+export interface RecommendationItemAttributes {
+  label?: string;
+  description?: string;
+}
+
+/**
+ * Legacy pre-migration shape of `listing.recommendations`: a single
+ * visit-info component with fixed dual fields instead of flexible items.
+ * As with all dual-field components, an entry's own-locale values live in
+ * the `_es` columns. Temporary bridge until the backend contract deploy is
+ * stable in production.
+ */
+export interface LegacyVisitInfoAttributes {
   bestTime_es?: string;
-  bestTime_en?: string;
   bring_es?: string;
-  bring_en?: string;
   accessibilityNotes_es?: string;
-  accessibilityNotes_en?: string;
   connectivityNotes_es?: string;
-  connectivityNotes_en?: string;
 }
 
+const LEGACY_REC_LABELS = {
+  'es-MX': {
+    bestTime: 'Mejor época para visitar',
+    bring: 'Qué llevar',
+    accessibility: 'Accesibilidad',
+    connectivity: 'Conectividad',
+  },
+  en: {
+    bestTime: 'Best time to visit',
+    bring: 'What to bring',
+    accessibility: 'Accessibility',
+    connectivity: 'Connectivity',
+  },
+} as const;
+
+function legacyVisitInfoToItems(
+  v: LegacyVisitInfoAttributes,
+  locale: string,
+): RecommendationItemAttributes[] {
+  const labels = locale.startsWith('en') ? LEGACY_REC_LABELS.en : LEGACY_REC_LABELS['es-MX'];
+  return [
+    { label: labels.bestTime, description: v.bestTime_es },
+    { label: labels.bring, description: v.bring_es },
+    { label: labels.accessibility, description: v.accessibilityNotes_es },
+    { label: labels.connectivity, description: v.connectivityNotes_es },
+  ].filter((r) => strFallback(r.description, '') !== '');
+}
+
+function normalizeRecommendations(
+  raw: ListingAttributes['recommendations'],
+  locale: string,
+): RecommendationItemAttributes[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  return legacyVisitInfoToItems(raw, locale);
+}
+
+/**
+ * Raw shape of the `common.localized-text` component after the localization
+ * migration: a single `text` field whose value is already resolved to the
+ * requested Strapi locale.
+ */
 export interface LocalizedTextAttributes {
+  text?: string;
+  /** Temporary expand/contract bridge (see TagItemAttributes.label_es). */
   text_es?: string;
-  text_en?: string;
 }
 
 export interface LinksAttributes {
@@ -231,8 +298,8 @@ export interface ListingAttributes {
   contact?: ContactInfoAttributes;
   location?: GeoPointAttributes;
   schedule?: HoursAttributes;
-  amenities?: TagItemAttributes[];
-  recommendations?: VisitInfoAttributes;
+  amenities?: AmenityItemAttributes[];
+  recommendations?: RecommendationItemAttributes[] | LegacyVisitInfoAttributes;
   // Strapi v4 wraps relations as `{ data: [...] }`; Strapi v5 returns a bare
   // array / object. The transformer handles both shapes via `relationArray`.
   relatedListings?: { data: StrapiItem<ListingAttributes>[] } | StrapiItem<ListingAttributes>[];
@@ -417,46 +484,22 @@ function localized(value: string | { 'es-MX': string; en: string } | null | unde
 }
 
 /**
- * Strapi v5 may return `location` as either a structured object
- * `{ lat, lng, name, address, ... }` or a positional array `[lat, lng]`
- * depending on how the record was authored. This helper normalises both
- * shapes into the canonical `Location` interface.
- */
-/**
- * Build a LocalizedString from a Strapi JSON field using locale-suffixed
- * keys (e.g. `bestTime_es`, `bestTime_en`). Falls back `_en` → `_es`.
- */
-function localeSuffixed(obj: any, key: string): LocalizedString | undefined {
-  if (!obj) return undefined;
-  const es = obj[`${key}_es`];
-  const en = obj[`${key}_en`] ?? es;
-  if (es == null && en == null) return undefined;
-  return { 'es-MX': String(es ?? ''), en: String(en ?? '') };
-}
-
-/**
- * Build a LocalizedString[] from locale-suffixed text fields where each line
- * is a separate item (one item per line).
- */
-function textLinesToLocalized(obj: any, key: string): LocalizedString[] | undefined {
-  if (!obj) return undefined;
-  const esText = obj[`${key}_es`] || '';
-  const enText = obj[`${key}_en`] || esText;
-  const esLines = esText.split('\n').map((s: string) => s.trim()).filter(Boolean);
-  const enLines = enText.split('\n').map((s: string) => s.trim()).filter(Boolean);
-  if (esLines.length === 0) return undefined;
-  return esLines.map((item: string, i: number) => ({ 'es-MX': item, en: enLines[i] ?? item }));
-}
-
-/**
- * Convert a LocalizedText component ({ text_es, text_en }) to a LocalizedString.
+ * Convert a `common.localized-text` component ({ text }) to a LocalizedString.
+ * After the localization migration the component carries a single `text`
+ * field already resolved to the fetched Strapi locale, so both slots get the
+ * same value (the fetch itself is locale-scoped).
  */
 function fromLocalizedText(comp: any): LocalizedString | undefined {
   if (!comp) return undefined;
-  const es = comp.text_es || '';
-  const en = comp.text_en || es;
+  const text = typeof comp.text === 'string' ? comp.text : '';
+  if (text) return { 'es-MX': text, en: text };
+  // Temporary expand/contract bridge: the pre-migration API returns dual
+  // `text_es`/`text_en` fields. Remove once the backend contract deploy is
+  // stable in production.
+  const es = typeof comp.text_es === 'string' ? comp.text_es : '';
+  const en = typeof comp.text_en === 'string' ? comp.text_en : '';
   if (!es && !en) return undefined;
-  return { 'es-MX': es, en };
+  return { 'es-MX': es, en: en || es };
 }
 
 function normalizeLocation(raw: any): any {
@@ -511,7 +554,21 @@ export function transformListing(
   const storiesRaw = a.stories || [];
   const productsRaw = a.products || [];
   const membersRaw = relationArray<StrapiItem<CommunityMemberAttributes>>(a.members) ?? [];
+  const esMembersRaw = relationArray<StrapiItem<CommunityMemberAttributes>>(esAttrs?.members) ?? [];
   const relatedRaw = relationArray<StrapiItem<ListingAttributes>>(a.relatedListings) ?? [];
+
+  // Localized listing components (tags, schedule, amenities, recommendations)
+  // arrive as single-locale values. EN entries may have empty component
+  // arrays — same policy as stories/products: fall back to the ES entry's
+  // values, wholesale when the EN array is empty, per-item otherwise.
+  // During the expand/contract window the API may still return the legacy
+  // dual-field shapes; the `?? _es` bridges below keep both deploy orders
+  // safe until the backend contract is stable in production.
+  const tagsRaw = a.tags?.length ? a.tags : esAttrs?.tags || [];
+  const amenitiesRaw = a.amenities?.length ? a.amenities : esAttrs?.amenities || [];
+  const recItems = normalizeRecommendations(a.recommendations, locale);
+  const esRecItems = normalizeRecommendations(esAttrs?.recommendations, 'es-MX');
+  const recommendationsRaw = recItems.length ? recItems : esRecItems;
 
   // Extract category relation - handle both Strapi v4 wrapped {data: ...} and v5 flat format
   const catRaw = a.category as any;
@@ -528,7 +585,9 @@ export function transformListing(
     description: a.description ? localized(asString(a.description), locale) : undefined,
     categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
     category: catItem ? transformCategory(catItem) : undefined,
-    tags: (a.tags || []).map((t) => localized({ 'es-MX': t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
+    tags: tagsRaw.map((t, i) =>
+      strFallback(t.label || t.label_es, esAttrs?.tags?.[i]?.label || esAttrs?.tags?.[i]?.label_es),
+    ),
     location: normalizeLocation(a.location),
     contact: a.contact,
     pricing: a.price ? { price: a.price } : undefined,
@@ -537,19 +596,18 @@ export function transformListing(
       : undefined,
     image: mainImageUrl,
     isFeatured: a.isFeatured,
-    schedule: a.schedule
+    schedule: a.schedule || esAttrs?.schedule
       ? {
-          text: localeSuffixed(a.schedule, 'text'),
+          text:
+            strFallback(
+              a.schedule?.text || a.schedule?.text_es,
+              esAttrs?.schedule?.text || esAttrs?.schedule?.text_es,
+            ) || undefined,
         }
       : undefined,
-    amenities: (a.amenities || []).map((t) => localized({ 'es-MX': t.label_es || '', en: t.label_en || t.label_es || '' }, locale)),
-    recommendations: a.recommendations
-      ? {
-          bestTimeToVisit: localeSuffixed(a.recommendations, 'bestTime'),
-          whatToBring: textLinesToLocalized(a.recommendations, 'bring'),
-          accessibilityNotes: localeSuffixed(a.recommendations, 'accessibilityNotes'),
-          connectivityNotes: localeSuffixed(a.recommendations, 'connectivityNotes'),
-        }
+    amenities: amenitiesRaw.map((am, i) => transformAmenity(am, esAttrs?.amenities?.[i])),
+    recommendations: recommendationsRaw.length
+      ? recommendationsRaw.map((r, i) => transformRecommendation(r, esRecItems[i]))
       : undefined,
     relatedSites: relatedRaw.length
       ? relatedRaw.map((r) => String(r.id ?? r.documentId))
@@ -559,7 +617,7 @@ export function transformListing(
       en: navigation.siteDetail(slug, 'en'),
     },
     members: membersRaw.length
-      ? membersRaw.map((m) => transformCommunityMemberSummary(m, locale))
+      ? membersRaw.map((m, i) => transformCommunityMember(m, locale, esMembersRaw[i]))
       : undefined,
     stories: storiesRaw.length
       ? storiesRaw.map((s, i) => transformStory(s, locale, esAttrs?.stories?.[i]))
@@ -751,6 +809,26 @@ export function transformProduct(
   return {
     name: pickLocalized(raw.name, locale, esRaw?.name),
     description: pickLocalized(raw.description, locale, esRaw?.description) || undefined,
+  };
+}
+
+export function transformAmenity(
+  raw: AmenityItemAttributes,
+  esRaw?: AmenityItemAttributes,
+): AmenityItem {
+  return {
+    label: strFallback(raw.label || raw.label_es, esRaw?.label || esRaw?.label_es),
+    content: strFallback(raw.content, esRaw?.content) || undefined,
+  };
+}
+
+export function transformRecommendation(
+  raw: RecommendationItemAttributes,
+  esRaw?: RecommendationItemAttributes,
+): RecommendationItem {
+  return {
+    label: strFallback(raw.label, esRaw?.label),
+    description: strFallback(raw.description, esRaw?.description) || undefined,
   };
 }
 

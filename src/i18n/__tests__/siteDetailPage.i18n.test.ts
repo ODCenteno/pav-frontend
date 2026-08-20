@@ -28,10 +28,6 @@ describe("siteDetailPage i18n parity", () => {
     "labels.stories",
     "labels.products",
     "labels.follow",
-    "labels.bestTime",
-    "labels.whatToBring",
-    "labels.accessibility",
-    "labels.connectivity",
     "actions.directions",
     "actions.contact",
     "actions.favorite",
@@ -53,14 +49,19 @@ describe("siteDetailPage i18n parity", () => {
     });
   }
 
-  it("the four new recommendation labels are present in both locales", () => {
-    expect(get(es, "siteDetailPage.labels.bestTime")).toBeTruthy();
-    expect(get(en, "siteDetailPage.labels.bestTime")).toBeTruthy();
-    expect(get(es, "siteDetailPage.labels.whatToBring")).toBeTruthy();
-    expect(get(en, "siteDetailPage.labels.whatToBring")).toBeTruthy();
-    expect(get(es, "siteDetailPage.labels.accessibility")).toBeTruthy();
-    expect(get(en, "siteDetailPage.labels.accessibility")).toBeTruthy();
-    expect(get(es, "siteDetailPage.labels.connectivity")).toBeTruthy();
-    expect(get(en, "siteDetailPage.labels.connectivity")).toBeTruthy();
+  it("recommendation labels are no longer i18n keys (they are CMS data now)", () => {
+    expect(get(es, "siteDetailPage.labels.bestTime")).toBeUndefined();
+    expect(get(en, "siteDetailPage.labels.bestTime")).toBeUndefined();
+    expect(get(es, "siteDetailPage.labels.whatToBring")).toBeUndefined();
+    expect(get(en, "siteDetailPage.labels.whatToBring")).toBeUndefined();
+    expect(get(es, "siteDetailPage.labels.accessibility")).toBeUndefined();
+    expect(get(en, "siteDetailPage.labels.accessibility")).toBeUndefined();
+    expect(get(es, "siteDetailPage.labels.connectivity")).toBeUndefined();
+    expect(get(en, "siteDetailPage.labels.connectivity")).toBeUndefined();
+  });
+
+  it("keeps the tips section heading in both locales", () => {
+    expect(get(es, "siteDetailPage.labels.tips")).toBeTruthy();
+    expect(get(en, "siteDetailPage.labels.tips")).toBeTruthy();
   });
 });

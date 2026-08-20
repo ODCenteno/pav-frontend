@@ -20,6 +20,16 @@ export interface ProductItem {
   description?: string;
 }
 
+export interface AmenityItem {
+  label: string;
+  content?: string;
+}
+
+export interface RecommendationItem {
+  label: string;
+  description?: string;
+}
+
 export interface RelatedMemberRef {
   id: string;
   name: string;

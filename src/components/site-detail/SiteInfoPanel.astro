@@ -1,6 +1,7 @@
 ---
 import "./siteInfoPanel.css";
 import SvgIcon from "../icons/SvgIcon.astro";
+import type { AmenityItem } from "@/types/community.type";
 
 interface Props {
   labels: {
@@ -11,7 +12,7 @@ interface Props {
   };
   schedule?: string;
   price?: string | number;
-  amenities?: string[];
+  amenities?: AmenityItem[];
 }
 
 const { labels, schedule, price, amenities } = Astro.props;
@@ -28,7 +29,10 @@ const { labels, schedule, price, amenities } = Astro.props;
         </div>
         <ul class="site-info__list">
           {amenities.map(item => (
-            <li class="site-info__list-item">{item}</li>
+            <li class="site-info__list-item">
+              {item.label}
+              {item.content && <span class="site-info__list-note">{item.content}</span>}
+            </li>
           ))}
         </ul>
       </div>

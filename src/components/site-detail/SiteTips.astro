@@ -1,21 +1,16 @@
 ---
 import "./siteTips.css";
+import type { RecommendationItem } from "@/types/community.type";
 
 interface Props {
   labels: {
     tips: string;
-    bestTimeLabel: string;
-    bringLabel: string;
-    accessibilityLabel: string;
-    connectivityLabel: string;
   };
-  bestTime?: string;
-  whatToBring?: string[];
-  accessibility?: string;
-  connectivity?: string;
+  recommendations?: RecommendationItem[];
 }
 
-const { labels, bestTime, whatToBring, accessibility, connectivity } = Astro.props;
+const { labels, recommendations = [] } = Astro.props;
+const items = recommendations.filter(item => (item.description || "").trim() !== "");
 ---
 
 <section class="site-tips container">
@@ -23,35 +18,12 @@ const { labels, bestTime, whatToBring, accessibility, connectivity } = Astro.pro
     <h2 class="site-tips__title">{labels.tips}</h2>
 
     <div class="site-tips__grid">
-      {bestTime && (
+      {items.map(item => (
         <div class="site-tips__item">
-          <h3 class="site-tips__label">{labels.bestTimeLabel}</h3>
-          <p class="site-tips__value">{bestTime}</p>
+          <h3 class="site-tips__label">{item.label}</h3>
+          <p class="site-tips__value">{item.description}</p>
         </div>
-      )}
-
-      {whatToBring && whatToBring.length > 0 && (
-        <div class="site-tips__item">
-          <h3 class="site-tips__label">{labels.bringLabel}</h3>
-          <ul class="site-tips__list">
-            {whatToBring.map(item => <li>{item}</li>)}
-          </ul>
-        </div>
-      )}
-
-      {accessibility && (
-        <div class="site-tips__item">
-          <h3 class="site-tips__label">{labels.accessibilityLabel}</h3>
-          <p class="site-tips__value">{accessibility}</p>
-        </div>
-      )}
-
-      {connectivity && (
-        <div class="site-tips__item">
-          <h3 class="site-tips__label">{labels.connectivityLabel}</h3>
-          <p class="site-tips__value">{connectivity}</p>
-        </div>
-      )}
+      ))}
     </div>
   </div>
 </section>

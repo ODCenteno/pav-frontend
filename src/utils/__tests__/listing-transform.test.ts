@@ -45,7 +45,7 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
       name: "Hospedaje",
       color: "#4A90E2",
     },
-    tags: [{ label_es: "r2", label_en: "r2" }, { label_es: "demo", label_en: "demo" }],
+    tags: [{ id: 1, label: "r2" }, { id: 2, label: "demo" }],
     contact: {
       id: 50,
       whatsapp: "521234567890",
@@ -60,24 +60,18 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
     },
     schedule: {
       id: 80,
-      text_es: "Lunes a Domingo 8:00 - 18:00",
-      text_en: "Monday to Sunday 8:00 - 18:00",
+      text: "Lunes a Domingo 8:00 - 18:00",
     },
     amenities: [
-      { label_es: "Wifi", label_en: "Wifi" },
-      { label_es: "Estacionamiento", label_en: "Parking" },
+      { id: 1, label: "Wifi", content: "" },
+      { id: 2, label: "Estacionamiento", content: "Junto a la entrada" },
     ],
-    recommendations: {
-      id: 92,
-      bestTime_es: "La mejor hora",
-      bestTime_en: "The best moment",
-      bring_es: "Traer cariño",
-      bring_en: "Bring meals",
-      accessibilityNotes_es: "Notas de accesibilidad para visitantes",
-      accessibilityNotes_en: "Accessibility Notes",
-      connectivityNotes_es: "Tenemos wifi",
-      connectivityNotes_en: "Wifi here",
-    },
+    recommendations: [
+      { id: 1, label: "Mejor época para visitar", description: "La mejor hora" },
+      { id: 2, label: "Qué llevar", description: "Traer cariño" },
+      { id: 3, label: "Accesibilidad", description: "Notas de accesibilidad para visitantes" },
+      { id: 4, label: "Conectividad", description: "Tenemos wifi" },
+    ],
     // Strapi v5 returns relations as bare arrays (not `{ data: [...] }`)
     relatedListings: [
       {
@@ -152,20 +146,23 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
     expect(out.contact?.phone).toBe("+52 614 123 4567");
     expect(out.contact?.email).toBe("info@example.com");
 
+    // Tags → plain localized strings
+    expect(out.tags).toEqual(["r2", "demo"]);
+
     // Schedule → drives SiteInfoPanel
-    expect(out.schedule?.text?.['es-MX']).toContain("Lunes");
-    expect(out.schedule?.text?.en).toContain("Monday");
+    expect(out.schedule?.text).toContain("Lunes");
 
-    // Amenities → drives SiteInfoPanel
+    // Amenities → drives SiteInfoPanel (label + optional content)
     expect(out.amenities).toHaveLength(2);
-    expect(out.amenities?.[0]['es-MX']).toBe("Wifi");
+    expect(out.amenities?.[0]).toEqual({ label: "Wifi", content: undefined });
+    expect(out.amenities?.[1]).toEqual({ label: "Estacionamiento", content: "Junto a la entrada" });
 
-    // Recommendations → drives SiteTips
-    expect(out.recommendations?.bestTimeToVisit?.['es-MX']).toBe("La mejor hora");
-    expect(out.recommendations?.whatToBring).toHaveLength(1);
-    expect(out.recommendations?.whatToBring?.[0]['es-MX']).toBe("Traer cariño");
-    expect(out.recommendations?.accessibilityNotes?.['es-MX']).toContain("accesibilidad");
-    expect(out.recommendations?.connectivityNotes?.['es-MX']).toBe("Tenemos wifi");
+    // Recommendations → drives SiteTips (dynamic CMS-labeled items)
+    expect(out.recommendations).toHaveLength(4);
+    expect(out.recommendations?.[0]).toEqual({ label: "Mejor época para visitar", description: "La mejor hora" });
+    expect(out.recommendations?.[1]).toEqual({ label: "Qué llevar", description: "Traer cariño" });
+    expect(out.recommendations?.[2]?.description).toContain("accesibilidad");
+    expect(out.recommendations?.[3]).toEqual({ label: "Conectividad", description: "Tenemos wifi" });
 
     // Relations (Strapi v5: bare arrays, not { data: [...] })
     expect(out.relatedSites).toEqual(["245", "211"]);
@@ -199,5 +196,207 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
   it("derives facebook URL from a bare handle", () => {
     const fb = out.social!.find((s) => s.handle === "pav.ejemplo");
     expect(fb?.url).toBe("https://facebook.com/pav.ejemplo");
+  });
+});
+
+/**
+ * EN fallback policy for localized listing components: EN entries may have
+ * empty component arrays (or empty fields inside them). The transformer must
+ * fall back to the ES entry's values, exactly like stories/products.
+ */
+describe("transformListing — ES fallback for tags/schedule/amenities/recommendations", () => {
+  const esItem = {
+    id: 1,
+    documentId: "doc-es",
+    title: "Sitio ES",
+    slug: "sitio-es",
+    tags: [{ id: 1, label: "Aventura" }, { id: 2, label: "Mar" }],
+    schedule: { id: 1, text: "Lunes a Domingo" },
+    amenities: [
+      { id: 1, label: "Wifi", content: "En todo el predio" },
+      { id: 2, label: "Estacionamiento", content: "" },
+    ],
+    recommendations: [
+      { id: 1, label: "Mejor época para visitar", description: "Invierno" },
+      { id: 2, label: "Qué llevar", description: "Agua\nGorra\nBloqueador" },
+    ],
+  };
+
+  it("uses the ES entry values when the EN component arrays are empty", () => {
+    const enItem = {
+      id: 2,
+      documentId: "doc-es",
+      title: "Site EN",
+      slug: "sitio-es",
+      tags: [],
+      schedule: null,
+      amenities: [],
+      recommendations: [],
+    };
+    const out = transformListing(enItem as any, "en", esItem as any);
+
+    expect(out.tags).toEqual(["Aventura", "Mar"]);
+    expect(out.schedule?.text).toBe("Lunes a Domingo");
+    expect(out.amenities).toEqual([
+      { label: "Wifi", content: "En todo el predio" },
+      { label: "Estacionamiento", content: undefined },
+    ]);
+    expect(out.recommendations).toEqual([
+      { label: "Mejor época para visitar", description: "Invierno" },
+      { label: "Qué llevar", description: "Agua\nGorra\nBloqueador" },
+    ]);
+  });
+
+  it("uses the ES entry values when the EN components are missing entirely", () => {
+    const enItem = { id: 3, documentId: "doc-es", title: "Site EN", slug: "sitio-es" };
+    const out = transformListing(enItem as any, "en", esItem as any);
+
+    expect(out.tags).toEqual(["Aventura", "Mar"]);
+    expect(out.schedule?.text).toBe("Lunes a Domingo");
+    expect(out.amenities).toHaveLength(2);
+    expect(out.recommendations).toHaveLength(2);
+  });
+
+  it("falls back per item when EN entries exist but their fields are empty", () => {
+    const enItem = {
+      id: 4,
+      documentId: "doc-es",
+      title: "Site EN",
+      slug: "sitio-es",
+      tags: [{ id: 10, label: "Adventure" }, { id: 11, label: "" }],
+      schedule: { id: 10, text: "" },
+      amenities: [{ id: 10, label: "", content: "" }],
+      recommendations: [
+        { id: 10, label: "Best time to visit", description: "" },
+        { id: 11, label: "", description: "Water\nHat" },
+      ],
+    };
+    const out = transformListing(enItem as any, "en", esItem as any);
+
+    expect(out.tags).toEqual(["Adventure", "Mar"]);
+    expect(out.schedule?.text).toBe("Lunes a Domingo");
+    expect(out.amenities?.[0]).toEqual({ label: "Wifi", content: "En todo el predio" });
+    expect(out.recommendations?.[0]).toEqual({
+      label: "Best time to visit",
+      description: "Invierno",
+    });
+    expect(out.recommendations?.[1]).toEqual({ label: "Qué llevar", description: "Water\nHat" });
+  });
+
+  it("keeps EN values when present (no fallback needed)", () => {
+    const enItem = {
+      id: 5,
+      documentId: "doc-es",
+      title: "Site EN",
+      slug: "sitio-es",
+      tags: [{ id: 10, label: "Adventure" }],
+      schedule: { id: 10, text: "Monday to Sunday" },
+      amenities: [{ id: 10, label: "Wifi", content: "Across the property" }],
+      recommendations: [{ id: 10, label: "Best time to visit", description: "Winter" }],
+    };
+    const out = transformListing(enItem as any, "en", esItem as any);
+
+    expect(out.tags).toEqual(["Adventure"]);
+    expect(out.schedule?.text).toBe("Monday to Sunday");
+    expect(out.amenities?.[0]).toEqual({ label: "Wifi", content: "Across the property" });
+    expect(out.recommendations?.[0]).toEqual({ label: "Best time to visit", description: "Winter" });
+  });
+
+  it("preserves newline-separated lists inside recommendation descriptions", () => {
+    const out = transformListing(esItem as any, "es-MX");
+    const bring = out.recommendations?.find((r) => r.label === "Qué llevar");
+    expect(bring?.description).toBe("Agua\nGorra\nBloqueador");
+    expect(bring?.description?.split("\n")).toHaveLength(3);
+  });
+});
+
+/**
+ * Expand/contract bridge: until the backend contract deploy is stable in
+ * production, the API may still return the legacy dual-field shapes (either
+ * deploy order must be safe). The transformer resolves the entry's own-locale
+ * values from the `_es` columns and converts the legacy visit-info object
+ * into labeled recommendation items.
+ */
+describe("transformListing — legacy dual-field bridge (expand/contract window)", () => {
+  it("resolves tags/schedule/amenities from legacy label_es/text_es fields", () => {
+    const legacy = {
+      id: 1,
+      documentId: "doc-legacy",
+      title: "Sitio Legacy",
+      slug: "sitio-legacy",
+      tags: [{ id: 1, label_es: "Aventura" }, { id: 2, label_es: "Mar" }],
+      schedule: { id: 1, text_es: "Lunes a Domingo" },
+      amenities: [{ id: 1, label_es: "Wifi" }],
+    };
+    const out = transformListing(legacy as any, "es-MX");
+
+    expect(out.tags).toEqual(["Aventura", "Mar"]);
+    expect(out.schedule?.text).toBe("Lunes a Domingo");
+    expect(out.amenities?.[0]).toEqual({ label: "Wifi", content: undefined });
+  });
+
+  it("converts a legacy visit-info recommendations object into labeled items (ES)", () => {
+    const legacy = {
+      id: 2,
+      documentId: "doc-legacy",
+      title: "Sitio Legacy",
+      slug: "sitio-legacy",
+      recommendations: {
+        id: 1,
+        bestTime_es: "Invierno",
+        bring_es: "Agua\nGorra",
+        accessibilityNotes_es: "",
+        connectivityNotes_es: "Sin señal",
+      },
+    };
+    const out = transformListing(legacy as any, "es-MX");
+
+    expect(out.recommendations).toEqual([
+      { label: "Mejor época para visitar", description: "Invierno" },
+      { label: "Qué llevar", description: "Agua\nGorra" },
+      { label: "Conectividad", description: "Sin señal" },
+    ]);
+  });
+
+  it("uses English labels for legacy recommendations on EN entries", () => {
+    const legacy = {
+      id: 3,
+      documentId: "doc-legacy",
+      title: "Legacy EN",
+      slug: "sitio-legacy",
+      recommendations: {
+        id: 1,
+        bestTime_es: "Winter",
+        bring_es: "Water",
+      },
+    };
+    const out = transformListing(legacy as any, "en");
+
+    expect(out.recommendations).toEqual([
+      { label: "Best time to visit", description: "Winter" },
+      { label: "What to bring", description: "Water" },
+    ]);
+  });
+
+  it("falls back to the ES entry's legacy recommendations when the EN entry has none", () => {
+    const esLegacy = {
+      id: 4,
+      documentId: "doc-legacy",
+      title: "Sitio Legacy",
+      slug: "sitio-legacy",
+      recommendations: { id: 1, bestTime_es: "Invierno" },
+    };
+    const enItem = {
+      id: 5,
+      documentId: "doc-legacy",
+      title: "Legacy EN",
+      slug: "sitio-legacy",
+      recommendations: [],
+    };
+    const out = transformListing(enItem as any, "en", esLegacy as any);
+
+    expect(out.recommendations).toEqual([
+      { label: "Mejor época para visitar", description: "Invierno" },
+    ]);
   });
 });

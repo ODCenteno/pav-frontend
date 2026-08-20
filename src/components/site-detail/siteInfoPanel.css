@@ -123,6 +123,15 @@
     margin-top: 0.65em;
 }
 
+.site-info__list-note {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--color-on-surface-variant, var(--color-on-surface));
+    opacity: 0.8;
+    white-space: pre-line;
+}
+
 @media (min-width: 768px) {
     .site-info__grid {
         grid-template-columns: repeat(2, 1fr);

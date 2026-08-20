@@ -95,7 +95,7 @@ expect(out.name.en).toBe("Experiencias");
               attributes: { name: "Experiencias", slug: "experiences" },
             },
           },
-          tags: [{ label_es: "Aventura", label_en: "" }, { label_es: "Mar", label_en: "" }],
+          tags: [{ label: "Aventura" }, { label: "Mar" }],
           location: {
             geoPoint: { lat: 25.5, lng: -111.0 },
           },
@@ -110,7 +110,7 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.categoryId).toBe("experiences");
       expect(out.category?.slug).toBe("experiences");
       expect(out.tags).toHaveLength(2);
-      expect(out.tags?.[0]['es-MX']).toBe("Aventura");
+      expect(out.tags?.[0]).toBe("Aventura");
       expect(out.location?.lat).toBe(25.5);
       expect(out.location?.lng).toBe(-111.0);
       expect(out.image).toContain("/uploads/isla.jpg");
@@ -211,8 +211,8 @@ expect(out.name.en).toBe("Experiencias");
         id: 1,
         attributes: {
           name: "Juan Pérez",
-          role: { text_es: "Coordinador", text_en: "Coordinator" },
-          shortBio: { text_es: "Bio ES", text_en: "Bio EN" },
+          role: { text: "Coordinador" },
+          shortBio: { text: "Bio ES" },
           photo: { id: 1, url: "/uploads/juan.jpg" },
           links: { email: "juan@example.com" },
           order: 1,
@@ -235,6 +235,22 @@ expect(out.name.en).toBe("Experiencias");
       const out = transformTeamMember(item);
       expect(out.photo).toBeUndefined();
     });
+
+    it("bridges legacy dual text_es/text_en localized-text during expand/contract", () => {
+      const item: StrapiItem<TeamMemberAttributes> = {
+        id: 3,
+        attributes: {
+          name: "Legacy Member",
+          role: { text_es: "Coordinador", text_en: "Coordinator" } as any,
+          shortBio: { text_es: "Bio ES", text_en: "" } as any,
+        },
+      };
+      const out = transformTeamMember(item);
+      expect(out.role?.['es-MX']).toBe("Coordinador");
+      expect(out.role?.en).toBe("Coordinator");
+      expect(out.shortBio?.['es-MX']).toBe("Bio ES");
+      expect(out.shortBio?.en).toBe("Bio ES");
+    });
   });
 
   describe("transformOrganization", () => {
@@ -244,7 +260,7 @@ expect(out.name.en).toBe("Experiencias");
         attributes: {
           name: "Cooperativa Agua Verde",
           type: "community",
-          shortDescription: { text_es: "Cooperativa local", text_en: "Local cooperative" },
+          shortDescription: { text: "Cooperativa local" },
           logo: { id: 1, url: "/uploads/coop.png" },
           order: 1,
           isFeatured: true,

@@ -36,7 +36,7 @@ const t = useTranslations(locale);
 const title = item.name[locale];
 const description = item.description?.[locale];
 const categoryLabel = item.category?.name?.[locale] || "";
-const tags = (item.tags || []).map(tag => tag[locale]);
+const tags = item.tags || [];
 const location = item.location;
 const categoryColor = item.category?.color || "#68a299";
 
@@ -61,10 +61,6 @@ const labels = {
   stories: t("siteDetailPage.labels.stories"),
   products: t("siteDetailPage.labels.products"),
   follow: t("siteDetailPage.labels.follow"),
-  bestTimeLabel: t("siteDetailPage.labels.bestTime") || "Mejor época para visitar",
-  bringLabel: t("siteDetailPage.labels.whatToBring") || "Qué llevar",
-  accessibilityLabel: t("siteDetailPage.labels.accessibility") || "Accesibilidad",
-  connectivityLabel: t("siteDetailPage.labels.connectivity") || "Conectividad",
 };
 
 const contactActions = {
@@ -75,12 +71,9 @@ const contactActions = {
   facebook: item.contact?.facebook,
 };
 
-const schedule = item.schedule?.text?.[locale];
-const amenities = (item.amenities || []).map(a => a[locale]);
-const bestTime = item.recommendations?.bestTimeToVisit?.[locale];
-const bring = (item.recommendations?.whatToBring || []).map(b => b[locale]);
-const accessibility = item.recommendations?.accessibilityNotes?.[locale];
-const connectivity = item.recommendations?.connectivityNotes?.[locale];
+const schedule = item.schedule?.text;
+const amenities = item.amenities || [];
+const tips = (item.recommendations || []).filter(r => (r.description || "").trim() !== "");
 ---
 
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
@@ -106,7 +99,7 @@ const connectivity = item.recommendations?.connectivityNotes?.[locale];
     </section>
   )}
 
-  {(bestTime || (bring && bring.length > 0) || accessibility || connectivity) && <SiteTips labels={labels} bestTime={bestTime} whatToBring={bring} accessibility={accessibility} connectivity={connectivity} />}
+  {tips.length > 0 && <SiteTips labels={labels} recommendations={tips} />}
 
   {item.stories && item.stories.length > 0 && (
     <StoryTimeline title={labels.stories} stories={item.stories} />

@@ -701,3 +701,86 @@ describe("null safety — about page valuesItems", () => {
     expect(en.values?.values?.items[1]).toBe("Respect");
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────
+// transformListing — full member view-model (gallery, social, locality)
+// ─────────────────────────────────────────────────────────────────────
+describe("transformListing — full member mapping", () => {
+  it("maps members with gallery, contact-derived social, and locality", () => {
+    const item = {
+      id: 1,
+      attributes: {
+        title: "Test",
+        slug: "test",
+        members: [
+          {
+            id: 10,
+            name: "Ana",
+            slug: "ana",
+            role: "Guía",
+            locality: "agua-verde",
+            bio: "Bio de Ana",
+            pullQuote: "Cita",
+            legacyNote: "Legado",
+            photo: { url: "/uploads/ana.jpg" },
+            gallery: [{ url: "/uploads/g1.jpg" }, { url: "/uploads/g2.jpg" }],
+            contact: { instagram: "@ana", whatsapp: "521234567890" },
+            isFeatured: true,
+            order: 2,
+          },
+        ],
+      },
+    };
+    const out = transformListing(item as any, "es");
+    const member = out.members?.[0];
+    expect(member?.name).toBe("Ana");
+    expect(member?.locality).toBe("agua-verde");
+    expect(member?.galleryUrls).toHaveLength(2);
+    expect(member?.galleryUrls[0]).toContain("/uploads/g1.jpg");
+    // contact { instagram, whatsapp } → 2 social links
+    expect(member?.social.length).toBe(2);
+    const platforms = member?.social.map((s) => s.platform).sort();
+    expect(platforms).toEqual(["instagram", "whatsapp"]);
+    expect(member?.isFeatured).toBe(true);
+    expect(member?.order).toBe(2);
+    expect(member?.photo).toContain("/uploads/ana.jpg");
+  });
+
+  it("maps a member without gallery/contact to empty arrays, not undefined", () => {
+    const item = {
+      id: 2,
+      attributes: {
+        title: "T",
+        slug: "t",
+        members: [{ id: 11, name: "Beto", slug: "beto" }],
+      },
+    };
+    const out = transformListing(item as any, "es");
+    const member = out.members?.[0];
+    expect(member?.galleryUrls).toEqual([]);
+    expect(member?.social).toEqual([]);
+    expect(member?.listingSlugs).toEqual([]);
+    expect(member?.relatedMembers).toEqual([]);
+  });
+
+  it("falls back to the ES member fields per index (same policy as stories)", () => {
+    const item = {
+      id: 3,
+      attributes: {
+        title: "T",
+        slug: "t",
+        members: [{ id: 10, name: "Ana", slug: "ana", role: "" }],
+      },
+    };
+    const esItem = {
+      id: 3,
+      attributes: {
+        title: "T",
+        slug: "t",
+        members: [{ id: 10, name: "Ana", slug: "ana", role: "Rol ES" }],
+      },
+    };
+    const out = transformListing(item as any, "en", esItem as any);
+    expect(out.members?.[0].role).toBe("Rol ES");
+  });
+});

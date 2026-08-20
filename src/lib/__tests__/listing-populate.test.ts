@@ -95,4 +95,24 @@ describe("getListingBySlug populates all relations", () => {
       expect(url).toContain(expected);
     }
   });
+
+  it("EN locale re-fetches the ES entry with every fallback component populated", async () => {
+    // First call: EN entry. Second call: ES fallback entry.
+    fetchMock.mockResolvedValueOnce(strapiOk([{ id: 1, title: "EN", slug: "s" }]));
+    fetchMock.mockResolvedValueOnce(strapiOk([{ id: 2, title: "ES", slug: "s" }]));
+    await getListingBySlug("s", "en");
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const esUrl = String(fetchMock.mock.calls[1][0]);
+    expect(esUrl).toContain("locale=es-MX");
+    for (const field of ["stories", "products", "tags", "schedule", "amenities", "recommendations"]) {
+      expect(decodeURIComponent(esUrl)).toContain(field);
+    }
+  });
+
+  it("ES locale does not trigger a second fetch", async () => {
+    fetchMock.mockResolvedValueOnce(strapiOk([{ id: 1, title: "ES", slug: "s" }]));
+    await getListingBySlug("s", "es-MX");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

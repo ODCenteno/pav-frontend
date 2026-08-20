@@ -33,8 +33,8 @@ const searchDesc = stripMarkdown(desc).toLowerCase();
 // Alt text: preferimos shortDescription, si no, title
 const altText = shortDesc || title || "";
 
-// Tags (LocalizedString[])
-const tags = (item.tags ?? []).map((t) => getLocalizedText(t, langKey).trim()).filter(Boolean);
+// Tags (string[] — single localized label per tag)
+const tags = (item.tags ?? []).map((t) => String(t ?? "").trim()).filter(Boolean);
 
 // Media: intentamos varias formas (modelo nuevo y legacy) para no romper MVP
 const mainImageUrl =

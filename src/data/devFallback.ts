@@ -25,21 +25,31 @@ function localizedFromPair(es: any, en: any) {
   return { 'es-MX': es || '', en: en || '' };
 }
 
-function localizedArray(es: string[] | undefined, en: string[] | undefined) {
-  const esArr = es || [];
-  const enArr = en || [];
-  const len = Math.max(esArr.length, enArr.length);
-  const out: { 'es-MX': string; en: string }[] = [];
-  for (let i = 0; i < len; i++) {
-    out.push({ 'es-MX': esArr[i] || '', en: enArr[i] || esArr[i] || '' });
-  }
-  return out;
-}
-
-export function getListingsFallback(): Listing[] {
+/**
+ * Build the locale-specific listings fallback. Since the localization
+ * migration, listing components (tags, schedule, amenities, recommendations)
+ * carry single-locale plain strings in the view-model, so the bilingual
+ * legacy seeds are resolved here for the requested locale.
+ */
+export function getListingsFallback(locale: string = 'es-MX'): Listing[] {
+  const isEn = locale.startsWith('en');
   return (legacyCategoryData as any[]).map((item) => {
-    const tags = localizedArray(item.tags_es, item.tags_en);
-    const amenities = localizedArray(item.amenities_es, item.amenities_en);
+    const tags: string[] = (isEn ? item.tags_en : item.tags_es) || [];
+    const amenityLabels: string[] = (isEn ? item.amenities_en : item.amenities_es) || [];
+    const recommendations = item.recommendations
+      ? [
+          {
+            label: isEn ? 'Best time to visit' : 'Mejor época para visitar',
+            description: isEn ? item.recommendations.bestTime_en : item.recommendations.bestTime_es,
+          },
+          {
+            label: isEn ? 'What to bring' : 'Qué llevar',
+            description: ((isEn ? item.recommendations.bring_en : item.recommendations.bring_es) || []).join('\n'),
+          },
+        ]
+          .filter((r) => (r.description || '').trim() !== '')
+          .map((r) => ({ label: r.label, description: r.description }))
+      : undefined;
     const list: Listing = {
       id: item.id,
       slug: item.slug,
@@ -48,16 +58,11 @@ export function getListingsFallback(): Listing[] {
       description: localizedFromPair(item.description_es, item.description_en),
       categoryId: item.categoryId,
       tags,
-      amenities,
+      amenities: amenityLabels.map((label) => ({ label })),
       schedule: item.schedule
-        ? { text: localizedFromPair(item.schedule.text_es, item.schedule.text_en) }
+        ? { text: (isEn ? item.schedule.text_en : item.schedule.text_es) || '' }
         : undefined,
-      recommendations: item.recommendations
-        ? {
-            bestTimeToVisit: localizedFromPair(item.recommendations.bestTime_es, item.recommendations.bestTime_en),
-            whatToBring: localizedArray(item.recommendations.bring_es, item.recommendations.bring_en),
-          }
-        : undefined,
+      recommendations,
       contact: item.contact
         ? (({ website, ...rest }) => rest)(item.contact)
         : undefined,

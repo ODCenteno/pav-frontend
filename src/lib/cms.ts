@@ -126,6 +126,8 @@ export const LISTING_FULL_POPULATE: Record<string, string> = {
   'populate[12]': 'stories.image',
   'populate[13]': 'stories.gallery',
   'populate[14]': 'products',
+  'populate[15]': 'members.gallery',
+  'populate[16]': 'members.contact',
 };
 
 /**
@@ -361,8 +363,8 @@ export async function getListingBySlug(slug: string, locale: string = 'es-MX'): 
     });
     if (res.data.length === 0) return null;
 
-    // EN fallback: fetch ES version so empty EN narrative fields
-    // (stories, products) fall back to Spanish content.
+    // EN fallback: fetch ES version so empty EN fields (stories, products,
+    // tags, schedule, amenities, recommendations) fall back to Spanish content.
     let esItem: StrapiItem<ListingAttributes> | null = null;
     if (locale.startsWith('en')) {
       const esRes = await strapiGet<ListingAttributes>('/listings', {
@@ -370,6 +372,10 @@ export async function getListingBySlug(slug: string, locale: string = 'es-MX'): 
         'filters[publishedAt][$notNull]': 'true',
         'populate[0]': 'stories',
         'populate[1]': 'products',
+        'populate[2]': 'tags',
+        'populate[3]': 'schedule',
+        'populate[4]': 'amenities',
+        'populate[5]': 'recommendations',
         locale: 'es-MX',
         'pagination[pageSize]': '1',
       });
@@ -1191,7 +1197,7 @@ function dedupedListingsFetch(locale: string): Promise<Listing[]> {
     if (listings.length > 0) return listings;
 
     if (!USE_DEV_FALLBACK) return [];
-    return getListingsFallback();
+    return getListingsFallback(locale);
   })();
 
   listingsInFlight.set(key, promise);
@@ -1226,7 +1232,7 @@ export async function getListingSlugsWithFallback(locale: string = 'es-MX'): Pro
 
   if (fromCms && fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
-  return getListingsFallback()
+  return getListingsFallback(locale)
     .map((l) => l.slug)
     .filter((s): s is string => typeof s === 'string' && s.length > 0);
 }
@@ -1235,14 +1241,14 @@ export async function getListingBySlugWithFallback(slug: string, locale: string 
   const fromCms = await getListingBySlug(slug, locale);
   if (fromCms) return fromCms;
   if (!USE_DEV_FALLBACK) return null;
-  return getListingsFallback().find((l) => l.slug === slug) ?? null;
+  return getListingsFallback(locale).find((l) => l.slug === slug) ?? null;
 }
 
 export async function getFeaturedListingsWithFallback(locale: string = 'es-MX', limit: number = 3): Promise<Listing[]> {
   const fromCms = await getFeaturedListings(locale, limit);
   if (fromCms.length > 0) return fromCms;
   if (!USE_DEV_FALLBACK) return [];
-  return getListingsFallback().filter((l) => l.isFeatured).slice(0, limit);
+  return getListingsFallback(locale).filter((l) => l.isFeatured).slice(0, limit);
 }
 
 export async function getTeamWithFallback(locale: string = 'es-MX'): Promise<TeamMember[]> {

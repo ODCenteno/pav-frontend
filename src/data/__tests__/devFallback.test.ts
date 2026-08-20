@@ -34,11 +34,34 @@ describe("data/devFallback", () => {
       }
     });
 
-    it("converts tags to LocalizedString[]", () => {
+    it("converts tags to plain string[] for the requested locale", () => {
       const items = getListingsFallback();
       const withTags = items.find((i) => i.tags && i.tags.length > 0);
       expect(withTags).toBeDefined();
-      expect(typeof withTags!.tags![0]['es-MX']).toBe("string");
+      expect(typeof withTags!.tags![0]).toBe("string");
+      expect(withTags!.tags).toContain("Aventura");
+
+      const itemsEn = getListingsFallback("en");
+      const withTagsEn = itemsEn.find((i) => i.slug === withTags!.slug);
+      expect(withTagsEn!.tags).toContain("Adventure");
+    });
+
+    it("builds schedule/amenities/recommendations in the migrated view-model shape", () => {
+      const items = getListingsFallback();
+      const withSchedule = items.find((i) => i.schedule?.text);
+      expect(typeof withSchedule!.schedule!.text).toBe("string");
+
+      const withAmenities = items.find((i) => i.amenities && i.amenities.length > 0);
+      expect(typeof withAmenities!.amenities![0].label).toBe("string");
+
+      const withRecs = items.find((i) => i.recommendations && i.recommendations.length > 0);
+      expect(withRecs).toBeDefined();
+      for (const rec of withRecs!.recommendations!) {
+        expect(typeof rec.label).toBe("string");
+        expect((rec.description || "").trim().length).toBeGreaterThan(0);
+      }
+      const bring = withRecs!.recommendations!.find((r) => r.label === "Qué llevar");
+      expect(bring?.description).toContain("\n");
     });
 
     it("builds media with mainImageUrl and galleryUrls", () => {

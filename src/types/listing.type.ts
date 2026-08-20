@@ -1,7 +1,7 @@
 import type { LocalizedString } from './i18n.type';
 import type { Category } from './category.type';
-import type { Location, ContactInfo, Pricing, Media, Schedule, Recommendations, SocialLink } from './common.type';
-import type { CommunityMemberSummary, StoryBlock, ProductItem } from './community.type';
+import type { Location, ContactInfo, Pricing, Media, Schedule, SocialLink } from './common.type';
+import type { CommunityMember, StoryBlock, ProductItem, AmenityItem, RecommendationItem } from './community.type';
 
 export interface Listing {
   id: string;
@@ -13,7 +13,7 @@ export interface Listing {
 
   categoryId: string;
   category?: Category;
-  tags?: LocalizedString[];
+  tags?: string[];
 
   location?: Location;
   contact?: ContactInfo;
@@ -27,8 +27,8 @@ export interface Listing {
   image?: string;
 
   schedule?: Schedule;
-  amenities?: LocalizedString[];
-  recommendations?: Recommendations;
+  amenities?: AmenityItem[];
+  recommendations?: RecommendationItem[];
   relatedSites?: string[];
 
   href?: {
@@ -36,7 +36,7 @@ export interface Listing {
     en: string;
   };
 
-  members?: CommunityMemberSummary[];
+  members?: CommunityMember[];
   stories?: StoryBlock[];
   products?: ProductItem[];
   social?: SocialLink[];

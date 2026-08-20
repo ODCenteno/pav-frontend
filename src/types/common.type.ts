@@ -1,6 +1,3 @@
-import type { LocalizedString } from './i18n.type';
-
-
 export interface Location {
   lat: number;
   lng: number;
@@ -27,14 +24,7 @@ export interface Media {
 }
 
 export interface Schedule {
-  text?: LocalizedString;
-}
-
-export interface Recommendations {
-  bestTimeToVisit?: LocalizedString;
-  whatToBring?: LocalizedString[];
-  accessibilityNotes?: LocalizedString;
-  connectivityNotes?: LocalizedString;
+  text?: string;
 }
 
 export interface SocialLink {
