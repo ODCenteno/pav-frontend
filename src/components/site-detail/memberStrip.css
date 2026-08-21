@@ -195,3 +195,25 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Interactive cards: the whole card opens the member profile modal
+   (MemberCards island). Hover/focus affordance follows the project's
+   card + button transition conventions. */
+.member-strip__card--clickable {
+  cursor: pointer;
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.member-strip__card--clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(90, 138, 128, 0.25);
+}
+
+.member-strip__card--clickable:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--shadow-sea),
+    0 0 0 3px var(--color-primary);
+}

@@ -1,47 +1,51 @@
 ---
 import "./memberStrip.css";
-import type { CommunityMemberSummary } from "@/types/community.type";
+import "./memberModal.css";
+import MemberCards from "./MemberCards";
+import { useTranslations } from "@/i18n/utils";
 import { renderMarkdown } from "@/utils/markdown";
+import type { CommunityMember } from "@/types/community.type";
 
 interface Props {
   title: string;
-  members: CommunityMemberSummary[];
+  members: CommunityMember[];
 }
 
 const { title, members } = Astro.props;
+const locale = Astro.currentLocale || "es";
+const t = useTranslations(locale);
+
+// Islands can't call t() at runtime — resolve every label here, at build
+// time, and hand them over as plain props.
+const labels = {
+  close: t("siteDetailPage.memberModal.close"),
+  gallery: t("siteDetailPage.memberModal.gallery"),
+  openProfile: t("siteDetailPage.memberModal.openProfile"),
+  call: t("siteDetailPage.actions.call"),
+  email: t("siteDetailPage.actions.email"),
+  locality: {
+    "agua-verde": t("siteDetailPage.memberModal.localityAguaVerde"),
+    "rancho-san-cosme": t("siteDetailPage.memberModal.localityRanchoSanCosme"),
+  } as Record<string, string>,
+};
+
+// Pre-render markdown to HTML on the server: the island receives plain
+// strings and ships zero markdown code to the client.
+const membersVm = members.map((m) => ({
+  id: m.id,
+  name: m.name,
+  role: m.role,
+  locality: m.locality,
+  pullQuote: m.pullQuote,
+  bioHtml: m.bio ? renderMarkdown(m.bio) : undefined,
+  legacyNote: m.legacyNote,
+  photo: m.photo,
+  galleryUrls: m.galleryUrls ?? [],
+  social: m.social ?? [],
+}));
 ---
 
 <section class="member-strip container">
   <h2 class="member-strip__title">{title}</h2>
-  <div class="member-strip__grid">
-    {members.map((member) => (
-      <article class="member-strip__card">
-        <div class="member-strip__header">
-          {member.photo ? (
-            <img
-              class="member-strip__photo"
-              src={member.photo}
-              alt={member.name}
-              loading="lazy"
-            />
-          ) : (
-            <div class="member-strip__photo member-strip__photo--placeholder">
-              {member.name.charAt(0)}
-            </div>
-          )}
-          <div class="member-strip__identity">
-            <h3 class="member-strip__name">{member.name}</h3>
-            {member.role && <p class="member-strip__role">{member.role}</p>}
-          </div>
-        </div>
-        {member.pullQuote && (
-          <blockquote class="member-strip__quote">{member.pullQuote}</blockquote>
-        )}
-        {member.bio && <div class="member-strip__bio prose" set:html={renderMarkdown(member.bio)} />}
-        {member.legacyNote && (
-          <span class="member-strip__legacy">{member.legacyNote}</span>
-        )}
-      </article>
-    ))}
-  </div>
+  <MemberCards client:visible members={membersVm} labels={labels} />
 </section>

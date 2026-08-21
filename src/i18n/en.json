@@ -214,6 +214,13 @@
       "call": "Call",
       "email": "Email"
     },
+    "memberModal": {
+      "close": "Close",
+      "gallery": "Gallery",
+      "openProfile": "View profile",
+      "localityAguaVerde": "Puerto Agua Verde",
+      "localityRanchoSanCosme": "Rancho San Cosme"
+    },
     "labels": {
       "about": "About this place",
       "gallery": "Gallery",
