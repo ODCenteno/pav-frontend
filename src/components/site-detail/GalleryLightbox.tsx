@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import "./galleryLightbox.css";
 
 interface GalleryLightboxProps {
@@ -28,6 +29,18 @@ export default function GalleryLightbox({ images, initialIndex, isOpen, onClose 
       return () => window.removeEventListener("popstate", handlePopState);
     }
   }, [isOpen, onClose]);
+
+  // Lock body scroll while open so the lightbox is truly fullscreen (no
+  // scrollbar strip with the page behind). Nesting-safe: when stacked on the
+  // member modal, this saves the modal's "hidden" and restores it on close.
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -93,7 +106,14 @@ export default function GalleryLightbox({ images, initialIndex, isOpen, onClose 
 
   if (!isOpen) return null;
 
-  return (
+  // Portal to <body>: position:fixed resolves against the nearest ancestor
+  // with a transform/filter/backdrop-filter/will-change (containing block).
+  // Host pages often wrap this island inside such cards (e.g. glassmorphism
+  // with backdrop-filter), which would shrink the "fullscreen" lightbox to
+  // the card's box. Rendering at <body> level guarantees true fullscreen.
+  // Safe for SSR: every caller starts with isOpen=false, so this only
+  // renders client-side after user interaction.
+  return createPortal(
     <div className="lightbox" role="dialog" aria-modal="true" aria-label="Image gallery" ref={lightboxRef}>
       <div className="lightbox__overlay" onClick={onClose} aria-hidden="true"></div>
 
@@ -106,6 +126,14 @@ export default function GalleryLightbox({ images, initialIndex, isOpen, onClose 
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        onClick={(e) => {
+          // Click-outside-to-close: .lightbox__content spans the whole
+          // viewport ABOVE the overlay (z-index), so the overlay's own
+          // onClick is unreachable. Close only when the click lands on the
+          // content layer itself (empty space) — clicks on the image,
+          // arrows, or counter target their own elements and never match.
+          if (e.target === e.currentTarget) onClose();
+        }}
       >
         <button className="lightbox__nav prev" onClick={prevImage} aria-label="Previous image">
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -122,6 +150,7 @@ export default function GalleryLightbox({ images, initialIndex, isOpen, onClose 
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

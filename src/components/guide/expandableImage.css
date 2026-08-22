@@ -1,0 +1,58 @@
+/*
+ * Fullscreen-expandable image (guide maps).
+ *
+ * The wrapper reuses the section's own layout class (passed as `className`),
+ * so this file only adds the interaction affordance: zoom cursor, a hover
+ * magnifier badge, and a visible focus ring for keyboard users. Works the
+ * same on mobile, tablet and desktop (tap = click).
+ */
+
+.expandable-image {
+  position: relative;
+  cursor: zoom-in;
+}
+
+.expandable-image:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--shadow-sea),
+    0 0 0 3px var(--color-primary);
+}
+
+.expandable-image__hint {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  background: rgba(26, 26, 26, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base);
+  pointer-events: none;
+}
+
+.expandable-image:hover .expandable-image__hint,
+.expandable-image:focus-visible .expandable-image__hint {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Touch devices have no hover: keep the badge always visible so the
+   affordance is discoverable, but slightly quieter. */
+@media (hover: none) {
+  .expandable-image__hint {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
