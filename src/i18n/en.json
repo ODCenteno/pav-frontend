@@ -454,7 +454,8 @@
     "relatedMembersLabel": "Related family"
   },
   "communityBadge": {
-    "_note": "Owned by agent B. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent B. Add keys below this line; keep es/en in sync.",
+    "ariaLabel": "Community: {{name}}"
   },
   "communityDetail": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",

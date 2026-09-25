@@ -1,0 +1,60 @@
+---
+import "./communityBadge.css";
+import { useTranslations } from "@/i18n/utils";
+import { communityStyle, communityBadgeIcon } from "@/utils/communityTheme";
+import type { CommunityRef } from "@/types/community.type";
+
+interface Props {
+  /** Community reference. When absent the component renders nothing. */
+  community?: CommunityRef | null;
+  /** "sm" for cards (default), "lg" for page titles. */
+  size?: "sm" | "lg";
+  /** Show the community name next to the icon. */
+  showName?: boolean;
+  locale?: string;
+  class?: string;
+}
+
+const {
+  community,
+  size = "sm",
+  showName = false,
+  locale = "es-MX",
+  class: className,
+} = Astro.props;
+
+const t = useTranslations(locale);
+
+// Icon resolution lives in communityTheme: CMS badgeIcon first, bundled
+// per-slug PNG second, '' when there is nothing to render.
+const icon = communityBadgeIcon(community);
+const style = communityStyle(community);
+const ariaLabel = community
+  ? t("communityBadge.ariaLabel", { name: community.name })
+  : "";
+---
+
+{
+  community && (
+    <span
+      class={`community-badge community-badge--${size}${className ? ` ${className}` : ""}`}
+      style={style}
+      role="img"
+      aria-label={ariaLabel}
+    >
+      {icon && (
+        <img
+          class="community-badge__icon"
+          src={icon}
+          alt=""
+          aria-hidden="true"
+          width="223"
+          height="226"
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      {showName && <span class="community-badge__name">{community.name}</span>}
+    </span>
+  )
+}

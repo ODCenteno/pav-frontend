@@ -1,0 +1,61 @@
+/*
+ * CommunityBadge (redesign contract §2).
+ *
+ * The theme custom properties are set inline through communityStyle();
+ * the declarations below are only fallbacks for the no-community default.
+ * Small text always uses --community-color-text (WCAG 2.2 AA), never
+ * --community-color.
+ */
+
+.community-badge {
+  --community-color: #5a8a80;
+  --community-color-text: #3d6b62;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--community-color-text);
+  /* Non-interactive: nothing inside may catch focus. */
+  pointer-events: none;
+  user-select: none;
+}
+
+.community-badge__icon {
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+  border-radius: 0.25rem;
+}
+
+.community-badge__name {
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--community-color-text);
+}
+
+/* sm: cards (default). */
+.community-badge--sm .community-badge__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.community-badge--sm .community-badge__name {
+  font-size: 0.875rem;
+}
+
+/* lg: page titles. */
+.community-badge--lg .community-badge__icon {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.community-badge--lg .community-badge__name {
+  font-size: 1.25rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .community-badge__icon {
+    transition: transform 150ms ease;
+  }
+}
