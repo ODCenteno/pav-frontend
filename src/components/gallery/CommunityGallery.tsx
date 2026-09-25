@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import GalleryLightbox from "../site-detail/GalleryLightbox";
 import { fillTemplate } from "./fillTemplate";
+import { scrollBehavior } from "./motion";
 import "./communityGallery.css";
 
 export interface CommunityGalleryLabels {
@@ -18,12 +19,6 @@ interface CommunityGalleryProps {
   photos: string[];
   communityName: string;
   labels: CommunityGalleryLabels;
-}
-
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-
-function prefersReducedMotion(): boolean {
-  return typeof window !== "undefined" && window.matchMedia(REDUCED_MOTION_QUERY).matches;
 }
 
 /**
@@ -75,7 +70,7 @@ export default function CommunityGallery({ photos, communityName, labels }: Comm
     if (!track) return;
     track.scrollBy({
       left: direction * track.clientWidth * 0.8,
-      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      behavior: scrollBehavior(),
     });
   };
 

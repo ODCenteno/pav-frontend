@@ -7,6 +7,7 @@ import CommunityGallery, { type CommunityGalleryLabels } from "../CommunityGalle
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SOURCE = readFileSync(resolve(__dirname, "../CommunityGallery.tsx"), "utf8");
+const MOTION = readFileSync(resolve(__dirname, "../motion.ts"), "utf8");
 const CSS = readFileSync(resolve(__dirname, "../communityGallery.css"), "utf8");
 
 const labels: CommunityGalleryLabels = {
@@ -65,7 +66,8 @@ describe("CommunityGallery", () => {
   });
 
   it("uses instant scrolling when the user prefers reduced motion", () => {
-    expect(SOURCE).toContain("prefers-reduced-motion: reduce");
+    expect(SOURCE).toMatch(/behavior:\s*scrollBehavior\(\)/);
+    expect(MOTION).toContain("prefers-reduced-motion: reduce");
   });
 });
 
