@@ -59,6 +59,9 @@ import {
 
 export { clearCmsCache, CmsError, toStrapiLocale };
 
+// Community fetchers with fixture fallback (contract §4 / §9).
+export { getCommunities, getCommunityBySlug } from './cms/community';
+
 export async function getSiteSettings() {
   return (await import('../config/siteSettings')).getSiteSettings();
 }

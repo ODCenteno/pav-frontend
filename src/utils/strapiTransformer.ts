@@ -16,6 +16,7 @@ import type { SiteContent } from '../types/site-content.type';
 import type { HomepageData } from '../types/homepage.type';
 import type { LocalizedString } from '../types/i18n.type';
 import type {
+  Community,
   CommunityMember,
   CommunityMemberSummary,
   StoryBlock,
@@ -27,6 +28,7 @@ import type {
 } from '../types/community.type';
 import type { SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
+import { getCommunityBySlug } from '../data/communities';
 
 export interface StrapiItem<T = any> {
   id: number;
@@ -1041,6 +1043,131 @@ export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: 
       buttonLabel: localized(finalCta.buttonLabel, locale)[l],
       buttonLink: finalCta.buttonLink || '#',
     },
+  };
+}
+
+// ---------- community ----------
+
+/**
+ * Raw shape of `api::community.community` (contract §4). The FE reads
+ * listings/members through their own `community` relations, so the inverse
+ * relations are not part of this view.
+ */
+export interface CommunityAttributes {
+  name?: string | { 'es-MX': string; en: string };
+  slug: string;
+  tagline?: string | { 'es-MX': string; en: string };
+  description?: string | { 'es-MX': string; en: string };
+  order?: number;
+  color?: string;
+  textColor?: string;
+  badgeIcon?: StrapiMedia;
+  heroImage?: StrapiMedia;
+  location?: GeoPointAttributes;
+  googleMapsUrl?: string;
+  historyHeader?: SectionHeaderAttributes;
+  historyMilestones?: Array<{ year?: string; text?: string | { 'es-MX': string; en: string } }>;
+  historyText?: string | { 'es-MX': string; en: string };
+  touristMapImage?: StrapiMedia;
+  touristMapCaption?: string | { 'es-MX': string; en: string };
+  highlightsHeader?: SectionHeaderAttributes;
+  highlights?: HighlightCardAttributes[];
+  quickFactsHeader?: SectionHeaderAttributes;
+  quickFacts?: QuickFactAttributes[];
+  gallery?: StrapiMediaArray;
+  finalCta?: CtaSectionAttributes;
+}
+
+/**
+ * Per-community landscape fallback for `community.heroImage` when the CMS
+ * media is empty: the coastal sign for Puerto Agua Verde and the sierra /
+ * desert landscape for Rancho San Cosme — the same photos the current home
+ * fallback uses for each community.
+ */
+const COMMUNITY_HERO_FALLBACK: Record<string, string> = {
+  'puerto-agua-verde': '/images/PAV-Letrero-.webp',
+  'rancho-san-cosme': '/images/pav-landscape-12.webp',
+};
+
+function toSectionHeader(
+  raw: SectionHeaderAttributes | undefined,
+  locale: string,
+  l: string,
+): { title: string; subtitle: string } | undefined {
+  if (!raw) return undefined;
+  return {
+    title: localized(raw.title, locale)[l],
+    subtitle: localized(raw.subtitle, locale)[l],
+  };
+}
+
+/**
+ * Map a `community` item to the `Community` view model for one locale.
+ *
+ * Merge policy (contract encoding): a non-empty CMS value always wins; for
+ * empty identity fields (name, color, textColor, order, location, tagline,
+ * badgeIcon) the per-slug fixture from `src/data/communities.ts` completes
+ * the value. An empty `heroImage` falls back to the per-community landscape
+ * above. Communities whose slug is not in the fixtures map as-is (no crash);
+ * their `badgeIcon`/`heroImage` stay empty for the UI to handle.
+ */
+export function transformCommunity(
+  item: StrapiItem<CommunityAttributes>,
+  locale: string = 'es-MX',
+): Community {
+  const a = unwrap(item);
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
+  const id = String(item.id ?? item.documentId ?? a.slug);
+  const fixture = getCommunityBySlug(a.slug);
+
+  const name = pickLocalized(a.name, locale) || fixture?.name[l] || '';
+  const heroFromCms = mediaUrl(a.heroImage);
+
+  return {
+    id,
+    // Runtime may carry slugs beyond the union (unknown CMS entries).
+    slug: a.slug as Community['slug'],
+    name,
+    tagline: pickLocalized(a.tagline, locale) || fixture?.tagline[l] || undefined,
+    description: pickLocalized(a.description, locale) || undefined,
+    order: a.order ?? fixture?.order ?? 0,
+    color: (a.color || '').trim() || fixture?.color || '',
+    textColor: (a.textColor || '').trim() || fixture?.textColor || '',
+    badgeIcon: mediaUrl(a.badgeIcon) || fixture?.iconPath || '',
+    heroImage: heroFromCms || COMMUNITY_HERO_FALLBACK[a.slug] || undefined,
+    location: normalizeLocation(a.location) ?? fixture?.location,
+    googleMapsUrl: a.googleMapsUrl || undefined,
+    historyHeader: toSectionHeader(a.historyHeader, locale, l),
+    historyMilestones: (a.historyMilestones || []).map((m) => ({
+      year: m.year || '',
+      text: locText(m.text, l),
+    })),
+    historyText: pickLocalized(a.historyText, locale) || undefined,
+    touristMapImage: a.touristMapImage ? mediaUrl(a.touristMapImage) : undefined,
+    touristMapCaption: pickLocalized(a.touristMapCaption, locale) || undefined,
+    highlightsHeader: toSectionHeader(a.highlightsHeader, locale, l),
+    highlights: (a.highlights || []).map((h) => ({
+      title: localized(h.title, locale)[l],
+      description: localized(h.description, locale)[l],
+      image: mediaUrl(h.image),
+      alt: getAltFromMedia(h.image),
+      link: h.link || undefined,
+    })),
+    quickFactsHeader: toSectionHeader(a.quickFactsHeader, locale, l),
+    quickFacts: (a.quickFacts || []).map((q) => ({
+      title: localized(q.title, locale)[l],
+      value: localized(q.value, locale)[l],
+      description: localized(q.description, locale)[l],
+    })),
+    gallery: mediaUrls(a.gallery),
+    finalCta: a.finalCta
+      ? {
+          title: localized(a.finalCta.title, locale)[l],
+          description: localized(a.finalCta.description, locale)[l],
+          buttonLabel: localized(a.finalCta.buttonLabel, locale)[l],
+          buttonLink: a.finalCta.buttonLink || '#',
+        }
+      : undefined,
   };
 }
 

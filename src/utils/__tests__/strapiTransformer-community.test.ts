@@ -1,0 +1,193 @@
+import { describe, it, expect, vi } from "vitest";
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { URL, fileURLToPath } from "node:url";
+
+vi.mock("astro:i18n", () => ({
+  getRelativeLocaleUrl: (locale: string, path: string) => {
+    const normalized = (path || "").replace(/^\/+/, "");
+    if (!normalized) return locale === "en" ? "/en" : "/";
+    return locale === "en" ? `/en/${normalized}` : `/${normalized}`;
+  },
+}));
+
+import { transformCommunity, type CommunityAttributes, type StrapiItem } from "../strapiTransformer";
+import { communities } from "../../data/communities";
+
+const PUBLIC_DIR = fileURLToPath(new URL("../../../public", import.meta.url));
+
+function communityItem(attributes: Partial<CommunityAttributes>): StrapiItem<CommunityAttributes> {
+  return { id: 42, attributes: { slug: "puerto-agua-verde", ...attributes } as CommunityAttributes };
+}
+
+describe("transformCommunity", () => {
+  it("maps a full CMS item: identity, media, location and sections", () => {
+    const out = transformCommunity(
+      communityItem({
+        name: { "es-MX": "Puerto Agua Verde", en: "Puerto Agua Verde" },
+        tagline: "CMS tagline",
+        description: "CMS description",
+        order: 7,
+        color: "#0CA58C",
+        textColor: "#08806D",
+        badgeIcon: { data: { id: 1, attributes: { url: "/uploads/badge.png" } } },
+        heroImage: { url: "/uploads/hero.jpg" },
+        location: { geoPoint: { lat: 25.5, lng: -111.1 } },
+        googleMapsUrl: "https://maps.example.com",
+        historyHeader: { title: "Historia", subtitle: "Sub" },
+        historyMilestones: [{ year: "1937", text: { "es-MX": "Ejido", en: "Ejido" } }],
+        historyText: "History text",
+        touristMapImage: { url: "/uploads/map.png" },
+        touristMapCaption: "Caption",
+        highlightsHeader: { title: "Destacados", subtitle: "Sub" },
+        highlights: [{ title: "H1", description: "D1", image: { url: "/uploads/h1.jpg" }, link: "/sitios" }],
+        quickFactsHeader: { title: "Datos", subtitle: "Sub" },
+        quickFacts: [{ title: "T", value: "V", description: "D" }],
+        gallery: { data: [{ id: 1, attributes: { url: "/uploads/g1.jpg" } }] },
+        finalCta: { title: "CTA", description: "Desc", buttonLabel: "Go", buttonLink: "/go" },
+      }),
+      "es-MX",
+    );
+
+    expect(out.id).toBe("42");
+    expect(out.slug).toBe("puerto-agua-verde");
+    expect(out.name).toBe("Puerto Agua Verde");
+    expect(out.tagline).toBe("CMS tagline");
+    expect(out.description).toBe("CMS description");
+    expect(out.order).toBe(7);
+    expect(out.color).toBe("#0CA58C");
+    expect(out.textColor).toBe("#08806D");
+    expect(out.badgeIcon).toBe("http://localhost:1337/uploads/badge.png");
+    expect(out.heroImage).toBe("http://localhost:1337/uploads/hero.jpg");
+    expect(out.location).toEqual({ lat: 25.5, lng: -111.1 });
+    expect(out.googleMapsUrl).toBe("https://maps.example.com");
+    expect(out.historyHeader).toEqual({ title: "Historia", subtitle: "Sub" });
+    expect(out.historyMilestones).toEqual([{ year: "1937", text: "Ejido" }]);
+    expect(out.historyText).toBe("History text");
+    expect(out.touristMapImage).toBe("http://localhost:1337/uploads/map.png");
+    expect(out.touristMapCaption).toBe("Caption");
+    expect(out.highlightsHeader).toEqual({ title: "Destacados", subtitle: "Sub" });
+    expect(out.highlights).toEqual([
+      { title: "H1", description: "D1", image: "http://localhost:1337/uploads/h1.jpg", alt: "", link: "/sitios" },
+    ]);
+    expect(out.quickFactsHeader).toEqual({ title: "Datos", subtitle: "Sub" });
+    expect(out.quickFacts).toEqual([{ title: "T", value: "V", description: "D" }]);
+    expect(out.gallery).toEqual(["http://localhost:1337/uploads/g1.jpg"]);
+    expect(out.finalCta).toEqual({ title: "CTA", description: "Desc", buttonLabel: "Go", buttonLink: "/go" });
+  });
+
+  it("picks the localized name slot for the requested locale", () => {
+    const out = transformCommunity(
+      communityItem({
+        name: { "es-MX": "Nombre ES", en: "Name EN" },
+        tagline: { "es-MX": "Tagline ES", en: "Tagline EN" },
+        color: "#0CA58C",
+        textColor: "#08806D",
+      }),
+      "en",
+    );
+    expect(out.name).toBe("Name EN");
+    expect(out.tagline).toBe("Tagline EN");
+  });
+
+  describe("per-field fixture fallback (CMS value wins when non-empty)", () => {
+    it("fills color, textColor, name, order and location from the fixture by slug", () => {
+      const out = transformCommunity(communityItem({}), "es-MX");
+      const fixture = communities[0];
+      expect(out.name).toBe(fixture.name["es-MX"]);
+      expect(out.color).toBe(fixture.color);
+      expect(out.textColor).toBe(fixture.textColor);
+      expect(out.order).toBe(fixture.order);
+      expect(out.location).toEqual(fixture.location);
+      expect(out.tagline).toBe(fixture.tagline["es-MX"]);
+    });
+
+    it("keeps the CMS values when present", () => {
+      const out = transformCommunity(
+        communityItem({ color: "#111111", textColor: "#222222", order: 9, name: "CMS Name" }),
+        "es-MX",
+      );
+      expect(out.color).toBe("#111111");
+      expect(out.textColor).toBe("#222222");
+      expect(out.order).toBe(9);
+      expect(out.name).toBe("CMS Name");
+    });
+
+    it("falls back to the fixture iconPath when badgeIcon media is empty", () => {
+      const out = transformCommunity(communityItem({}), "es-MX");
+      expect(out.badgeIcon).toBe("/images/communities/fish.png");
+    });
+
+    it("falls back to a per-community landscape hero when heroImage is empty", () => {
+      const pav = transformCommunity(
+        { id: 1, attributes: { slug: "puerto-agua-verde" } as CommunityAttributes },
+        "es-MX",
+      );
+      const rsc = transformCommunity(
+        { id: 2, attributes: { slug: "rancho-san-cosme" } as CommunityAttributes },
+        "es-MX",
+      );
+      expect(pav.heroImage).toBe("/images/PAV-Letrero-.webp");
+      expect(rsc.heroImage).toBe("/images/pav-landscape-12.webp");
+    });
+
+    it("mock hero fallback files exist in public/", () => {
+      expect(existsSync(path.join(PUBLIC_DIR, "/images/PAV-Letrero-.webp"))).toBe(true);
+      expect(existsSync(path.join(PUBLIC_DIR, "/images/pav-landscape-12.webp"))).toBe(true);
+    });
+  });
+
+  describe("section defaults", () => {
+    it("defaults repeatable sections to [] and optional components to undefined", () => {
+      const out = transformCommunity(communityItem({}), "es-MX");
+      expect(out.historyMilestones).toEqual([]);
+      expect(out.highlights).toEqual([]);
+      expect(out.quickFacts).toEqual([]);
+      expect(out.gallery).toEqual([]);
+      expect(out.historyHeader).toBeUndefined();
+      expect(out.historyText).toBeUndefined();
+      expect(out.touristMapImage).toBeUndefined();
+      expect(out.touristMapCaption).toBeUndefined();
+      expect(out.highlightsHeader).toBeUndefined();
+      expect(out.quickFactsHeader).toBeUndefined();
+      expect(out.description).toBeUndefined();
+      expect(out.googleMapsUrl).toBeUndefined();
+      expect(out.finalCta).toBeUndefined();
+    });
+
+    it("keeps empty-string CMS values treated as empty (fixture completes them)", () => {
+      const out = transformCommunity(
+        communityItem({ color: "", textColor: "", name: "" }),
+        "es-MX",
+      );
+      expect(out.color).toBe(communities[0].color);
+      expect(out.textColor).toBe(communities[0].textColor);
+      expect(out.name).toBe(communities[0].name["es-MX"]);
+    });
+  });
+
+  describe("communities not present in the fixtures", () => {
+    it("maps an unknown slug as-is without crashing", () => {
+      const out = transformCommunity(
+        {
+          id: 9,
+          attributes: {
+            slug: "la-paz",
+            name: "La Paz",
+            color: "#123456",
+            textColor: "#123456",
+            order: 3,
+          } as CommunityAttributes,
+        },
+        "es-MX",
+      );
+      expect(out.slug).toBe("la-paz");
+      expect(out.name).toBe("La Paz");
+      expect(out.color).toBe("#123456");
+      expect(out.order).toBe(3);
+      expect(out.badgeIcon).toBe("");
+      expect(out.heroImage).toBeUndefined();
+      expect(out.highlights).toEqual([]);
+    });
+  });
+});
