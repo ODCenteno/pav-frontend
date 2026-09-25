@@ -127,6 +127,7 @@ FE types: `Community` (a view model resolved for one locale) and `CommunityRef` 
 
 | Field | Type | Localized | Reuses (BE UID / FE type) | Notes |
 |---|---|---|---|---|
+| `internalLabel` | string (default `"Good Practices Page"`) | no | none | Editor-only label, same as the other page single types. Not rendered |
 | `hero` | component, single | yes | `hero.hero-section` / FE `HeroData` | |
 | `intro` | component, single | yes | `section.section-header` / FE `SectionHeader` | **Decision**: see note (a) |
 | `protectedArea` | component, single | yes | `guide.protected-link` / FE `ProtectedAreaBlock` | |
