@@ -1,0 +1,163 @@
+/*
+ * Community gallery (F6).
+ *
+ * Desktop: one horizontal scroll-snap row driven by prev/next buttons.
+ * Mobile (<= 768px): vertical full-viewport snap feed; the nav buttons hide
+ * because swiping is the native interaction there.
+ */
+
+.community-gallery {
+  padding-block: var(--space-xl) var(--space-lg);
+}
+
+.community-gallery__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.community-gallery__title {
+  font-size: var(--text-2xl);
+  margin: 0;
+}
+
+.community-gallery__controls {
+  display: flex;
+  gap: var(--space-2xs);
+}
+
+.community-gallery__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--community-color, var(--color-primary));
+  background: var(--white);
+  color: var(--community-text-color, var(--color-primary));
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.community-gallery__nav:hover:not(:disabled) {
+  background: var(--community-text-color, var(--color-primary));
+  color: var(--white);
+}
+
+.community-gallery__nav:focus-visible {
+  outline: 3px solid var(--community-text-color, var(--color-primary));
+  outline-offset: 2px;
+}
+
+.community-gallery__nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.community-gallery__track {
+  display: flex;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2xs) max(var(--space-md), calc((100vw - var(--container-width, 1200px)) / 2));
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scroll-padding-inline: max(var(--space-md), calc((100vw - var(--container-width, 1200px)) / 2));
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.community-gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.community-gallery__item {
+  flex: 0 0 auto;
+  width: clamp(240px, 30vw, 380px);
+  aspect-ratio: 4 / 5;
+  scroll-snap-align: start;
+}
+
+.community-gallery__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-bone);
+  cursor: zoom-in;
+}
+
+.community-gallery__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.community-gallery__photo:hover img {
+  transform: scale(1.03);
+}
+
+.community-gallery__photo:focus-visible {
+  outline: 3px solid var(--community-text-color, var(--color-primary));
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .community-gallery__controls {
+    display: none;
+  }
+
+  .community-gallery__track {
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    height: 100svh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-padding-inline: 0;
+    overscroll-behavior-y: contain;
+  }
+
+  .community-gallery__item {
+    width: 100%;
+    height: 100svh;
+    aspect-ratio: auto;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .community-gallery__photo {
+    border-radius: 0;
+  }
+
+  .community-gallery__photo:focus-visible {
+    outline-offset: -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .community-gallery__track {
+    scroll-behavior: auto;
+  }
+
+  .community-gallery__nav,
+  .community-gallery__photo img {
+    transition: none;
+  }
+
+  .community-gallery__photo:hover img {
+    transform: none;
+  }
+}
