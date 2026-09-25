@@ -273,17 +273,29 @@ describe("transformListing — community and hideContact", () => {
     expect(out.hideContact).toBe(true);
   });
 
-  it("sets hideContact true for the services category even without the flag", () => {
-    const out = transformListing(
+  it("derives hideContact only from the flag so editors can override the migration", () => {
+    // The services default comes from the backend migration setting the
+    // flag; an editor flipping the flag to false must show the contact
+    // again, so the transformer must not re-derive it from the category.
+    const servicesWithoutFlag = transformListing(
       listingItem({
         category: { data: { id: 3, attributes: { name: "Servicios", slug: "services" } } },
       }),
       "es-MX",
     );
-    expect(out.hideContact).toBe(true);
+    expect(servicesWithoutFlag.hideContact).toBe(false);
+
+    const anyCategoryWithFlag = transformListing(
+      listingItem({
+        hideContact: true,
+        category: { data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } } },
+      }),
+      "es-MX",
+    );
+    expect(anyCategoryWithFlag.hideContact).toBe(true);
   });
 
-  it("sets hideContact false for other categories without the flag", () => {
+  it("defaults hideContact to false when the flag is absent", () => {
     const out = transformListing(
       listingItem({
         category: { data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } } },

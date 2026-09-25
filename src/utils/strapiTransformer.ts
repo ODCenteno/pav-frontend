@@ -31,7 +31,7 @@ import type {
 import type { SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
 import { getCommunityBySlug } from '../data/communities';
-import { HIDE_CONTACT_CATEGORY_SLUGS, LOCALITY_TO_COMMUNITY } from '../data/categories';
+import { LOCALITY_TO_COMMUNITY } from '../data/categories';
 
 export interface StrapiItem<T = any> {
   id: number;
@@ -639,13 +639,11 @@ export function transformListing(
 
   const derivedSocial = contactToSocialLinks(a.contact);
 
-  // Contract §5: community relation (fixture-completed) and hideContact
-  // (explicit flag OR the services category per the data contract).
+  // Contract §5: community relation (fixture-completed). hideContact comes
+  // only from the listing flag — the migration sets it for services, and
+  // deriving it from the category would stop editors from overriding it.
   const community = communityRefFromRelation(a.community, locale);
-  const categorySlug = catItem ? ((unwrap(catItem) as any).slug || '') : '';
-  const hideContact =
-    a.hideContact === true ||
-    (HIDE_CONTACT_CATEGORY_SLUGS as readonly string[]).includes(categorySlug);
+  const hideContact = a.hideContact === true;
 
   return {
     id,
