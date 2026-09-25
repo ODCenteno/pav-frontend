@@ -44,7 +44,12 @@ function communityFromFixture(slug: string, locale: string): Community | null {
   const fixture = getFixtureBySlug(slug);
   if (!fixture) return null;
   return transformCommunity(
-    { documentId: fixture.slug, attributes: { slug: fixture.slug } },
+    // Synthetic raw item: `transformCommunity` resolves the id through
+    // `item.id ?? item.documentId ?? attributes.slug`, so a fixture slug as
+    // documentId is enough — StrapiItem's numeric `id` is not needed here.
+    { documentId: fixture.slug, attributes: { slug: fixture.slug } } as Parameters<
+      typeof transformCommunity
+    >[0],
     locale,
   );
 }
