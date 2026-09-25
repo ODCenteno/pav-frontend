@@ -45,7 +45,7 @@ describe("CommunityDirections (component smoke test)", () => {
 
   it("uses the community text color (not the surface color) for the button", () => {
     const css = readFileSync(CSS_PATH, "utf8");
-    expect(css).toMatch(/\.community-directions__cta\s*\{[^}]*background:\s*var\(--community-text-color/);
+    expect(css).toMatch(/\.community-directions__cta\s*\{[^}]*background:\s*var\(--community-color-text/);
     expect(css).toMatch(/\.community-directions__cta:focus-visible/);
   });
 });

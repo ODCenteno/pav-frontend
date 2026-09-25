@@ -37,7 +37,7 @@
   border-radius: var(--radius-full);
   border: 2px solid var(--community-color, var(--color-primary));
   background: var(--white);
-  color: var(--community-text-color, var(--color-primary));
+  color: var(--community-color-text, var(--color-primary));
   cursor: pointer;
   transition:
     background-color var(--transition-base),
@@ -45,12 +45,12 @@
 }
 
 .community-gallery__nav:hover:not(:disabled) {
-  background: var(--community-text-color, var(--color-primary));
+  background: var(--community-color-text, var(--color-primary));
   color: var(--white);
 }
 
 .community-gallery__nav:focus-visible {
-  outline: 3px solid var(--community-text-color, var(--color-primary));
+  outline: 3px solid var(--community-color-text, var(--color-primary));
   outline-offset: 2px;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .community-gallery__photo:focus-visible {
-  outline: 3px solid var(--community-text-color, var(--color-primary));
+  outline: 3px solid var(--community-color-text, var(--color-primary));
   outline-offset: 3px;
 }
 

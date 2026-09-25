@@ -27,7 +27,7 @@
   min-height: 44px;
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius-full);
-  background: var(--community-text-color, var(--color-on-surface));
+  background: var(--community-color-text, var(--color-on-surface));
   color: var(--white);
   font-weight: 600;
   text-decoration: none;
@@ -42,7 +42,7 @@
 }
 
 .community-directions__cta:focus-visible {
-  outline: 3px solid var(--community-text-color, var(--color-on-surface));
+  outline: 3px solid var(--community-color-text, var(--color-on-surface));
   outline-offset: 3px;
 }
 

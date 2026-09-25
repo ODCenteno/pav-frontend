@@ -121,9 +121,9 @@
   border-radius: var(--radius-full);
   /* Small text: the community textColor (>= 4.5:1) or charcoal, never
      --color-primary, which is only ~3.9:1 on white. */
-  border: 2px solid var(--community-text-color, var(--color-on-surface));
+  border: 2px solid var(--community-color-text, var(--color-on-surface));
   background: transparent;
-  color: var(--community-text-color, var(--color-on-surface));
+  color: var(--community-color-text, var(--color-on-surface));
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -132,12 +132,12 @@
 }
 
 .member-strip__open:hover {
-  background: var(--community-text-color, var(--color-on-surface));
+  background: var(--community-color-text, var(--color-on-surface));
   color: var(--white);
 }
 
 .member-strip__open:focus-visible {
-  outline: 3px solid var(--community-text-color, var(--color-on-surface));
+  outline: 3px solid var(--community-color-text, var(--color-on-surface));
   outline-offset: 2px;
 }
 
