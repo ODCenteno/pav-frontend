@@ -457,7 +457,18 @@
     "_note": "Owned by agent B. Add keys below this line; keep es/en in sync."
   },
   "communityDetail": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "directions": {
+      "title": "Cómo llegar",
+      "text": "{{name}} está en la costa de Loreto, Baja California Sur. Abre la ruta en Google Maps para planear tu viaje.",
+      "cta": "Cómo llegar",
+      "newTab": "(se abre en una pestaña nueva)"
+    },
+    "touristMap": {
+      "title": "Mapa turístico",
+      "expand": "Ampliar mapa a pantalla completa",
+      "defaultCaption": "Ubica los puntos de interés de la comunidad."
+    }
   },
   "goodPractices": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
@@ -466,9 +477,19 @@
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
   },
   "communityGallery": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "title": "Galería",
+    "previous": "Fotos anteriores",
+    "next": "Fotos siguientes",
+    "openPhoto": "Ver foto {{index}} de {{total}} en pantalla completa",
+    "photoAlt": "{{name}}, foto {{index}} de {{total}}"
   },
   "memberCard": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "contact": "Contacto",
+    "photos": "Fotos de {{name}}",
+    "previousPhoto": "Foto anterior",
+    "nextPhoto": "Foto siguiente",
+    "openPhoto": "Ver foto {{index}} de {{total}} en pantalla completa"
   }
 }

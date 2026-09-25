@@ -457,7 +457,18 @@
     "_note": "Owned by agent B. Add keys below this line; keep es/en in sync."
   },
   "communityDetail": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "directions": {
+      "title": "Getting there",
+      "text": "{{name}} is on the coast of Loreto, Baja California Sur. Open the route in Google Maps to plan your trip.",
+      "cta": "Get directions",
+      "newTab": "(opens in a new tab)"
+    },
+    "touristMap": {
+      "title": "Tourist map",
+      "expand": "Expand map to fullscreen",
+      "defaultCaption": "Find the community's points of interest."
+    }
   },
   "goodPractices": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
@@ -466,9 +477,19 @@
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
   },
   "communityGallery": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "title": "Gallery",
+    "previous": "Previous photos",
+    "next": "Next photos",
+    "openPhoto": "Open photo {{index}} of {{total}} in fullscreen",
+    "photoAlt": "{{name}}, photo {{index}} of {{total}}"
   },
   "memberCard": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "contact": "Contact",
+    "photos": "Photos of {{name}}",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "openPhoto": "Open photo {{index}} of {{total}} in fullscreen"
   }
 }
