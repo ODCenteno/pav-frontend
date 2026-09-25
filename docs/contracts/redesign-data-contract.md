@@ -181,6 +181,26 @@ The two OSM pins come from `community.location`. The hero's community buttons ar
 
 Strapi returns `badgeIcon` as a media relation, so it is populated, not listed in `fields`.
 
+**Populate format rule (verified against Strapi 5.39).** Never mix the indexed form
+(`populate[0]=category`) with the named form (`populate[community][fields]=...`) in the same
+query. When both appear, the query parser turns `populate` into an object and Strapi **silently
+drops every indexed entry**: the response keeps `community` but loses `category`, `mainImage`,
+`gallery` and the rest, with status 200 and no error. Any query that needs a named entry must
+express **every** populate entry in the named form, for example:
+
+```
+populate[category]=true
+populate[mainImage]=true
+populate[members][populate][0]=photo
+populate[members][populate][1]=gallery
+populate[community][fields][0]=name
+populate[community][fields][1]=slug
+populate[community][populate][0]=badgeIcon
+```
+
+Queries with only indexed entries (e.g. `populate[0]=badgeIcon&populate[1]=highlights.image`)
+are fine. Always send `locale` explicitly: on a fresh database the default locale can be `en`.
+
 ## 10. Deprecated (kept until the contract phase)
 
 | Item | Replacement |
