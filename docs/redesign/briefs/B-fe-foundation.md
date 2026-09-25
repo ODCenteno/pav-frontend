@@ -83,6 +83,9 @@ Tests first for every fetcher fallback, route helper, `communityStyle` and the b
    - Map section: split in two. Left: `homepage.regionMapImage`, with a mock placeholder until
      the designer delivers it. Right: the existing Leaflet map with only two pins, from
      `community.location`. Each pin links to its community page.
+   - Localize the hardcoded `aria-label="Mapa interactivo de ubicaciones"` in
+     `src/components/maps/MapView.tsx` through a prop or i18n key (requested by agent C: English
+     pages announce a Spanish label).
 4. **F10** Remove `pages/experiencias.astro` and `pages/en/experiencias.astro`, and redirect
    `/experiencias` and `/en/experiencias` to `/` using the project's redirect mechanism. Do not
    remove guide, acerca, comunidad or sitios.

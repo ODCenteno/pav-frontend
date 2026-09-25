@@ -40,6 +40,7 @@ your milestone report; do not edit it.
 | CMS client | `src/lib/cms.ts`, new `src/lib/cms/*`, `src/utils/strapiTransformer*`, `src/lib/__tests__/*` | — |
 | Types and contract data | `src/types/*`, `src/data/*` | — |
 | Routing and theme | `src/utils/navigation.ts`, new `src/utils/communityTheme.ts`, `astro.config.*` (redirects), `public/_redirects` | — |
+| Maps | `src/components/maps/*` (C imports `MapView` read-only) | — |
 | i18n | namespaces `nav`, `hero`, `categories`, `highlights`, `quickFacts`, `map`, `footer`, `featured`, `experiencesPage`, `communityBadge` | namespaces `communityDetail`, `goodPractices`, `favoritesPage`, `communityGallery`, `memberCard`, `sitesPage` |
 | Layout | `src/components/header/*`, `src/components/menuOverlay/*`, `src/components/footer/*` | — |
 | Home | `src/pages/index.astro`, `src/pages/en/index.astro`, `src/components/main/*` except `main/favorites/*`, `src/components/popup/*` | `src/components/main/favorites/*` |
