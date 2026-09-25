@@ -452,5 +452,23 @@
     "noSocial": "No social media",
     "viewListing": "View site",
     "relatedMembersLabel": "Related family"
+  },
+  "communityBadge": {
+    "_note": "Owned by agent B. Add keys below this line; keep es/en in sync."
+  },
+  "communityDetail": {
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+  },
+  "goodPractices": {
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+  },
+  "favoritesPage": {
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+  },
+  "communityGallery": {
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+  },
+  "memberCard": {
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
   }
 }
