@@ -27,60 +27,49 @@ function strapiOk<T>(data: T) {
 
 describe("LISTING populate constants", () => {
   it("LISTING_FULL_POPULATE contains every relation/component referenced by the detail page", () => {
+    // Contract §9 named form: populate[key]=true for plain relations,
+    // populate[key][populate][n]=sub for dotted paths.
     const expected = [
-      "category",
-      "mainImage",
-      "gallery",
-      "logo",
-      "location",
-      "tags",
-      "contact",
-      "schedule",
-      "amenities",
-      "recommendations",
-      "relatedListings",
-      "members.photo",
-      "stories.image",
-      "stories.gallery",
-      "products",
+      "populate[category]",
+      "populate[mainImage]",
+      "populate[gallery]",
+      "populate[logo]",
+      "populate[location]",
+      "populate[tags]",
+      "populate[contact]",
+      "populate[schedule]",
+      "populate[amenities]",
+      "populate[recommendations]",
+      "populate[relatedListings]",
+      "populate[members][populate][0]",
+      "populate[members][populate][1]",
+      "populate[members][populate][2]",
+      "populate[stories][populate][0]",
+      "populate[stories][populate][1]",
+      "populate[products]",
     ];
     for (const key of expected) {
-      const populateValue = Object.values(LISTING_FULL_POPULATE);
-      expect(populateValue).toContain(key);
+      expect(LISTING_FULL_POPULATE).toHaveProperty(key);
     }
   });
 
   it("LISTING_SLIM_POPULATE is a strict subset of LISTING_FULL_POPULATE", () => {
-    for (const v of Object.values(LISTING_SLIM_POPULATE)) {
-      expect(Object.values(LISTING_FULL_POPULATE)).toContain(v);
+    for (const [key, value] of Object.entries(LISTING_SLIM_POPULATE)) {
+      expect(LISTING_FULL_POPULATE[key]).toBe(value);
     }
   });
 
   it("LISTING_FULL_POPULATE includes contact (instagram/facebook reach the page)", () => {
-    expect(Object.values(LISTING_FULL_POPULATE)).toContain("contact");
+    expect(LISTING_FULL_POPULATE).toHaveProperty("populate[contact]", "true");
   });
 
-  it("LISTING_FULL_POPULATE indexes are sequential and zero-based", () => {
-    // Sort numerically (Object.keys().sort() is lexicographic: "populate[10]"
-    // would come before "populate[2]"). Only the indexed populate[N] keys
-    // participate — the contract §9 community entries use named keys
-    // (populate[community][...]) alongside the indexed ones.
-    const keys = Object.keys(LISTING_FULL_POPULATE)
-      .filter((k) => /^populate\[\d+\]$/.test(k))
-      .sort((a, b) => {
-        const ai = Number(a.match(/\[(\d+)\]/)?.[1] ?? -1);
-        const bi = Number(b.match(/\[(\d+)\]/)?.[1] ?? -1);
-        return ai - bi;
-      });
-    for (let i = 0; i < keys.length; i++) {
-      expect(keys[i]).toBe(`populate[${i}]`);
-    }
-  });
-
-  it("both listing populates include the contract §9 community entries", () => {
+  it("both listing populates include the contract §9 community entries (named form)", () => {
     const communityEntries = {
-      "populate[community][fields]": "name,slug,color,textColor",
-      "populate[community][populate]": "badgeIcon",
+      "populate[community][fields][0]": "name",
+      "populate[community][fields][1]": "slug",
+      "populate[community][fields][2]": "color",
+      "populate[community][fields][3]": "textColor",
+      "populate[community][populate][0]": "badgeIcon",
     };
     expect(LISTING_FULL_POPULATE).toMatchObject(communityEntries);
     expect(LISTING_SLIM_POPULATE).toMatchObject(communityEntries);

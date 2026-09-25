@@ -115,53 +115,69 @@ export async function getSiteSettingsDirect(): Promise<{
  * contains every field (members, stories, products, social, recommendations,
  * schedule, amenities, contact, relatedListings).
  *
- * Keep this list in sync with the schema. Index values are stable — adding
- * new entries at the end is safe.
+ * Contract §9 populate format rule (verified against Strapi 5.39): a query
+ * that mixes indexed entries (populate[0]=x) with named ones silently drops
+ * every indexed entry. Because the community relation needs the named form,
+ * EVERY entry here is named: plain relations as populate[key]=true and
+ * dotted paths as populate[key][populate][n]=sub.
  */
 export const LISTING_FULL_POPULATE: Record<string, string> = {
-  'populate[0]': 'category',
-  'populate[1]': 'mainImage',
-  'populate[2]': 'gallery',
-  'populate[3]': 'logo',
-  'populate[4]': 'location',
-  'populate[5]': 'tags',
-  'populate[6]': 'contact',
-  'populate[7]': 'schedule',
-  'populate[8]': 'amenities',
-  'populate[9]': 'recommendations',
-  'populate[10]': 'relatedListings',
-  'populate[11]': 'members.photo',
-  'populate[12]': 'stories.image',
-  'populate[13]': 'stories.gallery',
-  'populate[14]': 'products',
-  'populate[15]': 'members.gallery',
-  'populate[16]': 'members.contact',
-  // Contract §9: community relation with the field subset + badgeIcon media.
-  // Named keys coexist with the indexed entries above.
-  'populate[community][fields]': 'name,slug,color,textColor',
-  'populate[community][populate]': 'badgeIcon',
+  'populate[category]': 'true',
+  'populate[mainImage]': 'true',
+  'populate[gallery]': 'true',
+  'populate[logo]': 'true',
+  'populate[location]': 'true',
+  'populate[tags]': 'true',
+  'populate[contact]': 'true',
+  'populate[schedule]': 'true',
+  'populate[amenities]': 'true',
+  'populate[recommendations]': 'true',
+  'populate[relatedListings]': 'true',
+  'populate[members][populate][0]': 'photo',
+  'populate[members][populate][1]': 'gallery',
+  'populate[members][populate][2]': 'contact',
+  'populate[stories][populate][0]': 'image',
+  'populate[stories][populate][1]': 'gallery',
+  'populate[products]': 'true',
+  // Contract §9 community subset.
+  'populate[community][fields][0]': 'name',
+  'populate[community][fields][1]': 'slug',
+  'populate[community][fields][2]': 'color',
+  'populate[community][fields][3]': 'textColor',
+  'populate[community][populate][0]': 'badgeIcon',
 };
 
 /**
  * Populate spec for listing list pages (cards, maps, filters) where only the
  * summary fields are needed and full populates would bloat the response.
+ * Named form only, like LISTING_FULL_POPULATE (contract §9).
  */
 export const LISTING_SLIM_POPULATE: Record<string, string> = {
-  'populate[0]': 'category',
-  'populate[1]': 'mainImage',
-  'populate[2]': 'gallery',
-  'populate[3]': 'location',
-  'populate[4]': 'tags',
-  'populate[5]': 'contact',
-  // Contract §9: same community subset as LISTING_FULL_POPULATE.
-  'populate[community][fields]': 'name,slug,color,textColor',
-  'populate[community][populate]': 'badgeIcon',
+  'populate[category]': 'true',
+  'populate[mainImage]': 'true',
+  'populate[gallery]': 'true',
+  'populate[location]': 'true',
+  'populate[tags]': 'true',
+  'populate[contact]': 'true',
+  // Contract §9 community subset.
+  'populate[community][fields][0]': 'name',
+  'populate[community][fields][1]': 'slug',
+  'populate[community][fields][2]': 'color',
+  'populate[community][fields][3]': 'textColor',
+  'populate[community][populate][0]': 'badgeIcon',
 };
 
-/** Contract §9 community populate entries for community-member fetches. */
+/**
+ * Contract §9 community populate entries for community-member fetches.
+ * Named form only — the member queries mix these with other named entries
+ * (contract §9 populate format rule).
+ */
 const COMMUNITY_MEMBER_COMMUNITY_POPULATE: Record<string, string> = {
-  'populate[community][fields]': 'name,slug,color,textColor',
-  'populate[community][populate]': 'badgeIcon',
+  'populate[community][fields][0]': 'name',
+  'populate[community][fields][1]': 'slug',
+  'populate[community][fields][2]': 'color',
+  'populate[community][fields][3]': 'textColor',
+  'populate[community][populate][0]': 'badgeIcon',
 };
 
 // ---------- categories ----------
@@ -307,8 +323,9 @@ export async function getCommunityMembers(locale: string = 'es-MX'): Promise<Com
     (await safe(async () => {
       const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
         'filters[publishedAt][$notNull]': 'true',
-        'populate[0]': 'photo',
-        'populate[1]': 'listings',
+        // Named form (contract §9): mixed with the community entries below.
+        'populate[photo]': 'true',
+        'populate[listings]': 'true',
         ...COMMUNITY_MEMBER_COMMUNITY_POPULATE,
         sort: 'order:asc',
         'pagination[pageSize]': '100',
@@ -328,7 +345,8 @@ export async function getFeaturedCommunityMembers(
       const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
         'filters[publishedAt][$notNull]': 'true',
         'filters[isFeatured][$eq]': 'true',
-        'populate[0]': 'photo',
+        // Named form (contract §9): mixed with the community entries below.
+        'populate[photo]': 'true',
         ...COMMUNITY_MEMBER_COMMUNITY_POPULATE,
         sort: 'order:asc',
         'pagination[pageSize]': String(limit),
@@ -353,11 +371,12 @@ export async function getCommunityMemberBySlug(
     const res = await strapiGet<CommunityMemberAttributes>('/community-members', {
       'filters[slug][$eq]': slug,
       'filters[publishedAt][$notNull]': 'true',
-      'populate[0]': 'photo',
-      'populate[1]': 'gallery',
-      'populate[2]': 'social',
-      'populate[3]': 'listings',
-      'populate[4]': 'relatedMembers.photo',
+      // Named form (contract §9): mixed with the community entries below.
+      'populate[photo]': 'true',
+      'populate[gallery]': 'true',
+      'populate[social]': 'true',
+      'populate[listings]': 'true',
+      'populate[relatedMembers][populate][0]': 'photo',
       ...COMMUNITY_MEMBER_COMMUNITY_POPULATE,
       'pagination[pageSize]': '1',
       locale,
