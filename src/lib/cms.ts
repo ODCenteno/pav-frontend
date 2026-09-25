@@ -62,6 +62,9 @@ export { clearCmsCache, CmsError, toStrapiLocale };
 // Community fetchers with fixture fallback (contract §4 / §9).
 export { getCommunities, getCommunityBySlug } from './cms/community';
 
+// Good-practices page fetcher with guide fallback (contract §7 / §9).
+export { getGoodPracticesPage } from './cms/goodPractices';
+
 export async function getSiteSettings() {
   return (await import('../config/siteSettings')).getSiteSettings();
 }

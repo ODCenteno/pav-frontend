@@ -14,6 +14,7 @@ import type { Listing } from '../types/listing.type';
 import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
 import type { HomepageData } from '../types/homepage.type';
+import type { GoodPracticesPage } from '../types/good-practices.type';
 import type { LocalizedString } from '../types/i18n.type';
 import type {
   Community,
@@ -1168,6 +1169,123 @@ export function transformCommunity(
           buttonLink: a.finalCta.buttonLink || '#',
         }
       : undefined,
+  };
+}
+
+// ---------- good practices page ----------
+
+/** Mirrors the new `campaign.campaign-block` component (contract §7). */
+export interface CampaignBlockAttributes {
+  title?: string | { 'es-MX': string; en: string };
+  description?: string | { 'es-MX': string; en: string };
+  logo?: StrapiMedia;
+  url?: string;
+  linkLabel?: string | { 'es-MX': string; en: string };
+}
+
+/**
+ * Raw shape of the `api::good-practices-page.good-practices-page` single
+ * type (contract §7). List fields come from `guide.text-list-item` and are
+ * flattened to plain strings.
+ */
+export interface GoodPracticesPageAttributes {
+  hero?: HeroSectionAttributes;
+  intro?: SectionHeaderAttributes;
+  protectedArea?: {
+    title?: string | { 'es-MX': string; en: string };
+    text?: string | { 'es-MX': string; en: string };
+    linkLabel?: string | { 'es-MX': string; en: string };
+    linkHref?: string;
+  };
+  anpMapImage?: StrapiMedia;
+  conanpUrl?: string;
+  influenceHeader?: SectionHeaderAttributes;
+  influenceText?: string | { 'es-MX': string; en: string };
+  fishingHeader?: SectionHeaderAttributes;
+  fishingText?: string | { 'es-MX': string; en: string };
+  fishingRules?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
+  fishingRefugeMapImage?: StrapiMedia;
+  recommendationsHeader?: SectionHeaderAttributes;
+  recommendations?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
+  tipsHeader?: SectionHeaderAttributes;
+  tips?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
+  campaign?: CampaignBlockAttributes;
+  finalCta?: CtaSectionAttributes;
+}
+
+/**
+ * Map the good-practices single type to its view model. Pure mapping only —
+ * the guide-content fallback policy lives in the fetcher
+ * (`src/lib/cms/goodPractices.ts`). A hero without a title maps to null so
+ * the fetcher can detect the "section empty" case.
+ */
+export function transformGoodPracticesPage(
+  item: StrapiItem<GoodPracticesPageAttributes>,
+  locale: string = 'es-MX',
+): GoodPracticesPage {
+  const a = unwrap(item);
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
+
+  const hero = a.hero || {};
+  const heroImagesRaw: any[] = (
+    Array.isArray(hero.images)
+      ? hero.images
+      : hero.images?.data || []
+  ) as any[];
+  const heroTitle = localized(hero.title, locale)[l];
+
+  return {
+    hero: heroTitle
+      ? {
+          title: heroTitle,
+          titleHighlight: localized(hero.titleHighlight, locale)[l],
+          description: localized(hero.description, locale)[l],
+          ctaLabel: localized(hero.ctaLabel, locale)[l],
+          ctaLink: hero.ctaLink || '',
+          images: heroImagesRaw.map((img: any) => ({
+            url: resolveMediaUrl(getUrlFromMedia(img)),
+            alt: getAltFromMedia(img),
+          })),
+        }
+      : null,
+    intro: toSectionHeader(a.intro, locale, l) ?? null,
+    protectedArea: a.protectedArea
+      ? {
+          title: localized(a.protectedArea.title, locale)[l],
+          text: localized(a.protectedArea.text, locale)[l] || undefined,
+          linkLabel: localized(a.protectedArea.linkLabel, locale)[l] || undefined,
+          linkHref: a.protectedArea.linkHref || undefined,
+        }
+      : null,
+    anpMapImage: a.anpMapImage ? mediaUrl(a.anpMapImage) : undefined,
+    conanpUrl: a.conanpUrl || undefined,
+    influenceHeader: toSectionHeader(a.influenceHeader, locale, l) ?? null,
+    influenceText: localized(a.influenceText, locale)[l] || undefined,
+    fishingHeader: toSectionHeader(a.fishingHeader, locale, l) ?? null,
+    fishingText: localized(a.fishingText, locale)[l] || undefined,
+    fishingRules: (a.fishingRules || []).map((r) => locText(r.text, l)),
+    fishingRefugeMapImage: a.fishingRefugeMapImage ? mediaUrl(a.fishingRefugeMapImage) : undefined,
+    recommendationsHeader: toSectionHeader(a.recommendationsHeader, locale, l) ?? null,
+    recommendations: (a.recommendations || []).map((r) => locText(r.text, l)),
+    tipsHeader: toSectionHeader(a.tipsHeader, locale, l) ?? null,
+    tips: (a.tips || []).map((r) => locText(r.text, l)),
+    campaign: a.campaign
+      ? {
+          title: localized(a.campaign.title, locale)[l],
+          description: localized(a.campaign.description, locale)[l] || undefined,
+          logo: a.campaign.logo ? mediaUrl(a.campaign.logo) : undefined,
+          url: a.campaign.url || undefined,
+          linkLabel: localized(a.campaign.linkLabel, locale)[l] || undefined,
+        }
+      : null,
+    finalCta: a.finalCta
+      ? {
+          title: localized(a.finalCta.title, locale)[l],
+          description: localized(a.finalCta.description, locale)[l],
+          buttonLabel: localized(a.finalCta.buttonLabel, locale)[l],
+          buttonLink: a.finalCta.buttonLink || '#',
+        }
+      : null,
   };
 }
 
