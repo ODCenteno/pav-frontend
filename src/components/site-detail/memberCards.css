@@ -1,0 +1,152 @@
+/*
+ * Member (artisan) card additions: summary, inline photo carousel, contact
+ * bar and the "View profile" trigger. Base card styles live in
+ * memberStrip.css; the contact bar reuses socialLinks.css.
+ */
+
+.member-strip__summary {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-on-surface);
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.member-strip__photos {
+  position: relative;
+  z-index: 1;
+}
+
+.member-strip__photos-track {
+  display: flex;
+  gap: var(--space-2xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-radius: var(--radius-sm);
+}
+
+.member-strip__photos-track::-webkit-scrollbar {
+  display: none;
+}
+
+.member-strip__photos-item {
+  flex: 0 0 72%;
+  aspect-ratio: 4 / 3;
+  scroll-snap-align: start;
+}
+
+.member-strip__photos-open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-bone);
+  cursor: zoom-in;
+}
+
+.member-strip__photos-open img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-strip__photos-open:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: -3px;
+}
+
+.member-strip__photos-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: rgba(26, 26, 26, 0.6);
+  color: var(--white);
+  cursor: pointer;
+}
+
+.member-strip__photos-nav--prev {
+  left: var(--space-2xs);
+}
+
+.member-strip__photos-nav--next {
+  right: var(--space-2xs);
+}
+
+.member-strip__photos-nav:hover {
+  background: rgba(26, 26, 26, 0.8);
+}
+
+.member-strip__photos-nav:focus-visible {
+  outline: 3px solid var(--white);
+  box-shadow: 0 0 0 5px var(--color-primary);
+}
+
+/* Touch users swipe; the arrows are for mouse and keyboard. */
+@media (hover: none) {
+  .member-strip__photos-nav {
+    display: none;
+  }
+}
+
+.member-strip__contact {
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.member-strip__open {
+  align-self: flex-start;
+  position: relative;
+  z-index: 1;
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-full);
+  /* Small text: the community textColor (>= 4.5:1) or charcoal, never
+     --color-primary, which is only ~3.9:1 on white. */
+  border: 2px solid var(--community-text-color, var(--color-on-surface));
+  background: transparent;
+  color: var(--community-text-color, var(--color-on-surface));
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.member-strip__open:hover {
+  background: var(--community-text-color, var(--color-on-surface));
+  color: var(--white);
+}
+
+.member-strip__open:focus-visible {
+  outline: 3px solid var(--community-text-color, var(--color-on-surface));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-strip__photos-track {
+    scroll-behavior: auto;
+  }
+
+  .member-strip__open {
+    transition: none;
+  }
+}

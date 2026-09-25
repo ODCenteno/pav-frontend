@@ -3,6 +3,7 @@ import GalleryLightbox from "./GalleryLightbox";
 import { SOCIAL_CONFIG } from "@/utils/socialConfig";
 import { socialUrl } from "@/utils/social";
 import type { SocialLink } from "@/types/common.type";
+import { contactLinkLabel, contactLinkTarget } from "../community-page/memberCard";
 import "./memberModal.css";
 
 /** View-model member: bio pre-rendered to HTML at build time by the shell. */
@@ -12,6 +13,8 @@ export interface MemberVm {
   role?: string;
   locality?: string;
   pullQuote?: string;
+  /** Card text: `shortDescription` or a truncated plain-text bio. */
+  summary?: string;
   bioHtml?: string;
   legacyNote?: string;
   photo?: string;
@@ -136,12 +139,6 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
   const localityLabel = member.locality ? labels.locality[member.locality] : undefined;
   const titleId = `member-modal-title-${member.id}`;
 
-  function socialLabel(link: SocialLink): string {
-    if (link.platform === "phone") return labels.call;
-    if (link.platform === "email") return labels.email;
-    return SOCIAL_CONFIG[link.platform]?.label ?? link.platform;
-  }
-
   return (
     <>
       <div className="member-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
@@ -213,9 +210,9 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
                     key={`${link.platform}-${href}`}
                     className="member-modal__social-link"
                     href={href}
-                    target={link.platform === "phone" || link.platform === "email" ? "_self" : "_blank"}
+                    target={contactLinkTarget(link)}
                     rel="noopener noreferrer"
-                    aria-label={socialLabel(link)}
+                    aria-label={contactLinkLabel(link, labels)}
                   >
                     {icon ? (
                       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" dangerouslySetInnerHTML={{ __html: icon }} />

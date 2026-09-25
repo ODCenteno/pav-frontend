@@ -1,10 +1,12 @@
 ---
 import "./memberStrip.css";
 import "./memberModal.css";
+import "./socialLinks.css";
 import MemberCards from "./MemberCards";
 import { useTranslations } from "@/i18n/utils";
 import { renderMarkdown } from "@/utils/markdown";
 import type { CommunityMember } from "@/types/community.type";
+import { memberContactLinks, memberSummary } from "../community-page/memberCard";
 
 interface Props {
   title: string;
@@ -23,6 +25,11 @@ const labels = {
   openProfile: t("siteDetailPage.memberModal.openProfile"),
   call: t("siteDetailPage.actions.call"),
   email: t("siteDetailPage.actions.email"),
+  contact: t("memberCard.contact"),
+  photos: t("memberCard.photos"),
+  previousPhoto: t("memberCard.previousPhoto"),
+  nextPhoto: t("memberCard.nextPhoto"),
+  openPhoto: t("memberCard.openPhoto"),
   locality: {
     "agua-verde": t("siteDetailPage.memberModal.localityAguaVerde"),
     "rancho-san-cosme": t("siteDetailPage.memberModal.localityRanchoSanCosme"),
@@ -37,11 +44,12 @@ const membersVm = members.map((m) => ({
   role: m.role,
   locality: m.locality,
   pullQuote: m.pullQuote,
+  summary: memberSummary(m),
   bioHtml: m.bio ? renderMarkdown(m.bio) : undefined,
   legacyNote: m.legacyNote,
   photo: m.photo,
   galleryUrls: m.galleryUrls ?? [],
-  social: m.social ?? [],
+  social: memberContactLinks(m),
 }));
 ---
 
