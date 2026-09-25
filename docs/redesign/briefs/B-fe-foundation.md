@@ -55,6 +55,19 @@ Tests first for every fetcher fallback, route helper, `communityStyle` and the b
      works before and after the data migration.
    - The home keeps showing featured listings from both communities.
 
+3. **Phone numbers** (contract §5b), in the transformer:
+   - Build `phone` and `whatsapp` for listings and members as E.164 (`+52XXXXXXXXXX`) from
+     `*CountryCode` + `*Number`.
+   - Fall back to the legacy `phone` / `whatsapp` normalized with the §5b rules, and drop
+     values that cannot be normalized. Put this in one shared helper,
+     `src/utils/phone.ts`: `normalizePhone`, `telHref`, `whatsappHref`, `formatPhone`.
+   - Use the helper everywhere tel/wa.me links are built today, including existing
+     site-detail links.
+   - Tests first, with the same parser table as the backend: `5216131234567`,
+     `526131234567`, `+52 613 123 4567` and `613-123-4567` → `+526131234567`; `12345` → none.
+   - Request agent C, through your report, to switch `community-page/memberCard.ts` to the
+     helper.
+
 ## Milestone B3 · Layout and home
 
 1. **F1 header** (`header/*`, `menuOverlay/*`, `navigation.ts`, i18n `nav`):

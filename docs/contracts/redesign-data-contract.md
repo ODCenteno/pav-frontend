@@ -107,6 +107,37 @@ FE types: `Community` (a view model resolved for one locale) and `CommunityRef` 
 
 `isFeatured` stays: it drives the home carousel. The UI drops the star badge later.
 
+## 5b. Phone numbers (`contact.contact-info` component)
+
+Used by `listing.contact` and `community-member.contact`. Most numbers are Mexican, so the
+country code is a separate field that defaults to `+52`, and the national number is exactly
+10 digits. Strapi enforces both regexes in the admin and the API.
+
+| Field | Type | Validation (`regex`) | Default | Notes |
+|---|---|---|---|---|
+| `phoneCountryCode` | string | `^\+[1-9]\d{0,2}$` | `+52` | |
+| `phoneNumber` | string | `^\d{10}$` | none | National number, digits only |
+| `whatsappCountryCode` | string | `^\+[1-9]\d{0,2}$` | `+52` | |
+| `whatsappNumber` | string | `^\d{10}$` | none | National number, digits only |
+
+- Legacy `phone` and `whatsapp` (free text) are **kept** until cleanup and described as
+  deprecated in the admin.
+- Migration normalizes each legacy value (digits only, then):
+  - 13 digits starting with `521` → `+52` + last 10 digits (old Mexican mobile format)
+  - 12 digits starting with `52` → `+52` + last 10 digits
+  - 10 digits → `+52` + the 10 digits
+  - anything else → "needs manual review", new fields left empty
+  - Existing new-field values are never overwritten.
+- The FE composes the links from the new fields, falling back to the legacy field normalized
+  with the same rules:
+  - `tel:+52XXXXXXXXXX`
+  - `https://wa.me/52XXXXXXXXXX` (no `+`)
+  - display as `+52 XXX XXX XXXX`
+- The FE view model keeps `phone` / `whatsapp` as the normalized E.164 string
+  (`+52XXXXXXXXXX`), so components do not change.
+- Numbers of other lengths (outside Mexico, US and Canada) are out of scope. Relax `^\d{10}$`
+  to `^\d{8,12}$` if needed.
+
 ## 6. `community-member` additions
 
 | Field | Type | Localized | FE type | Notes |
