@@ -25,6 +25,11 @@ export const navigation = {
   siteDetail: (slug: string, locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), `sitios/${slug}`),
   about: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "acerca"),
   guide: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "guide"),
+  // Redesign routes (contract §3). Path segments stay in Spanish for both
+  // locales, like the existing /en/sitios and /en/acerca convention.
+  community: (slug: string, locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), `comunidades/${slug}`),
+  goodPractices: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "buenas-practicas"),
+  favorites: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "favoritos"),
   legal: (slug: string = "privacy-notice", locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), `legal/${slug}`),
   homeAnchor: (anchor: string, locale: string = "es-MX") => {
     const home = getRelativeLocaleUrl(toUrlLocale(locale), "");
@@ -47,3 +52,12 @@ export const navigation = {
     return getRelativeLocaleUrl(targetUrlLocale, relativePath);
   }
 };
+
+// Standalone route helpers for the redesign routes (contract §3). They wrap
+// the navigation object so both call styles stay in sync by construction.
+export const communityPath = (slug: string, locale: string = "es-MX"): string =>
+  navigation.community(slug, locale);
+export const goodPracticesPath = (locale: string = "es-MX"): string =>
+  navigation.goodPractices(locale);
+export const favoritesPath = (locale: string = "es-MX"): string =>
+  navigation.favorites(locale);
