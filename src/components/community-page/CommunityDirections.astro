@@ -1,0 +1,65 @@
+---
+import "./communityDirections.css";
+import MapView from "../maps/MapView";
+import type { MarkerItem } from "../maps/mapIcons";
+import { useTranslations } from "@/i18n/utils";
+import type { Community } from "@/types/community.type";
+import { buildDirectionsUrl, resolveCommunityLocation } from "./directions";
+
+interface Props {
+  community: Pick<Community, "slug" | "name" | "color" | "location" | "googleMapsUrl">;
+  locale?: string;
+}
+
+const { community, locale = Astro.currentLocale || "es-MX" } = Astro.props;
+const t = useTranslations(locale);
+
+const location = resolveCommunityLocation(community);
+const directionsUrl = buildDirectionsUrl({ googleMapsUrl: community.googleMapsUrl, location });
+const marker: MarkerItem | undefined = location && {
+  lat: location.lat,
+  lng: location.lng,
+  title: community.name,
+  categoryColor: community.color,
+};
+---
+
+<section class="community-directions section-padding" aria-labelledby="community-directions-title">
+  <div class="container community-directions__grid">
+    <div class="community-directions__body">
+      <h2 id="community-directions-title" class="community-directions__title">
+        {t("communityDetail.directions.title")}
+      </h2>
+      <p class="community-directions__text">
+        {t("communityDetail.directions.text", { name: community.name })}
+      </p>
+      {directionsUrl && (
+        <a
+          class="community-directions__cta"
+          href={directionsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="3 11 22 2 13 21 11 13 3 11" />
+          </svg>
+          {t("communityDetail.directions.cta")}
+          <span class="community-directions__sr-only">{t("communityDetail.directions.newTab")}</span>
+        </a>
+      )}
+    </div>
+
+    {marker && (
+      <div class="community-directions__map">
+        <MapView
+          client:visible
+          markers={[marker]}
+          center={[marker.lat, marker.lng]}
+          zoom={12}
+          height={360}
+          locale={locale}
+        />
+      </div>
+    )}
+  </div>
+</section>
