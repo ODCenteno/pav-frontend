@@ -11,7 +11,7 @@ vi.mock("astro:i18n", () => ({
   },
 }));
 
-import { transformCommunity, type CommunityAttributes, type StrapiItem } from "../strapiTransformer";
+import { transformCommunity, transformListing, transformCommunityMember, type CommunityAttributes, type ListingAttributes, type CommunityMemberAttributes, type StrapiItem } from "../strapiTransformer";
 import { communities } from "../../data/communities";
 
 const PUBLIC_DIR = fileURLToPath(new URL("../../../public", import.meta.url));
@@ -189,5 +189,197 @@ describe("transformCommunity", () => {
       expect(out.heroImage).toBeUndefined();
       expect(out.highlights).toEqual([]);
     });
+  });
+});
+
+describe("transformListing — community and hideContact", () => {
+  function listingItem(attributes: Partial<ListingAttributes>): StrapiItem<ListingAttributes> {
+    return { id: 10, attributes: { title: "Tour", slug: "tour-a", ...attributes } as ListingAttributes };
+  }
+
+  it("maps a populated community relation", () => {
+    const out = transformListing(
+      listingItem({
+        community: {
+          data: {
+            id: 1,
+            attributes: {
+              slug: "puerto-agua-verde",
+              name: "Puerto Agua Verde",
+              color: "#0CA58C",
+              textColor: "#08806D",
+              badgeIcon: { url: "/uploads/badge.png" },
+            },
+          },
+        } as any,
+      }),
+      "es-MX",
+    );
+    expect(out.community).toEqual({
+      slug: "puerto-agua-verde",
+      name: "Puerto Agua Verde",
+      color: "#0CA58C",
+      textColor: "#08806D",
+      badgeIcon: "http://localhost:1337/uploads/badge.png",
+    });
+  });
+
+  it("completes empty relation fields from the fixture by slug (contract encoding)", () => {
+    const out = transformListing(
+      listingItem({
+        community: { data: { id: 2, attributes: { slug: "rancho-san-cosme" } } } as any,
+      }),
+      "es-MX",
+    );
+    expect(out.community).toEqual({
+      slug: "rancho-san-cosme",
+      name: communities[1].name["es-MX"],
+      color: communities[1].color,
+      textColor: communities[1].textColor,
+      badgeIcon: communities[1].iconPath,
+    });
+  });
+
+  it("picks the localized fixture name for the en locale", () => {
+    const out = transformListing(
+      listingItem({
+        community: { data: { id: 1, attributes: { slug: "puerto-agua-verde" } } } as any,
+      }),
+      "en",
+    );
+    expect(out.community?.name).toBe(communities[0].name.en);
+  });
+
+  it("leaves community undefined when the relation is absent (UI must not break)", () => {
+    const out = transformListing(listingItem({}), "es-MX");
+    expect(out.community).toBeUndefined();
+  });
+
+  it("leaves community undefined for an unknown community slug with no CMS identity", () => {
+    const out = transformListing(
+      listingItem({
+        community: { data: { id: 9, attributes: { slug: "loreto" } } } as any,
+      }),
+      "es-MX",
+    );
+    // Mapped as-is: slug kept, no fixture completion available.
+    expect(out.community?.slug).toBe("loreto");
+    expect(out.community?.name).toBe("");
+    expect(out.community?.color).toBe("");
+  });
+
+  it("sets hideContact true when the listing flag is true", () => {
+    const out = transformListing(listingItem({ hideContact: true }), "es-MX");
+    expect(out.hideContact).toBe(true);
+  });
+
+  it("sets hideContact true for the services category even without the flag", () => {
+    const out = transformListing(
+      listingItem({
+        category: { data: { id: 3, attributes: { name: "Servicios", slug: "services" } } },
+      }),
+      "es-MX",
+    );
+    expect(out.hideContact).toBe(true);
+  });
+
+  it("sets hideContact false for other categories without the flag", () => {
+    const out = transformListing(
+      listingItem({
+        category: { data: { id: 1, attributes: { name: "Experiencias", slug: "experiences" } } },
+      }),
+      "es-MX",
+    );
+    expect(out.hideContact).toBe(false);
+  });
+});
+
+describe("transformCommunityMember — community, shortDescription, phone, whatsapp", () => {
+  function memberItem(attributes: Partial<CommunityMemberAttributes>): StrapiItem<CommunityMemberAttributes> {
+    return { id: 5, attributes: { name: "Artisan", slug: "artisan", ...attributes } as CommunityMemberAttributes };
+  }
+
+  it("maps a populated community relation with fixture completion", () => {
+    const out = transformCommunityMember(
+      memberItem({
+        community: {
+          data: { id: 1, attributes: { slug: "puerto-agua-verde", color: "#0CA58C" } },
+        } as any,
+      }),
+      "es-MX",
+    );
+    expect(out.community).toEqual({
+      slug: "puerto-agua-verde",
+      name: communities[0].name["es-MX"],
+      color: "#0CA58C",
+      textColor: communities[0].textColor,
+      badgeIcon: communities[0].iconPath,
+    });
+  });
+
+  it("derives the community from the deprecated locality when the relation is absent", () => {
+    const out = transformCommunityMember(memberItem({ locality: "rancho-san-cosme" }), "es-MX");
+    expect(out.community?.slug).toBe("rancho-san-cosme");
+    expect(out.community?.color).toBe(communities[1].color);
+  });
+
+  it("prefers the relation over the locality", () => {
+    const out = transformCommunityMember(
+      memberItem({
+        locality: "rancho-san-cosme",
+        community: { data: { id: 1, attributes: { slug: "puerto-agua-verde" } } } as any,
+      }),
+      "es-MX",
+    );
+    expect(out.community?.slug).toBe("puerto-agua-verde");
+  });
+
+  it("leaves community undefined with neither relation nor locality", () => {
+    const out = transformCommunityMember(memberItem({}), "es-MX");
+    expect(out.community).toBeUndefined();
+  });
+
+  it("passes shortDescription through", () => {
+    const out = transformCommunityMember(
+      memberItem({ shortDescription: "Artesana de la comunidad" }),
+      "es-MX",
+    );
+    expect(out.shortDescription).toBe("Artesana de la comunidad");
+  });
+
+  it("leaves shortDescription undefined when empty", () => {
+    const out = transformCommunityMember(memberItem({}), "es-MX");
+    expect(out.shortDescription).toBeUndefined();
+  });
+
+  it("takes phone and whatsapp from the contact component", () => {
+    const out = transformCommunityMember(
+      memberItem({
+        contact: { phone: "+52 614 123 4567", whatsapp: "526141234567" },
+      }),
+      "es-MX",
+    );
+    expect(out.phone).toBe("+52 614 123 4567");
+    expect(out.whatsapp).toBe("526141234567");
+  });
+
+  it("falls back to social links (platform phone/whatsapp) when contact is absent", () => {
+    const out = transformCommunityMember(
+      memberItem({
+        social: [
+          { platform: "whatsapp", handle: "526141234567", url: "https://wa.me/526141234567" },
+          { platform: "phone", handle: "+52 614 123 4567", url: "tel:+526141234567" },
+        ],
+      }),
+      "es-MX",
+    );
+    expect(out.whatsapp).toBe("526141234567");
+    expect(out.phone).toBe("+52 614 123 4567");
+  });
+
+  it("leaves phone/whatsapp undefined when neither source has them", () => {
+    const out = transformCommunityMember(memberItem({}), "es-MX");
+    expect(out.phone).toBeUndefined();
+    expect(out.whatsapp).toBeUndefined();
   });
 });

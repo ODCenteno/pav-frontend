@@ -62,15 +62,28 @@ describe("LISTING populate constants", () => {
 
   it("LISTING_FULL_POPULATE indexes are sequential and zero-based", () => {
     // Sort numerically (Object.keys().sort() is lexicographic: "populate[10]"
-    // would come before "populate[2]").
-    const keys = Object.keys(LISTING_FULL_POPULATE).sort((a, b) => {
-      const ai = Number(a.match(/\[(\d+)\]/)?.[1] ?? -1);
-      const bi = Number(b.match(/\[(\d+)\]/)?.[1] ?? -1);
-      return ai - bi;
-    });
+    // would come before "populate[2]"). Only the indexed populate[N] keys
+    // participate — the contract §9 community entries use named keys
+    // (populate[community][...]) alongside the indexed ones.
+    const keys = Object.keys(LISTING_FULL_POPULATE)
+      .filter((k) => /^populate\[\d+\]$/.test(k))
+      .sort((a, b) => {
+        const ai = Number(a.match(/\[(\d+)\]/)?.[1] ?? -1);
+        const bi = Number(b.match(/\[(\d+)\]/)?.[1] ?? -1);
+        return ai - bi;
+      });
     for (let i = 0; i < keys.length; i++) {
       expect(keys[i]).toBe(`populate[${i}]`);
     }
+  });
+
+  it("both listing populates include the contract §9 community entries", () => {
+    const communityEntries = {
+      "populate[community][fields]": "name,slug,color,textColor",
+      "populate[community][populate]": "badgeIcon",
+    };
+    expect(LISTING_FULL_POPULATE).toMatchObject(communityEntries);
+    expect(LISTING_SLIM_POPULATE).toMatchObject(communityEntries);
   });
 });
 
@@ -87,11 +100,10 @@ describe("getListingBySlug populates all relations", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const url = String(fetchMock.mock.calls[0][0]);
-    // The URL is encoded: `populate%5B${idx}%5D=${encodeURIComponent(value)}`.
-    // Assert that each (idx, value) pair appears.
+    // Every (paramKey, value) pair must appear URL-encoded. Covers the
+    // indexed populate[N] entries and the named populate[community][*] ones.
     for (const [paramKey, value] of Object.entries(LISTING_FULL_POPULATE)) {
-      const idx = paramKey.match(/\[(\d+)\]/)?.[1] ?? "";
-      const expected = `populate%5B${idx}%5D=${encodeURIComponent(value)}`;
+      const expected = `${encodeURIComponent(paramKey)}=${encodeURIComponent(value)}`;
       expect(url).toContain(expected);
     }
   });

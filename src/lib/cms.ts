@@ -136,6 +136,10 @@ export const LISTING_FULL_POPULATE: Record<string, string> = {
   'populate[14]': 'products',
   'populate[15]': 'members.gallery',
   'populate[16]': 'members.contact',
+  // Contract §9: community relation with the field subset + badgeIcon media.
+  // Named keys coexist with the indexed entries above.
+  'populate[community][fields]': 'name,slug,color,textColor',
+  'populate[community][populate]': 'badgeIcon',
 };
 
 /**
@@ -149,6 +153,15 @@ export const LISTING_SLIM_POPULATE: Record<string, string> = {
   'populate[3]': 'location',
   'populate[4]': 'tags',
   'populate[5]': 'contact',
+  // Contract §9: same community subset as LISTING_FULL_POPULATE.
+  'populate[community][fields]': 'name,slug,color,textColor',
+  'populate[community][populate]': 'badgeIcon',
+};
+
+/** Contract §9 community populate entries for community-member fetches. */
+const COMMUNITY_MEMBER_COMMUNITY_POPULATE: Record<string, string> = {
+  'populate[community][fields]': 'name,slug,color,textColor',
+  'populate[community][populate]': 'badgeIcon',
 };
 
 // ---------- categories ----------
@@ -296,6 +309,7 @@ export async function getCommunityMembers(locale: string = 'es-MX'): Promise<Com
         'filters[publishedAt][$notNull]': 'true',
         'populate[0]': 'photo',
         'populate[1]': 'listings',
+        ...COMMUNITY_MEMBER_COMMUNITY_POPULATE,
         sort: 'order:asc',
         'pagination[pageSize]': '100',
         locale,
@@ -315,6 +329,7 @@ export async function getFeaturedCommunityMembers(
         'filters[publishedAt][$notNull]': 'true',
         'filters[isFeatured][$eq]': 'true',
         'populate[0]': 'photo',
+        ...COMMUNITY_MEMBER_COMMUNITY_POPULATE,
         sort: 'order:asc',
         'pagination[pageSize]': String(limit),
         locale,
@@ -343,6 +358,7 @@ export async function getCommunityMemberBySlug(
       'populate[2]': 'social',
       'populate[3]': 'listings',
       'populate[4]': 'relatedMembers.photo',
+      ...COMMUNITY_MEMBER_COMMUNITY_POPULATE,
       'pagination[pageSize]': '1',
       locale,
     });

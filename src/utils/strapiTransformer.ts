@@ -18,6 +18,7 @@ import type { GoodPracticesPage } from '../types/good-practices.type';
 import type { LocalizedString } from '../types/i18n.type';
 import type {
   Community,
+  CommunityRef,
   CommunityMember,
   CommunityMemberSummary,
   StoryBlock,
@@ -30,6 +31,7 @@ import type {
 import type { SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
 import { getCommunityBySlug } from '../data/communities';
+import { HIDE_CONTACT_CATEGORY_SLUGS, LOCALITY_TO_COMMUNITY } from '../data/categories';
 
 export interface StrapiItem<T = any> {
   id: number;
@@ -303,6 +305,10 @@ export interface ListingAttributes {
   schedule?: HoursAttributes;
   amenities?: AmenityItemAttributes[];
   recommendations?: RecommendationItemAttributes[] | LegacyVisitInfoAttributes;
+  // Contract §5 additions. `community` arrives as the §9 populate subset
+  // (name, slug, color, textColor + badgeIcon media).
+  community?: StrapiRelation<Partial<CommunityAttributes>> | StrapiItem<Partial<CommunityAttributes>>;
+  hideContact?: boolean;
   // Strapi v4 wraps relations as `{ data: [...] }`; Strapi v5 returns a bare
   // array / object. The transformer handles both shapes via `relationArray`.
   relatedListings?: { data: StrapiItem<ListingAttributes>[] } | StrapiItem<ListingAttributes>[];
@@ -362,11 +368,17 @@ export interface CommunityMemberAttributes {
   photo?: StrapiMedia;
   gallery?: StrapiMediaArray;
   contact?: ContactInfoAttributes;
+  // Repeatable social component (platform/handle/url), populated by detail
+  // fetches; used as the phone/whatsapp fallback when contact is absent.
+  social?: SocialLinkAttributes[];
   listings?: { data: StrapiItem<ListingAttributes>[] };
   relatedMembers?: { data: StrapiItem<CommunityMemberAttributes>[] };
   legacyNote?: string | { 'es-MX': string; en: string };
   isFeatured?: boolean;
   order?: number;
+  // Contract §6 additions.
+  community?: StrapiRelation<Partial<CommunityAttributes>> | StrapiItem<Partial<CommunityAttributes>>;
+  shortDescription?: string | { 'es-MX': string; en: string };
 }
 
 export interface TeamMemberAttributes {
@@ -542,6 +554,53 @@ export function transformCategory(item: StrapiItem<CategoryAttributes>): Categor
   };
 }
 
+/**
+ * Build a `CommunityRef` from a community slug, completing empty identity
+ * fields from the per-slug fixture (contract encoding). Unknown slugs yield
+ * a ref with empty strings rather than undefined so CMS-only communities
+ * still render.
+ */
+function communityRefFromSlug(slug: string, locale: string): CommunityRef | undefined {
+  if (!slug) return undefined;
+  const l = locale.startsWith('en') ? 'en' : 'es-MX';
+  const fixture = getCommunityBySlug(slug);
+  return {
+    slug: slug as CommunityRef['slug'],
+    name: fixture?.name[l] || '',
+    color: fixture?.color || '',
+    textColor: fixture?.textColor || '',
+    badgeIcon: fixture?.iconPath || '',
+  };
+}
+
+/**
+ * Map a `community` relation (contract §9 populate subset: name, slug,
+ * color, textColor + badgeIcon) to a `CommunityRef`, completing empty
+ * fields from the per-slug fixture. Absent/empty relation → undefined.
+ */
+function communityRefFromRelation(raw: unknown, locale: string): CommunityRef | undefined {
+  if (raw == null) return undefined;
+  const item =
+    typeof raw === 'object' && 'data' in (raw as Record<string, unknown>)
+      ? ((raw as { data: unknown }).data as StrapiItem<Partial<CommunityAttributes>> | null)
+      : (raw as StrapiItem<Partial<CommunityAttributes>>);
+  if (!item) return undefined;
+
+  const a = unwrap(item) || {};
+  const slug = a.slug || '';
+  if (!slug) return undefined;
+
+  const ref = communityRefFromSlug(slug, locale);
+  const badgeIconUrl = mediaUrl(a.badgeIcon as StrapiMedia | undefined);
+  return {
+    slug: ref!.slug,
+    name: pickLocalized(a.name, locale) || ref!.name,
+    color: (a.color || '').trim() || ref!.color,
+    textColor: (a.textColor || '').trim() || ref!.textColor,
+    badgeIcon: badgeIconUrl || ref!.badgeIcon || '',
+  };
+}
+
 export function transformListing(
   item: StrapiItem<ListingAttributes>,
   locale: string = 'es-MX',
@@ -580,6 +639,14 @@ export function transformListing(
 
   const derivedSocial = contactToSocialLinks(a.contact);
 
+  // Contract §5: community relation (fixture-completed) and hideContact
+  // (explicit flag OR the services category per the data contract).
+  const community = communityRefFromRelation(a.community, locale);
+  const categorySlug = catItem ? ((unwrap(catItem) as any).slug || '') : '';
+  const hideContact =
+    a.hideContact === true ||
+    (HIDE_CONTACT_CATEGORY_SLUGS as readonly string[]).includes(categorySlug);
+
   return {
     id,
     slug,
@@ -588,6 +655,8 @@ export function transformListing(
     description: a.description ? localized(asString(a.description), locale) : undefined,
     categoryId: catItem ? (unwrap(catItem) as any).slug || '' : '',
     category: catItem ? transformCategory(catItem) : undefined,
+    community,
+    hideContact,
     tags: tagsRaw.map((t, i) =>
       strFallback(t.label || t.label_es, esAttrs?.tags?.[i]?.label || esAttrs?.tags?.[i]?.label_es),
     ),
@@ -879,12 +948,36 @@ export function transformCommunityMember(
     };
   });
 
+  // Contract §6: community relation wins; the deprecated `locality` derives
+  // the community from the fixture when the relation is absent.
+  const community =
+    communityRefFromRelation(a.community, locale) ??
+    (a.locality
+      ? communityRefFromSlug(LOCALITY_TO_COMMUNITY[a.locality as keyof typeof LOCALITY_TO_COMMUNITY] ?? '', locale)
+      : undefined);
+
+  // Phone/whatsapp: the contact component carries them as separate
+  // attributes (ContactInfoAttributes.phone/.whatsapp); when contact is not
+  // populated, fall back to social links with the matching platform.
+  const derivedSocial = contactToSocialLinks(a.contact);
+  const rawSocial = Array.isArray(a.social) ? a.social : [];
+  const fromSocial = (platform: 'phone' | 'whatsapp'): string | undefined => {
+    const link = [...derivedSocial, ...rawSocial].find((s) => s.platform === platform);
+    return link?.handle || link?.url || undefined;
+  };
+  const phone = ((a.contact?.phone || '').trim() || fromSocial('phone') || '') || undefined;
+  const whatsapp = ((a.contact?.whatsapp || '').trim() || fromSocial('whatsapp') || '') || undefined;
+
   return {
     id,
     slug: a.slug,
     name: a.name || '',
     role: pickLocalized(a.role, locale, es?.role) || undefined,
     locality: (a.locality as CommunityMember['locality']) || undefined,
+    community,
+    shortDescription: pickLocalized(a.shortDescription, locale) || undefined,
+    phone,
+    whatsapp,
     // `bio` is a Strapi rich-text field, so it goes through `asString` (which
     // flattens rich-text blocks) rather than `pickLocalized`. Each item is
     // already fetched per-locale, so flattening yields the correct language;
@@ -894,7 +987,7 @@ export function transformCommunityMember(
     legacyNote: pickLocalized(a.legacyNote, locale, es?.legacyNote) || undefined,
     photo: mediaUrl(a.photo) || undefined,
     galleryUrls: mediaUrls(a.gallery),
-    social: contactToSocialLinks(a.contact),
+    social: derivedSocial,
     listingSlugs,
     relatedMembers,
     isFeatured: a.isFeatured,
