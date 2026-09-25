@@ -7,3 +7,17 @@ export interface Category {
   color?: string;
   order?: number;
 }
+
+/**
+ * Category slugs of the redesign (see docs/contracts/redesign-data-contract.md).
+ * One category per listing.
+ */
+export type CurrentCategorySlug = 'experiences' | 'gastronomy' | 'services' | 'crafts';
+
+/**
+ * Pre-redesign slugs. Still valid in Strapi until the contract (cleanup)
+ * phase; the migration maps them to a CurrentCategorySlug.
+ */
+export type LegacyCategorySlug = 'sites' | 'accommodation' | 'restaurants';
+
+export type CategorySlug = CurrentCategorySlug | LegacyCategorySlug;

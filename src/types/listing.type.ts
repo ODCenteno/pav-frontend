@@ -1,7 +1,7 @@
 import type { LocalizedString } from './i18n.type';
 import type { Category } from './category.type';
 import type { Location, ContactInfo, Pricing, Media, Schedule, SocialLink } from './common.type';
-import type { CommunityMember, StoryBlock, ProductItem, AmenityItem, RecommendationItem } from './community.type';
+import type { CommunityMember, CommunityRef, StoryBlock, ProductItem, AmenityItem, RecommendationItem } from './community.type';
 
 export interface Listing {
   id: string;
@@ -20,7 +20,12 @@ export interface Listing {
   pricing?: Pricing;
   media?: Media;
 
+  /** Drives the home carousel. */
   isFeatured?: boolean;
+
+  community?: CommunityRef;
+  /** When true the UI hides contact info (default for the `services` category). */
+  hideContact?: boolean;
 
   type?: string;
 

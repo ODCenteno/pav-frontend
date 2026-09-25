@@ -67,6 +67,8 @@ export interface HomepageData {
     images: string[];
   };
   mapSection: MapSectionData;
+  /** Static BCS/Loreto map shown left of the map section. */
+  regionMapImage?: string;
   finalCta: CtaData;
 }
 
