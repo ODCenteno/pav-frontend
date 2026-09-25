@@ -1,0 +1,43 @@
+---
+import "./communityTouristMap.css";
+import ExpandableImage from "../guide/ExpandableImage";
+import { useTranslations } from "@/i18n/utils";
+
+interface Props {
+  communityName: string;
+  /** `community.touristMapImage` (absolute URL). */
+  image?: string;
+  /** `community.touristMapCaption`. */
+  caption?: string;
+  locale?: string;
+}
+
+// TODO(content): mock shown until editors upload `touristMapImage`.
+const MOCK_TOURIST_MAP = "/images/tourist-map.png";
+
+const { communityName, image, caption, locale = Astro.currentLocale || "es-MX" } = Astro.props;
+const t = useTranslations(locale);
+
+const src = image?.trim() || MOCK_TOURIST_MAP;
+const title = t("communityDetail.touristMap.title");
+const alt = `${title}: ${communityName}`;
+const figcaption = caption?.trim() || t("communityDetail.touristMap.defaultCaption");
+---
+
+<section class="community-tourist-map section-padding" aria-labelledby="community-tourist-map-title">
+  <div class="container">
+    <h2 id="community-tourist-map-title" class="community-tourist-map__title">{title}</h2>
+
+    <figure class="community-tourist-map__figure">
+      <ExpandableImage
+        client:visible
+        className="community-tourist-map__image-wrap"
+        imgClassName="community-tourist-map__image"
+        src={src}
+        alt={alt}
+        expandLabel={`${t("communityDetail.touristMap.expand")}: ${alt}`}
+      />
+      <figcaption class="community-tourist-map__caption">{figcaption}</figcaption>
+    </figure>
+  </div>
+</section>
