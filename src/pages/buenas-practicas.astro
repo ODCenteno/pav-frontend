@@ -3,9 +3,10 @@ export const prerender = true;
 
 import GoodPracticesPage from "@/components/good-practices/GoodPracticesPage.astro";
 import { getGoodPracticesPage, toStrapiLocale } from "@/lib/cms";
+import { getCommunities } from "@/lib/cms/community";
 
 const locale = toStrapiLocale(Astro.currentLocale || "es");
-const page = await getGoodPracticesPage(locale);
+const [page, communities] = await Promise.all([getGoodPracticesPage(locale), getCommunities(locale)]);
 ---
 
-<GoodPracticesPage page={page} locale={locale} />
+<GoodPracticesPage page={page} locale={locale} communities={communities} />

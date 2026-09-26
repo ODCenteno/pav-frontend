@@ -6,6 +6,7 @@ import Highlights from "@/components/main/highlights/Highlights.astro";
 import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
 import { homeQuickFacts } from "@/components/main/quickFacts/homeQuickFacts";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import type { CtaAction } from "@/components/main/CTA/ctaActions";
 import CommunityGallery from "@/components/gallery/CommunityGallery";
 import CommunityHero from "./CommunityHero.astro";
 import CommunityIntro from "./CommunityIntro.astro";
@@ -56,6 +57,18 @@ const finalCta = finalCtaFor(
     : null
 );
 
+// The panel always sends visitors on to the other community, in its color.
+const ctaActions: CtaAction[] =
+  finalCta && other
+    ? [
+        {
+          label: finalCta.buttonLabel?.trim() || t("communityDetail.cta.button", { name: other.name }),
+          href: navigation.community(other.slug, locale),
+          community: other,
+        },
+      ]
+    : [];
+
 const galleryLabels = {
   title: t("communityGallery.title"),
   previous: t("communityGallery.previous"),
@@ -104,6 +117,8 @@ const galleryLabels = {
 
     <CommunityGallery client:visible photos={community.gallery} communityName={name} labels={galleryLabels} />
 
-    {finalCta && <CtaSection data={finalCta} />}
+    {finalCta && ctaActions.length > 0 && (
+      <CtaSection title={finalCta.title} description={finalCta.description} actions={ctaActions} locale={locale} />
+    )}
   </div>
 </BaseLayout>

@@ -6,6 +6,9 @@ import GuideInfluenceArea from "@/components/guide/GuideInfluenceArea.astro";
 import GuideFishingRefuge from "@/components/guide/GuideFishingRefuge.astro";
 import GuideRecommendations from "@/components/guide/GuideRecommendations.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import { communityActions } from "@/components/main/CTA/ctaActions";
+import { navigation } from "@/utils/navigation";
+import type { Community } from "@/types/community.type";
 import SectionIntro from "./SectionIntro.astro";
 import MapFigure from "./MapFigure.astro";
 import VisitorTips from "./VisitorTips.astro";
@@ -25,9 +28,11 @@ interface Props {
   page: GoodPracticesPage;
   /** Strapi locale ("es-MX" | "en"). */
   locale: string;
+  /** One CTA action per community closes the page. */
+  communities: Community[];
 }
 
-const { page, locale } = Astro.props;
+const { page, locale, communities } = Astro.props;
 const t = useTranslations(locale);
 
 const protectedArea = toProtectedAreaProps(page, t("goodPractices.conanpCta"));
@@ -35,6 +40,7 @@ const influence = toInfluenceProps(page);
 const fishing = toFishingProps(page);
 const recommendations = toRecommendationsProps(page);
 const conanpHref = resolveConanpButtonHref(page);
+const ctaActions = communityActions(communities, (slug) => navigation.community(slug, locale));
 const tips = page.tipsHeader?.title && page.tips.length > 0 ? page.tips : [];
 ---
 
@@ -87,5 +93,7 @@ const tips = page.tipsHeader?.title && page.tips.length > 0 ? page.tips : [];
 
   {page.campaign && <CampaignBlock campaign={page.campaign} locale={locale} />}
 
-  {page.finalCta && <CtaSection data={page.finalCta} />}
+  {page.finalCta && ctaActions.length > 0 && (
+    <CtaSection title={page.finalCta.title} description={page.finalCta.description} actions={ctaActions} locale={locale} />
+  )}
 </BaseLayout>

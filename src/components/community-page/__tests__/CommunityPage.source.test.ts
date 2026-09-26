@@ -49,6 +49,12 @@ describe("CommunityPage", () => {
     expect(source).toMatch(/items=\{homeQuickFacts\(community\.quickFacts\)\}/);
   });
 
+  it("ends with the CTA panel themed as the other community", () => {
+    expect(source).toMatch(/<CtaSection[\s\S]*?actions=\{ctaActions\}/);
+    expect(source).toMatch(/community: other/);
+    expect(source).toMatch(/href: navigation\.community\(other\.slug, locale\)/);
+  });
+
   it("hydrates the gallery island only when visible", () => {
     expect(source).toMatch(/<CommunityGallery[\s\S]*?client:visible/);
   });

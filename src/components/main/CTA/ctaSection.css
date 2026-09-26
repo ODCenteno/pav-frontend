@@ -1,44 +1,154 @@
-/* CtaSection — final call-to-action at end of page */
-.section-padding.text-center {
-    text-align: center;
-    position: relative;
-    padding-top: var(--space-lg);
+/*
+ * CTA panel. Each action carries --community-color / --community-color-text
+ * inline (communityStyle); without a community the site primary pair
+ * applies. White text sits on --community-color-text only (WCAG AA).
+ */
+.cta-panel-section {
+    padding-block: var(--space-xl) var(--space-2xl);
 }
 
-.section-padding.text-center::before {
+.cta-panel {
+    --split-a: #0ca58c;
+    --split-b: #ec6e0b;
+
+    position: relative;
+    display: grid;
+    gap: var(--space-lg);
+    padding: calc(var(--space-xl) + 6px) var(--space-lg) var(--space-lg);
+    border-radius: 1.75rem;
+    background: var(--white);
+    box-shadow: 0 24px 48px -32px rgba(26, 26, 26, 0.35), 0 2px 6px rgba(26, 26, 26, 0.04);
+    overflow: hidden;
+}
+
+/* The two community colors side by side, like the home hero split. */
+.cta-panel::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background-image: var(--wave-divider);
-    background-repeat: repeat-x;
-    background-position: top;
-    background-size: 1440px 4px;
-    pointer-events: none;
+    inset: 0 0 auto;
+    height: 6px;
+    background: linear-gradient(90deg, var(--split-a) 0 50%, var(--split-b) 50% 100%);
 }
 
-.section-padding.text-center h2 {
-    font-size: var(--text-2xl);
-    margin: 0 0 var(--space-sm);
+.cta-panel__copy {
+    max-width: 38rem;
 }
 
-.cta-description {
-    font-size: var(--text-lg);
+.cta-panel__title {
+    margin: 0;
+    font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+}
+
+.cta-panel__description {
+    margin: var(--space-sm) 0 0;
+    font-size: var(--text-base);
     line-height: 1.6;
     color: var(--color-on-surface-variant);
-    margin-bottom: 2rem;
-
-    white-space: pre-line;}
-
-/* Primary CTA button — plain primary color (no gradient) */
-.section-padding.text-center .btn-primary {
-    background-color: var(--color-primary);
-    color: var(--white);
+    text-wrap: pretty;
+    white-space: pre-line;
 }
 
-.section-padding.text-center .btn-primary:hover {
-    background-color: var(--color-emerald);
-    filter: brightness(1.05);
+.cta-panel__actions {
+    display: grid;
+    gap: var(--space-xs);
+    align-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cta-panel__action {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 4rem;
+    padding: 0.625rem 0.625rem 0.625rem 1.25rem;
+    border-radius: 1.25rem;
+    background-color: var(--community-color-text);
+    color: var(--white);
+    font-family: var(--font-heading);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-decoration: none;
+    box-shadow: 0 12px 24px -16px var(--community-color-text);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
+}
+
+/* No mark: the label starts the row. */
+.cta-panel__action > .cta-panel__label:first-child {
+    grid-column: 1 / 3;
+}
+
+.cta-panel__mark {
+    display: inline-flex;
+}
+
+.cta-panel__mark .community-badge__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+    box-shadow: 0 0 0 2px var(--white);
+}
+
+.cta-panel__mark--icon {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+    background: color-mix(in srgb, var(--white) 18%, transparent);
+}
+
+.cta-panel__mark--icon svg,
+.cta-panel__arrow svg {
+    display: block;
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.cta-panel__arrow {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.875rem;
+    background: var(--white);
+    color: var(--community-color-text);
+    transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta-panel__action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 28px -16px var(--community-color-text);
+}
+
+.cta-panel__action:hover .cta-panel__arrow,
+.cta-panel__action:focus-visible .cta-panel__arrow {
+    transform: translateX(3px);
+}
+
+.cta-panel__action:focus-visible {
+    outline: 3px solid var(--community-color-text);
+    outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+    .cta-panel {
+        grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 1fr);
+        align-items: center;
+        gap: var(--space-xl);
+        padding: calc(var(--space-2xl) + 6px) var(--space-2xl) var(--space-2xl);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cta-panel__action,
+    .cta-panel__arrow {
+        transition: none;
+    }
 }

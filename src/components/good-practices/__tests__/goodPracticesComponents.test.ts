@@ -80,6 +80,12 @@ describe("GoodPracticesPage", () => {
     expect([...positions].sort((a, b) => a - b)).toEqual(positions);
   });
 
+  it("ends with a CTA panel with one themed action per community", () => {
+    expect(source).toMatch(/communities:\s*Community\[\]/);
+    expect(source).toMatch(/communityActions\(communities,/);
+    expect(source).toMatch(/<CtaSection[\s\S]*?actions=\{ctaActions\}/);
+  });
+
   it("reuses the guide components instead of copying them", () => {
     for (const name of ["GuideProtectedArea", "GuideInfluenceArea", "GuideFishingRefuge", "GuideRecommendations"]) {
       expect(source).toMatch(new RegExp(`import ${name} from ["']@/components/guide/${name}\\.astro["']`));
@@ -113,6 +119,8 @@ describe("buenas-practicas routes", () => {
       expect(source).toMatch(/export const prerender = true/);
       expect(source).toMatch(/getGoodPracticesPage\(locale\)/);
       expect(source).toMatch(/<GoodPracticesPage page=\{page\} locale=\{locale\}/);
+      expect(source).toMatch(/getCommunities\(locale\)/);
+      expect(source).toMatch(/communities=\{communities\}/);
     });
   }
 });

@@ -12,6 +12,7 @@ const PAGES = [
     name: 'Puerto Agua Verde',
     textColor: '#08806D',
     otherPath: '/comunidades/rancho-san-cosme/',
+    otherTextColor: '#B85206',
   },
   {
     path: '/en/comunidades/puerto-agua-verde/',
@@ -19,6 +20,7 @@ const PAGES = [
     name: 'Puerto Agua Verde',
     textColor: '#08806D',
     otherPath: '/en/comunidades/rancho-san-cosme/',
+    otherTextColor: '#B85206',
   },
   {
     path: '/comunidades/rancho-san-cosme/',
@@ -26,6 +28,7 @@ const PAGES = [
     name: 'Rancho San Cosme',
     textColor: '#B85206',
     otherPath: '/comunidades/puerto-agua-verde/',
+    otherTextColor: '#08806D',
   },
 ];
 
@@ -100,7 +103,12 @@ for (const community of PAGES) {
 
     test('links the final CTA to the other community', async ({ page }) => {
       const cta = page.locator('section:has([data-key="final_cta_title"]) a');
+      await expect(cta).toHaveCount(1);
       await expect(cta).toHaveAttribute('href', community.otherPath);
+      // Themed as the other community.
+      const color = await cta.evaluate((el) => getComputedStyle(el).getPropertyValue('--community-color-text').trim());
+      expect(color.toUpperCase()).toBe(community.otherTextColor);
+      await expect(cta.locator('.community-badge__icon')).toBeVisible();
     });
 
     test('category chips filter the community listings', async ({ page }) => {

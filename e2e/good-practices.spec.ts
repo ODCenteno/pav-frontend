@@ -83,6 +83,24 @@ for (const locale of LOCALES) {
       }
     });
 
+    test('closes with one CTA action per community, in its color', async ({ page }) => {
+      const actions = page.locator('section:has([data-key="final_cta_title"]) a');
+      await expect(actions).toHaveCount(2);
+      const prefix = locale.name === 'en' ? '/en/' : '/';
+      const expected = [
+        { slug: 'puerto-agua-verde', name: 'Puerto Agua Verde', textColor: '#08806D' },
+        { slug: 'rancho-san-cosme', name: 'Rancho San Cosme', textColor: '#B85206' },
+      ];
+      for (const [i, community] of expected.entries()) {
+        const action = actions.nth(i);
+        await expect(action).toHaveText(community.name);
+        await expect(action).toHaveAttribute('href', `${prefix}comunidades/${community.slug}/`);
+        const color = await action.evaluate((el) => getComputedStyle(el).getPropertyValue('--community-color-text').trim());
+        expect(color.toUpperCase()).toBe(community.textColor);
+        await expect(action.locator('.community-badge__icon')).toBeVisible();
+      }
+    });
+
     test('has a single h1 and no skipped heading levels in the main content', async ({ page }) => {
       await expect(page.locator('h1')).toHaveCount(1);
 
@@ -110,8 +128,12 @@ for (const locale of LOCALES) {
         expect(image.alt, `missing alt on ${image.src}`).not.toBeNull();
       }
 
+      // Decorative images (community badge icons next to their name) are
+      // hidden from assistive tech and keep an empty alt on purpose.
       const mainImages = await page.locator('main img').evaluateAll((imgs) =>
-        imgs.map((img) => ({ src: img.getAttribute('src'), alt: img.getAttribute('alt') ?? '' })),
+        imgs
+          .filter((img) => !img.closest('[aria-hidden="true"]'))
+          .map((img) => ({ src: img.getAttribute('src'), alt: img.getAttribute('alt') ?? '' })),
       );
       for (const image of mainImages) {
         expect(image.alt.trim(), `empty alt on content image ${image.src}`).not.toBe('');

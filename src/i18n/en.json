@@ -21,7 +21,9 @@
   "hero": {
     "title": "Puerto Agua Verde & <span class=\"highlight-text\">Rancho San Cosme</span>",
     "desc": "A natural destination in Baja California Sur where tranquility, tradition, and spectacular landscapes meet authentic coastal life. Explore beaches, local experiences, trails, and services to plan your visit.",
-    "cta": "Explore the destination"
+    "cta": "Explore the destination",
+    "explorePort": "Explore the Port",
+    "exploreRanch": "Explore the Ranch"
   },
   "categories": {
     "all": "All",
@@ -115,12 +117,15 @@
     "ariaLabel": "Interactive map of locations",
     "regionMapAlt": "Map of the Loreto region, Baja California Sur",
     "communityLink": "Visit the community",
-    "communitiesTitle": "Our communities on the map"
+    "communitiesTitle": "Our communities on the map",
+    "openInGoogleMaps": "{{name}} on Google Maps",
+    "newTab": "(opens in a new tab)"
   },
   "finalCta": {
     "title": "Your journey begins here",
     "desc": "Puerto Agua Verde and Rancho San Cosme are more than places on the map, they are living landscapes of sea, desert, and tradition. Plan your stay, explore local experiences, and discover the rhythm of authentic Baja life.",
-    "btn": "Start planning your visit"
+    "btn": "Start planning your visit",
+    "favoritesBtn": "See my favorites"
   },
   "footer": {
     "title": "Quick Links",

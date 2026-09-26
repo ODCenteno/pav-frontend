@@ -1,18 +1,62 @@
 ---
+/**
+ * Closing CTA panel, shared by the home, the community pages and the good
+ * practices page.
+ *
+ * One or two actions. A community action takes that community's color and
+ * badge; an unthemed action uses the site primary pair. The two-color bar on
+ * top echoes the home hero split.
+ */
 import "./ctaSection.css";
-import type { CtaData } from "@/types/homepage.type";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
+import SvgIcon from "@/components/icons/SvgIcon.astro";
+import { communityStyle } from "@/utils/communityTheme";
+import { communities as communityFixtures } from "@/data/communities";
+import { ctaActionsOf, type CtaAction } from "./ctaActions";
 
 interface Props {
-  data: CtaData;
+  title: string;
+  description?: string;
+  actions: CtaAction[];
+  locale?: string;
 }
 
-const { data } = Astro.props;
+const { title, description, actions, locale = Astro.currentLocale ?? "es-MX" } = Astro.props;
+const items = ctaActionsOf(actions);
+const layout = items.length > 1 ? "pair" : "single";
+const [first, second] = communityFixtures;
+const splitStyle = `--split-a: ${first.color}; --split-b: ${second.color};`;
 ---
 
-<section class="section-padding text-center">
+<section class="cta-panel-section section-padding">
   <div class="container">
-    <h2 data-key="final_cta_title">{data.title}</h2>
-    <p class="cta-description" data-key="final_cta_desc">{data.description}</p>
-    <a href={data.buttonLink || "#"} class="btn btn-primary" data-key="final_cta_btn">{data.buttonLabel}</a>
+    <div class={`cta-panel cta-panel--${layout}`} style={splitStyle}>
+      <div class="cta-panel__copy">
+        <h2 class="cta-panel__title" data-key="final_cta_title">{title}</h2>
+        {description && <p class="cta-panel__description" data-key="final_cta_desc">{description}</p>}
+      </div>
+
+      <ul class="cta-panel__actions">
+        {items.map((action) => (
+          <li>
+            <a class="cta-panel__action" href={action.href} style={communityStyle(action.community)} data-key="final_cta_btn">
+              {action.community ? (
+                <span class="cta-panel__mark">
+                  <CommunityBadge community={action.community} size="sm" locale={locale} decorative />
+                </span>
+              ) : (
+                action.icon && (
+                  <span class="cta-panel__mark cta-panel__mark--icon" aria-hidden="true">
+                    <SvgIcon name="bookmark-filled" class="cta-panel__icon" />
+                  </span>
+                )
+              )}
+              <span class="cta-panel__label">{action.label}</span>
+              <span class="cta-panel__arrow" aria-hidden="true"><SvgIcon name="arrow-right" /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </section>

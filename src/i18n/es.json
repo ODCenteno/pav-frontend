@@ -21,7 +21,9 @@
   "hero": {
     "title": "Puerto Agua Verde & <span class=\"highlight-text\">Rancho San Cosme</span>",
     "desc": "Un destino natural en Baja California Sur donde la tranquilidad, la tradición y los paisajes espectaculares se encuentran con la auténtica vida costera. Explora playas, experiencias locales, senderos y servicios para planear tu visita.",
-    "cta": "Explorar el destino"
+    "cta": "Explorar el destino",
+    "explorePort": "Explorar el Puerto",
+    "exploreRanch": "Explorar el Rancho"
   },
   "categories": {
     "all": "Todo",
@@ -115,12 +117,15 @@
     "ariaLabel": "Mapa interactivo de ubicaciones",
     "regionMapAlt": "Mapa de la región de Loreto, Baja California Sur",
     "communityLink": "Conocer la comunidad",
-    "communitiesTitle": "Nuestras comunidades en el mapa"
+    "communitiesTitle": "Nuestras comunidades en el mapa",
+    "openInGoogleMaps": "{{name}} en Google Maps",
+    "newTab": "(se abre en una pestaña nueva)"
   },
   "finalCta": {
     "title": "Tu viaje comienza aquí",
     "desc": "Puerto Agua Verde y Rancho San Cosme no son solo puntos en el mapa, son paisajes vivos de mar, desierto y tradición. Planea tu estancia, explora experiencias locales y descubre el ritmo auténtico de la vida en Baja.",
-    "btn": "Comenzar a planear mi visita"
+    "btn": "Comenzar a planear mi visita",
+    "favoritesBtn": "Ver mis favoritos"
   },
   "footer": {
     "title": "Enlaces Rápidos",
