@@ -127,3 +127,25 @@ describe("home carousel (categories.astro)", () => {
     expect(source).toMatch(/<ListingCarousel[\s\S]*listings=\{listings\}/);
   });
 });
+
+import SitesExplorer from "../SitesExplorer";
+
+describe("SitesExplorer chips", () => {
+  const html = renderToStaticMarkup(
+    <SitesExplorer
+      locale="es-MX"
+      categories={carouselChips("es-MX")}
+      translations={{ all: "Todo", noResults: "Nada", searchPlaceholder: "Buscar" }}
+    />,
+  );
+
+  it("exposes the chips as a labelled group, not a tablist", () => {
+    expect(html).toMatch(/<div class="filter-chips" role="group" aria-label="[^"]+"/);
+    expect(html).not.toContain('role="tablist"');
+  });
+
+  it("marks exactly the active chip with aria-pressed", () => {
+    expect(html.match(/aria-pressed="true"/g)).toHaveLength(1);
+    expect(html.match(/aria-pressed="false"/g)).toHaveLength(4);
+  });
+});

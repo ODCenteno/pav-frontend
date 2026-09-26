@@ -98,11 +98,12 @@ export default function SitesExplorer({ locale, categories, translations }: Site
 
       {/* Filter Chips */}
       <div className="filter-container">
-        <div className="filter-chips" role="tablist">
+        <div className="filter-chips" role="group" aria-label={isEnglish ? "Filter by category" : "Filtrar por categoría"}>
           <button 
             type="button" 
             className={`chip ${activeCategory === "all" ? "active" : ""}`} 
             onClick={() => setActiveCategory("all")}
+            aria-pressed={activeCategory === "all"}
           >
             {translations.all}
           </button>
@@ -112,6 +113,7 @@ export default function SitesExplorer({ locale, categories, translations }: Site
               type="button" 
               className={`chip ${activeCategory === c.id ? "active" : ""}`} 
               onClick={() => setActiveCategory(c.id)}
+              aria-pressed={activeCategory === c.id}
             >
               {c.label}
             </button>
