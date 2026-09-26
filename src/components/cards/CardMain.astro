@@ -6,6 +6,8 @@ import Socials from "./Socials.astro";
 import { cardContactInfo } from "./socialLinks";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 import { communityStyle } from "@/utils/communityTheme";
+import { carouselCategoryOf } from "@/components/main/categories/carousel";
+import { useTranslations } from "@/i18n/utils";
 import SvgIcon from "../icons/SvgIcon.astro";
 import { navigation } from "@/utils/navigation";
 import { renderMarkdown, stripMarkdown } from "@/utils/markdown";
@@ -65,7 +67,9 @@ const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
 const themeStyle = communityStyle(item.community);
 
 // Labels UI (idealmente se moverán a translations, pero quedan correctos por locale)
-const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
+// Toggle button: a constant label, with the saved state in aria-pressed.
+const t = useTranslations(langKey);
+const favLabel = t("featured.favorite");
 
 // Detail link construction
 const detailLink = item.href ? (item.href as any)[langKey] : navigation.siteDetail(item.slug, langKey);
@@ -87,7 +91,7 @@ const cardData = {
 const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<div class="listing-card-container" style={themeStyle} data-category={item.category?.slug || ''} data-name={title.toLowerCase()} data-description={searchDesc}>
+<div class="listing-card-container" style={themeStyle} data-category={carouselCategoryOf(item)} data-name={title.toLowerCase()} data-description={searchDesc}>
   <article
     class="listing-card"
     data-listing-type={item.type}
@@ -100,7 +104,7 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
 
       <CommunityBadge community={item.community} size="sm" locale={langKey} class="listing-community-badge" />
 
-      <button type="button" class="fav-btn" data-fav-id={item.id} aria-label={favLabel} title={favLabel} onclick="event.stopPropagation(); window.toggleFav(this)">
+      <button type="button" class="fav-btn" data-fav-id={item.id} aria-pressed="false" aria-label={favLabel} title={favLabel} onclick="event.stopPropagation(); window.toggleFav(this)">
         <SvgIcon name="bookmark-outline" class="bookmark-icon icon-outline" />
         <SvgIcon name="bookmark-filled" class="bookmark-icon icon-filled" />
       </button>
@@ -136,11 +140,9 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     const buttons = document.querySelectorAll(".fav-btn");
     buttons.forEach((btn) => {
       const id = btn.getAttribute("data-fav-id");
-      if (id && isFavorite(id)) {
-        btn.classList.add("is-favorite");
-      } else {
-        btn.classList.remove("is-favorite");
-      }
+      const saved = Boolean(id && isFavorite(id));
+      btn.classList.toggle("is-favorite", saved);
+      btn.setAttribute("aria-pressed", String(saved));
     });
   }
 
@@ -149,11 +151,8 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     const id = el.getAttribute("data-fav-id");
     if (id) {
       const isAdded = toggleFavorite(id);
-      if (isAdded) {
-        el.classList.add("is-favorite");
-      } else {
-        el.classList.remove("is-favorite");
-      }
+      el.classList.toggle("is-favorite", isAdded);
+      el.setAttribute("aria-pressed", String(isAdded));
     }
   };
 

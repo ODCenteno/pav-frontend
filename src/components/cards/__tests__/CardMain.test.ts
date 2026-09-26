@@ -106,3 +106,29 @@ describe("cardContactInfo", () => {
     expect(cardContactInfo(legacy).whatsapp).toBe("6131234567");
   });
 });
+
+describe("CardMain B4 polish", () => {
+  it("files the card under its current category slug (legacy slugs mapped)", () => {
+    expect(source).toMatch(/import \{ carouselCategoryOf \} from "@\/components\/main\/categories\/carousel"/);
+    expect(source).toMatch(/class="listing-card-container"[^>]*data-category=\{carouselCategoryOf\(item\)\}/);
+  });
+
+  it("exposes the favorite state with aria-pressed", () => {
+    expect(source).toMatch(/class="fav-btn"[^>]*aria-pressed="false"/);
+    const updates = source.match(/setAttribute\("aria-pressed", String\([^)]*\)\)/g) ?? [];
+    expect(updates.length).toBeGreaterThanOrEqual(2); // page-load sync + toggle
+  });
+
+  it("takes the favorite label from i18n", () => {
+    expect(source).toMatch(/const favLabel = t\("featured\.favorite"\)/);
+    expect(source).not.toContain("Agregar a favoritos");
+    expect(source).not.toContain("Add to favorites");
+  });
+
+  it("defines featured.favorite in both locales", () => {
+    const es = JSON.parse(readFileSync(resolve(__dirname, "../../../i18n/es.json"), "utf8"));
+    const en = JSON.parse(readFileSync(resolve(__dirname, "../../../i18n/en.json"), "utf8"));
+    expect(es.featured.favorite).toBe("Guardar en favoritos");
+    expect(en.featured.favorite).toBe("Save to favorites");
+  });
+});
