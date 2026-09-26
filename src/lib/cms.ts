@@ -11,6 +11,7 @@
  */
 
 import type { Category } from '../types/category.type';
+import { SITE_BRAND_NAME } from '../config/brand';
 import type { Listing } from '../types/listing.type';
 import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
@@ -83,7 +84,7 @@ async function _getSiteSettingsCms(): Promise<{
     social: { instagram: "https://instagram.com/guiacomunidadesloretanas", facebook: "https://facebook.com/guiacomunidadesloretanas", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
     metadata: { siteName: "Puerto Agua Verde", defaultTitle: "Puerto Agua Verde - Community Directory", defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme." },
     seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "https://guiacomunidadesloretanas.com", author: "ODCenteno", themeColor: "#5A8A80" },
-    branding: { logoImage: "", logoShortName: "Agua Verde" },
+    branding: { logoImage: "", logoShortName: SITE_BRAND_NAME },
   };
 }
 
@@ -105,7 +106,7 @@ export async function getSiteSettingsDirect(): Promise<{
     social: { instagram: "https://instagram.com/guiacomunidadesloretanas", facebook: "https://facebook.com/guiacomunidadesloretanas", googleMaps: "https://maps.google.com/?q=Puerto+Agua+Verde" },
     metadata: { siteName: "Puerto Agua Verde", defaultTitle: "Puerto Agua Verde - Community Directory", defaultDescription: "Directory for services and points of interest in Puerto Agua Verde and Rancho San Cosme." },
     seo: { keywords: "BCS, Puerto Agua Verde, Rancho San Cosme, Directorio, Turismo, Servicios", ogImage: "", ogUrl: "https://guiacomunidadesloretanas.com", author: "ODCenteno", themeColor: "#5A8A80" },
-    branding: { logoImage: "", logoShortName: "Agua Verde" },
+    branding: { logoImage: "", logoShortName: SITE_BRAND_NAME },
   };
 }
 
@@ -551,7 +552,7 @@ export async function getGlobalSettings(): Promise<{
       },
       branding: {
         logoImage: logoImageUrl,
-        logoShortName: a.logoShortName || 'Agua Verde',
+        logoShortName: a.logoShortName || SITE_BRAND_NAME,
       },
     };
   });

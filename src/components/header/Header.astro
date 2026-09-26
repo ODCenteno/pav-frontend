@@ -6,6 +6,7 @@ import { useTranslations } from "../../i18n/utils";
 import { navigation, communityPath, goodPracticesPath, favoritesPath } from "@/utils/navigation";
 import { getCommunities } from "@/lib/cms/community";
 import SvgIcon from "../icons/SvgIcon.astro";
+import { SITE_BRAND_NAME } from "@/config/brand";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 }
 
 const { logoImage, logoShortName } = Astro.props;
-const brandName = logoShortName || "Agua Verde";
+const brandName = logoShortName || SITE_BRAND_NAME;
 const logoAlt = `${brandName} Logo`;
 
 const locale = Astro.currentLocale || "es";

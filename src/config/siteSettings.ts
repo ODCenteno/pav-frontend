@@ -5,6 +5,7 @@
  */
 import { getGlobalSettings } from "@/lib/cms";
 import type { GlobalSettings } from "@/types/site-content.type";
+import { SITE_BRAND_NAME } from "./brand";
 
 export const siteSettings: GlobalSettings = {
   contact: {
@@ -33,7 +34,7 @@ export const siteSettings: GlobalSettings = {
   },
   branding: {
     logoImage: "",
-    logoShortName: "Agua Verde",
+    logoShortName: SITE_BRAND_NAME,
   },
 };
 

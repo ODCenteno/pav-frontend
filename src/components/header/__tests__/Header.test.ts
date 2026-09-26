@@ -110,3 +110,20 @@ describe("nav i18n keys", () => {
     expect(en.nav.favorites).toBe("Favorites");
   });
 });
+
+describe("brand name", () => {
+  it("shows 'Comunidades Loretanas' as the logo text in every locale", async () => {
+    const { SITE_BRAND_NAME } = await import("@/config/brand");
+    expect(SITE_BRAND_NAME).toBe("Comunidades Loretanas");
+    expect(header).toMatch(/const brandName = logoShortName \|\| SITE_BRAND_NAME/);
+    expect(header).not.toContain('"Agua Verde"');
+  });
+
+  it("defaults the CMS and local branding to the same name", () => {
+    const cms = read("../../../lib/cms.ts");
+    const settings = read("../../../config/siteSettings.ts");
+    expect(cms).not.toMatch(/logoShortName:\s*["']Agua Verde["']/);
+    expect(cms).not.toMatch(/logoShortName \|\| ["']Agua Verde["']/);
+    expect(settings).not.toMatch(/logoShortName:\s*["']Agua Verde["']/);
+  });
+});
