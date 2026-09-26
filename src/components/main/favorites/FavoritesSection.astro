@@ -1,239 +1,197 @@
 ---
-import CardMain from "../../cards/CardMain.astro";
-import { useTranslations } from "../../../i18n/utils";
-import type { Listing } from "../../../types/listing.type";
+/**
+ * Favorites carousel (brief C3 · F8), rendered on /favoritos.
+ *
+ * Every listing card is rendered on the server and hidden by default; the
+ * client script shows the ones saved in localStorage (`utils/favorites`)
+ * that match the active chip, using the pure `favoritesViewState` rules.
+ */
+import "@/components/main/categories/categories.css";
+import CardMain from "@/components/cards/CardMain.astro";
+import { carouselCategoryOf, carouselChips } from "@/components/main/categories/carousel";
+import { useTranslations } from "@/i18n/utils";
+import { navigation } from "@/utils/navigation";
+import { communityStyle } from "@/utils/communityTheme";
+import type { Community } from "@/types/community.type";
+import type { Listing } from "@/types/listing.type";
 
 interface Props {
   listings: Listing[];
+  /** Linked from the empty state. */
+  communities: Community[];
+  /** Strapi locale ("es-MX" | "en"). */
+  locale?: string;
 }
 
-const { listings } = Astro.props as Props;
-
-const locale = Astro.currentLocale ?? "es";
+const { listings, communities, locale = Astro.currentLocale ?? "es-MX" } = Astro.props;
 const t = useTranslations(locale);
 
-const categories = [
-  { id: "all", label: t("categories.all") },
-  { id: "sites", label: t("sitesPage.filters.sites") },
-  { id: "restaurants", label: t("sitesPage.filters.food") },
-  { id: "accommodation", label: t("sitesPage.filters.stay") },
-  { id: "services", label: t("sitesPage.filters.services") },
-  { id: "experiences", label: t("nav.experiences") }
-];
-
-const favEmpty = t("sitesPage.favoritesEmpty");
-const filterEmpty = t("sitesPage.empty");
+const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(locale)];
 ---
 
-<section class="favorites-section section-padding" id="favorites-section">
+<section class="favorites-section section-padding" id="favorites-section" aria-labelledby="favorites-title">
   <div class="container">
     <div class="section-header">
-      <h2 class="favorites-title">{t("gallery.title")}</h2>
-      <p class="favorites-subtitle">{t("sitesPage.sections.favorites")}</p>
+      <h2 id="favorites-title" class="favorites-title">{t("favoritesPage.title")}</h2>
+      <p class="favorites-subtitle">{t("favoritesPage.subtitle")}</p>
     </div>
 
-    <!-- Category Chips for Favorites -->
-    <div class="filter-container">
-      <div class="filter-chips" id="favorite-chips">
-        {categories.map(cat => (
-          <button type="button" class="chip" data-category-filter={cat.id} class:list={{ active: cat.id === 'all' }}>
-            {cat.label}
-          </button>
-        ))}
-      </div>
-    </div>
-
-    <!-- Favorites Carousel - All cards rendered server-side; CSS hides them by default; JS shows only favorites -->
-    <div id="favorites-carousel-container" class="carousel-container favorites-empty">
-      {listings.map((item) => (
-        <div
-          class="carousel-item favorite-card-wrapper"
-          data-fav-id={String(item.id)}
-          data-category={item.category?.slug || ""}
+    <div class="filter-chips" role="group" aria-label={t("favoritesPage.filterLabel")}>
+      {chips.map((chip) => (
+        <button
+          type="button"
+          class:list={["chip", { active: chip.id === "all" }]}
+          data-category-filter={chip.id}
+          aria-pressed={chip.id === "all" ? "true" : "false"}
         >
+          {chip.label}
+        </button>
+      ))}
+    </div>
+
+    <div id="favorites-carousel" class="carousel-container" aria-live="polite">
+      {listings.map((item) => (
+        <div class="carousel-slide" data-fav-id={String(item.id)} data-category={carouselCategoryOf(item)}>
           <CardMain item={item} currentLang={locale} />
         </div>
       ))}
     </div>
 
-    <!-- Empty State - Hidden by default; JS shows it only when appropriate -->
-    <div id="favorites-empty-state" class="empty-state" data-empty-text={favEmpty} data-filter-text={filterEmpty} style="display: none;">
-      <div class="empty-state__content">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-        <p id="favorites-empty-text">{favEmpty}</p>
+    <div
+      id="favorites-empty-state"
+      class="favorites-empty"
+      data-empty-text={t("favoritesPage.empty")}
+      data-filter-text={t("favoritesPage.emptyFiltered")}
+      hidden
+    >
+      <p id="favorites-empty-text" class="favorites-empty__text" role="status">{t("favoritesPage.empty")}</p>
+      <div class="favorites-empty__links">
+        {communities.map((community) => (
+          <a
+            class="favorites-empty__link"
+            href={navigation.community(community.slug, locale)}
+            style={communityStyle(community)}
+          >
+            {t("favoritesPage.exploreCommunity", { name: community.name })}
+          </a>
+        ))}
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  .favorites-section {
-    background-color: var(--color-bone);
-    border-bottom: 1px solid transparent;
-    background-image: var(--gradient-sea-border);
-    background-size: 100% 1px;
-    background-repeat: no-repeat;
-    background-position: bottom;
-  }
-
-  /* Hide favorite cards by default; JS adds .is-favorite-visible to show them */
-  .favorite-card-wrapper {
-    display: none;
-  }
-
-  .favorite-card-wrapper.is-favorite-visible {
-    display: block;
-  }
-
-  .favorites-empty .favorite-card-wrapper {
-    /* No override: keep cards hidden until JS runs */
-  }
-
   .favorites-title {
     font-size: var(--text-2xl);
     margin-bottom: var(--space-xs);
-    position: relative;
-    padding-left: var(--space-md);
-  }
-
-  .favorites-title::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 80%;
-    background: var(--gradient-sea-bar);
-    border-radius: 2px;
   }
 
   .favorites-subtitle {
-    color: var(--color-primary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: var(--color-on-surface-variant);
     font-size: var(--text-sm);
+    margin: 0 0 var(--space-md);
   }
 
-  .empty-state {
-    padding: var(--space-xl) 0;
+  /* Cards stay hidden until the script marks them as visible favorites.
+     More specific than categories.css `.carousel-container > .carousel-slide`. */
+  .favorites-section .carousel-slide:not(.is-favorite-visible) {
+    display: none;
+  }
+
+  .chip:focus-visible {
+    outline: 3px solid var(--color-on-surface);
+    outline-offset: 2px;
+  }
+
+  .favorites-empty {
+    padding: var(--space-xl) var(--space-md);
     text-align: center;
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-lg);
-    background: var(--white);
-    background-image: var(--gradient-sea-glass);
+    background: var(--gradient-sea-glass);
   }
 
-  .empty-state__content {
-    max-width: 400px;
-    margin: 0 auto;
-    color: var(--secondary-text);
+  .favorites-empty[hidden] {
+    display: none;
   }
 
-  .empty-icon {
-    margin-bottom: var(--space-sm);
-    opacity: 0.5;
-    color: var(--color-primary);
+  .favorites-empty__text {
+    max-width: 440px;
+    margin: 0 auto var(--space-md);
+    color: var(--color-on-surface);
   }
 
-  .filter-container {
-    text-align: center;
-  }
-
-  .carousel-container {
+  .favorites-empty__links {
     display: flex;
-    gap: var(--space-md);
-    overflow-x: auto;
-    padding: var(--space-sm) 0 0;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm);
   }
 
-  .carousel-container::-webkit-scrollbar { display: none; }
-
-  .carousel-item {
-    flex: 0 0 300px;
-    scroll-snap-align: start;
+  /* White text on the community TEXT color keeps AA (>= 4.5:1). */
+  .favorites-empty__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-full);
+    background: var(--community-color-text);
+    color: var(--white);
+    font-weight: 600;
+    text-decoration: none;
   }
 
-  @media (min-width: 768px) {
-    .carousel-item {
-      flex: 0 0 340px;
-    }
+  .favorites-empty__link:focus-visible {
+    outline: 3px solid var(--community-color-text);
+    outline-offset: 3px;
   }
 </style>
 
 <script>
-  import { getFavorites } from "../../../utils/favorites";
+  import { getFavorites } from "@/utils/favorites";
+  import { favoritesViewState } from "@/components/main/favorites/favoritesView";
 
   function initFavoritesSection() {
     const section = document.getElementById("favorites-section");
-    if (!section) return;
+    if (!section || section.dataset.ready === "true") return;
+    section.dataset.ready = "true";
 
-    const carousel = document.getElementById("favorites-carousel-container");
-    const emptyState = document.getElementById("favorites-empty-state");
-    const emptyText = document.getElementById("favorites-empty-text");
-    const cardWrappers = section.querySelectorAll<HTMLElement>(".favorite-card-wrapper");
-    const chips = section.querySelectorAll<HTMLElement>("[data-category-filter]");
-
-    const favEmptyMsg = emptyState?.dataset.emptyText || "";
-    const filterEmptyMsg = emptyState?.dataset.filterText || "";
+    const slides = Array.from(section.querySelectorAll<HTMLElement>("[data-fav-id]"));
+    const chips = Array.from(section.querySelectorAll<HTMLButtonElement>("[data-category-filter]"));
+    const emptyState = section.querySelector<HTMLElement>("#favorites-empty-state");
+    const emptyText = section.querySelector<HTMLElement>("#favorites-empty-text");
+    const cards = slides.map((el) => ({ id: el.dataset.favId ?? "", category: el.dataset.category ?? "" }));
 
     let activeFilter = "all";
 
-    function updateFavorites() {
-      const favorites = getFavorites();
-      const favSet = new Set(favorites);
-      let visibleCount = 0;
+    function render() {
+      const state = favoritesViewState(cards, getFavorites(), activeFilter);
+      const visible = new Set(state.visibleIds);
+      slides.forEach((el) => el.classList.toggle("is-favorite-visible", visible.has(el.dataset.favId ?? "")));
 
-      cardWrappers.forEach((el) => {
-        const id = el.getAttribute("data-fav-id") || "";
-        const category = el.getAttribute("data-category") || "";
-        const isFav = id !== "" && favSet.has(id);
-        const matchesFilter = activeFilter === "all" || category === activeFilter;
-
-        if (isFav && matchesFilter) {
-          el.classList.add("is-favorite-visible");
-          visibleCount++;
-        } else {
-          el.classList.remove("is-favorite-visible");
-        }
-      });
-
-      const noFavoritesAtAll = favorites.length === 0;
-      const filterHasNoMatches = visibleCount === 0 && favorites.length > 0;
-      const showEmpty = noFavoritesAtAll || filterHasNoMatches;
-
-      if (emptyState) {
-        emptyState.style.display = showEmpty ? "block" : "none";
-      }
-      if (emptyText) {
-        emptyText.textContent = noFavoritesAtAll ? favEmptyMsg : filterEmptyMsg;
-      }
-      if (carousel) {
-        carousel.classList.toggle("favorites-empty", visibleCount === 0);
+      if (emptyState) emptyState.hidden = state.empty === "none";
+      if (emptyText && emptyState) {
+        emptyText.textContent =
+          state.empty === "no-matches" ? emptyState.dataset.filterText ?? "" : emptyState.dataset.emptyText ?? "";
       }
     }
 
-    // Filter chip handlers
-    chips.forEach(chip => {
+    chips.forEach((chip) => {
       chip.addEventListener("click", () => {
-        activeFilter = chip.getAttribute("data-category-filter") || "all";
-        chips.forEach(c => c.classList.remove("active"));
-        chip.classList.add("active");
-        updateFavorites();
+        activeFilter = chip.dataset.categoryFilter ?? "all";
+        chips.forEach((c) => {
+          const active = c === chip;
+          c.classList.toggle("active", active);
+          c.setAttribute("aria-pressed", String(active));
+        });
+        render();
       });
     });
 
-    // Sync when favorites change in another component
-    window.addEventListener("favorites-updated", updateFavorites);
-
-    // Run on init
-    updateFavorites();
+    window.addEventListener("favorites-updated", render);
+    render();
   }
 
-  document.addEventListener("DOMContentLoaded", initFavoritesSection);
   document.addEventListener("astro:page-load", initFavoritesSection);
+  initFavoritesSection();
 </script>

@@ -1,0 +1,30 @@
+---
+export const prerender = true;
+
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
+import FavoritesSection from "@/components/main/favorites/FavoritesSection.astro";
+import { useTranslations } from "@/i18n/utils";
+import { getCommunities, getListingsWithFallback, toStrapiLocale } from "@/lib/cms";
+
+const locale = toStrapiLocale(Astro.currentLocale || "es");
+const t = useTranslations(locale);
+
+const [listings, communities] = await Promise.all([getListingsWithFallback(locale), getCommunities(locale)]);
+---
+
+<BaseLayout
+  siteTitle={t("favoritesPage.seo.siteTitle")}
+  ogTitle={t("favoritesPage.seo.ogTitle")}
+  siteDescription={t("favoritesPage.seo.siteDescription")}
+  ogDescription={t("favoritesPage.seo.ogDescription")}
+>
+  <HeroPage
+    slot="Hero"
+    title={t("favoritesPage.heroTitle")}
+    description={t("favoritesPage.heroDesc")}
+    backgroundImage="/images/pav-01.jpg"
+  />
+
+  <FavoritesSection listings={listings} communities={communities} locale={locale} />
+</BaseLayout>
