@@ -1,95 +1,120 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
-test.describe('Favorites Functionality', () => {
-  test('should add a site to favorites', async ({ page }) => {
-    await page.goto('/sitios');
+// Favorites page (brief C3 · F8): /favoritos and /en/favoritos.
+// Favorites live in localStorage under `pav_favorites` (src/utils/favorites.ts).
+// Every listing card is rendered on the server and hidden until the client
+// script shows the saved ones, so card-based tests need listings in the build
+// (CMS data, or STRAPI_USE_DEV_FALLBACK=true); they skip otherwise.
 
-    const favoriteButton = page.locator('[aria-label*="favorite" i], [aria-label*="guardar" i], button[class*="favorite"]').first();
+const STORAGE_KEY = 'pav_favorites';
 
-    if (await favoriteButton.isVisible()) {
-      const initialState = await favoriteButton.getAttribute('aria-pressed') || 'false';
+/** Contract category slugs in chip order after "all" (contract §1). */
+const CONTRACT_CATEGORIES = ['experiences', 'gastronomy', 'services', 'crafts'];
 
-      await favoriteButton.click();
-      await page.waitForTimeout(300);
+async function seedFavorites(page: Page, ids: string[]) {
+  await page.evaluate(
+    ([key, value]) => window.localStorage.setItem(key, value),
+    [STORAGE_KEY, JSON.stringify(ids)] as const,
+  );
+  await page.reload();
+}
 
-      const newState = await favoriteButton.getAttribute('aria-pressed') || 'false';
-      expect(newState).not.toBe(initialState);
-    }
-  });
+const slides = (page: Page) => page.locator('#favorites-section .carousel-slide');
+const emptyState = (page: Page) => page.locator('#favorites-empty-state');
 
-  test('should remove a site from favorites', async ({ page }) => {
-    await page.goto('/sitios');
+for (const locale of [
+  { path: '/favoritos/', lang: 'es', communityPrefix: '/comunidades/' },
+  { path: '/en/favoritos/', lang: 'en', communityPrefix: '/en/comunidades/' },
+]) {
+  test.describe(`Favorites page ${locale.path}`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(locale.path);
+    });
 
-    const favoriteButton = page.locator('[aria-label*="favorite" i], [aria-label*="guardar" i], button[class*="favorite"]').first();
-
-    if (await favoriteButton.isVisible()) {
-      await favoriteButton.click();
-      await page.waitForTimeout(300);
-
-      await favoriteButton.click();
-      await page.waitForTimeout(300);
-    }
-  });
-
-  test('should persist favorites in localStorage', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const favoriteButton = page.locator('[aria-label*="favorite" i], button[class*="favorite"]').first();
-
-    if (await favoriteButton.isVisible()) {
-      await favoriteButton.click();
-      await page.waitForTimeout(300);
-
-      const localStorage = await page.evaluate(() => {
-        return window.localStorage.getItem('favorites');
-      });
-
-      expect(localStorage).toBeTruthy();
-    }
-  });
-
-  test('should display favorites section on homepage', async ({ page }) => {
-    await page.goto('/');
-
-    const favoritesSection = page.locator('[class*="favorites" i], [class*="guardados" i]');
-
-    if (await favoritesSection.isVisible()) {
-      await expect(favoritesSection).toBeVisible();
-    }
-  });
-
-  test('should navigate to favorites and see saved items', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const favoriteButton = page.locator('[aria-label*="favorite" i], button[class*="favorite"]').first();
-
-    if (await favoriteButton.isVisible()) {
-      await favoriteButton.click();
-      await page.waitForTimeout(300);
-
-      const favoritesLink = page.getByRole('link', { name: /favorites|guardados/i }).first();
-
-      if (await favoritesLink.isVisible()) {
-        await favoritesLink.click();
-        await page.waitForURL(/favorites|guardados/);
+    test('renders a single h1 and the 4 contract category chips plus "all"', async ({ page }) => {
+      await expect(page.locator('html')).toHaveAttribute('lang', locale.lang);
+      await expect(page.locator('h1')).toHaveCount(1);
+      const chips = page.locator('#favorites-section [data-category-filter]');
+      await expect(chips).toHaveCount(5);
+      await expect(chips.first()).toHaveAttribute('data-category-filter', 'all');
+      await expect(chips.first()).toHaveAttribute('aria-pressed', 'true');
+      for (const [i, slug] of CONTRACT_CATEGORIES.entries()) {
+        await expect(chips.nth(i + 1)).toHaveAttribute('data-category-filter', slug);
       }
-    }
+    });
+
+    test('shows the empty state with links to both community pages', async ({ page }) => {
+      await expect(emptyState(page)).toBeVisible();
+      const links = emptyState(page).locator('a');
+      await expect(links).toHaveCount(2);
+      for (const href of await links.evaluateAll((els) => els.map((el) => el.getAttribute('href')))) {
+        expect(href).toMatch(new RegExp(`^${locale.communityPrefix}`));
+      }
+      await expect(slides(page).filter({ visible: true })).toHaveCount(0);
+    });
+
+    test('ignores saved ids that are no longer on the page', async ({ page }) => {
+      await seedFavorites(page, ['does-not-exist']);
+      await expect(emptyState(page)).toBeVisible();
+      await expect(slides(page).filter({ visible: true })).toHaveCount(0);
+    });
+
+    test('shows saved cards and filters them by category', async ({ page }) => {
+      const count = await slides(page).count();
+      test.skip(count === 0, 'No listings in this build');
+
+      const first = slides(page).first();
+      const id = (await first.getAttribute('data-fav-id')) ?? '';
+      const category = (await first.getAttribute('data-category')) ?? '';
+      await seedFavorites(page, [id]);
+
+      const saved = page.locator(`#favorites-section .carousel-slide[data-fav-id="${id}"]`);
+      await expect(saved).toBeVisible();
+      await expect(emptyState(page)).toBeHidden();
+
+      // A chip for another category hides the card and explains why.
+      const other = CONTRACT_CATEGORIES.find((c) => c !== category)!;
+      const otherChip = page.locator(`#favorites-section [data-category-filter="${other}"]`);
+      await otherChip.click();
+      await expect(otherChip).toHaveAttribute('aria-pressed', 'true');
+      await expect(saved).toBeHidden();
+      await expect(emptyState(page)).toBeVisible();
+
+      await page.locator('#favorites-section [data-category-filter="all"]').click();
+      await expect(saved).toBeVisible();
+    });
+
+    test('removing a favorite from its card updates the list', async ({ page }) => {
+      const count = await slides(page).count();
+      test.skip(count === 0, 'No listings in this build');
+
+      const id = (await slides(page).first().getAttribute('data-fav-id')) ?? '';
+      await seedFavorites(page, [id]);
+      const saved = page.locator(`#favorites-section .carousel-slide[data-fav-id="${id}"]`);
+      await expect(saved).toBeVisible();
+
+      await saved.locator('.fav-btn').click();
+      await expect(saved).toBeHidden();
+      await expect(emptyState(page)).toBeVisible();
+      const stored = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+      expect(JSON.parse(stored ?? '[]')).not.toContain(id);
+    });
+  });
+}
+
+test.describe('Sites page', () => {
+  test('no longer renders the favorites section', async ({ page }) => {
+    await page.goto('/sitios/');
+    await expect(page.locator('#favorites-section')).toHaveCount(0);
   });
 
-  test('should show favorite count in UI', async ({ page }) => {
-    await page.goto('/sitios');
+  test('saving a card stores it under pav_favorites', async ({ page }) => {
+    await page.goto('/sitios/');
+    const button = page.locator('.fav-btn').first();
+    test.skip((await button.count()) === 0, 'No listings in this build');
 
-    await page.goto('/');
-    const favoriteButton = page.locator('[aria-label*="favorite" i], button[class*="favorite"]').first();
-
-    if (await favoriteButton.isVisible()) {
-      await favoriteButton.click();
-      await page.waitForTimeout(300);
-
-      const badge = page.locator('[class*="badge"]:has-text("1"), [class*="count"]:has-text("1")');
-      const countExists = await badge.count() > 0;
-
-      expect(countExists || true);
-    }
+    await button.click();
+    const stored = await page.evaluate((key) => window.localStorage.getItem(key), STORAGE_KEY);
+    expect(JSON.parse(stored ?? '[]')).toHaveLength(1);
   });
 });
