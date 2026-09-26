@@ -20,7 +20,6 @@ import {
   historyProps,
   listingsForCommunity,
   otherCommunity,
-  quickFactsImages,
   sectionHeader,
 } from "./communityPage";
 
@@ -99,7 +98,7 @@ const galleryLabels = {
     {community.highlights.length > 0 && <Highlights header={highlightsHeader} items={community.highlights} />}
 
     {community.quickFacts.length > 0 && (
-      <QuickFacts header={quickFactsHeader} items={community.quickFacts} images={quickFactsImages(community)} />
+      <QuickFacts header={quickFactsHeader} items={community.quickFacts} theme={community} />
     )}
 
     <CommunityGallery client:visible photos={community.gallery} communityName={name} labels={galleryLabels} />

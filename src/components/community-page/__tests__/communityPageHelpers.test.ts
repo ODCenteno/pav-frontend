@@ -6,7 +6,6 @@ import {
   historyProps,
   listingsForCommunity,
   otherCommunity,
-  quickFactsImages,
   sectionHeader,
 } from "../communityPage";
 
@@ -115,13 +114,3 @@ describe("finalCtaFor", () => {
   });
 });
 
-describe("quickFactsImages", () => {
-  it("takes the first two gallery photos", () => {
-    expect(quickFactsImages(community({ gallery: ["/a", "/b", "/c"], heroImage: "/h" }))).toEqual(["/a", "/b"]);
-  });
-
-  it("fills in with the hero image", () => {
-    expect(quickFactsImages(community({ gallery: ["/a"], heroImage: "/h" }))).toEqual(["/a", "/h"]);
-    expect(quickFactsImages(community())).toEqual([]);
-  });
-});

@@ -45,10 +45,3 @@ export function historyProps(community: Community, fallbackTitle: string) {
 export function finalCtaFor(community: Community, fallback: CtaData | null): CtaData | null {
   return community.finalCta?.title?.trim() ? community.finalCta : fallback;
 }
-
-/** Up to two photos for the QuickFacts bento: gallery first, then the hero. */
-export function quickFactsImages(community: Community): string[] {
-  const images = community.gallery.slice(0, 2);
-  if (images.length < 2 && community.heroImage) images.push(community.heroImage);
-  return images;
-}
