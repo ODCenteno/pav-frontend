@@ -371,8 +371,8 @@ describe("transformCommunityMember — community, shortDescription, phone, whats
       }),
       "es-MX",
     );
-    expect(out.phone).toBe("+52 614 123 4567");
-    expect(out.whatsapp).toBe("526141234567");
+    expect(out.phone).toBe("+526141234567");
+    expect(out.whatsapp).toBe("+526141234567");
   });
 
   it("falls back to social links (platform phone/whatsapp) when contact is absent", () => {
@@ -385,8 +385,8 @@ describe("transformCommunityMember — community, shortDescription, phone, whats
       }),
       "es-MX",
     );
-    expect(out.whatsapp).toBe("526141234567");
-    expect(out.phone).toBe("+52 614 123 4567");
+    expect(out.whatsapp).toBe("+526141234567");
+    expect(out.phone).toBe("+526141234567");
   });
 
   it("leaves phone/whatsapp undefined when neither source has them", () => {

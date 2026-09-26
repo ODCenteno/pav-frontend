@@ -142,8 +142,8 @@ describe("transformListing (sitio-ejemplo-carga-assets fixture)", () => {
     expect(out.category?.slug).toBe("accommodation");
 
     // Contact → drives SiteSummary + StickyActionBar
-    expect(out.contact?.whatsapp).toBe("521234567890");
-    expect(out.contact?.phone).toBe("+52 614 123 4567");
+    expect(out.contact?.whatsapp).toBe("+521234567890");
+    expect(out.contact?.phone).toBe("+526141234567");
     expect(out.contact?.email).toBe("info@example.com");
 
     // Tags → plain localized strings

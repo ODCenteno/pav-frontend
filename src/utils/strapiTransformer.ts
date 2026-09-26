@@ -28,8 +28,9 @@ import type {
   RecommendationItem,
   RelatedMemberRef,
 } from '../types/community.type';
-import type { SocialLink } from '../types/common.type';
+import type { ContactInfo, SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
+import { composePhone, formatPhone, normalizePhone, telHref, whatsappHref } from './phone';
 import { getCommunityBySlug } from '../data/communities';
 import { LOCALITY_TO_COMMUNITY } from '../data/categories';
 
@@ -187,8 +188,14 @@ export interface TagItemAttributes {
 }
 
 export interface ContactInfoAttributes {
+  /** Deprecated free text (contract §5b); fallback for the fields below. */
   whatsapp?: string;
+  /** Deprecated free text (contract §5b); fallback for the fields below. */
   phone?: string;
+  phoneCountryCode?: string;
+  phoneNumber?: string;
+  whatsappCountryCode?: string;
+  whatsappNumber?: string;
   email?: string;
   instagram?: string;
   facebook?: string;
@@ -637,7 +644,8 @@ export function transformListing(
   const catItem: StrapiItem<CategoryAttributes> | null | undefined =
     catRaw && 'data' in catRaw ? (catRaw.data ?? null) : catRaw;
 
-  const derivedSocial = contactToSocialLinks(a.contact);
+  const contact = normalizeContact(a.contact);
+  const derivedSocial = contactToSocialLinks(contact);
 
   // Contract §5: community relation (fixture-completed). hideContact comes
   // only from the listing flag — the migration sets it for services, and
@@ -659,7 +667,7 @@ export function transformListing(
       strFallback(t.label || t.label_es, esAttrs?.tags?.[i]?.label || esAttrs?.tags?.[i]?.label_es),
     ),
     location: normalizeLocation(a.location),
-    contact: a.contact,
+    contact,
     pricing: a.price ? { price: a.price } : undefined,
     media: mainImageUrl || galleryUrls.length > 0 || logoUrls.length > 0
       ? { mainImageUrl, galleryUrls, logoUrls }
@@ -763,42 +771,50 @@ function locText(value: any, l: string): string {
 }
 
 /**
- * Convert a listing's `contact` component fields into SocialLink entries so a
+ * Contract §5b: resolve `phone` / `whatsapp` to E.164. The new
+ * `*CountryCode` + `*Number` fields win; the legacy free-text field is the
+ * fallback, normalized with the shared rules. Values that cannot be
+ * normalized are dropped, and the raw contract fields stay out of the view
+ * model.
+ */
+function normalizeContact(contact?: ContactInfoAttributes): ContactInfo | undefined {
+  if (!contact) return undefined;
+  const { phoneCountryCode, phoneNumber, whatsappCountryCode, whatsappNumber, ...rest } = contact;
+  return {
+    ...rest,
+    phone: composePhone(phoneCountryCode, phoneNumber) ?? normalizePhone(contact.phone),
+    whatsapp: composePhone(whatsappCountryCode, whatsappNumber) ?? normalizePhone(contact.whatsapp),
+  };
+}
+
+/**
+ * Convert a listing's normalized `contact` (see `normalizeContact`) into SocialLink entries so a
  * single `item.social` array feeds every UI surface (cards, detail page,
  * "Follow us" block). Empty / falsy values are skipped. The `handle` and
  * `url` fields are accepted as either bare handles/usernames (no leading @)
  * or full URLs — the URL is synthesized with a sensible platform prefix
  * when only the handle is provided.
  *
- *   - `whatsapp` → `https://wa.me/<digits>`
- *   - `phone`    → `tel:<digits>`
+ *   - `whatsapp` → `https://wa.me/52XXXXXXXXXX` (handle `+52 XXX XXX XXXX`)
+ *   - `phone`    → `tel:+52XXXXXXXXXX`         (handle `+52 XXX XXX XXXX`)
  *   - `email`    → `mailto:<email>`
  *   - `instagram`→ `https://instagram.com/<handle>`
  *   - `facebook` → `https://facebook.com/<handle or URL>`
  *   - `tiktok`   → `https://tiktok.com/@<handle>`
  *   - `website`  → URL as-is
  */
-function contactToSocialLinks(contact?: ContactInfoAttributes): SocialLinkAttributes[] {
+function contactToSocialLinks(contact?: ContactInfo): SocialLinkAttributes[] {
   if (!contact) return [];
   const out: SocialLinkAttributes[] = [];
 
-  const whatsapp = (contact.whatsapp || '').trim();
-  if (whatsapp) {
-    const digits = whatsapp.replace(/\D/g, '');
-    out.push({
-      platform: 'whatsapp',
-      handle: digits,
-      url: `https://wa.me/${digits}`,
-    });
+  const whatsappUrl = whatsappHref(contact.whatsapp);
+  if (whatsappUrl) {
+    out.push({ platform: 'whatsapp', handle: formatPhone(contact.whatsapp), url: whatsappUrl });
   }
 
-  const phone = (contact.phone || '').trim();
-  if (phone) {
-    out.push({
-      platform: 'phone',
-      handle: phone,
-      url: `tel:${phone.replace(/\s+/g, '')}`,
-    });
+  const phoneUrl = telHref(contact.phone);
+  if (phoneUrl) {
+    out.push({ platform: 'phone', handle: formatPhone(contact.phone), url: phoneUrl });
   }
 
   const email = (contact.email || '').trim();
@@ -954,17 +970,18 @@ export function transformCommunityMember(
       ? communityRefFromSlug(LOCALITY_TO_COMMUNITY[a.locality as keyof typeof LOCALITY_TO_COMMUNITY] ?? '', locale)
       : undefined);
 
-  // Phone/whatsapp: the contact component carries them as separate
-  // attributes (ContactInfoAttributes.phone/.whatsapp); when contact is not
-  // populated, fall back to social links with the matching platform.
-  const derivedSocial = contactToSocialLinks(a.contact);
+  // Phone/whatsapp (contract §5b): E.164 from the contact component; when
+  // it has none, fall back to the social links with the matching platform,
+  // normalized with the same rules.
+  const contact = normalizeContact(a.contact);
+  const derivedSocial = contactToSocialLinks(contact);
   const rawSocial = Array.isArray(a.social) ? a.social : [];
   const fromSocial = (platform: 'phone' | 'whatsapp'): string | undefined => {
-    const link = [...derivedSocial, ...rawSocial].find((s) => s.platform === platform);
-    return link?.handle || link?.url || undefined;
+    const link = rawSocial.find((s) => s.platform === platform);
+    return normalizePhone(link?.handle) ?? normalizePhone(link?.url);
   };
-  const phone = ((a.contact?.phone || '').trim() || fromSocial('phone') || '') || undefined;
-  const whatsapp = ((a.contact?.whatsapp || '').trim() || fromSocial('whatsapp') || '') || undefined;
+  const phone = contact?.phone ?? fromSocial('phone');
+  const whatsapp = contact?.whatsapp ?? fromSocial('whatsapp');
 
   return {
     id,

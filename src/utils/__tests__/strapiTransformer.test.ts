@@ -975,8 +975,8 @@ expect(out.name.en).toBe("Experiencias");
       const out = transformListing(item as any, "es");
       const wa = out.social!.find((s) => s.platform === "whatsapp");
       expect(wa).toBeTruthy();
-      expect(wa?.handle).toBe("5216131226237");
-      expect(wa?.url).toBe("https://wa.me/5216131226237");
+      expect(wa?.handle).toBe("+52 613 122 6237");
+      expect(wa?.url).toBe("https://wa.me/526131226237");
     });
 
     it("synthesizes phone and email SocialLinks from contact fields", () => {
@@ -995,7 +995,7 @@ expect(out.name.en).toBe("Experiencias");
       const out = transformListing(item as any, "es");
       const platforms = out.social!.map((s) => s.platform).sort();
       expect(platforms).toEqual(["email", "phone"]);
-      expect(out.social!.find((s) => s.platform === "phone")?.url).toBe("tel:6131226237");
+      expect(out.social!.find((s) => s.platform === "phone")?.url).toBe("tel:+526131226237");
       expect(out.social!.find((s) => s.platform === "email")?.url).toBe("mailto:info@example.com");
     });
 
