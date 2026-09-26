@@ -1,145 +1,77 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+/**
+ * Site-detail gallery lightbox. Galleries live on /sitios/<slug>, not on the
+ * /sitios listing. The first detail page with a gallery is discovered from the
+ * listing; builds without CMS data have none, so the suite skips explicitly
+ * instead of passing without asserting anything.
+ */
+async function openFirstGallery(page: Page) {
+  await page.goto('/sitios/');
+  // Cards open their detail page from script data, not from <a href>, so the
+  // detail slugs are collected from the rendered HTML.
+  const html = await page.content();
+  const slugs = [...new Set([...html.matchAll(/\/sitios\/([a-z0-9-]+)/g)].map((m) => m[1]))];
+  for (const slug of slugs) {
+    await page.goto(`/sitios/${slug}/`);
+    if ((await page.locator('.site-gallery__item').count()) > 0) {
+      // The gallery is a client:load island: clicks before hydration do nothing.
+      await page.waitForFunction(
+        () => !document.querySelector('astro-island[component-url*="GalleryManager"][ssr]'),
+      );
+      return true;
+    }
+  }
+  return false;
+}
+
+const lightbox = (page: Page) => page.locator('.lightbox[role="dialog"]');
 
 test.describe('Gallery Lightbox', () => {
-  test('should open lightbox when clicking gallery image', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img, [class*="image"]:not([class*="icon"])').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      const lightbox = page.locator('[class*="lightbox"], [role="dialog"]').first();
-      await expect(lightbox).toBeVisible();
-    }
+  test.beforeEach(async ({ page }) => {
+    test.skip(!(await openFirstGallery(page)), 'no listing with a gallery in this build (no CMS data)');
   });
 
-  test('should close lightbox when clicking close button', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img, [class*="image"]:not([class*="icon"])').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      const closeButton = page.locator('[class*="lightbox"] button[aria-label*="close" i], [class*="lightbox"] [aria-label*="cerrar" i]');
-
-      if (await closeButton.isVisible()) {
-        await closeButton.click();
-        await page.waitForTimeout(300);
-
-        const lightbox = page.locator('[class*="lightbox"], [role="dialog"]').first();
-        if (await lightbox.count() > 0) {
-          await expect(lightbox).not.toBeVisible();
-        }
-      }
-    }
+  test('opens from a gallery thumbnail and shows the image counter', async ({ page }) => {
+    await page.locator('.site-gallery__item').first().click();
+    await expect(lightbox(page)).toBeVisible();
+    await expect(page.locator('.lightbox__image')).toBeVisible();
+    await expect(page.locator('.lightbox__counter')).toContainText('1');
   });
 
-  test('should close lightbox when clicking overlay', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      const overlay = page.locator('[class*="lightbox__overlay"], [class*="overlay"]').first();
-
-      if (await overlay.isVisible()) {
-        await overlay.click({ position: { x: 10, y: 10 } });
-        await page.waitForTimeout(300);
-      }
-    }
+  test('opens with the keyboard', async ({ page }) => {
+    await page.locator('.site-gallery__item').first().focus();
+    await page.keyboard.press('Enter');
+    await expect(lightbox(page)).toBeVisible();
   });
 
-  test('should navigate to next image', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      const nextButton = page.locator('[class*="lightbox__nav"].next, [class*="lightbox__nav--next"], button[aria-label*="next" i]').first();
-
-      if (await nextButton.isVisible()) {
-        const counterBefore = await page.locator('[class*="lightbox__counter"]').textContent();
-        await nextButton.click();
-        await page.waitForTimeout(300);
-
-        const counterAfter = await page.locator('[class*="lightbox__counter"]').textContent();
-        expect(counterAfter).not.toBe(counterBefore);
-      }
-    }
+  test('moves to the next image with the arrow button', async ({ page, isMobile }) => {
+    test.skip(!!isMobile, 'nav buttons are hidden on mobile by design (swipe gestures)');
+    await page.locator('.site-gallery__item').first().click();
+    const counter = page.locator('.lightbox__counter');
+    const before = await counter.textContent();
+    await page.locator('.lightbox__nav.next').click();
+    await expect(counter).not.toHaveText(before ?? '');
   });
 
-  test('should navigate to previous image', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      const nextButton = page.locator('[class*="lightbox__nav"].next, button[aria-label*="next" i]').first();
-
-      if (await nextButton.isVisible()) {
-        await nextButton.click();
-        await page.waitForTimeout(300);
-      }
-
-      const prevButton = page.locator('[class*="lightbox__nav"].prev, button[aria-label*="previous" i]').first();
-
-      if (await prevButton.isVisible()) {
-        const counterBefore = await page.locator('[class*="lightbox__counter"]').textContent();
-        await prevButton.click();
-        await page.waitForTimeout(300);
-
-        const counterAfter = await page.locator('[class*="lightbox__counter"]').textContent();
-        expect(counterAfter).not.toBe(counterBefore);
-      }
-    }
+  test('moves to the next image with the ArrowRight key', async ({ page }) => {
+    await page.locator('.site-gallery__item').first().click();
+    const counter = page.locator('.lightbox__counter');
+    const before = await counter.textContent();
+    await page.keyboard.press('ArrowRight');
+    await expect(counter).not.toHaveText(before ?? '');
   });
 
-  test('should close lightbox with Escape key', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      await page.keyboard.press('Escape');
-      await page.waitForTimeout(300);
-
-      const lightbox = page.locator('[class*="lightbox"]').first();
-      if (await lightbox.count() > 0) {
-        await expect(lightbox).not.toBeVisible();
-      }
-    }
+  test('closes with the close button', async ({ page }) => {
+    await page.locator('.site-gallery__item').first().click();
+    await page.locator('.lightbox__close').click();
+    await expect(lightbox(page)).toHaveCount(0);
   });
 
-  test('should display image counter', async ({ page }) => {
-    await page.goto('/sitios');
-
-    const galleryImage = page.locator('[class*="gallery"] img').first();
-
-    if (await galleryImage.isVisible()) {
-      await galleryImage.click();
-      await page.waitForTimeout(500);
-
-      const counter = page.locator('[class*="lightbox__counter"]');
-      if (await counter.isVisible()) {
-        const counterText = await counter.textContent();
-        expect(counterText).toMatch(/\d+\s*\/\s*\d+/);
-      }
-    }
+  test('closes with Escape', async ({ page }) => {
+    await page.locator('.site-gallery__item').first().click();
+    await expect(lightbox(page)).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(lightbox(page)).toHaveCount(0);
   });
 });
