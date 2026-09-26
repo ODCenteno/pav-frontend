@@ -1,0 +1,17 @@
+---
+import "./sectionIntro.css";
+import type { SectionHeader } from "@/types/homepage.type";
+
+interface Props {
+  header: SectionHeader;
+}
+
+const { header } = Astro.props;
+---
+
+<section class="section-intro section-padding">
+  <div class="container section-intro__inner">
+    <h2 class="section-intro__title">{header.title}</h2>
+    {header.subtitle?.trim() && <p class="section-intro__subtitle">{header.subtitle}</p>}
+  </div>
+</section>

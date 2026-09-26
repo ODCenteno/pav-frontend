@@ -1,0 +1,27 @@
+/* Shared by the good-practices section components. */
+
+.good-practices__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The global .btn has no focus style; buttons here need a visible one. */
+.good-practices__btn:focus-visible {
+  outline: 3px solid var(--color-on-surface);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .good-practices__btn,
+  .good-practices__btn:hover {
+    transition: none;
+    transform: none;
+  }
+}

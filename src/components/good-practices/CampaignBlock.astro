@@ -1,0 +1,44 @@
+---
+import "./goodPractices.css";
+import "./campaignBlock.css";
+import { useTranslations } from "@/i18n/utils";
+import type { CampaignBlock } from "@/types/good-practices.type";
+
+interface Props {
+  campaign: CampaignBlock;
+  locale?: string;
+}
+
+const { campaign, locale = Astro.currentLocale || "es-MX" } = Astro.props;
+const t = useTranslations(locale);
+const linkLabel = campaign.linkLabel?.trim() || campaign.title;
+---
+
+<section class="campaign-block section-padding" aria-labelledby="campaign-block-title">
+  <div class="container campaign-block__inner">
+    {campaign.logo && (
+      <img
+        class="campaign-block__logo"
+        src={campaign.logo}
+        alt={t("goodPractices.campaignLogoAlt", { title: campaign.title })}
+        loading="lazy"
+        decoding="async"
+      />
+    )}
+    <div class="campaign-block__body">
+      <h2 id="campaign-block-title" class="campaign-block__title">{campaign.title}</h2>
+      {campaign.description && <p class="campaign-block__description">{campaign.description}</p>}
+      {campaign.url && (
+        <a
+          class="btn btn-primary good-practices__btn campaign-block__cta"
+          href={campaign.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {linkLabel}
+          <span class="good-practices__sr-only">{t("goodPractices.newTab")}</span>
+        </a>
+      )}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,46 @@
+---
+import "./goodPractices.css";
+import "./mapFigure.css";
+import ExpandableImage from "../guide/ExpandableImage";
+import { useTranslations } from "@/i18n/utils";
+
+interface Props {
+  /** Anchor id, so other sections and the tests can target the figure. */
+  id: string;
+  title: string;
+  image: string;
+  linkHref?: string;
+  linkLabel?: string;
+  locale?: string;
+}
+
+const { id, title, image, linkHref, linkLabel, locale = Astro.currentLocale || "es-MX" } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section id={id} class="map-figure section-padding" aria-labelledby={`${id}-title`}>
+  <div class="container">
+    <figure class="map-figure__figure">
+      <ExpandableImage
+        client:visible
+        className="map-figure__image-wrap"
+        imgClassName="map-figure__image"
+        src={image}
+        alt={title}
+        expandLabel={`${t("goodPractices.expandMap")}: ${title}`}
+      />
+      <figcaption id={`${id}-title`} class="map-figure__caption">{title}</figcaption>
+    </figure>
+    {linkHref && (
+      <a
+        class="btn btn-outline good-practices__btn map-figure__cta"
+        href={linkHref}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {linkLabel}
+        <span class="good-practices__sr-only">{t("goodPractices.newTab")}</span>
+      </a>
+    )}
+  </div>
+</section>

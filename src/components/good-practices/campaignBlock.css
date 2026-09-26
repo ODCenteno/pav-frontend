@@ -1,0 +1,42 @@
+.campaign-block {
+  background-color: var(--color-bone);
+}
+
+.campaign-block__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+}
+
+.campaign-block__logo {
+  width: clamp(120px, 20vw, 200px);
+  height: auto;
+  object-fit: contain;
+}
+
+.campaign-block__body {
+  max-width: 640px;
+}
+
+.campaign-block__title {
+  font-size: var(--text-2xl);
+  margin: 0 0 var(--space-sm);
+}
+
+.campaign-block__description {
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-on-surface);
+  margin: 0 0 var(--space-md);
+  white-space: pre-line;
+}
+
+@media (min-width: 768px) {
+  .campaign-block__inner {
+    flex-direction: row;
+    justify-content: center;
+    text-align: left;
+  }
+}

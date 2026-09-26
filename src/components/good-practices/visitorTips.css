@@ -1,0 +1,41 @@
+.visitor-tips__card {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-sea-glass);
+  box-shadow: var(--shadow-sea);
+}
+
+.visitor-tips__title {
+  font-size: var(--text-2xl);
+  margin: 0 0 var(--space-md);
+}
+
+.visitor-tips__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.visitor-tips__item {
+  position: relative;
+  padding-left: var(--space-md);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-on-surface);
+}
+
+.visitor-tips__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gold);
+}

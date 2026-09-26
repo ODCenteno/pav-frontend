@@ -1,0 +1,21 @@
+---
+import "./visitorTips.css";
+
+interface Props {
+  title: string;
+  tips: string[];
+}
+
+const { title, tips } = Astro.props;
+---
+
+<section class="visitor-tips section-padding" aria-labelledby="visitor-tips-title">
+  <div class="container">
+    <div class="visitor-tips__card">
+      <h2 id="visitor-tips-title" class="visitor-tips__title">{title}</h2>
+      <ul class="visitor-tips__list" role="list">
+        {tips.map((tip) => <li class="visitor-tips__item">{tip}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>

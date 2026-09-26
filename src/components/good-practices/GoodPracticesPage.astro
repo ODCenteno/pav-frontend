@@ -1,0 +1,91 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroPage from "@/components/main/hero/HeroPage.astro";
+import GuideProtectedArea from "@/components/guide/GuideProtectedArea.astro";
+import GuideInfluenceArea from "@/components/guide/GuideInfluenceArea.astro";
+import GuideFishingRefuge from "@/components/guide/GuideFishingRefuge.astro";
+import GuideRecommendations from "@/components/guide/GuideRecommendations.astro";
+import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import SectionIntro from "./SectionIntro.astro";
+import MapFigure from "./MapFigure.astro";
+import VisitorTips from "./VisitorTips.astro";
+import CampaignBlock from "./CampaignBlock.astro";
+import { useTranslations } from "@/i18n/utils";
+import type { GoodPracticesPage } from "@/types/good-practices.type";
+import {
+  escapeHtml,
+  resolveConanpButtonHref,
+  toFishingProps,
+  toInfluenceProps,
+  toProtectedAreaProps,
+  toRecommendationsProps,
+} from "./goodPracticesView";
+
+interface Props {
+  page: GoodPracticesPage;
+  /** Strapi locale ("es-MX" | "en"). */
+  locale: string;
+}
+
+const { page, locale } = Astro.props;
+const t = useTranslations(locale);
+
+const protectedArea = toProtectedAreaProps(page, t("goodPractices.conanpCta"));
+const influence = toInfluenceProps(page);
+const fishing = toFishingProps(page);
+const recommendations = toRecommendationsProps(page);
+const conanpHref = resolveConanpButtonHref(page);
+const tips = page.tipsHeader?.title && page.tips.length > 0 ? page.tips : [];
+---
+
+<BaseLayout
+  siteTitle={t("goodPractices.seo.siteTitle")}
+  ogTitle={t("goodPractices.seo.ogTitle")}
+  siteDescription={t("goodPractices.seo.siteDescription")}
+  ogDescription={t("goodPractices.seo.ogDescription")}
+>
+  {page.hero && (
+    <HeroPage
+      slot="Hero"
+      title={escapeHtml(page.hero.title)}
+      description={page.hero.description}
+      backgroundImage={page.hero.images[0]?.url || undefined}
+    />
+  )}
+
+  {page.intro?.title && <SectionIntro header={page.intro} />}
+
+  {protectedArea && <GuideProtectedArea data={protectedArea} locale={locale} />}
+
+  {influence && <GuideInfluenceArea data={influence} locale={locale} />}
+
+  {page.anpMapImage && (
+    <MapFigure
+      id="anp-map"
+      title={t("goodPractices.anpMapTitle")}
+      image={page.anpMapImage}
+      linkHref={conanpHref}
+      linkLabel={t("goodPractices.conanpCta")}
+      locale={locale}
+    />
+  )}
+
+  {fishing && <GuideFishingRefuge data={fishing} locale={locale} />}
+
+  {page.fishingRefugeMapImage && (
+    <MapFigure
+      id="refuge-map"
+      title={t("goodPractices.refugeMapTitle")}
+      image={page.fishingRefugeMapImage}
+      locale={locale}
+    />
+  )}
+
+  {recommendations && <GuideRecommendations data={recommendations} locale={locale} />}
+
+  {tips.length > 0 && <VisitorTips title={page.tipsHeader!.title} tips={tips} />}
+
+  {page.campaign && <CampaignBlock campaign={page.campaign} locale={locale} />}
+
+  {page.finalCta && <CtaSection data={page.finalCta} />}
+</BaseLayout>
