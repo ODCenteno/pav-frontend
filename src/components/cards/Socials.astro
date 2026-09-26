@@ -116,30 +116,26 @@ const activeLinks = cardSocialLinks(socialInfo);
     background: var(--gradient-sea-glass);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(90, 138, 128, 0.15);
+    border: 1px solid color-mix(in srgb, var(--community-color, #5a8a80) 25%, transparent);
     background-clip: padding-box;
-    color: var(--color-on-surface-variant);
+    color: var(--community-color-text, var(--color-on-surface-variant));
     transition: all 0.2s ease;
     text-decoration: none;
     flex-shrink: 0;
   }
 
-  .social-link:hover {
+  .social-link:hover,
+  .social-link:focus-visible {
     transform: translateY(-2px);
     cursor: pointer;
     color: var(--white);
-    background: var(--gradient-sea-badge);
+    background: var(--community-color-text, var(--color-primary));
     border-color: transparent;
   }
 
-  .social-link.whatsapp:hover {
-    background-color: #25d366;
-  }
-  .social-link.facebook:hover {
-    background-color: #1877f2;
-  }
-  .social-link.instagram:hover {
-    background-color: #e1306c;
+  .social-link:focus-visible {
+    outline: 2px solid var(--community-color-text, var(--color-primary));
+    outline-offset: 2px;
   }
 
   .icon-svg {

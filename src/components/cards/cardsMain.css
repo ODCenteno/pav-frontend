@@ -42,7 +42,7 @@
 
 .listing-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(90, 138, 128, 0.15), 0 2px 8px rgba(26, 26, 26, 0.06);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--community-color) 20%, transparent), 0 2px 8px rgba(26, 26, 26, 0.06);
 }
 
 .listing-image-container {
@@ -60,29 +60,20 @@
     object-fit: cover;
 }
 
-.listing-featured-badge {
+.listing-community-badge {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: var(--color-primary);
-    color: var(--white);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    line-height: 1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     z-index: 2;
+    /* Keeps the icon legible on light photos. */
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
 }
 
 .fav-btn {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: rgba(90, 138, 128, 0.85);
+    background-color: var(--community-color);
     border: none;
     width: 44px;
     height: 44px;
@@ -98,9 +89,16 @@
     z-index: 2;
 }
 
-.fav-btn:hover {
+.fav-btn:hover,
+.fav-btn:focus-visible {
     transform: scale(1.1);
-    background-color: var(--color-primary);
+    background-color: var(--community-color-text);
+}
+
+.fav-btn:focus-visible {
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--community-color-text);
 }
 
 .bookmark-icon {
@@ -113,7 +111,7 @@
 }
 
 .fav-btn.is-favorite {
-    background-color: var(--color-primary);
+    background-color: var(--community-color-text);
 }
 
 .fav-btn.is-favorite .icon-outline {
@@ -150,7 +148,7 @@
 .listing-tag {
     display: inline-block;
     padding: 0.15rem 0.5rem;
-    background: var(--color-primary);
+    background: var(--community-color-text);
     color: var(--white);
     border-radius: var(--radius-full);
     font-size: var(--text-xs);

@@ -3,6 +3,9 @@ import "./cardsMain.css";
 import type { Listing } from "../../types/listing.type";
 import type { LocalizedString } from "../../types/i18n.type";
 import Socials from "./Socials.astro";
+import { cardContactInfo } from "./socialLinks";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
+import { communityStyle } from "@/utils/communityTheme";
 import SvgIcon from "../icons/SvgIcon.astro";
 import { navigation } from "@/utils/navigation";
 import { renderMarkdown, stripMarkdown } from "@/utils/markdown";
@@ -52,17 +55,14 @@ const mainImageUrl =
 // Pricing: intenta modelo nuevo y legacy
 const price = (item.pricing as any)?.price ?? (item.pricing as any)?.amount ?? (item as any).price ?? null;
 
-// Contacto: modelo nuevo + fallback legacy
-const contact = item.contact ?? ({} as any);
-const socialInfo = {
-  whatsapp: contact.whatsapp || (item as any).whatsapp || "",
-  instagram: contact.instagram || (item as any).instagram || "",
-  facebook: contact.facebook || (item as any).facebook || "",
-  phone: contact.phone || (item as any).phone || "",
-  email: contact.email || (item as any).email || "",
-};
+// Contact channels (hidden for `hideContact` listings)
+const socialInfo = cardContactInfo(item);
 
+// Kept as data (drives the home carousel); the star badge is gone from the UI.
 const isFeatured = item.isFeatured ?? (item as any).is_featured ?? false;
+
+// Community theme: --community-color / --community-color-text
+const themeStyle = communityStyle(item.community);
 
 // Labels UI (idealmente se moverán a translations, pero quedan correctos por locale)
 const favLabel = langKey === "en" ? "Add to favorites" : "Agregar a favoritos";
@@ -87,7 +87,7 @@ const cardData = {
 const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 ---
 
-<div class="listing-card-container" data-category={item.category?.slug || ''} data-name={title.toLowerCase()} data-description={searchDesc}>
+<div class="listing-card-container" style={themeStyle} data-category={item.category?.slug || ''} data-name={title.toLowerCase()} data-description={searchDesc}>
   <article
     class="listing-card"
     data-listing-type={item.type}
@@ -98,7 +98,7 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     <div class="listing-image-container">
       {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
-      {isFeatured && <span class="listing-featured-badge" aria-label={langKey === "en" ? "Featured" : "Destacado"} title={langKey === "en" ? "Featured" : "Destacado"}>★</span>}
+      <CommunityBadge community={item.community} size="sm" locale={langKey} class="listing-community-badge" />
 
       <button type="button" class="fav-btn" data-fav-id={item.id} aria-label={favLabel} title={favLabel} onclick="event.stopPropagation(); window.toggleFav(this)">
         <SvgIcon name="bookmark-outline" class="bookmark-icon icon-outline" />
