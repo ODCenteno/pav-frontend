@@ -1,37 +1,44 @@
 ---
 /**
- * MapSection.astro — Homepage map block.
+ * MapSection.astro — Homepage map block (F2).
  *
- * Mobile-first, three-block vertical stack:
  *   1. Header (eyebrow + title + description)
- *   2. Map (primary element, full-bleed width)
- *   3. Section CTA → external map / full listings
+ *   2. Split: the static BCS/Loreto region map (`homepage.regionMapImage`) on
+ *      the left, the Leaflet map with one pin per community on the right.
+ *      Stacked on mobile.
+ *   3. Section CTA → external map
  *
- * Markers come from CMS featured listings and render enhanced popups
- * (image thumb + title + short description + link) when tapped.
+ * Pins come from `community.location`; each popup links to the community page.
  */
 import "./mapSection.css";
 import MapView from "@/components/maps/MapView.tsx";
-import type { MarkerItem } from "@/components/maps/mapIcons";
+import { useTranslations } from "@/i18n/utils";
 import type { MapSectionData } from "@/types/homepage.type";
+import type { Community } from "@/types/community.type";
+import { communityMapMarkers } from "./communityPins";
 
 interface Props {
   data: MapSectionData;
-  listings?: MarkerItem[];
+  communities: Community[];
+  regionMapImage?: string;
+  regionMapImageAlt?: string;
   locale?: string;
 }
 
-const { data, listings = [], locale = "es-MX" } = Astro.props;
+const { data, communities, regionMapImage, regionMapImageAlt, locale = "es-MX" } = Astro.props;
 
+const t = useTranslations(locale);
 const lang = locale.startsWith("en") ? "en" : "es-MX";
 
-const FALLBACK_CENTER: [number, number] = [25.512, -111.075];
+const pins = communityMapMarkers(communities, locale);
+
+const FALLBACK_CENTER: [number, number] = [25.545, -111.12];
 const center: [number, number] =
   data.centerPoint && typeof data.centerPoint.lat === "number" && typeof data.centerPoint.lng === "number"
     ? [data.centerPoint.lat, data.centerPoint.lng]
     : FALLBACK_CENTER;
 
-const zoom = typeof data.zoom === "number" ? data.zoom : 12;
+const zoom = typeof data.zoom === "number" ? data.zoom : 11;
 
 const title = (data.title ?? "").trim();
 const description = (data.description ?? "").trim();
@@ -41,12 +48,8 @@ const ctaHref = (data.buttonUrl ?? "").trim() || "#";
 
 <section class="map-section section-padding" aria-labelledby="map-section-title">
   <div class="container map-section__header">
-    <p class="map-section__eyebrow">Mapa del destino</p>
-    <h2
-      id="map-section-title"
-      class="map-section__title"
-      data-key="map_title"
-    >
+    <p class="map-section__eyebrow">{t("map.eyebrow")}</p>
+    <h2 id="map-section-title" class="map-section__title" data-key="map_title">
       {title || (lang === "en" ? "Explore the destination" : "Explora el destino")}
     </h2>
     {description && (
@@ -56,28 +59,30 @@ const ctaHref = (data.buttonUrl ?? "").trim() || "#";
     )}
   </div>
 
-  <div class="map-section__map-wrapper">
-    <div class="map-section__map">
-      <MapView
-        client:only="react"
-        markers={listings}
-        center={center}
-        zoom={zoom}
-        height="100%"
-        locale={locale}
-        linkLabel={lang === "en" ? "View site" : "Ver sitio"}
-      />
+  <div class="container map-section__split">
+    {regionMapImage && (
+      <figure class="map-section__region">
+        <img src={regionMapImage} alt={regionMapImageAlt || t("map.regionMapAlt")} loading="lazy" decoding="async" />
+      </figure>
+    )}
+
+    <div class="map-section__map-wrapper">
+      <div class="map-section__map">
+        <MapView
+          client:only="react"
+          markers={pins}
+          center={center}
+          zoom={zoom}
+          height="100%"
+          locale={locale}
+          linkLabel={t("map.communityLink")}
+        />
+      </div>
     </div>
   </div>
 
   <div class="container map-section__cta">
-    <a
-      href={ctaHref}
-      class="btn btn-accent map-section__btn"
-      target="_blank"
-      rel="noopener noreferrer"
-      data-key="map_btn"
-    >
+    <a href={ctaHref} class="btn btn-accent map-section__btn" target="_blank" rel="noopener noreferrer" data-key="map_btn">
       {buttonLabel || (lang === "en" ? "Open full map" : "Abrir mapa completo")}
     </a>
   </div>

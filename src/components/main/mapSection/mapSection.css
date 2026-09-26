@@ -58,9 +58,30 @@
 
     white-space: pre-line;}
 
-/* 2) Map — wrapper with border and shadow (no inner padding; map is flush with edges) */
+/* 2) Split — region map image + Leaflet map (stacked on mobile) */
+.map-section__split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+.map-section__region {
+    margin: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background-color: var(--white);
+}
+
+.map-section__region img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Map — wrapper with border and shadow (no inner padding; map is flush with edges) */
 .map-section__map-wrapper {
-    margin: 0 16px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
     box-shadow: 0 8px 24px rgba(26, 26, 26, 0.1), 0 2px 6px rgba(90, 138, 128, 0.08);
@@ -79,7 +100,7 @@
     background-color: var(--color-bone, #fdfcf8);
 }
 
-.map-section__map :global(.map-container) {
+.map-section__map .map-container {
     border-radius: 0;
     height: 100%;
 }
@@ -140,6 +161,11 @@
 @media (min-width: 1024px) {
     .map-section {
         gap: var(--space-xl);
+    }
+
+    .map-section__split {
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
     }
 
     .map-section__map {

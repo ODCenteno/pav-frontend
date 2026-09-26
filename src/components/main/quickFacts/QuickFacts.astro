@@ -1,81 +1,42 @@
 ---
+/**
+ * "Lo esencial de un vistazo" fact cards.
+ *
+ * Renders every item it receives. An optional community `theme` recolors the
+ * accent card and the values (agent C reuses it on community pages); without
+ * it the site palette applies.
+ */
 import "./quickFacts.css";
 import type { SectionHeader, QuickFact } from "@/types/homepage.type";
+import type { CommunityRef } from "@/types/community.type";
+import { communityStyle } from "@/utils/communityTheme";
 
 interface Props {
   header: SectionHeader;
   items: QuickFact[];
-  images: string[];
+  theme?: CommunityRef | null;
 }
 
-const { header, items, images } = Astro.props;
-
-const [image1, image2] = images;
+const { header, items, theme } = Astro.props;
 ---
 
-<section class="quick-facts section-padding">
+<section class="quick-facts section-padding" style={theme ? communityStyle(theme) : undefined}>
   <div class="container">
     <div class="section-header">
       <h2 class="quick-facts__title">{header.title}</h2>
-      <p class="quick-facts__subtitle">{header.subtitle}</p>
+      {header.subtitle && <p class="quick-facts__subtitle">{header.subtitle}</p>}
     </div>
 
     <div class="quick-facts__bento">
-      <div class="quick-facts__card fact-accent-1">
-        <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{items[0]?.title}</h3>
-          <div class="quick-facts__card-value">{items[0]?.value}</div>
-          <p class="quick-facts__card-desc">{items[0]?.description}</p>
+      {items.map((item, i) => (
+        <div class={`quick-facts__card${i === 0 ? " fact-accent-1" : ""}`}>
+          <div class="quick-facts__card-content">
+            <h3 class="quick-facts__card-title">{item.title}</h3>
+            <div class="quick-facts__card-value">{item.value}</div>
+            <p class="quick-facts__card-desc">{item.description}</p>
+          </div>
         </div>
-      </div>
-
-      <div class="quick-facts__card">
-        <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{items[1]?.title}</h3>
-          <div class="quick-facts__card-value">{items[1]?.value}</div>
-          <p class="quick-facts__card-desc">{items[1]?.description}</p>
-        </div>
-      </div>
-
-      <div class="quick-facts__image-box">
-        {image1 && <img src={image1} alt="Puerto Agua Verde landscape" />}
-      </div>
-
-      <div class="quick-facts__card">
-        <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{items[2]?.title}</h3>
-          <div class="quick-facts__card-value">{items[2]?.value}</div>
-          <p class="quick-facts__card-desc">{items[2]?.description}</p>
-        </div>
-      </div>
-
-      <div class="quick-facts__card">
-        <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{items[3]?.title}</h3>
-          <div class="quick-facts__card-value">{items[3]?.value}</div>
-          <p class="quick-facts__card-desc">{items[3]?.description}</p>
-        </div>
-      </div>
-
-      <div class="quick-facts__card">
-        <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{items[4]?.title}</h3>
-          <div class="quick-facts__card-value">{items[4]?.value}</div>
-          <p class="quick-facts__card-desc">{items[4]?.description}</p>
-        </div>
-      </div>
-
-      <div class="quick-facts__image-box">
-        {image2 && <img src={image2} alt="Local details" />}
-      </div>
-
-      <div class="quick-facts__card fact-accent-2 wide">
-        <div class="quick-facts__card-content">
-          <h3 class="quick-facts__card-title">{items[5]?.title}</h3>
-          <div class="quick-facts__card-value">{items[5]?.value}</div>
-          <p class="quick-facts__card-desc">{items[5]?.description}</p>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 </section>

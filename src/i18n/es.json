@@ -109,7 +109,12 @@
   "map": {
     "title": "Mapa del Destino",
     "desc": "Explora los puntos clave de Puerto Agua Verde y Rancho San Cosme. Encuentra rutas, servicios, playas y actividades cerca de ti.",
-    "btn": "Ver Mapa en OpenStreetMap"
+    "btn": "Ver Mapa en OpenStreetMap",
+    "eyebrow": "Mapa del destino",
+    "ariaLabel": "Mapa interactivo de ubicaciones",
+    "regionMapAlt": "Mapa de la región de Loreto, Baja California Sur",
+    "communityLink": "Conocer la comunidad",
+    "communitiesTitle": "Nuestras comunidades en el mapa"
   },
   "finalCta": {
     "title": "Tu viaje comienza aquí",

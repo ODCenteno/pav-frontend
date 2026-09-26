@@ -1,0 +1,137 @@
+import { describe, it, expect, beforeAll } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const SRC = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
+const read = (rel: string) => readFileSync(resolve(SRC, rel), "utf8");
+
+describe("F2 hero", () => {
+  let hero: string;
+  let css: string;
+  beforeAll(() => {
+    hero = read("components/main/hero/Hero.astro");
+    css = read("components/main/hero/hero.css");
+  });
+
+  it("takes the communities as a prop", () => {
+    expect(hero).toMatch(/communities:\s*Community\[\]/);
+  });
+
+  it("keeps the current title as the page h1 and the description", () => {
+    expect(hero).toMatch(/<h1[^>]*class="hero-title"/);
+    expect(hero).toContain("{data.description}");
+  });
+
+  it("splits desktop into one half per community with name, tagline, color and CTA", () => {
+    expect(hero).toMatch(/class="hero-split"/);
+    expect(hero).toMatch(/communities\.map/);
+    expect(hero).toMatch(/style=\{communityStyle\(community\)\}/);
+    expect(hero).toContain("{community.tagline}");
+    expect(hero).toMatch(/href=\{communityPath\(community\.slug, locale\)\}/);
+    expect(hero).toContain('t("hero.cta")');
+  });
+
+  it("names the community in each CTA for screen readers", () => {
+    expect(hero).toMatch(/<span class="sr-only">\s*\{community\.name\}\s*<\/span>/);
+  });
+
+  it("adds one button per community with its color and icon on mobile", () => {
+    expect(hero).toMatch(/class="hero-community-buttons"/);
+    expect(hero).toMatch(/<CommunityBadge\s+community=\{community\}[^/]*decorative/);
+  });
+
+  it("shows the split only on desktop and the buttons only on mobile", () => {
+    expect(css).toMatch(/\.hero-split\s*\{[^}]*display:\s*none/);
+    expect(css).toMatch(/@media \(min-width: 968px\)[\s\S]*\.hero-split\s*\{[^}]*display:\s*grid/);
+    expect(css).toMatch(/@media \(min-width: 968px\)[\s\S]*\.hero-community-buttons\s*\{[^}]*display:\s*none/);
+  });
+
+  it("uses textColor behind white text", () => {
+    expect(css).toMatch(/\.hero-community-button\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
+  });
+});
+
+describe("F2 QuickFacts", () => {
+  let qf: string;
+  let css: string;
+  beforeAll(() => {
+    qf = read("components/main/quickFacts/QuickFacts.astro");
+    css = read("components/main/quickFacts/quickFacts.css");
+  });
+
+  it("drops the images and hardcoded alt texts", () => {
+    expect(qf).not.toContain("<img");
+    expect(qf).not.toMatch(/alt="/);
+    expect(qf).not.toMatch(/images/);
+  });
+
+  it("renders every item it receives", () => {
+    expect(qf).toMatch(/items\.map/);
+  });
+
+  it("accepts an optional community theme", () => {
+    expect(qf).toMatch(/theme\?:\s*CommunityRef\s*\|\s*null/);
+    expect(qf).toMatch(/theme \? communityStyle\(theme\) : undefined/);
+    expect(css).toMatch(/var\(--community-color-text,/);
+  });
+});
+
+describe("F2 map section", () => {
+  let section: string;
+  let css: string;
+  beforeAll(() => {
+    section = read("components/main/mapSection/MapSection.astro");
+    css = read("components/main/mapSection/mapSection.css");
+  });
+
+  it("shows the region map image on the left with a CMS or i18n alt", () => {
+    expect(section).toMatch(/class="map-section__region"/);
+    expect(section).toMatch(/alt=\{regionMapImageAlt \|\| t\("map\.regionMapAlt"\)\}/);
+  });
+
+  it("feeds the Leaflet map only the community pins", () => {
+    expect(section).toMatch(/communityMapMarkers\(communities, locale\)/);
+    expect(section).toMatch(/markers=\{pins\}/);
+    expect(section).not.toMatch(/listings/);
+  });
+
+  it("localizes the eyebrow and the map label", () => {
+    expect(section).toContain('t("map.eyebrow")');
+    expect(section).not.toContain("Mapa del destino");
+    expect(section).toMatch(/locale=\{locale\}/);
+  });
+
+  it("splits into two columns on desktop and drops the invalid :global()", () => {
+    expect(css).toMatch(/\.map-section__split\s*\{[^}]*display:\s*grid/);
+    expect(css).toMatch(/grid-template-columns:\s*1fr 1fr/);
+    expect(css).not.toContain(":global(");
+  });
+});
+
+describe.each(["pages/index.astro", "pages/en/index.astro"])("F2 %s", (page) => {
+  let source: string;
+  beforeAll(() => {
+    source = read(page);
+  });
+
+  it("removes Destinations and Highlights from the home", () => {
+    expect(source).not.toMatch(/<Destinations/);
+    expect(source).not.toMatch(/<Highlights/);
+  });
+
+  it("keeps the featured carousel", () => {
+    expect(source).toMatch(/<PopupManager slot="categories" \/>/);
+  });
+
+  it("feeds communities to the hero and the map section", () => {
+    expect(source).toMatch(/getCommunities\(locale\)/);
+    expect(source).toMatch(/<Hero slot="Hero" data=\{homepage\.hero\} communities=\{communities\}/);
+    expect(source).toMatch(/<MapSection[^>]*communities=\{communities\}/);
+    expect(source).toMatch(/regionMapImage=\{homepage\.regionMapImage\}/);
+  });
+
+  it("drops the QuickFacts images", () => {
+    expect(source).toMatch(/<QuickFacts header=\{homepage\.quickFacts\.header\} items=\{homepageFacts\} \/>/);
+  });
+});

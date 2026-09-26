@@ -51,13 +51,16 @@ test.describe('Header (desktop)', () => {
     await expect(submenu).toBeHidden();
   });
 
-  test('opens on keyboard focus and closes on Escape', async ({ page }) => {
+  test('opens on keyboard focus and closes on Escape', async ({ page, browserName }) => {
     const toggle = page.getByRole('button', { name: 'Nuestras Comunidades' });
     await toggle.focus();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
-    await page.keyboard.press('Tab');
-    await expect(page.getByRole('link', { name: 'Puerto Agua Verde' }).first()).toBeFocused();
+    // WebKit only tabs through links with Option+Tab (Safari default).
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
+    await expect(
+      page.locator('#community-submenu').getByRole('link', { name: 'Puerto Agua Verde', exact: true }),
+    ).toBeFocused();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
     await page.keyboard.press('Escape');
@@ -123,7 +126,7 @@ test.describe('Footer', () => {
 test.describe('Redirects (F10)', () => {
   test('sends /experiencias home', async ({ page }) => {
     await page.goto('/experiencias');
-    await expect(page).toHaveURL(/^http:\/\/localhost:4321\/$/);
+    await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/$/);
   });
 
   test('sends /en/experiencias to the English home', async ({ page }) => {

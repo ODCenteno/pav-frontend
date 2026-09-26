@@ -1,14 +1,29 @@
 ---
+/**
+ * Home hero (F2).
+ *
+ * - Mobile: the current title and description, plus one button per community
+ *   with its color and icon.
+ * - Desktop (>= 968px): split in two halves, one per community, each with its
+ *   name, tagline, color and an "Explorar el destino" button to its page.
+ *
+ * The h1 is shared: visible on mobile, visually hidden on desktop, so every
+ * page outline still starts with it.
+ */
 import "./hero.css";
 import { useTranslations } from "../../../i18n/utils";
-import { navigation } from "@/utils/navigation";
+import { communityPath } from "@/utils/navigation";
+import { communityStyle } from "@/utils/communityTheme";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 import type { HeroData } from "@/types/homepage.type";
+import type { Community } from "@/types/community.type";
 
 interface Props {
   data: HeroData;
+  communities: Community[];
 }
 
-const { data } = Astro.props;
+const { data, communities } = Astro.props;
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 ---
@@ -16,20 +31,38 @@ const t = useTranslations(locale);
 <section class="hero section-padding">
   <div class="container hero-container">
     <div class="hero-content">
-      <h1 data-key="hero_title">
+      <h1 class="hero-title" data-key="hero_title">
         {data.title}{" "}
         {data.titleHighlight && <span class="highlight-text">{data.titleHighlight}</span>}
       </h1>
-      <p data-key="hero_desc">{data.description}</p>
-      <div class="hero-actions">
-        <a class="btn btn-accent" href={data.ctaLink || navigation.sites(locale)} data-key="hero_cta">{data.ctaLabel || t("hero.cta")}</a>
-      </div>
+      <p class="hero-desc" data-key="hero_desc">{data.description}</p>
+
+      <ul class="hero-community-buttons">
+        {communities.map((community) => (
+          <li>
+            <a class="hero-community-button" style={communityStyle(community)} href={communityPath(community.slug, locale)}>
+              <CommunityBadge community={community} size="sm" locale={locale} decorative />
+              <span>{community.name}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
-    <div class="hero-images">
-      {data.images.map((img, i) => (
-        <div class={`hero-img-card img-${i + 1}`}>
-          <img src={img.url} alt={img.alt} loading="eager" />
-        </div>
+
+    <div class="hero-split">
+      {communities.map((community) => (
+        <article class="hero-half" style={communityStyle(community)}>
+          {community.heroImage && <img class="hero-half__image" src={community.heroImage} alt="" loading="eager" decoding="async" />}
+          <div class="hero-half__content">
+            <CommunityBadge community={community} size="lg" locale={locale} decorative />
+            <h2 class="hero-half__name">{community.name}</h2>
+            {community.tagline && <p class="hero-half__tagline">{community.tagline}</p>}
+            <a class="hero-half__cta btn" href={communityPath(community.slug, locale)}>
+              {t("hero.cta")}
+              <span class="sr-only">{community.name}</span>
+            </a>
+          </div>
+        </article>
       ))}
     </div>
   </div>

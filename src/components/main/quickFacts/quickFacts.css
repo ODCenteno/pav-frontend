@@ -70,7 +70,7 @@
 
 .quick-facts__card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(90, 138, 128, 0.15);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--community-color, var(--color-primary)) 15%, transparent);
 }
 
 .quick-facts__card > * {
@@ -79,8 +79,9 @@
 }
 
 /* Accent variants — solid colors override the frosted glass for visual emphasis */
+/* With a community theme, the accent uses its textColor (white text needs 4.5:1). */
 .fact-accent-1 {
-    background-color: var(--color-coral);
+    background-color: var(--community-color-text, var(--color-coral));
     background-image: none;
     color: var(--white);
     border: none;
@@ -97,35 +98,6 @@
 
     white-space: pre-line;}
 
-.fact-accent-2 {
-    background-color: var(--color-slate);
-    background-image: none;
-    color: var(--white);
-    border: none;
-}
-
-.fact-accent-2::before {
-    display: none;
-}
-
-.fact-accent-2 .quick-facts__card-title,
-.fact-accent-2 .quick-facts__card-value,
-.fact-accent-2 .quick-facts__card-desc {
-    color: var(--white);
-}
-
-.quick-facts__image-box {
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    height: 200px;
-}
-
-.quick-facts__image-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .quick-facts__card-title {
     font-size: var(--text-sm);
     color: var(--color-on-surface-variant);
@@ -137,7 +109,7 @@
 
 .quick-facts__card-value {
     font-size: var(--text-2xl);
-    color: var(--color-primary);
+    color: var(--community-color-text, var(--color-primary));
     font-weight: 700;
     margin-bottom: var(--space-xs);
     line-height: 1.2;
@@ -156,11 +128,8 @@
         grid-auto-rows: minmax(220px, auto);
     }
 
-    .quick-facts__image-box {
-        height: auto;
-    }
-
-    .wide {
+    /* The lead fact spans two columns so five facts fill two rows. */
+    .fact-accent-1 {
         grid-column: span 2;
     }
 
