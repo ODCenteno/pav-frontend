@@ -24,7 +24,7 @@
 .footer-grid {
     display: grid;
     gap: 3rem;
-    grid-template-columns: 1.5fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
 }
 
 .footer-col {
