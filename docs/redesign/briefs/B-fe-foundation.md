@@ -102,7 +102,17 @@ Tests first for every fetcher fallback, route helper, `communityStyle` and the b
 4. **F10** Remove `pages/experiencias.astro` and `pages/en/experiencias.astro`, and redirect
    `/experiencias` and `/en/experiencias` to `/` using the project's redirect mechanism. Do not
    remove guide, acerca, comunidad or sitios.
-5. **Tests**:
+5. **hideContact on the site detail page** (found in the B2 review):
+   - `pages/sitios/[slug].astro` (+ `en/`) and `site-detail/SiteInfoPanel.astro`,
+     `StickyActionBar.tsx`, `SocialLinks.astro` still show phone and WhatsApp when
+     `listing.hideContact` is true.
+   - With `hideContact`, hide every contact channel on the card and on the detail page:
+     phone, WhatsApp, email, website **and social profiles**. RED's rule for Servicios is
+     "foto y descripción breve, sin contacto". The map / "Cómo llegar" stays.
+   - Update B2's card behavior accordingly (it currently keeps social profiles).
+   - Tests first: a hideContact listing renders no `tel:`, `wa.me`, `mailto:` or social links
+     on either page.
+6. **Tests**:
    - Update `e2e/navigation.spec.ts` for the new header and footer.
    - Update the unit tests your changes break.
    - Add a test for the redirect.
