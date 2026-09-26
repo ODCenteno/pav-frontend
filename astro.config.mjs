@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import cloudflare from "@astrojs/cloudflare";
+import { redirects } from "./src/config/redirects";
 
 /**
  * Workaround for Astro 7 + @astrojs/cloudflare 14 dev crash:
@@ -36,6 +37,7 @@ export default defineConfig({
     runtime: { mode: 'local' },
   }),
   site: "https://guiacomunidadesloretanas.com/",
+  redirects,
   integrations: [react(), sitemap()],
   vite: {
     plugins: [processPolyfillPlugin],
