@@ -1,20 +1,21 @@
 ---
 /**
- * Home hero (F2).
+ * Home hero.
  *
- * - Mobile: the current title and description, plus one button per community
- *   with its color and icon.
- * - Desktop (>= 968px): split in two halves, one per community, each with its
- *   name, tagline, color and an "Explorar el destino" button to its page.
- *
- * The h1 is shared: visible on mobile, visually hidden on desktop, so every
- * page outline still starts with it.
+ * - Mobile: the shared title and description, plus one button per community
+ *   with its color, photo and badge.
+ * - Desktop (>= 968px): the split, one photo half per community with its
+ *   name, tagline and explore button. The hovered or focused half widens.
+ *   The shared h1 sits in a tab over the seam, so it stays the first
+ *   heading on every breakpoint.
  */
 import "./hero.css";
 import { useTranslations } from "../../../i18n/utils";
 import { communityPath } from "@/utils/navigation";
 import { communityStyle } from "@/utils/communityTheme";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
+import SvgIcon from "@/components/icons/SvgIcon.astro";
+import { heroCtaKey } from "./heroLabels";
 import type { HeroData } from "@/types/homepage.type";
 import type { Community } from "@/types/community.type";
 
@@ -28,47 +29,50 @@ const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
 ---
 
-<section class="hero section-padding">
-  <div class="container hero-container">
-    <div class="hero-content">
-      <h1 class="hero-title" data-key="hero_title">
-        {data.title}{" "}
-        {data.titleHighlight && <span class="highlight-text">{data.titleHighlight}</span>}
-      </h1>
-      <p class="hero-desc" data-key="hero_desc">{data.description}</p>
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title" data-key="hero_title">
+      {data.title}{" "}
+      {data.titleHighlight && <span class="highlight-text">{data.titleHighlight}</span>}
+    </h1>
+    <p class="hero-desc" data-key="hero_desc">{data.description}</p>
 
-      <ul class="hero-community-buttons">
-        {communities.map((community) => (
-          <li>
-            <a class="hero-community-button" style={communityStyle(community)} href={communityPath(community.slug, locale)}>
-              <CommunityBadge community={community} size="sm" locale={locale} decorative />
-              <span>{community.name}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <div class="hero-split">
+    <ul class="hero-community-buttons">
       {communities.map((community) => (
-        <article class="hero-half" style={communityStyle(community)}>
-          {community.heroImage && <img class="hero-half__image" src={community.heroImage} alt="" loading="eager" decoding="async" />}
-          <div class="hero-half__content">
-            <CommunityBadge community={community} size="lg" locale={locale} decorative />
-            <h2 class="hero-half__name">{community.name}</h2>
-            {community.tagline && <p class="hero-half__tagline">{community.tagline}</p>}
-            <a class="hero-half__cta btn" href={communityPath(community.slug, locale)}>
-              {t("hero.cta")}
-              <span class="sr-only">{community.name}</span>
-            </a>
-          </div>
-        </article>
+        <li>
+          <a class="hero-community-button" style={communityStyle(community)} href={communityPath(community.slug, locale)}>
+            <span class="hero-community-button__media" aria-hidden="true">
+              {community.heroImage && <img src={community.heroImage} alt="" loading="eager" decoding="async" />}
+              <CommunityBadge community={community} size="sm" locale={locale} decorative />
+            </span>
+            <span class="hero-community-button__text">
+              <span class="hero-community-button__label">{t(heroCtaKey(community.slug))}</span>
+              <span class="hero-community-button__name">{community.name}</span>
+            </span>
+            <span class="hero-community-button__arrow" aria-hidden="true"><SvgIcon name="arrow-right" class="hero-arrow" /></span>
+          </a>
+        </li>
       ))}
-    </div>
+    </ul>
   </div>
-  <div class="hero-wave" aria-hidden="true">
-    <svg viewBox="0 0 1440 40" preserveAspectRatio="none" fill="none">
-      <path d="M0,25 C240,45 480,5 720,25 C960,45 1200,5 1440,25 L1440,40 L0,40 Z" fill="#FDFCF8"></path>
-    </svg>
+
+  <div class="hero-split">
+    {communities.map((community) => (
+      <article class="hero-half" style={communityStyle(community)}>
+        {community.heroImage && <img class="hero-half__image" src={community.heroImage} alt="" loading="eager" decoding="async" fetchpriority="high" />}
+        <div class="hero-half__content">
+          <span class="hero-half__badge">
+            <CommunityBadge community={community} size="lg" locale={locale} decorative />
+          </span>
+          <h2 class="hero-half__name">{community.name}</h2>
+          {community.tagline && <p class="hero-half__tagline">{community.tagline}</p>}
+          <a class="hero-half__cta" href={communityPath(community.slug, locale)}>
+            <span>{t(heroCtaKey(community.slug))}</span>
+            <span class="sr-only">{community.name}</span>
+            <span class="hero-half__cta-arrow" aria-hidden="true"><SvgIcon name="arrow-right" class="hero-arrow" /></span>
+          </a>
+        </div>
+      </article>
+    ))}
   </div>
 </section>

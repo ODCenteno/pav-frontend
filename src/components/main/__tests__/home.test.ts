@@ -29,7 +29,13 @@ describe("F2 hero", () => {
     expect(hero).toMatch(/style=\{communityStyle\(community\)\}/);
     expect(hero).toContain("{community.tagline}");
     expect(hero).toMatch(/href=\{communityPath\(community\.slug, locale\)\}/);
-    expect(hero).toContain('t("hero.cta")');
+    expect(hero).toContain("t(heroCtaKey(community.slug))");
+  });
+
+  it("labels every community button with its own explore copy", () => {
+    expect(hero).toMatch(/import \{ heroCtaKey \} from "\.\/heroLabels"/);
+    expect(hero.match(/t\(heroCtaKey\(community\.slug\)\)/g)).toHaveLength(2);
+    expect(hero).not.toContain('t("hero.cta")');
   });
 
   it("names the community in each CTA for screen readers", () => {
@@ -102,10 +108,46 @@ describe("F2 map section", () => {
     expect(section).toMatch(/locale=\{locale\}/);
   });
 
+  it("adds a legend with each community badge, color and name", () => {
+    expect(section).toMatch(/class="map-section__legend"/);
+    expect(section).toMatch(/<CommunityBadge\s+community=\{link\.community\}/);
+    expect(section).toContain("{link.name}");
+    expect(section).toMatch(/style=\{communityStyle\(link\.community\)\}/);
+  });
+
+  it("replaces the single map button with one Google Maps button per community", () => {
+    expect(section).toMatch(/communityMapLinks\(communities\)/);
+    expect(section).not.toContain('data-key="map_btn"');
+    expect(section).toMatch(/class="map-section__community-btn"[^>]*href=\{link\.href\}[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+    expect(section).toMatch(/<span class="sr-only">\s*\{t\("map\.newTab"\)\}\s*<\/span>/);
+    expect(css).toMatch(/\.map-section__community-btn\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
+  });
+
   it("splits into two columns on desktop and drops the invalid :global()", () => {
     expect(css).toMatch(/\.map-section__split\s*\{[^}]*display:\s*grid/);
     expect(css).toMatch(/grid-template-columns:\s*1fr 1fr/);
     expect(css).not.toContain(":global(");
+  });
+});
+
+describe("CTA panel", () => {
+  let cta: string;
+  let css: string;
+  beforeAll(() => {
+    cta = read("components/main/CTA/CtaSection.astro");
+    css = read("components/main/CTA/ctaSection.css");
+  });
+
+  it("takes a title, a description and one or two actions", () => {
+    expect(cta).toMatch(/actions:\s*CtaAction\[\]/);
+    expect(cta).toMatch(/ctaActionsOf\(actions\)/);
+    expect(cta).toContain('data-key="final_cta_title"');
+  });
+
+  it("themes community actions with their color and badge", () => {
+    expect(cta).toMatch(/style=\{communityStyle\(action\.community\)\}/);
+    expect(cta).toMatch(/<CommunityBadge\s+community=\{action\.community\}/);
+    expect(css).toMatch(/\.cta-panel__action\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
   });
 });
 
@@ -129,6 +171,13 @@ describe.each(["pages/index.astro", "pages/en/index.astro"])("F2 %s", (page) => 
     expect(source).toMatch(/<Hero slot="Hero" data=\{homepage\.hero\} communities=\{communities\}/);
     expect(source).toMatch(/<MapSection[^>]*communities=\{communities\}/);
     expect(source).toMatch(/regionMapImage=\{homepage\.regionMapImage\}/);
+  });
+
+  it("ends with the favorites CTA set in code, not from the CMS button", () => {
+    expect(source).toMatch(/<CtaSection[\s\S]*?title=\{homepage\.finalCta\.title\}/);
+    expect(source).toMatch(/label: t\("finalCta\.favoritesBtn"\)/);
+    expect(source).toMatch(/href: navigation\.favorites\(locale\)/);
+    expect(source).not.toMatch(/finalCta\.buttonLabel|finalCta\.buttonLink/);
   });
 
   it("drops the QuickFacts images", () => {

@@ -6,7 +6,8 @@
  *   2. Split: the static BCS/Loreto region map (`homepage.regionMapImage`) on
  *      the left, the Leaflet map with one pin per community on the right.
  *      Stacked on mobile.
- *   3. Section CTA → external map
+ *   3. Legend (badge, color and name per community) and one Google Maps
+ *      button per community, in its color, opening in a new tab.
  *
  * Pins come from `community.location`; each popup links to the community page.
  */
@@ -15,7 +16,9 @@ import MapView from "@/components/maps/MapView.tsx";
 import { useTranslations } from "@/i18n/utils";
 import type { MapSectionData } from "@/types/homepage.type";
 import type { Community } from "@/types/community.type";
-import { communityMapMarkers } from "./communityPins";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
+import { communityStyle } from "@/utils/communityTheme";
+import { communityMapLinks, communityMapMarkers } from "./communityPins";
 
 interface Props {
   data: MapSectionData;
@@ -31,6 +34,7 @@ const t = useTranslations(locale);
 const lang = locale.startsWith("en") ? "en" : "es-MX";
 
 const pins = communityMapMarkers(communities, locale);
+const mapLinks = communityMapLinks(communities);
 
 const FALLBACK_CENTER: [number, number] = [25.545, -111.12];
 const center: [number, number] =
@@ -42,8 +46,6 @@ const zoom = typeof data.zoom === "number" ? data.zoom : 11;
 
 const title = (data.title ?? "").trim();
 const description = (data.description ?? "").trim();
-const buttonLabel = (data.buttonLabel ?? "").trim();
-const ctaHref = (data.buttonUrl ?? "").trim() || "#";
 ---
 
 <section class="map-section section-padding" aria-labelledby="map-section-title">
@@ -81,9 +83,31 @@ const ctaHref = (data.buttonUrl ?? "").trim() || "#";
     </div>
   </div>
 
-  <div class="container map-section__cta">
-    <a href={ctaHref} class="btn btn-accent map-section__btn" target="_blank" rel="noopener noreferrer" data-key="map_btn">
-      {buttonLabel || (lang === "en" ? "Open full map" : "Abrir mapa completo")}
-    </a>
-  </div>
+  {mapLinks.length > 0 && (
+    <div class="container map-section__footer">
+      <ul class="map-section__legend" aria-label={t("map.communitiesTitle")}>
+        {mapLinks.map((link) => (
+          <li class="map-section__legend-item" style={communityStyle(link.community)}>
+            <span class="map-section__swatch" aria-hidden="true"></span>
+            <CommunityBadge community={link.community} size="sm" locale={locale} decorative />
+            <span class="map-section__legend-name">{link.name}</span>
+          </li>
+        ))}
+      </ul>
+
+      <ul class="map-section__actions">
+        {mapLinks.map((link) => (
+          <li>
+            <a class="map-section__community-btn" style={communityStyle(link.community)} href={link.href} target="_blank" rel="noopener noreferrer">
+              <span>{t("map.openInGoogleMaps", { name: link.name })}</span>
+              <span class="sr-only">{t("map.newTab")}</span>
+              <span class="map-section__external" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M8 7h9v9"></path></svg>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 </section>

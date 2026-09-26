@@ -5,7 +5,7 @@ vi.mock("astro:i18n", () => ({
     locale === "en" ? `/en/${path.replace(/^\/+/, "")}/` : `/${path.replace(/^\/+/, "")}/`,
 }));
 
-import { communityMapMarkers } from "../communityPins";
+import { communityMapLinks, communityMapMarkers } from "../communityPins";
 import type { Community } from "@/types/community.type";
 
 function community(overrides: Partial<Community>): Community {
@@ -64,5 +64,45 @@ describe("communityMapMarkers", () => {
 
   it("skips communities without a location", () => {
     expect(communityMapMarkers([community({ location: undefined }), rsc], "es-MX")).toHaveLength(1);
+  });
+});
+
+describe("communityMapLinks", () => {
+  const pav = community({ order: 1, location: { lat: 25.51204, lng: -111.07577 } });
+  const rsc = community({
+    id: "2",
+    slug: "rancho-san-cosme",
+    name: "Rancho San Cosme",
+    color: "#EC6E0B",
+    textColor: "#B85206",
+    order: 2,
+    googleMapsUrl: "https://maps.app.goo.gl/rsc",
+  });
+
+  it("returns one Google Maps link per community, in community order", () => {
+    expect(communityMapLinks([rsc, pav])).toEqual([
+      {
+        slug: "puerto-agua-verde",
+        name: "Puerto Agua Verde",
+        href: "https://www.google.com/maps/dir/?api=1&destination=25.51204,-111.07577",
+        community: pav,
+      },
+      {
+        slug: "rancho-san-cosme",
+        name: "Rancho San Cosme",
+        href: "https://maps.app.goo.gl/rsc",
+        community: rsc,
+      },
+    ]);
+  });
+
+  it("falls back to the bundled coordinates when the CMS has no location", () => {
+    const [link] = communityMapLinks([community({ location: undefined })]);
+    expect(link.href).toMatch(/^https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=25\.51204,-111\.07577$/);
+  });
+
+  it("skips a community with neither a URL nor coordinates", () => {
+    const unknown = community({ slug: "nowhere" as Community["slug"], location: undefined });
+    expect(communityMapLinks([unknown])).toEqual([]);
   });
 });
