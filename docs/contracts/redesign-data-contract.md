@@ -24,7 +24,7 @@ Each listing has exactly one category (`listing.category`, manyToOne, unchanged)
 | 1 | `experiences` | Experiencias turísticas comunitarias | Community tourism experiences | `sites`, `accommodation` | Keeps its existing slug |
 | 2 | `gastronomy` | Gastronomía regional | Regional gastronomy | `restaurants` | All food, including cheese and bread producers |
 | 3 | `services` | Servicios | Services | none | Listings here get `hideContact = true` |
-| 4 | `crafts` | Artesanías y productos locales | Crafts and local products | none | New. Listings are assigned manually |
+| 4 | `crafts` | Artesanías y productos locales | Crafts and local products | none | New. Color `#B59BD9` (2.43:1 on white: backgrounds/markers with dark text only, never text on white). Artesanías Andrea and Joyas del Mar move here (`--crafts`) |
 
 The existing `api::category.category` schema (`name`, `slug`, `color`, `order`) is reused as is. The migration creates `gastronomy` and `crafts`, then relabels and reorders `experiences` and `services`.
 
