@@ -541,7 +541,9 @@
     "previous": "Previous photos",
     "next": "Next photos",
     "openPhoto": "Open photo {{index}} of {{total}} in fullscreen",
-    "photoAlt": "{{name}}, photo {{index}} of {{total}}"
+    "photoAlt": "{{name}}, photo {{index}} of {{total}}",
+    "position": "Photo {{index}} of {{total}}",
+    "continue": "Keep scrolling"
   },
   "memberCard": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",

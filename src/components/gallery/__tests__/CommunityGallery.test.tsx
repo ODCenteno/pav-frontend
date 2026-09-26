@@ -16,6 +16,8 @@ const labels: CommunityGalleryLabels = {
   next: "Next photos",
   openPhoto: "Open photo {{index}} of {{total}}",
   photoAlt: "{{name}}, photo {{index}} of {{total}}",
+  position: "Photo {{index}} of {{total}}",
+  continue: "Continue",
 };
 
 const photos = ["/a.jpg", "/b.jpg", "/c.jpg"];
@@ -57,6 +59,20 @@ describe("CommunityGallery", () => {
     expect(html).toContain('aria-label="Next photos"');
   });
 
+  it("shows the feed position, starting at the first photo", () => {
+    const html = render();
+    expect(html).toMatch(/class="community-gallery__position" aria-live="polite"/);
+    expect(html).toContain('<span aria-hidden="true">1 / 3</span>');
+    expect(html).toContain('<span class="sr-only">Photo 1 of 3</span>');
+  });
+
+  it("offers a way to continue past the gallery", () => {
+    const html = render();
+    expect(html).toMatch(/<a[^>]*class="community-gallery__continue"[^>]*href="#community-gallery-end"/);
+    expect(html).toContain('id="community-gallery-end"');
+    expect(html).toContain(">Continue<");
+  });
+
   it("does not render the lightbox until a photo is opened", () => {
     expect(render()).not.toContain("lightbox");
   });
@@ -76,10 +92,14 @@ describe("communityGallery.css", () => {
     expect(CSS).toMatch(/scroll-snap-type:\s*x mandatory/);
   });
 
-  it("switches to a full-viewport vertical snap feed at <= 768px", () => {
+  it("switches to a bounded vertical snap feed at <= 768px that never traps the page", () => {
     expect(CSS).toMatch(/@media \(max-width: 768px\)/);
     expect(CSS).toMatch(/scroll-snap-type:\s*y mandatory/);
-    expect(CSS).toMatch(/100svh/);
+    // Shorter than the viewport, so the page is always reachable around it.
+    expect(CSS).toMatch(/--feed-height:\s*min\(\d+svh/);
+    // Scroll chains to the page at both ends of the feed.
+    expect(CSS).not.toMatch(/overscroll-behavior(-y)?:\s*contain/);
+    expect(CSS).not.toMatch(/height:\s*100svh/);
   });
 
   it("disables smooth scrolling and transitions under prefers-reduced-motion", () => {

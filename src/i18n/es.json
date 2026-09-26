@@ -541,7 +541,9 @@
     "previous": "Fotos anteriores",
     "next": "Fotos siguientes",
     "openPhoto": "Ver foto {{index}} de {{total}} en pantalla completa",
-    "photoAlt": "{{name}}, foto {{index}} de {{total}}"
+    "photoAlt": "{{name}}, foto {{index}} de {{total}}",
+    "position": "Foto {{index}} de {{total}}",
+    "continue": "Seguir bajando"
   },
   "memberCard": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
