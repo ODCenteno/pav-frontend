@@ -1,0 +1,27 @@
+---
+export const prerender = true;
+
+import CommunityPage from "@/components/community-page/CommunityPage.astro";
+import { getCommunities, getListingsWithFallback } from "@/lib/cms";
+import type { Community } from "@/types/community.type";
+
+const LOCALE = "en";
+
+export async function getStaticPaths() {
+  const communities = await getCommunities("en");
+  return communities.map((community) => ({
+    params: { slug: community.slug },
+    props: { community, communities },
+  }));
+}
+
+interface Props {
+  community: Community;
+  communities: Community[];
+}
+
+const { community, communities } = Astro.props;
+const allListings = await getListingsWithFallback(LOCALE);
+---
+
+<CommunityPage community={community} communities={communities} allListings={allListings} locale={LOCALE} />

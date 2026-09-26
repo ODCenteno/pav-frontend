@@ -1,0 +1,23 @@
+---
+import "./communityIntro.css";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
+import type { Community } from "@/types/community.type";
+
+interface Props {
+  community: Community;
+  locale: string;
+}
+
+const { community, locale } = Astro.props;
+---
+
+<section class="community-intro section-padding">
+  <div class="container community-intro__inner">
+    <div class="community-intro__heading">
+      <CommunityBadge community={community} size="lg" locale={locale} />
+      <h1 class="community-intro__title">{community.name}</h1>
+    </div>
+    {community.tagline && <p class="community-intro__tagline">{community.tagline}</p>}
+    {community.description && <p class="community-intro__description">{community.description}</p>}
+  </div>
+</section>

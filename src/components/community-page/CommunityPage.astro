@@ -1,0 +1,109 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ListingCarousel from "@/components/main/categories/ListingCarousel.astro";
+import GuideHistory from "@/components/guide/GuideHistory.astro";
+import Highlights from "@/components/main/highlights/Highlights.astro";
+import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
+import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import CommunityGallery from "@/components/gallery/CommunityGallery";
+import CommunityHero from "./CommunityHero.astro";
+import CommunityIntro from "./CommunityIntro.astro";
+import CommunityDirections from "./CommunityDirections.astro";
+import CommunityTouristMap from "./CommunityTouristMap.astro";
+import { useTranslations } from "@/i18n/utils";
+import { communityStyle } from "@/utils/communityTheme";
+import { navigation } from "@/utils/navigation";
+import type { Community } from "@/types/community.type";
+import type { Listing } from "@/types/listing.type";
+import {
+  finalCtaFor,
+  historyProps,
+  listingsForCommunity,
+  otherCommunity,
+  quickFactsImages,
+  sectionHeader,
+} from "./communityPage";
+
+interface Props {
+  community: Community;
+  /** Every community, to link the final CTA to the other one. */
+  communities: Community[];
+  /** Every listing; the page keeps only this community's. */
+  allListings: Listing[];
+  /** Strapi locale ("es-MX" | "en"). */
+  locale: string;
+}
+
+const { community, communities, allListings, locale } = Astro.props;
+const t = useTranslations(locale);
+const { name } = community;
+
+const listings = listingsForCommunity(allListings, community.slug);
+const history = historyProps(community, t("communityDetail.historyTitle"));
+const highlightsHeader = sectionHeader(community.highlightsHeader, t("communityDetail.highlightsTitle"));
+const quickFactsHeader = sectionHeader(community.quickFactsHeader, t("communityDetail.quickFactsTitle"));
+
+const other = otherCommunity(communities, community.slug);
+const finalCta = finalCtaFor(
+  community,
+  other
+    ? {
+        title: t("communityDetail.cta.title", { name: other.name }),
+        description: other.tagline ?? "",
+        buttonLabel: t("communityDetail.cta.button", { name: other.name }),
+        buttonLink: navigation.community(other.slug, locale),
+      }
+    : null
+);
+
+const galleryLabels = {
+  title: t("communityGallery.title"),
+  previous: t("communityGallery.previous"),
+  next: t("communityGallery.next"),
+  openPhoto: t("communityGallery.openPhoto"),
+  photoAlt: t("communityGallery.photoAlt"),
+};
+---
+
+<BaseLayout
+  siteTitle={t("communityDetail.seo.siteTitle", { name })}
+  ogTitle={t("communityDetail.seo.siteTitle", { name })}
+  siteDescription={community.tagline || t("communityDetail.seo.siteDescription", { name })}
+  ogDescription={t("communityDetail.seo.siteDescription", { name })}
+>
+  <CommunityHero slot="Hero" name={name} image={community.heroImage} locale={locale} />
+
+  <div class="community-page" style={communityStyle(community)}>
+    <CommunityIntro community={community} locale={locale} />
+
+    {listings.length > 0 && (
+      <ListingCarousel
+        listings={listings}
+        title={t("communityDetail.listingsTitle", { name })}
+        locale={locale}
+        id="community-listings"
+      />
+    )}
+
+    {history && <GuideHistory data={history} locale={locale} />}
+
+    <CommunityDirections community={community} locale={locale} />
+
+    <CommunityTouristMap
+      communityName={name}
+      image={community.touristMapImage}
+      caption={community.touristMapCaption}
+      locale={locale}
+    />
+
+    {community.highlights.length > 0 && <Highlights header={highlightsHeader} items={community.highlights} />}
+
+    {community.quickFacts.length > 0 && (
+      <QuickFacts header={quickFactsHeader} items={community.quickFacts} images={quickFactsImages(community)} />
+    )}
+
+    <CommunityGallery client:visible photos={community.gallery} communityName={name} labels={galleryLabels} />
+
+    {finalCta && <CtaSection data={finalCta} />}
+  </div>
+</BaseLayout>

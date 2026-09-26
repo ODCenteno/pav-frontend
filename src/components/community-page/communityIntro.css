@@ -1,0 +1,31 @@
+.community-intro__inner {
+  max-width: 860px;
+}
+
+.community-intro__heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.community-intro__title {
+  font-size: var(--text-3xl, var(--text-2xl));
+  margin: 0;
+}
+
+/* Small-ish text in the brand color: textColor (>= 4.5:1), not color. */
+.community-intro__tagline {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--community-color-text, var(--color-on-surface));
+  margin: 0 0 var(--space-sm);
+}
+
+.community-intro__description {
+  font-size: var(--text-base);
+  line-height: 1.7;
+  color: var(--color-on-surface);
+  margin: 0;
+  white-space: pre-line;
+}
