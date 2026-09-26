@@ -26,7 +26,9 @@ describe("CommunityDirections (component smoke test)", () => {
 
   it("renders the existing Leaflet MapView with a single pin", () => {
     expect(source).toMatch(/import\s+MapView\s+from\s+["'][^"']*maps\/MapView["']/);
-    expect(source).toMatch(/<MapView[\s\S]*client:visible/);
+    // Leaflet touches `window` on import: never server-render the map.
+    expect(source).toMatch(/<MapView[\s\S]*client:only="react"/);
+    expect(source).not.toMatch(/<MapView[\s\S]*client:visible/);
     expect(source).toMatch(/markers=\{\[marker\]\}/);
   });
 

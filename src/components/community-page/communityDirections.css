@@ -47,6 +47,8 @@
 }
 
 .community-directions__map {
+  /* client:only map: reserve its height so the page does not shift. */
+  min-height: 360px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 3px solid var(--community-color, var(--color-primary));

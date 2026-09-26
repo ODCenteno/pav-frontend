@@ -52,7 +52,7 @@ const marker: MarkerItem | undefined = location && {
     {marker && (
       <div class="community-directions__map">
         <MapView
-          client:visible
+          client:only="react"
           markers={[marker]}
           center={[marker.lat, marker.lng]}
           zoom={12}
