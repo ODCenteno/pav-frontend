@@ -21,6 +21,16 @@ interface MapViewProps {
   ariaLabel?: string;
 }
 
+/**
+ * Pins are drawn upward from their anchor (36px icon), so the top edge needs
+ * extra room or the top-most pin is clipped by the map frame.
+ */
+export const FIT_BOUNDS_OPTIONS: { paddingTopLeft: [number, number]; paddingBottomRight: [number, number]; maxZoom: number } = {
+  paddingTopLeft: [40, 64],
+  paddingBottomRight: [40, 24],
+  maxZoom: 14,
+};
+
 export default function MapView({
   markers,
   center,
@@ -73,7 +83,7 @@ export default function MapView({
         const group = L.featureGroup(
           markers.map((m) => L.marker([m.lat, m.lng], { icon: createCustomIcon(m.categoryColor) }))
         );
-        map.fitBounds(group.getBounds(), { padding: [40, 40], maxZoom: 14 });
+        map.fitBounds(group.getBounds(), FIT_BOUNDS_OPTIONS);
       } else if (markers.length === 1) {
         const only = markers[0];
         map.setView([only.lat, only.lng], zoom);

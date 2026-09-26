@@ -526,7 +526,7 @@
     "title": "Guardados",
     "subtitle": "Se guardan solo en este dispositivo",
     "filterLabel": "Filtrar favoritos por categoría",
-    "empty": "Aún no tienes favoritos. Toca el corazón en cualquier lugar para guardarlo aquí.",
+    "empty": "Aún no tienes favoritos. Toca el ícono de guardar en cualquier lugar para guardarlo aquí.",
     "emptyFiltered": "No tienes favoritos en esta categoría.",
     "exploreCommunity": "Explorar {{name}}"
   },

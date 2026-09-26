@@ -44,6 +44,11 @@ describe("CommunityPage", () => {
     expect(source).toMatch(/import CtaSection from ["']@\/components\/main\/CTA\/CtaSection\.astro["']/);
   });
 
+  it("drops the \"Qué hacer\" slot from quick facts, like the home (PDF: remove that box)", () => {
+    expect(source).toMatch(/import \{ homeQuickFacts \} from ["']@\/components\/main\/quickFacts\/homeQuickFacts["']/);
+    expect(source).toMatch(/items=\{homeQuickFacts\(community\.quickFacts\)\}/);
+  });
+
   it("hydrates the gallery island only when visible", () => {
     expect(source).toMatch(/<CommunityGallery[\s\S]*?client:visible/);
   });

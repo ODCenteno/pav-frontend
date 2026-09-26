@@ -24,3 +24,11 @@ describe("MapView accessible label", () => {
     );
   });
 });
+
+describe("MapView fitBounds padding", () => {
+  it("leaves room above the top-most pin, which is drawn upward from its anchor (36px icon)", async () => {
+    const { FIT_BOUNDS_OPTIONS } = await import("../MapView");
+    expect(FIT_BOUNDS_OPTIONS.paddingTopLeft[1]).toBeGreaterThanOrEqual(36 + 24);
+    expect(FIT_BOUNDS_OPTIONS.maxZoom).toBe(14);
+  });
+});

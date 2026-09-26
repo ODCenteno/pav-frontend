@@ -526,7 +526,7 @@
     "title": "Saved",
     "subtitle": "Stored on this device only",
     "filterLabel": "Filter favorites by category",
-    "empty": "You have no favorites yet. Tap the heart on any place to save it here.",
+    "empty": "You have no favorites yet. Tap the save icon on any place to save it here.",
     "emptyFiltered": "You have no favorites in this category.",
     "exploreCommunity": "Explore {{name}}"
   },

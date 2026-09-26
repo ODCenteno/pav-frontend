@@ -4,6 +4,7 @@ import ListingCarousel from "@/components/main/categories/ListingCarousel.astro"
 import GuideHistory from "@/components/guide/GuideHistory.astro";
 import Highlights from "@/components/main/highlights/Highlights.astro";
 import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
+import { homeQuickFacts } from "@/components/main/quickFacts/homeQuickFacts";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
 import CommunityGallery from "@/components/gallery/CommunityGallery";
 import CommunityHero from "./CommunityHero.astro";
@@ -98,7 +99,7 @@ const galleryLabels = {
     {community.highlights.length > 0 && <Highlights header={highlightsHeader} items={community.highlights} />}
 
     {community.quickFacts.length > 0 && (
-      <QuickFacts header={quickFactsHeader} items={community.quickFacts} theme={community} />
+      <QuickFacts header={quickFactsHeader} items={homeQuickFacts(community.quickFacts)} theme={community} />
     )}
 
     <CommunityGallery client:visible photos={community.gallery} communityName={name} labels={galleryLabels} />
