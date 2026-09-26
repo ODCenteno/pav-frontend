@@ -167,7 +167,9 @@ describe("getGoodPracticesPage", () => {
 
     const page = await getGoodPracticesPage("es-MX");
 
-    expect(page.hero?.title).toBe("Guide Hero");
+    // Good-practices copy, not the guide hero; the guide image is reused.
+    expect(page.hero?.title).toBe("Buenas Prácticas y Turismo Sustentable");
+    expect(page.hero?.description).not.toBe("Guide Hero Desc");
     expect(page.hero?.images[0].url).toContain("/uploads/guide-hero.jpg");
     expect(page.protectedArea?.title).toBe("Guide ANP");
     expect(page.protectedArea?.linkHref).toBe("https://guide.example.com/");
@@ -175,8 +177,9 @@ describe("getGoodPracticesPage", () => {
     expect(page.fishingRules).toEqual(["guide rule"]);
     expect(page.influenceHeader?.title).toBe("Guide Influence");
     expect(page.recommendations).toEqual(["guide rec"]);
+    // Driving tips stay as items under a visitor-tips header.
     expect(page.tips).toEqual(["guide tip"]);
-    expect(page.tipsHeader?.title).toBe("Guide Tips Title");
+    expect(page.tipsHeader?.title).toBe("Consejos al visitante");
     expect(page.finalCta?.title).toBe("Guide CTA");
     expect(page.conanpUrl).toBe("https://guide.example.com/");
   });
@@ -187,11 +190,12 @@ describe("getGoodPracticesPage", () => {
 
     const page = await getGoodPracticesPage("es-MX");
 
-    expect(page.hero?.title).toBe(heroData.title["es-MX"]);
+    expect(page.hero?.title).toBe("Buenas Prácticas y Turismo Sustentable");
     expect(page.hero?.titleHighlight).toBe("");
-    expect(page.hero?.description).toBe(heroData.desc["es-MX"]);
+    expect(page.hero?.description).toBeTruthy();
+    expect(page.hero?.description).not.toBe(heroData.desc["es-MX"]);
     expect(page.hero?.images).toEqual([
-      { url: heroData.image, alt: heroData.title["es-MX"] },
+      { url: heroData.image, alt: "Buenas Prácticas y Turismo Sustentable" },
     ]);
     expect(page.protectedArea?.title).toBe(protectedAreaData.title["es-MX"]);
     expect(page.protectedArea?.linkLabel).toBe(protectedAreaData.link.label["es-MX"]);
@@ -202,7 +206,7 @@ describe("getGoodPracticesPage", () => {
     expect(page.fishingHeader?.title).toBe(fishingData.title["es-MX"]);
     expect(page.fishingRules).toEqual(fishingData.rules["es-MX"]);
     expect(page.recommendations).toEqual(recommendationsData.items["es-MX"]);
-    expect(page.tipsHeader?.title).toBe(directionsData.drivingTipsTitle["es-MX"]);
+    expect(page.tipsHeader?.title).toBe("Consejos al visitante");
     expect(page.tips).toEqual(directionsData.drivingTips["es-MX"]);
     expect(page.finalCta?.title).toBe(ctaData.title["es-MX"]);
     expect(page.finalCta?.buttonLabel).toBe(ctaData.btn["es-MX"]);
@@ -215,8 +219,10 @@ describe("getGoodPracticesPage", () => {
     fetchMock.mockResolvedValueOnce(strapiNotFound());
     fetchMock.mockResolvedValueOnce(strapiNotFound());
     const page = await getGoodPracticesPage("en");
-    expect(page.hero?.title).toBe(heroData.title.en);
+    expect(page.hero?.title).toBe("Good Practices and Sustainable Tourism");
+    expect(page.hero?.description).not.toBe(heroData.desc.en);
     expect(page.fishingRules).toEqual(fishingData.rules.en);
+    expect(page.tipsHeader?.title).toBe("Visitor tips");
     expect(page.tips).toEqual(directionsData.drivingTips.en);
   });
 
@@ -226,7 +232,26 @@ describe("getGoodPracticesPage", () => {
     const page = await getGoodPracticesPage("es-MX");
     expect(page.campaign?.title).toBe("Abracemos el Golfo");
     expect(page.campaign?.description).toBeTruthy();
-    expect(page.campaign?.linkLabel).toBeTruthy();
+  });
+
+  it("gives the campaign placeholder no link until RED provides one", async () => {
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
+    const page = await getGoodPracticesPage("es-MX");
+    expect(page.campaign?.url).toBeUndefined();
+    expect(page.campaign?.linkLabel).toBeUndefined();
+  });
+
+  it("localizes the campaign placeholder description", async () => {
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
+    const es = await getGoodPracticesPage("es-MX");
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
+    const en = await getGoodPracticesPage("en");
+    expect(en.campaign?.title).toBe("Abracemos el Golfo");
+    expect(en.campaign?.description).toBeTruthy();
+    expect(en.campaign?.description).not.toBe(es.campaign?.description);
   });
 
   it("fills only the empty sections of a partial CMS page", async () => {
@@ -254,7 +279,7 @@ describe("getGoodPracticesPage", () => {
     fetchMock.mockResolvedValueOnce(strapiError(500));
     fetchMock.mockResolvedValueOnce(strapiError(500));
     const page = await getGoodPracticesPage("es-MX");
-    expect(page.hero?.title).toBe(heroData.title["es-MX"]);
+    expect(page.hero?.title).toBe("Buenas Prácticas y Turismo Sustentable");
     expect(page.campaign?.title).toBe("Abracemos el Golfo");
   });
 

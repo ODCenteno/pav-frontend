@@ -47,16 +47,46 @@ const GOOD_PRACTICES_POPULATE: Record<string, string> = {
   'populate[13]': 'finalCta',
 };
 
+type FallbackLocale = 'es-MX' | 'en';
+
 /**
- * Placeholder campaign block for the "Abracemos el Golfo" campaign. This is
- * fallback DATA, not i18n: the guide content it complements is authored in
- * Spanish (guideData.js), so the placeholder keeps Spanish copy for both
- * locales until the real campaign lands in the CMS.
+ * Fallback hero copy for the good-practices page (CMS fallback data, per
+ * locale). The guide hero describes the destination, not this page, so only
+ * its image is reused.
  */
-const CAMPAIGN_PLACEHOLDER: CampaignBlock = {
-  title: 'Abracemos el Golfo',
-  description: 'Campaña comunitaria de cuidado del Golfo de California. Contenido en preparación.',
-  linkLabel: 'Próximamente',
+const HERO_FALLBACK: Record<FallbackLocale, { title: string; description: string }> = {
+  'es-MX': {
+    title: 'Buenas Prácticas y Turismo Sustentable',
+    description:
+      'Cómo visitar Puerto Agua Verde y Rancho San Cosme cuidando su naturaleza, su mar y a su gente.',
+  },
+  en: {
+    title: 'Good Practices and Sustainable Tourism',
+    description:
+      'How to visit Puerto Agua Verde and Rancho San Cosme while caring for their nature, their sea and their people.',
+  },
+};
+
+/** The guide's driving tips are served under a visitor-tips header. */
+const TIPS_TITLE_FALLBACK: Record<FallbackLocale, string> = {
+  'es-MX': 'Consejos al visitante',
+  en: 'Visitor tips',
+};
+
+/**
+ * Placeholder campaign block for "Abracemos el Golfo" (CMS fallback data).
+ * It has no `url` / `linkLabel` until RED provides them, so the block renders
+ * without a button.
+ */
+const CAMPAIGN_PLACEHOLDER: Record<FallbackLocale, CampaignBlock> = {
+  'es-MX': {
+    title: 'Abracemos el Golfo',
+    description: 'Campaña comunitaria para cuidar el Golfo de California. Muy pronto más información.',
+  },
+  en: {
+    title: 'Abracemos el Golfo',
+    description: 'A community campaign to care for the Gulf of California. More information coming soon.',
+  },
 };
 
 /**
@@ -66,27 +96,18 @@ const CAMPAIGN_PLACEHOLDER: CampaignBlock = {
  * /experiencias, a route scheduled for removal in the redesign.
  */
 async function buildGuideFallback(locale: string): Promise<GoodPracticesPage> {
-  const l = locale.startsWith('en') ? 'en' : 'es-MX';
+  const l: FallbackLocale = locale.startsWith('en') ? 'en' : 'es-MX';
   const guide = await getGuidePage(toStrapiLocale(locale));
 
-  const hero =
-    guide.hero && guide.hero.title
-      ? {
-          title: guide.hero.title,
-          titleHighlight: '',
-          description: guide.hero.desc,
-          ctaLabel: guide.cta?.btn ?? ctaData.btn[l],
-          ctaLink: navigation.home(locale),
-          images: [{ url: guide.hero.image, alt: guide.hero.title }],
-        }
-      : {
-          title: heroData.title[l],
-          titleHighlight: '',
-          description: heroData.desc[l],
-          ctaLabel: ctaData.btn[l],
-          ctaLink: navigation.home(locale),
-          images: [{ url: heroData.image, alt: heroData.title[l] }],
-        };
+  const heroCopy = HERO_FALLBACK[l];
+  const hero = {
+    title: heroCopy.title,
+    titleHighlight: '',
+    description: heroCopy.description,
+    ctaLabel: guide.cta?.btn || ctaData.btn[l],
+    ctaLink: navigation.home(locale),
+    images: [{ url: guide.hero?.image || heroData.image, alt: heroCopy.title }],
+  };
 
   const protectedArea =
     guide.protected && guide.protected.title
@@ -117,14 +138,9 @@ async function buildGuideFallback(locale: string): Promise<GoodPracticesPage> {
       ? guide.recommendations
       : { title: recommendationsData.title[l], items: recommendationsData.items[l] };
 
-  const tips = guide.directions
-    ? {
-        title: guide.directions.drivingTipsTitle || directionsData.drivingTipsTitle[l],
-        items: guide.directions.drivingTips.length
-          ? guide.directions.drivingTips
-          : directionsData.drivingTips[l],
-      }
-    : { title: directionsData.drivingTipsTitle[l], items: directionsData.drivingTips[l] };
+  const tips = guide.directions?.drivingTips.length
+    ? guide.directions.drivingTips
+    : directionsData.drivingTips[l];
 
   const finalCta =
     guide.cta && guide.cta.title
@@ -157,9 +173,9 @@ async function buildGuideFallback(locale: string): Promise<GoodPracticesPage> {
     fishingRefugeMapImage: undefined,
     recommendationsHeader: { title: recommendations.title, subtitle: '' },
     recommendations: recommendations.items,
-    tipsHeader: { title: tips.title, subtitle: '' },
-    tips: tips.items,
-    campaign: CAMPAIGN_PLACEHOLDER,
+    tipsHeader: { title: TIPS_TITLE_FALLBACK[l], subtitle: '' },
+    tips,
+    campaign: CAMPAIGN_PLACEHOLDER[l],
     finalCta,
   };
 }
