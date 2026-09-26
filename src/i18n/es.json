@@ -472,6 +472,19 @@
   },
   "communityDetail": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "seo": {
+      "siteTitle": "{{name}} | Comunidades de Loreto",
+      "siteDescription": "Conoce {{name}}: historia, experiencias, cómo llegar y lo esencial para visitar la comunidad."
+    },
+    "heroAlt": "Vista de {{name}}",
+    "listingsTitle": "Qué hacer en {{name}}",
+    "historyTitle": "Historia",
+    "highlightsTitle": "Experiencias destacadas",
+    "quickFactsTitle": "Lo esencial de un vistazo",
+    "cta": {
+      "title": "Conoce {{name}}",
+      "button": "Visitar {{name}}"
+    },
     "directions": {
       "title": "Cómo llegar",
       "text": "{{name}} está en la costa de Loreto, Baja California Sur. Abre la ruta en Google Maps para planear tu viaje.",
@@ -500,7 +513,21 @@
     "campaignLogoAlt": "Logotipo de {{title}}"
   },
   "favoritesPage": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "seo": {
+      "siteTitle": "Mis favoritos | Puerto Agua Verde",
+      "ogTitle": "Tus lugares favoritos en Puerto Agua Verde y Rancho San Cosme",
+      "siteDescription": "Los sitios, sabores y servicios que guardaste para tu visita a Puerto Agua Verde y Rancho San Cosme.",
+      "ogDescription": "Tu lista de lugares guardados para planear la visita."
+    },
+    "heroTitle": "Mis favoritos",
+    "heroDesc": "Los lugares que guardaste para planear tu visita.",
+    "title": "Guardados",
+    "subtitle": "Se guardan solo en este dispositivo",
+    "filterLabel": "Filtrar favoritos por categoría",
+    "empty": "Aún no tienes favoritos. Toca el corazón en cualquier lugar para guardarlo aquí.",
+    "emptyFiltered": "No tienes favoritos en esta categoría.",
+    "exploreCommunity": "Explorar {{name}}"
   },
   "communityGallery": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
