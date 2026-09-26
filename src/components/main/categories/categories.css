@@ -96,7 +96,8 @@
 }
 
 /* Fix: Ensure cards are side by side by setting a specific width */
-.carousel-container > .listing-card-container {
+.carousel-container > .listing-card-container,
+.carousel-container > .carousel-slide {
     scroll-snap-align: start;
     flex-shrink: 0;
     width: 300px; /* Mobile width */
@@ -106,7 +107,8 @@
     .carousel-container {
         gap: var(--space-md);
     }
-    .carousel-container > .listing-card-container {
+    .carousel-container > .listing-card-container,
+    .carousel-container > .carousel-slide {
         width: 340px; /* Desktop width */
     }
 }
@@ -159,11 +161,11 @@
     color: var(--white);
     text-decoration: none;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(90, 138, 128, 0.35);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
 
 /* Empty State */
-#category-empty-state {
+.carousel-empty-state {
     padding: var(--space-xl) var(--space-sm);
     font-size: var(--text-base);
     text-align: center;

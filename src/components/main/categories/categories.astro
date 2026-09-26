@@ -1,103 +1,25 @@
 ---
-import "./categories.css";
-import type { Listing } from "@/types/listing.type.ts";
-import type { LocalizedString } from "@/types/i18n.type.ts";
+/**
+ * Home featured carousel: featured listings from both communities, rendered
+ * through the reusable ListingCarousel.
+ */
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback, deriveCategoriesFromListings, toStrapiLocale } from "@/lib/cms";
-import type { Category } from "@/types/category.type.ts";
-
-import CategoryFilter from "@/components/main/categories/CategoryFilter.tsx";
-import CardMain from "@/components/cards/CardMain.astro";
+import { getListingsWithFallback, toStrapiLocale } from "@/lib/cms";
 import { navigation } from "@/utils/navigation";
+import ListingCarousel from "./ListingCarousel.astro";
+import { featuredListings } from "./carousel";
 
 const locale = Astro.currentLocale ?? "es";
-
 const t = useTranslations(locale);
 
-function getLocalizedText(value?: LocalizedString, loc: string = "es"): string {
-  if (!value) return "";
-  const isEn = loc.toLowerCase().startsWith("en");
-  const key = isEn ? "en" : "es-MX";
-  const v = (value as any)?.[key] ?? (value as any)?.["es-MX"] ?? (value as any)?.en;
-  return typeof v === "string" ? v : "";
-}
-
-const allListings: Listing[] = await getListingsWithFallback(toStrapiLocale(locale));
-const allCategories: Category[] = deriveCategoriesFromListings(allListings);
-
-// Build a category lookup from the CMS-driven list
-const categoryBySlug = new Map<string, Category>();
-for (const c of allCategories) {
-  categoryBySlug.set(c.slug, c);
-}
-
-// Map each listing to its category (prefer the populated one, else the lookup)
-const listingData: Listing[] = allListings
-  .filter((item): item is Listing => item.isFeatured === true)
-  .map((item) => {
-    if (item.category) return item;
-    const slug = item.categoryId;
-    const cat = slug ? categoryBySlug.get(slug) : undefined;
-    return cat ? { ...item, category: cat } : item;
-  });
-
-// Build the categories list shown in the filter
-const categoryMap = new Map<string, { label: string; order: number }>();
-
-// Seed from the categories collection so order/label are correct even with no featured listings
-for (const c of allCategories) {
-  categoryMap.set(c.slug, {
-    label: getLocalizedText(c.name, locale),
-    order: c.order ?? 999,
-  });
-}
-
-// Then enrich with any featured listings that point to categories not in the collection
-for (const item of listingData) {
-  const id = item.category?.slug || item.categoryId;
-  if (!id || categoryMap.has(id)) continue;
-  const cat = item.category as any;
-  if (cat) {
-    const label = cat.name && typeof cat.name === "object"
-      ? getLocalizedText(cat.name, locale)
-      : id;
-    categoryMap.set(id, { label, order: cat.order ?? 999 });
-  }
-}
-
-const categories = Array.from(categoryMap.entries())
-  .map(([id, data]) => ({ id, label: data.label, order: data.order }))
-  .sort((a, b) => {
-    if (a.order !== b.order) return a.order - b.order;
-    return a.label.localeCompare(b.label, locale);
-  });
-
-const translations = {
-  noResults: t("gallery.noResults"),
-  all: t("categories.all"),
-};
-
-const viewAllHref = navigation.sites(locale);
+const listings = featuredListings(await getListingsWithFallback(toStrapiLocale(locale)));
 ---
 
-<section class="destinations section-padding">
-  <div class="container">
-    <div class="section-header categories-header">
-      <h2>{t("gallery.title")}</h2>
-      <p class="categories-subtitle">{t("gallery.desc")}</p>
-    </div>
-
-    <CategoryFilter client:idle locale={locale} translations={translations} categories={categories} containerSelector="#category-carousel-container" itemSelector="[data-category]" />
-
-    <!-- SSR-first: cards renderizadas en servidor -->
-    <div id="category-carousel-container" class="carousel-container">
-      {listingData.map((item) => <CardMain item={item} currentLang={locale} />)}
-    </div>
-
-    <div class="view-all-container">
-      <a href={viewAllHref} class="view-all-link" id="view-all-link">
-        {t("gallery.view_all")}
-      </a>
-    </div>
-  </div>
-</section>
+<ListingCarousel
+  id="category-carousel"
+  listings={listings}
+  title={t("gallery.title")}
+  subtitle={t("gallery.desc")}
+  locale={locale}
+  viewAllHref={navigation.sites(locale)}
+/>

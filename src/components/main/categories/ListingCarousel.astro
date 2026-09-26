@@ -1,0 +1,70 @@
+---
+/**
+ * Reusable one-row filterable listing carousel.
+ *
+ * Cards are rendered on the server; CategoryFilter only shows/hides them by
+ * their current category slug (legacy slugs mapped, contract §1).
+ */
+import "./categories.css";
+import type { Listing } from "@/types/listing.type";
+import { useTranslations } from "@/i18n/utils";
+import CategoryFilter from "./CategoryFilter.tsx";
+import CardMain from "@/components/cards/CardMain.astro";
+import { carouselChips, carouselCategoryOf } from "./carousel";
+
+interface Props {
+  listings: Listing[];
+  title: string;
+  locale: string;
+  subtitle?: string;
+  /** Unique per page; scopes the filter to this carousel. */
+  id?: string;
+  viewAllHref?: string;
+}
+
+const { listings, title, locale, subtitle, id = "listing-carousel", viewAllHref } = Astro.props;
+
+const t = useTranslations(locale);
+const containerId = `${id}-container`;
+const headingId = `${id}-title`;
+
+const translations = {
+  noResults: t("gallery.noResults"),
+  all: t("categories.all"),
+};
+---
+
+<section class="destinations section-padding" id={id} aria-labelledby={headingId}>
+  <div class="container">
+    <div class="section-header categories-header">
+      <h2 id={headingId}>{title}</h2>
+      {subtitle && <p class="categories-subtitle">{subtitle}</p>}
+    </div>
+
+    <CategoryFilter
+      client:idle
+      locale={locale}
+      translations={translations}
+      categories={carouselChips(locale)}
+      containerSelector={`#${containerId}`}
+      itemSelector="[data-carousel-category]"
+      categoryAttribute="data-carousel-category"
+    />
+
+    <div id={containerId} class="carousel-container">
+      {listings.map((item) => (
+        <div class="carousel-slide" data-carousel-category={carouselCategoryOf(item)}>
+          <CardMain item={item} currentLang={locale} />
+        </div>
+      ))}
+    </div>
+
+    {viewAllHref && (
+      <div class="view-all-container">
+        <a href={viewAllHref} class="view-all-link">
+          {t("gallery.view_all")}
+        </a>
+      </div>
+    )}
+  </div>
+</section>

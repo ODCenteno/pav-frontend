@@ -22,6 +22,9 @@ interface CategoryFilterProps {
   /** Selector CSS de cada card/listing dentro del contenedor. Default: '[data-category]' */
   itemSelector?: string;
 
+  /** Attribute holding each item's category slug. Default: 'data-category' */
+  categoryAttribute?: string;
+
   /** Categoría inicial (default: "all") */
   initialCategory?: string;
 }
@@ -31,7 +34,7 @@ interface CategoryFilterProps {
  * - React NO renderiza cards
  * - Solo filtra mostrando/ocultando elementos SSR por data-category
  */
-export default function CategoryFilter({ locale, categories, translations, containerSelector = "#category-carousel-container", itemSelector = "[data-category]", initialCategory = "all" }: CategoryFilterProps) {
+export default function CategoryFilter({ locale, categories, translations, containerSelector = "#category-carousel-container", itemSelector = "[data-category]", categoryAttribute = "data-category", initialCategory = "all" }: CategoryFilterProps) {
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
 
   const isEnglish = useMemo(() => String(locale).toLowerCase().startsWith("en"), [locale]);
@@ -57,21 +60,23 @@ export default function CategoryFilter({ locale, categories, translations, conta
     let visibleCount = 0;
 
     for (const el of items) {
-      const cat = el.getAttribute("data-category") || "";
+      const cat = el.getAttribute(categoryAttribute) || "";
       const shouldShow = activeCategory === "all" || cat === activeCategory;
 
       el.style.display = shouldShow ? "" : "none";
       if (shouldShow) visibleCount++;
     }
 
-    // Empty state dentro del contenedor SSR (sin duplicar DOM)
-    const emptyId = "category-empty-state";
-    let emptyEl = container.querySelector<HTMLElement>(`#${emptyId}`);
+    // Empty state inside this carousel's container (class, not id: several
+    // carousels can share a page).
+    const emptyClass = "carousel-empty-state";
+    let emptyEl = container.querySelector<HTMLElement>(`.${emptyClass}`);
 
     if (visibleCount === 0) {
       if (!emptyEl) {
         emptyEl = document.createElement("p");
-        emptyEl.id = emptyId;
+        emptyEl.className = emptyClass;
+        emptyEl.setAttribute("role", "status");
         // Styles handled in CSS
         container.appendChild(emptyEl);
       }
@@ -80,11 +85,11 @@ export default function CategoryFilter({ locale, categories, translations, conta
     } else if (emptyEl) {
       emptyEl.style.display = "none";
     }
-  }, [activeCategory, containerSelector, itemSelector, translations.noResults]);
+  }, [activeCategory, containerSelector, itemSelector, categoryAttribute, translations.noResults]);
 
   return (
     <>
-      <div className="filter-chips" role="tablist" aria-label={isEnglish ? "Filter by category" : "Filtrar por categoría"}>
+      <div className="filter-chips" role="group" aria-label={isEnglish ? "Filter by category" : "Filtrar por categoría"}>
         {/* All */}
         <button type="button" className={`chip ${activeCategory === "all" ? "active" : ""}`} onClick={() => setActiveCategory("all")} aria-pressed={activeCategory === "all"}>
           {translations.all}
