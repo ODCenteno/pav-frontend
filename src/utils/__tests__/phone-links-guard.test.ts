@@ -14,7 +14,7 @@ const SRC = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
  * Files still building links by hand, owned by another agent. Each entry is
  * tracked as a request in the milestone report; remove it once switched.
  */
-const PENDING_OWNER_SWITCH = new Set(["components/community-page/memberCard.ts"]);
+const PENDING_OWNER_SWITCH = new Set<string>([]);
 
 const HAND_BUILT_LINK = /(tel:\$\{|wa\.me\/\$\{)/;
 

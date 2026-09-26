@@ -49,12 +49,16 @@ describe("memberContactLinks", () => {
     expect(links.map((l) => l.platform)).toEqual(["whatsapp", "phone", "instagram"]);
   });
 
-  it("adds phone and WhatsApp from the member fields when social lacks them", () => {
-    const links = memberContactLinks({ social: [], phone: "612 111 2233", whatsapp: "+52 1 612 111 2233" });
+  it("adds phone and WhatsApp from the member fields as E.164 links (contract §5b)", () => {
+    const links = memberContactLinks({ social: [], phone: "+526121112233", whatsapp: "+52 1 612 111 2233" });
     expect(links).toEqual([
-      { platform: "whatsapp", handle: "5216121112233", url: "https://wa.me/5216121112233" },
-      { platform: "phone", handle: "612 111 2233", url: "tel:6121112233" },
+      { platform: "whatsapp", handle: "+52 612 111 2233", url: "https://wa.me/526121112233" },
+      { platform: "phone", handle: "+52 612 111 2233", url: "tel:+526121112233" },
     ]);
+  });
+
+  it("drops member numbers that cannot be normalized", () => {
+    expect(memberContactLinks({ social: [], phone: "12345", whatsapp: "abc" })).toEqual([]);
   });
 
   it("does not duplicate a platform already present in social", () => {

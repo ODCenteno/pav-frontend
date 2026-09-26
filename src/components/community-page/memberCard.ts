@@ -4,6 +4,7 @@
  */
 import type { SocialLink } from "@/types/common.type";
 import { SOCIAL_CONFIG } from "@/utils/socialConfig";
+import { formatPhone, telHref, whatsappHref } from "@/utils/phone";
 import type { CommunityMember } from "@/types/community.type";
 
 /** Bio fallback budget, kept under the 200-char CMS `shortDescription` cap. */
@@ -43,8 +44,8 @@ export function memberSummary(member: Pick<CommunityMember, "shortDescription" |
 
 /**
  * Contact links for the card and the modal: WhatsApp and phone first, then
- * the remaining social links. `phone` / `whatsapp` member fields fill in
- * when the contact component did not already produce those links.
+ * the remaining social links. `phone` / `whatsapp` member fields (E.164)
+ * fill in when the contact component did not already produce those links.
  */
 export function memberContactLinks(
   member: Pick<CommunityMember, "social" | "phone" | "whatsapp">
@@ -53,13 +54,15 @@ export function memberContactLinks(
   const has = (platform: SocialLink["platform"]) => social.some((l) => l.platform === platform);
   const extra: SocialLink[] = [];
 
-  const whatsapp = member.whatsapp?.replace(/\D/g, "");
-  if (whatsapp && !has("whatsapp")) {
-    extra.push({ platform: "whatsapp", handle: whatsapp, url: `https://wa.me/${whatsapp}` });
+  // Contract §5b: E.164 links through the shared helper; numbers that
+  // cannot be normalized are dropped instead of producing a broken link.
+  const whatsappUrl = whatsappHref(member.whatsapp);
+  if (whatsappUrl && !has("whatsapp")) {
+    extra.push({ platform: "whatsapp", handle: formatPhone(member.whatsapp), url: whatsappUrl });
   }
-  const phone = member.phone?.trim();
-  if (phone && !has("phone")) {
-    extra.push({ platform: "phone", handle: phone, url: `tel:${phone.replace(/\s+/g, "")}` });
+  const phoneUrl = telHref(member.phone);
+  if (phoneUrl && !has("phone")) {
+    extra.push({ platform: "phone", handle: formatPhone(member.phone), url: phoneUrl });
   }
 
   const all = [...social, ...extra];
