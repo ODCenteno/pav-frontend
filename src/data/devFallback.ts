@@ -18,8 +18,31 @@ import {
   collaborationData as legacyCollabData,
 } from './aboutData';
 import type { Listing } from '../types/listing.type';
+import type { CommunityRef, CommunitySlug } from '../types/community.type';
+import { getCommunityBySlug } from './communities';
 import type { TeamMember, Organization } from '../types/about.type';
 import { navigation } from '../utils/navigation';
+
+/**
+ * Mock community per seed listing, so offline builds exercise the community
+ * badges, theme and carousel. Every seed with a location sits at Puerto Agua
+ * Verde, so the Rancho San Cosme picks are the hiking, desert and "San Cosme"
+ * seeds, chosen so both communities have featured listings. Dev data only.
+ */
+const RANCHO_SAN_COSME_SEEDS = new Set(['exp-02', 'acc-02', 'res-02', 'sit-01', 'sit-02', 'sit-03', 'ser-03']);
+
+function seedCommunity(seedId: string, locale: string): CommunityRef | undefined {
+  const slug: CommunitySlug = RANCHO_SAN_COSME_SEEDS.has(seedId) ? 'rancho-san-cosme' : 'puerto-agua-verde';
+  const fixture = getCommunityBySlug(slug);
+  if (!fixture) return undefined;
+  return {
+    slug,
+    name: fixture.name[locale.startsWith('en') ? 'en' : 'es-MX'],
+    color: fixture.color,
+    textColor: fixture.textColor,
+    badgeIcon: fixture.iconPath,
+  };
+}
 
 function localizedFromPair(es: any, en: any) {
   return { 'es-MX': es || '', en: en || '' };
@@ -79,6 +102,7 @@ export function getListingsFallback(locale: string = 'es-MX'): Listing[] {
       },
       image: item.image,
       isFeatured: item.isFeatured,
+      community: seedCommunity(item.id, locale),
       category: {
         id: item.categoryId,
         slug: item.categoryId,

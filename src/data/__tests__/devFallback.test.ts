@@ -109,3 +109,34 @@ describe("data/devFallback", () => {
     });
   });
 });
+
+import { communities as communityFixtures } from "../communities";
+
+describe("getListingsFallback — community tags (offline community carousel)", () => {
+  it("tags every seed listing with a fixture community ref", () => {
+    const items = getListingsFallback("es-MX");
+    for (const item of items) {
+      const fixture = communityFixtures.find((c) => c.slug === item.community?.slug);
+      expect(fixture, item.slug).toBeDefined();
+      expect(item.community).toEqual({
+        slug: fixture!.slug,
+        name: fixture!.name["es-MX"],
+        color: fixture!.color,
+        textColor: fixture!.textColor,
+        badgeIcon: fixture!.iconPath,
+      });
+    }
+  });
+
+  it("features listings from both communities", () => {
+    const featured = getListingsFallback("es-MX").filter((i) => i.isFeatured);
+    const slugs = new Set(featured.map((i) => i.community?.slug));
+    expect(slugs).toEqual(new Set(["puerto-agua-verde", "rancho-san-cosme"]));
+  });
+
+  it("puts the San Cosme beach seed in Rancho San Cosme", () => {
+    const beach = getListingsFallback("en").find((i) => i.slug === "playa-san-cosme");
+    expect(beach?.community?.slug).toBe("rancho-san-cosme");
+    expect(beach?.community?.name).toBe("Rancho San Cosme");
+  });
+});
