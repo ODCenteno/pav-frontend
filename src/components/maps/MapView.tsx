@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { MarkerItem } from "./mapIcons";
 import { createPopupContent } from "./mapIcons";
 import { createCustomIcon } from "./mapMarker";
+import { useTranslations } from "../../i18n/utils";
 import "leaflet/dist/leaflet.css";
 import "./mapView.css";
 
@@ -16,6 +17,8 @@ interface MapViewProps {
   linkLabel?: string;
   /** Auto-fit the map to all visible markers on load. Defaults to true. */
   fitBounds?: boolean;
+  /** Accessible name of the map region. Defaults to the `map.ariaLabel` translation for `locale`. */
+  ariaLabel?: string;
 }
 
 export default function MapView({
@@ -25,9 +28,13 @@ export default function MapView({
   height = 250,
   fullScreen = false,
   className = "",
+  locale,
   linkLabel,
   fitBounds = true,
+  ariaLabel,
 }: MapViewProps) {
+  const t = useTranslations(locale);
+  const regionLabel = ariaLabel || t("map.ariaLabel");
   const mapRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<unknown>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -96,7 +103,7 @@ export default function MapView({
       className={`map-container ${fullScreen ? "map-container--full" : ""} ${className}`}
       style={{ height: heightValue }}
       role="region"
-      aria-label="Mapa interactivo de ubicaciones"
+      aria-label={regionLabel}
     >
       <div
         ref={mapRef}
