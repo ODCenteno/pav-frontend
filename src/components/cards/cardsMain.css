@@ -1,10 +1,21 @@
+/* Column flex so the card fills a stretched slot: every card in a row gets
+   the row's height, content stacks at the top and the footer is pinned. */
 .listing-card-container {
     container-type: inline-size;
     container-name: card;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Carousel slots (home, community, favorites, /sitios) are column flex
+   boxes stretched to the row height; the card fills the slot. */
+:where(.carousel-slide, .carousel-item) > .listing-card-container {
+    flex: 1 1 auto;
 }
 
 .listing-card {
+    flex: 1 1 auto;
     width: 100%;
     min-height: 520px;
     height: auto;

@@ -160,8 +160,11 @@ const groupedSites = categories
     display: none; /* Chrome/Safari */
   }
 
+  /* Items stretch to the row height; the card inside fills the item. */
   .carousel-item {
     flex: 0 0 300px;
+    display: flex;
+    flex-direction: column;
     scroll-snap-align: start;
   }
 

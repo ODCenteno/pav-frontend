@@ -103,6 +103,12 @@
     width: 300px; /* Mobile width */
 }
 
+/* Slides stretch to the row height; the card inside fills the slide. */
+.carousel-container > .carousel-slide {
+    display: flex;
+    flex-direction: column;
+}
+
 @media (min-width: 768px) {
     .carousel-container {
         gap: var(--space-md);
