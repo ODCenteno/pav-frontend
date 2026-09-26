@@ -156,7 +156,7 @@ const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(local
     if (!section || section.dataset.ready === "true") return;
     section.dataset.ready = "true";
 
-    const slides = Array.from(section.querySelectorAll<HTMLElement>("[data-fav-id]"));
+    const slides = Array.from(section.querySelectorAll<HTMLElement>(".carousel-slide[data-fav-id]"));
     const chips = Array.from(section.querySelectorAll<HTMLButtonElement>("[data-category-filter]"));
     const emptyState = section.querySelector<HTMLElement>("#favorites-empty-state");
     const emptyText = section.querySelector<HTMLElement>("#favorites-empty-text");

@@ -33,6 +33,11 @@ describe("FavoritesSection", () => {
     expect(source).toMatch(/navigation\.community\(/);
   });
 
+  it("only treats carousel slides as cards (CardMain's .fav-btn also has data-fav-id)", () => {
+    expect(source).toContain('querySelectorAll<HTMLElement>(".carousel-slide[data-fav-id]")');
+    expect(source).not.toContain('querySelectorAll<HTMLElement>("[data-fav-id]")');
+  });
+
   it("decides visibility through the tested favoritesView helper and localStorage util", () => {
     expect(source).toMatch(/favoritesViewState\(/);
     expect(source).toMatch(/import \{ getFavorites \} from ["']@\/utils\/favorites["']/);
