@@ -28,9 +28,15 @@ describe("FavoritesSection", () => {
     expect(source).toMatch(/class="carousel-slide/);
   });
 
-  it("links the empty state to both community pages", () => {
-    expect(source).toMatch(/communities\.map\(/);
-    expect(source).toMatch(/navigation\.community\(/);
+  it("always shows one community action per community below the cards, in the CTA style", () => {
+    expect(source).toMatch(/import CtaActions from ["']@\/components\/main\/CTA\/CtaActions\.astro["']/);
+    expect(source).toMatch(/communityActions\(communities, \(slug\) => navigation\.community\(slug, locale\)\)/);
+    const cards = source.indexOf('id="favorites-carousel"');
+    const actions = source.indexOf("<CtaActions");
+    expect(actions).toBeGreaterThan(cards);
+    // Its own block after the empty state (e2e checks both states).
+    expect(source.indexOf('class="favorites-communities"')).toBeGreaterThan(source.indexOf('id="favorites-empty-state"'));
+    expect(source).not.toContain("favorites-empty__link");
   });
 
   it("only treats carousel slides as cards (CardMain's .fav-btn also has data-fav-id)", () => {

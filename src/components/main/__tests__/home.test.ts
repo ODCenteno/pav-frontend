@@ -53,8 +53,22 @@ describe("F2 hero", () => {
     expect(css).toMatch(/@media \(min-width: 968px\)[\s\S]*\.hero-community-buttons\s*\{[^}]*display:\s*none/);
   });
 
+  it("keeps the h1 only for assistive tech on desktop, with no visible title block", () => {
+    const desktop = css.slice(css.indexOf("@media (min-width: 968px)"));
+    expect(desktop).toMatch(/\.hero-title\s*\{[^}]*clip:\s*rect\(0, 0, 0, 0\)/);
+    expect(desktop).not.toMatch(/\.hero-content\s*\{[^}]*background/);
+  });
+
+  it("turns each mobile option into a photo card with one visible label", () => {
+    expect(hero).toMatch(/class="hero-community-card"/);
+    expect(hero).toMatch(/class="hero-community-card__label">\{t\(heroCtaKey\(community\.slug\)\)\}/);
+    expect(hero).toMatch(/<span class="sr-only">\s*\{community\.name\}\s*<\/span>/);
+    expect(hero).not.toContain("hero-community-button__name");
+    expect(css).toMatch(/\.hero-community-card\s*\{[^}]*aspect-ratio/);
+  });
+
   it("uses textColor behind white text", () => {
-    expect(css).toMatch(/\.hero-community-button\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
+    expect(css).toMatch(/\.hero-community-card__label\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
   });
 });
 
@@ -145,8 +159,10 @@ describe("CTA panel", () => {
   });
 
   it("themes community actions with their color and badge", () => {
-    expect(cta).toMatch(/style=\{communityStyle\(action\.community\)\}/);
-    expect(cta).toMatch(/<CommunityBadge\s+community=\{action\.community\}/);
+    const actions = read("components/main/CTA/CtaActions.astro");
+    expect(cta).toMatch(/<CtaActions actions=\{items\}/);
+    expect(actions).toMatch(/style=\{communityStyle\(action\.community\)\}/);
+    expect(actions).toMatch(/<CommunityBadge\s+community=\{action\.community\}/);
     expect(css).toMatch(/\.cta-panel__action\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
   });
 });

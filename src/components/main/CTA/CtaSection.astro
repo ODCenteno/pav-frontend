@@ -8,9 +8,7 @@
  * top echoes the home hero split.
  */
 import "./ctaSection.css";
-import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
-import SvgIcon from "@/components/icons/SvgIcon.astro";
-import { communityStyle } from "@/utils/communityTheme";
+import CtaActions from "./CtaActions.astro";
 import { communities as communityFixtures } from "@/data/communities";
 import { ctaActionsOf, type CtaAction } from "./ctaActions";
 
@@ -36,27 +34,7 @@ const splitStyle = `--split-a: ${first.color}; --split-b: ${second.color};`;
         {description && <p class="cta-panel__description" data-key="final_cta_desc">{description}</p>}
       </div>
 
-      <ul class="cta-panel__actions">
-        {items.map((action) => (
-          <li>
-            <a class="cta-panel__action" href={action.href} style={communityStyle(action.community)} data-key="final_cta_btn">
-              {action.community ? (
-                <span class="cta-panel__mark">
-                  <CommunityBadge community={action.community} size="sm" locale={locale} decorative />
-                </span>
-              ) : (
-                action.icon && (
-                  <span class="cta-panel__mark cta-panel__mark--icon" aria-hidden="true">
-                    <SvgIcon name="bookmark-filled" class="cta-panel__icon" />
-                  </span>
-                )
-              )}
-              <span class="cta-panel__label">{action.label}</span>
-              <span class="cta-panel__arrow" aria-hidden="true"><SvgIcon name="arrow-right" /></span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      <CtaActions actions={items} locale={locale} />
     </div>
   </div>
 </section>

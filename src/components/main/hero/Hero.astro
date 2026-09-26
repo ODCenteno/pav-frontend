@@ -2,12 +2,12 @@
 /**
  * Home hero.
  *
- * - Mobile: the shared title and description, plus one button per community
- *   with its color, photo and badge.
+ * - Mobile: the shared title and description, plus one photo card per
+ *   community with its badge and a single explore label.
  * - Desktop (>= 968px): the split, one photo half per community with its
  *   name, tagline and explore button. The hovered or focused half widens.
- *   The shared h1 sits in a tab over the seam, so it stays the first
- *   heading on every breakpoint.
+ *   The shared h1 stays in the outline but is visually hidden: the split
+ *   carries the visuals.
  */
 import "./hero.css";
 import { useTranslations } from "../../../i18n/utils";
@@ -40,16 +40,12 @@ const t = useTranslations(locale);
     <ul class="hero-community-buttons">
       {communities.map((community) => (
         <li>
-          <a class="hero-community-button" style={communityStyle(community)} href={communityPath(community.slug, locale)}>
-            <span class="hero-community-button__media" aria-hidden="true">
-              {community.heroImage && <img src={community.heroImage} alt="" loading="eager" decoding="async" />}
-              <CommunityBadge community={community} size="sm" locale={locale} decorative />
+          <a class="hero-community-card" style={communityStyle(community)} href={communityPath(community.slug, locale)}>
+            {community.heroImage && <img class="hero-community-card__image" src={community.heroImage} alt="" loading="eager" decoding="async" />}
+            <span class="hero-community-card__badge">
+              <CommunityBadge community={community} size="lg" locale={locale} decorative />
             </span>
-            <span class="hero-community-button__text">
-              <span class="hero-community-button__label">{t(heroCtaKey(community.slug))}</span>
-              <span class="hero-community-button__name">{community.name}</span>
-            </span>
-            <span class="hero-community-button__arrow" aria-hidden="true"><SvgIcon name="arrow-right" class="hero-arrow" /></span>
+            <span class="hero-community-card__label">{t(heroCtaKey(community.slug))}{" "}<span class="sr-only">{community.name}</span><span class="hero-community-card__arrow" aria-hidden="true"><SvgIcon name="arrow-right" class="hero-arrow" /></span></span>
           </a>
         </li>
       ))}

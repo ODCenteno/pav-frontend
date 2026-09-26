@@ -11,7 +11,8 @@ import CardMain from "@/components/cards/CardMain.astro";
 import { carouselCategoryOf, carouselChips } from "@/components/main/categories/carousel";
 import { useTranslations } from "@/i18n/utils";
 import { navigation } from "@/utils/navigation";
-import { communityStyle } from "@/utils/communityTheme";
+import CtaActions from "@/components/main/CTA/CtaActions.astro";
+import { communityActions } from "@/components/main/CTA/ctaActions";
 import type { Community } from "@/types/community.type";
 import type { Listing } from "@/types/listing.type";
 
@@ -65,17 +66,11 @@ const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(local
       hidden
     >
       <p id="favorites-empty-text" class="favorites-empty__text" role="status">{t("favoritesPage.empty")}</p>
-      <div class="favorites-empty__links">
-        {communities.map((community) => (
-          <a
-            class="favorites-empty__link"
-            href={navigation.community(community.slug, locale)}
-            style={communityStyle(community)}
-          >
-            {t("favoritesPage.exploreCommunity", { name: community.name })}
-          </a>
-        ))}
-      </div>
+    </div>
+
+    <!-- Always shown, with or without saved favorites. -->
+    <div class="favorites-communities">
+      <CtaActions actions={communityActions(communities, (slug) => navigation.community(slug, locale))} locale={locale} />
     </div>
   </div>
 </section>
@@ -121,29 +116,15 @@ const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(local
     color: var(--color-on-surface);
   }
 
-  .favorites-empty__links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-sm);
+  .favorites-communities {
+    max-width: 40rem;
+    margin: var(--space-lg) auto 0;
   }
 
-  /* White text on the community TEXT color keeps AA (>= 4.5:1). */
-  .favorites-empty__link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--radius-full);
-    background: var(--community-color-text);
-    color: var(--white);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .favorites-empty__link:focus-visible {
-    outline: 3px solid var(--community-color-text);
-    outline-offset: 3px;
+  @media (min-width: 768px) {
+    .favorites-communities :global(.cta-panel__actions) {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>
 

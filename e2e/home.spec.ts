@@ -47,7 +47,12 @@ for (const locale of LOCALES) {
     test('keeps a single h1 in the hero', async ({ page }) => {
       await expect(page.locator('html')).toHaveAttribute('lang', locale.lang);
       await expect(page.locator('h1')).toHaveCount(1);
-      await expect(page.locator('.hero h1')).toBeVisible();
+      const h1 = page.locator('.hero h1');
+      await expect(h1).toHaveCount(1);
+      // Desktop: the split carries the visuals and the h1 is visually hidden.
+      const box = await h1.boundingBox();
+      if (isMobile(page)) expect(box?.height ?? 0).toBeGreaterThan(20);
+      else expect(box?.height ?? 0).toBeLessThanOrEqual(1);
     });
 
     test('links one explore button per community to its page', async ({ page }) => {
@@ -57,7 +62,9 @@ for (const locale of LOCALES) {
         const link = hero.getByRole('link', { name: new RegExp(`^${labels[i]}`) }).filter({ visible: true });
         await expect(link).toHaveCount(1);
         await expect(link).toHaveAttribute('href', `${locale.prefix}comunidades/${community.slug}/`);
-        await expect(link).toContainText(isMobile(page) ? community.name : labels[i]);
+        await expect(link).toContainText(labels[i]);
+        // One visible label; the community name is for assistive tech only.
+        await expect(link).toHaveAccessibleName(new RegExp(community.name));
         expect(await communityTextColor(link)).toBe(community.color);
       }
     });

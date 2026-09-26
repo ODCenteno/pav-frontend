@@ -1,0 +1,42 @@
+---
+/**
+ * The CTA action list: one or two large links, each optionally themed with
+ * a community's color and badge. Used by CtaSection and /favoritos.
+ */
+import "./ctaSection.css";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
+import SvgIcon from "@/components/icons/SvgIcon.astro";
+import { communityStyle } from "@/utils/communityTheme";
+import { ctaActionsOf, type CtaAction } from "./ctaActions";
+
+interface Props {
+  actions: CtaAction[];
+  locale?: string;
+  class?: string;
+}
+
+const { actions, locale = Astro.currentLocale ?? "es-MX", class: className } = Astro.props;
+const items = ctaActionsOf(actions);
+---
+
+<ul class:list={["cta-panel__actions", className]}>
+  {items.map((action) => (
+    <li>
+      <a class="cta-panel__action" href={action.href} style={communityStyle(action.community)} data-key="final_cta_btn">
+        {action.community ? (
+          <span class="cta-panel__mark">
+            <CommunityBadge community={action.community} size="sm" locale={locale} decorative />
+          </span>
+        ) : (
+          action.icon && (
+            <span class="cta-panel__mark cta-panel__mark--icon" aria-hidden="true">
+              <SvgIcon name="bookmark-filled" class="cta-panel__icon" />
+            </span>
+          )
+        )}
+        <span class="cta-panel__label">{action.label}</span>
+        <span class="cta-panel__arrow" aria-hidden="true"><SvgIcon name="arrow-right" /></span>
+      </a>
+    </li>
+  ))}
+</ul>

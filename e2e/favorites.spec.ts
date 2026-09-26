@@ -19,6 +19,25 @@ async function seedFavorites(page: Page, ids: string[]) {
   await page.reload();
 }
 
+const COMMUNITIES = [
+  { slug: 'puerto-agua-verde', name: 'Puerto Agua Verde', textColor: '#08806D' },
+  { slug: 'rancho-san-cosme', name: 'Rancho San Cosme', textColor: '#B85206' },
+];
+
+async function expectCommunityActions(page: Page, prefix: string) {
+  const actions = page.locator('.favorites-communities a');
+  await expect(actions).toHaveCount(2);
+  for (const [i, community] of COMMUNITIES.entries()) {
+    const action = actions.nth(i);
+    await expect(action).toBeVisible();
+    await expect(action).toHaveText(community.name);
+    await expect(action).toHaveAttribute('href', `${prefix}${community.slug}/`);
+    await expect(action.locator('.community-badge__icon')).toBeVisible();
+    const color = await action.evaluate((el) => getComputedStyle(el).getPropertyValue('--community-color-text').trim());
+    expect(color.toUpperCase()).toBe(community.textColor);
+  }
+}
+
 const slides = (page: Page) => page.locator('#favorites-section .carousel-slide');
 const emptyState = (page: Page) => page.locator('#favorites-empty-state');
 
@@ -43,14 +62,23 @@ for (const locale of [
       }
     });
 
-    test('shows the empty state with links to both community pages', async ({ page }) => {
+    test('shows the empty state and always the two community buttons', async ({ page }) => {
       await expect(emptyState(page)).toBeVisible();
-      const links = emptyState(page).locator('a');
-      await expect(links).toHaveCount(2);
-      for (const href of await links.evaluateAll((els) => els.map((el) => el.getAttribute('href')))) {
-        expect(href).toMatch(new RegExp(`^${locale.communityPrefix}`));
-      }
       await expect(slides(page).filter({ visible: true })).toHaveCount(0);
+      await expectCommunityActions(page, locale.communityPrefix);
+    });
+
+    test('keeps the community buttons below the cards when favorites are saved', async ({ page }) => {
+      const ids = await page
+        .locator('#favorites-carousel .fav-btn')
+        .evaluateAll((btns) => btns.slice(0, 2).map((b) => b.getAttribute('data-fav-id') ?? ''));
+      test.skip(ids.length === 0, 'No listings in this build');
+      await seedFavorites(page, ids);
+      await expect(emptyState(page)).toBeHidden();
+      await expectCommunityActions(page, locale.communityPrefix);
+      const cardsBottom = await page.locator('#favorites-carousel').evaluate((el) => el.getBoundingClientRect().bottom);
+      const actionsTop = await page.locator('.favorites-communities').evaluate((el) => el.getBoundingClientRect().top);
+      expect(actionsTop).toBeGreaterThanOrEqual(cardsBottom);
     });
 
     test('ignores saved ids that are no longer on the page', async ({ page }) => {
