@@ -5,6 +5,7 @@ import SvgIcon from "../icons/SvgIcon.astro";
 import { navigation } from "@/utils/navigation";
 import { getSiteSettings } from "@/lib/cms";
 import { getSiteContents, toStrapiLocale } from "@/lib/cms";
+import { formatPhone, telHref, whatsappHref } from "@/utils/phone";
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
@@ -15,6 +16,12 @@ const [settings, footerContents] = await Promise.all([
 ]);
 
 const footerAbout = footerContents[0];
+
+// Contract §5b: settings phones are free text; links go through the shared
+// E.164 helper and are hidden when the number cannot be normalized.
+const phoneUrl = telHref(settings.contact.phoneRaw) ?? telHref(settings.contact.phone);
+const phoneLabel = formatPhone(settings.contact.phoneRaw) ?? formatPhone(settings.contact.phone);
+const whatsappUrl = whatsappHref(settings.contact.whatsapp);
 const footerContact = footerContents[1];
 
 const aboutTitle = footerAbout?.title?.[locale === "en" ? "en" : "es-MX"] || t("footer.aboutTitle");
@@ -85,15 +92,19 @@ const currentYear = new Date().getFullYear();
           <span>{settings.contact.email}</span>
         </a>
 
-        <a class="footer-contactItem footer-link" href={`tel:${settings.contact.phoneRaw}`}>
-          <SvgIcon name="phone" class="footer-icon" />
-          <span>{settings.contact.phone}</span>
-        </a>
+        {phoneUrl && (
+          <a class="footer-contactItem footer-link" href={phoneUrl}>
+            <SvgIcon name="phone" class="footer-icon" />
+            <span>{phoneLabel}</span>
+          </a>
+        )}
 
-        <a class="footer-contactItem footer-link" href={`https://wa.me/${settings.contact.whatsapp}`} target="_blank" rel="noopener noreferrer">
-          <SvgIcon name="whatsapp" class="footer-icon" />
-          <span data-key="footer_whatsapp">WhatsApp</span>
-        </a>
+        {whatsappUrl && (
+          <a class="footer-contactItem footer-link" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+            <SvgIcon name="whatsapp" class="footer-icon" />
+            <span data-key="footer_whatsapp">WhatsApp</span>
+          </a>
+        )}
       </div>
 
       <p class="footer-note" data-key="footer_note">{contactNote}</p>

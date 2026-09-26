@@ -64,6 +64,28 @@ describe("socialUrl", () => {
         "https://wa.me/521234567890"
       );
     });
+
+    it("drops the legacy mobile 1 prefix (contract §5b)", () => {
+      expect(socialUrl({ platform: "whatsapp", handle: "5216141234567" })).toBe(
+        "https://wa.me/526141234567"
+      );
+    });
+
+    it("returns '#' when the number cannot be normalized", () => {
+      expect(socialUrl({ platform: "whatsapp", handle: "12345" })).toBe("#");
+    });
+  });
+
+  describe("phone", () => {
+    it("builds an E.164 tel: URL from a legacy handle", () => {
+      expect(socialUrl({ platform: "phone", handle: "613-123-4567" })).toBe(
+        "tel:+526131234567"
+      );
+    });
+
+    it("returns '#' when the number cannot be normalized", () => {
+      expect(socialUrl({ platform: "phone", handle: "12345" })).toBe("#");
+    });
   });
 
   describe("tiktok", () => {

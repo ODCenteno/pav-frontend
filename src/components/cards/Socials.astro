@@ -1,5 +1,5 @@
 ---
-import { SOCIAL_CONFIG } from "@/utils/socialConfig.ts";
+import { cardSocialLinks } from "./socialLinks";
 interface Props {
   socialInfo: {
     [key: string]: string | undefined | null;
@@ -13,27 +13,7 @@ const lang = Astro.currentLocale === 'en' ? 'en' : 'es';
 const shareLabel = lang === 'en' ? 'Share' : 'Compartir';
 const copiedLabel = lang === 'en' ? 'Copied!' : '¡Copiado!';
 
-const activeLinks = Object.entries(socialInfo)
-  .filter(([key, value]) => {
-    const strValue = String(value || "");
-    return strValue.trim() !== "" && SOCIAL_CONFIG[key];
-  })
-  .map(([key, value]) => {
-    const config = SOCIAL_CONFIG[key];
-    const strValue = String(value || "").trim();
-
-    let finalHref = strValue;
-
-    if (config.urlPrefix && !strValue.startsWith("http") && !strValue.startsWith(config.urlPrefix)) {
-      finalHref = `${config.urlPrefix}${strValue}`;
-    }
-
-    return {
-      key,
-      href: finalHref,
-      ...config,
-    };
-  });
+const activeLinks = cardSocialLinks(socialInfo);
 ---
 
 <div class="social-container">

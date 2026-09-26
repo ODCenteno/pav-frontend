@@ -6,6 +6,8 @@
  * resolves to the same URL regardless of where it's rendered.
  */
 
+import { telHref, whatsappHref } from "./phone";
+
 export interface SocialHandle {
   platform: string;
   handle?: string;
@@ -20,7 +22,9 @@ export interface SocialHandle {
  *  - Otherwise derive a platform-specific URL from the handle:
  *      - instagram: strip leading `@`, append to instagram.com
  *      - facebook:   pass through to facebook.com (handle is a page slug or full URL)
- *      - whatsapp:   strip non-digits, append to wa.me
+ *      - whatsapp:   E.164 wa.me link via `whatsappHref` (contract §5b)
+ *      - phone:      E.164 tel: link via `telHref` (contract §5b)
+ *      - a whatsapp/phone handle that cannot be normalized resolves to `#`
  *      - everything else: fall back to the raw handle or `#`
  */
 export function socialUrl(link: SocialHandle): string {
@@ -36,9 +40,8 @@ export function socialUrl(link: SocialHandle): string {
   if (link.platform === "facebook") {
     return handle.startsWith("http") ? handle : `https://facebook.com/${handle}`;
   }
-  if (link.platform === "whatsapp") {
-    return `https://wa.me/${handle.replace(/\D/g, "")}`;
-  }
+  if (link.platform === "whatsapp") return whatsappHref(handle) ?? "#";
+  if (link.platform === "phone") return telHref(handle) ?? "#";
   if (link.platform === "tiktok") {
     const h = handle.replace(/^@/, "");
     return handle.startsWith("http") ? handle : `https://tiktok.com/@${h}`;

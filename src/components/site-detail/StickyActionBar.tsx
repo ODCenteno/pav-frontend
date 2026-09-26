@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { isFavorite, toggleFavorite } from "../../utils/favorites";
+import { whatsappHref } from "../../utils/phone";
 import "./stickyActionBar.css";
 
 interface StickyActionBarProps {
@@ -28,6 +29,7 @@ export default function StickyActionBar({ id, whatsapp, labels, lat, lng }: Stic
   };
 
   const hasLocation = lat !== undefined && lng !== undefined;
+  const whatsappUrl = whatsappHref(whatsapp);
 
   return (
     <div className="sticky-action-bar">
@@ -45,8 +47,8 @@ export default function StickyActionBar({ id, whatsapp, labels, lat, lng }: Stic
         </button>
       )}
         
-        {whatsapp && (
-          <a href={`https://wa.me/${whatsapp}`} className="sticky-action-bar__btn primary" target="_blank" rel="noopener noreferrer">
+        {whatsappUrl && (
+          <a href={whatsappUrl} className="sticky-action-bar__btn primary" target="_blank" rel="noopener noreferrer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
             <span>{labels.contact}</span>
           </a>
