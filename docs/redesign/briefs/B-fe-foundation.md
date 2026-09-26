@@ -112,7 +112,10 @@ Tests first for every fetcher fallback, route helper, `communityStyle` and the b
    - Update B2's card behavior accordingly (it currently keeps social profiles).
    - Tests first: a hideContact listing renders no `tel:`, `wa.me`, `mailto:` or social links
      on either page.
-6. **Tests**:
+6. **Heading order** (from agent C's e2e): `menuOverlay/InstallApp.astro` renders an `h3` before
+   the page `h1` on every page. Make it a non-heading element (keep its visual style) so each
+   page starts its heading outline with the `h1`.
+7. **Tests**:
    - Update `e2e/navigation.spec.ts` for the new header and footer.
    - Update the unit tests your changes break.
    - Add a test for the redirect.
