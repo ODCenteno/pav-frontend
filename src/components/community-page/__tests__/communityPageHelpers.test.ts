@@ -10,8 +10,9 @@ import {
   sectionHeader,
 } from "../communityPage";
 
-// Named *Helpers* on purpose: `communityPage.test.ts` (the CommunityPage.astro
-// source test) and `CommunityPage.test.ts` collide on case-insensitive disks.
+// Unit tests for communityPage.ts. The CommunityPage.astro source test lives in
+// CommunityPage.source.test.ts: names differing only by case collide on
+// case-insensitive disks (macOS), so keep the two files distinct.
 
 function community(overrides: Partial<Community> = {}): Community {
   return {
