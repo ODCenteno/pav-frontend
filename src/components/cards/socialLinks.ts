@@ -1,6 +1,7 @@
 import { SOCIAL_CONFIG } from "@/utils/socialConfig";
 import { telHref, whatsappHref } from "@/utils/phone";
 import type { Listing } from "@/types/listing.type";
+import { listingContactChannels } from "@/utils/listingContact";
 
 export interface CardSocialLink {
   key: string;
@@ -35,21 +36,17 @@ export function cardSocialLinks(
   return links;
 }
 
-/** Channels hidden when a listing sets `hideContact` (contract §5). */
-const HIDDEN_CONTACT_KEYS = new Set(["whatsapp", "phone", "email"]);
-
 /**
- * Card contact values: the `contact` component first, legacy top-level
- * fields second. With `hideContact`, direct-contact channels are blanked
- * while social profiles stay visible.
+ * Card contact values: the `contact` component first (hidden entirely for
+ * `hideContact` listings, see `listingContactChannels`), legacy top-level
+ * mock fields second.
  */
-export function cardContactInfo(item: Listing): Record<string, string> {
-  const contact = item.contact ?? {};
-  const legacy = item as unknown as Record<string, string | undefined>;
+export function cardContactInfo(listing: Listing): Record<string, string> {
+  const { contact } = listingContactChannels(listing);
+  const legacy = listing.hideContact ? {} : (listing as unknown as Record<string, string | undefined>);
   const info: Record<string, string> = {};
   for (const key of ["whatsapp", "instagram", "facebook", "phone", "email"] as const) {
-    const value = contact[key] || legacy[key] || "";
-    info[key] = item.hideContact && HIDDEN_CONTACT_KEYS.has(key) ? "" : value;
+    info[key] = contact[key] || legacy[key] || "";
   }
   return info;
 }

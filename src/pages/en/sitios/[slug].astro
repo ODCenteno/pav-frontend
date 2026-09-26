@@ -15,6 +15,7 @@ import StickyActionBar from "../../../components/site-detail/StickyActionBar.tsx
 import { useTranslations } from "../../../i18n/utils";
 import { getListingBySlugWithFallback, getListingSlugsWithFallback, toStrapiLocale } from "../../../lib/cms";
 import { navigation } from "@/utils/navigation";
+import { listingContactChannels } from "@/utils/listingContact";
 
 export const prerender = true;
 
@@ -62,12 +63,15 @@ const labels = {
   follow: t("siteDetailPage.labels.follow"),
 };
 
+// hideContact listings show no contact channel at all (map and directions stay).
+const { contact, social } = listingContactChannels(item);
+
 const contactActions = {
-  whatsapp: item.contact?.whatsapp,
-  phone: item.contact?.phone,
-  email: item.contact?.email,
-  instagram: item.contact?.instagram,
-  facebook: item.contact?.facebook,
+  whatsapp: contact.whatsapp,
+  phone: contact.phone,
+  email: contact.email,
+  instagram: contact.instagram,
+  facebook: contact.facebook,
 };
 
 const schedule = item.schedule?.text;
@@ -120,9 +124,9 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
     <MemberStrip title={labels.behind} members={item.members} />
   )}
 
-  {item.social && item.social.length > 0 && (
+  {social.length > 0 && (
     <section class="container site-social">
-      <SocialLinks title={labels.follow} social={item.social} />
+      <SocialLinks title={labels.follow} social={social} />
     </section>
   )}
 
@@ -153,7 +157,7 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
   <StickyActionBar
     client:visible
     id={item.id}
-    whatsapp={item.contact?.whatsapp}
+    whatsapp={contact.whatsapp}
     lat= {item.location?.lat}
     lng= {item.location?.lng}
     labels={{

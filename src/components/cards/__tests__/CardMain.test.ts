@@ -91,11 +91,11 @@ describe("cardContactInfo", () => {
     });
   });
 
-  it("hides phone, WhatsApp and email when hideContact is set", () => {
+  it("hides every contact channel, social profiles included, when hideContact is set", () => {
     expect(cardContactInfo({ ...base, hideContact: true })).toEqual({
       whatsapp: "",
-      instagram: "pav",
-      facebook: "pav",
+      instagram: "",
+      facebook: "",
       phone: "",
       email: "",
     });
