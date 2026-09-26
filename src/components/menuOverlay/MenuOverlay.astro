@@ -1,12 +1,15 @@
 ---
 import "./menuOverlay.css";
 import { useTranslations } from "@/i18n/utils";
-import { navigation } from "@/utils/navigation";
+import { navigation, communityPath, goodPracticesPath, favoritesPath } from "@/utils/navigation";
+import { getCommunities } from "@/lib/cms/community";
 import SvgIcon from "../icons/SvgIcon.astro";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 import InstallApp from "./InstallApp.astro";
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
+const communities = await getCommunities(locale);
 
 const locales = ["en", "es"];
 const alternateLocaleCode = locales.find((l) => l !== locale);
@@ -20,17 +23,23 @@ if (alternateLocaleCode) {
 }
 ---
 
-<div id="mobile-menu-overlay" class="mobile-menu__overlay menu-overlay--hidden" role="dialog" aria-modal="true" aria-label="Mobile Menu">
-  <button class="mobile-menu__close-btn" aria-label="Close menu">
+<div id="mobile-menu-overlay" class="mobile-menu__overlay menu-overlay--hidden" role="dialog" aria-modal="true" aria-label={t("nav.mobileMenu")}>
+  <button type="button" class="mobile-menu__close-btn" aria-label={t("nav.closeMenu")}>
     <SvgIcon name="close" class="close-icon-svg" />
   </button>
   <nav class="mobile-nav">
     <ul class="mobile-nav--ul">
       <li><a class="mobile-nav--link" href={navigation.home(locale)} data-key="nav_home">{t("nav.home")}</a></li>
-      <li><a class="mobile-nav--link" href={navigation.experiences(locale)} data-key="nav_experiences">{t("nav.experiences")}</a></li>
-      <li><a class="mobile-nav--link" href={navigation.sites(locale)} data-key="nav_sites">{t("nav.sites")}</a></li>
-      <li><a class="mobile-nav--link" href={navigation.guide(locale)} data-key="nav_guide">{t("nav.guide")}</a></li>
-      <li><a class="mobile-nav--link" href={navigation.about(locale)} data-key="nav_about">{t("nav.about")}</a></li>
+      <li><a class="mobile-nav--link" href={goodPracticesPath(locale)} data-key="nav_goodPractices">{t("nav.goodPractices")}</a></li>
+      {communities.map((community) => (
+        <li>
+          <a class="mobile-nav--link mobile-nav--community" href={communityPath(community.slug, locale)}>
+            <CommunityBadge community={community} size="sm" locale={locale} decorative />
+            <span>{community.name}</span>
+          </a>
+        </li>
+      ))}
+      <li><a class="mobile-nav--link" href={favoritesPath(locale)} data-key="nav_favorites">{t("nav.favorites")}</a></li>
       
       {
         alternateLang && (

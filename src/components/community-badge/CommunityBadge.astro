@@ -13,6 +13,11 @@ interface Props {
   showName?: boolean;
   locale?: string;
   class?: string;
+  /**
+   * Hide the badge from assistive tech. Use it when the surrounding link or
+   * heading already names the community, to avoid a double announcement.
+   */
+  decorative?: boolean;
 }
 
 const {
@@ -21,6 +26,7 @@ const {
   showName = false,
   locale = "es-MX",
   class: className,
+  decorative = false,
 } = Astro.props;
 
 const t = useTranslations(locale);
@@ -39,8 +45,9 @@ const ariaLabel = community
     <span
       class={`community-badge community-badge--${size}${className ? ` ${className}` : ""}`}
       style={style}
-      role="img"
-      aria-label={ariaLabel}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : ariaLabel}
+      aria-hidden={decorative ? "true" : undefined}
     >
       {icon && (
         <img

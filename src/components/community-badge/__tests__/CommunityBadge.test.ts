@@ -42,9 +42,17 @@ describe("CommunityBadge (component smoke test)", () => {
   });
 
   it("exposes an accessible label naming the community via the i18n key", () => {
-    expect(source).toMatch(/aria-label=\{ariaLabel\}/);
+    expect(source).toMatch(/aria-label=\{decorative \? undefined : ariaLabel\}/);
     expect(source).toMatch(/communityBadge\.ariaLabel/);
     expect(source).toMatch(/name:\s*community\.name/);
+  });
+
+  it("can render as decorative inside a link that already names the community", () => {
+    expect(source).toMatch(/decorative\??:\s*boolean/);
+    expect(source).toMatch(/decorative\s*=\s*false/);
+    expect(source).toMatch(/role=\{decorative \? undefined : "img"\}/);
+    expect(source).toMatch(/aria-label=\{decorative \? undefined : ariaLabel\}/);
+    expect(source).toMatch(/aria-hidden=\{decorative \? "true" : undefined\}/);
   });
 
   it("renders the icon image as decorative (empty alt, aria-hidden)", () => {

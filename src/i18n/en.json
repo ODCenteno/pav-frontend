@@ -9,7 +9,14 @@
     "restaurants": "Restaurants",
     "services": "Services",
     "connectivity": "Internet",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "goodPractices": "Good Practices and Sustainable Tourism",
+    "communities": "Our Communities",
+    "favorites": "Favorites",
+    "mainLabel": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mobileMenu": "Menu"
   },
   "hero": {
     "title": "Puerto Agua Verde & <span class=\"highlight-text\">Rancho San Cosme</span>",

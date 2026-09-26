@@ -50,3 +50,10 @@
 .menu-overlay--hidden {
   display: none;
 }
+
+/* Community links show their badge next to the name (no submenu on mobile). */
+.mobile-nav--community {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}

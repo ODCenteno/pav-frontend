@@ -3,8 +3,10 @@ import "./header.css";
 import Image from "astro/components/Image.astro";
 import favicon from "../../../public/favicon.ico";
 import { useTranslations } from "../../i18n/utils";
-import { navigation } from "@/utils/navigation";
+import { navigation, communityPath, goodPracticesPath, favoritesPath } from "@/utils/navigation";
+import { getCommunities } from "@/lib/cms/community";
 import SvgIcon from "../icons/SvgIcon.astro";
+import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 
 interface Props {
   logoImage?: string;
@@ -17,6 +19,7 @@ const logoAlt = `${brandName} Logo`;
 
 const locale = Astro.currentLocale || "es";
 const t = useTranslations(locale);
+const communities = await getCommunities(locale);
 
 const locales = ["en", "es"];
 const alternateLocaleCode = locales.find((l) => l !== locale);
@@ -41,24 +44,42 @@ if (alternateLocaleCode) {
     </a>
     
     <!-- Desktop Navigation Only -->
-    <nav class="main-nav desktop-only" id="main-navigation">
+    <nav class="main-nav desktop-only" id="main-navigation" aria-label={t("nav.mainLabel")}>
       <ul class="main-nav--ul">
-        <li><a class="main-nav--link" href={navigation.experiences(locale)} data-key="nav_experiences">{t("nav.experiences")}</a></li>
-        <li><a class="main-nav--link" href={navigation.sites(locale)} data-key="nav_sites">{t("nav.sites")}</a></li>
-        <li><a class="main-nav--link" href={navigation.guide(locale)} data-key="nav_guide">{t("nav.guide")}</a></li>
-        <li><a class="main-nav--link" href={navigation.about(locale)} data-key="nav_about">{t("nav.about")}</a></li>
+        <li><a class="main-nav--link" href={goodPracticesPath(locale)} data-key="nav_goodPractices">{t("nav.goodPractices")}</a></li>
+        <li class="main-nav--item" data-community-menu>
+          <button type="button" class="main-nav--link main-nav--toggle" aria-expanded="false" aria-controls="community-submenu">
+            {t("nav.communities")}
+            <svg class="main-nav--chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <ul class="main-nav--submenu" id="community-submenu">
+            {communities.map((community) => (
+              <li>
+                <a class="main-nav--sublink" href={communityPath(community.slug, locale)}>
+                  <CommunityBadge community={community} size="sm" locale={locale} decorative />
+                  <span>{community.name}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+        <li><a class="main-nav--link" href={favoritesPath(locale)} data-key="nav_favorites">{t("nav.favorites")}</a></li>
         {
           alternateLang && (
-            <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm">
-              {alternateLang.locale.substring(0, 2).toUpperCase()}
-            </a>
+            <li>
+              <a id="i18n-toggle" href={alternateLang.url} class="btn btn-outline btn-sm" lang={alternateLang.locale}>
+                {alternateLang.locale.substring(0, 2).toUpperCase()}
+              </a>
+            </li>
           )
         }
       </ul>
     </nav>
 
     <div class="header-right">
-      <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu-overlay">
+      <button class="mobile-menu-btn" aria-label={t("nav.openMenu")} aria-expanded="false" aria-controls="mobile-menu-overlay">
         <SvgIcon name="menu" class="menu-icon-svg" />
       </button>
     </div>
@@ -67,8 +88,15 @@ if (alternateLocaleCode) {
 
 <script>
   import { navigate } from "astro:transitions/client";
+  import { initCommunityMenu } from "./communityMenu";
+
+  let cleanupCommunityMenu: (() => void) | undefined;
 
   document.addEventListener("astro:page-load", () => {
+    cleanupCommunityMenu?.();
+    const communityMenu = document.querySelector<HTMLElement>("[data-community-menu]");
+    cleanupCommunityMenu = communityMenu ? initCommunityMenu(communityMenu) : undefined;
+
     // Basic i18n toggle navigation
     const i18nToggle = document.getElementById("i18n-toggle");
     if (i18nToggle) {
