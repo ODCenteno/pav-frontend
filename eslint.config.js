@@ -57,6 +57,10 @@ export default [
     },
     rules: {
       "no-console": "off",
+      // TypeScript already reports undefined identifiers; typescript-eslint
+      // recommends disabling core no-undef for TS files (browser globals in
+      // islands and e2e page.evaluate callbacks were false positives).
+      "no-undef": "off",
       "no-unused-vars": "warn",
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
