@@ -472,7 +472,19 @@
     }
   },
   "goodPractices": {
-    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."
+    "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "seo": {
+      "siteTitle": "Good practices | Puerto Agua Verde",
+      "ogTitle": "Good practices for visiting Puerto Agua Verde and Rancho San Cosme",
+      "siteDescription": "Protected natural areas, the fishing refuge zone, a code of conduct and tips to visit Puerto Agua Verde and Rancho San Cosme respectfully.",
+      "ogDescription": "How to care for the Gulf of California during your visit: protected areas, the fishing refuge and traveler tips."
+    },
+    "anpMapTitle": "Protected natural area map",
+    "refugeMapTitle": "Fishing refuge zone map",
+    "conanpCta": "More information at CONANP",
+    "expandMap": "Expand map to fullscreen",
+    "newTab": "(opens in a new tab)",
+    "campaignLogoAlt": "{{title}} logo"
   },
   "favoritesPage": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync."

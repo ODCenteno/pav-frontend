@@ -31,6 +31,16 @@ const KEYS = [
   "memberCard.previousPhoto",
   "memberCard.nextPhoto",
   "memberCard.openPhoto",
+  "goodPractices.seo.siteTitle",
+  "goodPractices.seo.ogTitle",
+  "goodPractices.seo.siteDescription",
+  "goodPractices.seo.ogDescription",
+  "goodPractices.anpMapTitle",
+  "goodPractices.refugeMapTitle",
+  "goodPractices.conanpCta",
+  "goodPractices.expandMap",
+  "goodPractices.newTab",
+  "goodPractices.campaignLogoAlt",
 ];
 
 describe("redesign page namespaces (agent C) i18n parity", () => {
