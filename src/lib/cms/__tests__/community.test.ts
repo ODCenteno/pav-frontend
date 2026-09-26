@@ -213,3 +213,50 @@ describe("getCommunityBySlug", () => {
     expect(url).toContain("locale=en");
   });
 });
+
+describe("community gallery fallback (mock photos until RED uploads real ones)", () => {
+  const PUBLIC = new URL("../../../../public", import.meta.url);
+
+  it("gives fixture communities 6–8 photos that exist in public/", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("offline"));
+    const list = await getCommunities("es-MX");
+    const { existsSync } = await import("node:fs");
+    for (const c of list) {
+      expect(c.gallery.length).toBeGreaterThanOrEqual(6);
+      expect(c.gallery.length).toBeLessThanOrEqual(8);
+      for (const url of c.gallery) {
+        expect(url).toMatch(/^\/images\/[^/]+\.(webp|jpg)$/);
+        expect(existsSync(new URL(`.${url}`, `${PUBLIC.href}/`))).toBe(true);
+      }
+    }
+  });
+
+  it("fills an empty CMS gallery", async () => {
+    fetchMock.mockResolvedValueOnce(
+      strapiOk([{ id: 1, slug: "puerto-agua-verde", name: "PAV", gallery: [] }]),
+    );
+    const [pav] = await getCommunities("es-MX");
+    expect(pav.gallery.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it("keeps a CMS gallery that has photos", async () => {
+    fetchMock.mockResolvedValueOnce(
+      strapiOk([
+        {
+          id: 1,
+          slug: "puerto-agua-verde",
+          name: "PAV",
+          gallery: [{ id: 9, url: "https://cdn.example.com/real.jpg" }],
+        },
+      ]),
+    );
+    const [pav] = await getCommunities("es-MX");
+    expect(pav.gallery).toEqual(["https://cdn.example.com/real.jpg"]);
+  });
+
+  it("applies to getCommunityBySlug too", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("offline"));
+    const rsc = await getCommunityBySlug("rancho-san-cosme", "en");
+    expect(rsc?.gallery.length).toBeGreaterThanOrEqual(6);
+  });
+});

@@ -35,6 +35,28 @@ const COMMUNITY_POPULATE: Record<string, string> = {
 };
 
 /**
+ * Mock gallery (RED's decision): coastal and desert photos already used by the
+ * home and guide, served until real galleries are uploaded in Strapi. Applies
+ * to every community whose gallery comes back empty.
+ */
+export const MOCK_COMMUNITY_GALLERY: readonly string[] = [
+  '/images/PAV-Lanscape-Cueva.webp',
+  '/images/pav-landscape-12.webp',
+  '/images/PAV-Lanscape-Fuga.webp',
+  '/images/pav-02.jpg',
+  '/images/pav-landscape-13.webp',
+  '/images/pav-01.jpg',
+  '/images/PAV-Letrero-.webp',
+  '/images/pav-04.jpg',
+];
+
+function withGalleryFallback(community: Community): Community {
+  return community.gallery.length > 0
+    ? community
+    : { ...community, gallery: [...MOCK_COMMUNITY_GALLERY] };
+}
+
+/**
  * Build the fixture-derived Community view model. Routes through
  * `transformCommunity` with an empty raw item so fixture completion is the
  * single mapping path for fixture and CMS data alike. Unknown slugs return
@@ -68,12 +90,12 @@ export async function getCommunities(locale: string = 'es-MX'): Promise<Communit
   );
 
   if (fromCms && fromCms.data.length > 0) {
-    return fromCms.data.map((item) => transformCommunity(item, locale));
+    return fromCms.data.map((item) => withGalleryFallback(transformCommunity(item, locale)));
   }
 
   return communities.flatMap((f) => {
     const c = communityFromFixture(f.slug, locale);
-    return c ? [c] : [];
+    return c ? [withGalleryFallback(c)] : [];
   });
 }
 
@@ -94,8 +116,9 @@ export async function getCommunityBySlug(
   );
 
   if (fromCms && fromCms.data.length > 0) {
-    return transformCommunity(fromCms.data[0], locale);
+    return withGalleryFallback(transformCommunity(fromCms.data[0], locale));
   }
 
-  return communityFromFixture(slug, locale);
+  const fixture = communityFromFixture(slug, locale);
+  return fixture ? withGalleryFallback(fixture) : null;
 }
