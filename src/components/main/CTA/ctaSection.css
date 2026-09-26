@@ -4,7 +4,7 @@
  * applies. White text sits on --community-color-text only (WCAG AA).
  */
 .cta-panel-section {
-    padding-block: var(--space-xl) var(--space-2xl);
+    padding-block: var(--section-space) calc(var(--section-space) * 2);
 }
 
 .cta-panel {
@@ -14,7 +14,7 @@
     position: relative;
     display: grid;
     gap: var(--space-lg);
-    padding: calc(var(--space-xl) + 6px) var(--space-lg) var(--space-lg);
+    padding: calc(var(--space-lg) + 6px) var(--space-md) var(--space-md);
     border-radius: 1.75rem;
     background: var(--white);
     box-shadow: 0 24px 48px -32px rgba(26, 26, 26, 0.35), 0 2px 6px rgba(26, 26, 26, 0.04);

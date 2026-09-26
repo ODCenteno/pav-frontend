@@ -75,6 +75,9 @@
 
     /* Layout */
     --container-width: 1200px;
+    /* Section gutters and vertical rhythm (mobile values; see .container). */
+    --gutter: max(1rem, var(--space-sm));
+    --section-space: var(--space-sm);
     --radius-sm: 8px;
     --radius-md: 16px;
     --radius-lg: 24px;
@@ -127,15 +130,33 @@ ul {
     list-style: none;
 }
 
+/* Mobile: the small spacing token on every side (16px minimum gutter);
+   tablet and up restore the roomier layout. */
 .container {
-    width: 90%;
+    width: 100%;
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 0 var(--space-md);
+}
+
+/* Specificity (0,2,0) so a component's own `padding: X 0` or
+   `.section-padding` on the same element keeps the gutter. */
+:root .container {
+    padding-inline: var(--gutter);
 }
 
 .section-padding {
-    padding: var(--space-lg) 0;
+    padding: var(--section-space) 0;
+}
+
+@media (min-width: 768px) {
+    :root {
+        --gutter: var(--space-md);
+        --section-space: var(--space-lg);
+    }
+
+    .container {
+        width: 90%;
+    }
 }
 
 /* Typography */
