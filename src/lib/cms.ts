@@ -582,6 +582,7 @@ const HOMEPAGE_POPULATE = {
   'populate[9]': 'quickFacts',
   'populate[10]': 'finalCta',
   'populate[11]': 'mapSection.centerPoint',
+  'populate[12]': 'regionMapImage',
 } as const;
 
 const GUIDE_PAGE_POPULATE = {
@@ -711,6 +712,8 @@ function mergeHomepage(cms: HomepageData, fb: HomepageData): HomepageData {
       image: str(cms.mapSection.image, fb.mapSection.image),
       alt: str(cms.mapSection.alt || '', fb.mapSection.alt || ''),
     },
+    regionMapImage: str(cms.regionMapImage || '', fb.regionMapImage || ''),
+    regionMapImageAlt: cms.regionMapImage ? cms.regionMapImageAlt : undefined,
     finalCta: {
       title: str(cms.finalCta.title, fb.finalCta.title),
       description: str(cms.finalCta.description, fb.finalCta.description),
@@ -719,6 +722,8 @@ function mergeHomepage(cms: HomepageData, fb: HomepageData): HomepageData {
     },
   };
 }
+
+const REGION_MAP_PLACEHOLDER = '/images/guide/route-loreto.svg';
 
 const HOMEPAGE_FALLBACK_ES: HomepageData = {
   hero: {
@@ -807,6 +812,8 @@ const HOMEPAGE_FALLBACK_ES: HomepageData = {
     centerPoint: { lat: 25.51204, lng: -111.07577 },
     zoom: 12,
   },
+  // Mock placeholder until the designer delivers the BCS/Loreto map (contract §8).
+  regionMapImage: REGION_MAP_PLACEHOLDER,
   finalCta: {
     title: 'Tu viaje comienza aquí',
     description: 'Puerto Agua Verde y Rancho San Cosme no son solo puntos en el mapa, son paisajes vivos de mar, desierto y tradición. Planea tu estancia, explora experiencias locales y descubre el ritmo auténtico de la vida en Baja.',
@@ -902,6 +909,8 @@ const HOMEPAGE_FALLBACK_EN: HomepageData = {
     centerPoint: { lat: 25.51204, lng: -111.07577 },
     zoom: 12,
   },
+  // Mock placeholder until the designer delivers the BCS/Loreto map (contract §8).
+  regionMapImage: REGION_MAP_PLACEHOLDER,
   finalCta: {
     title: 'Your journey begins here',
     description: 'Puerto Agua Verde and Rancho San Cosme are more than places on the map, they are living landscapes of sea, desert, and tradition. Plan your stay, explore local experiences, and discover the rhythm of authentic Baja life.',

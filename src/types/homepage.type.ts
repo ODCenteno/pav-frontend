@@ -69,6 +69,8 @@ export interface HomepageData {
   mapSection: MapSectionData;
   /** Static BCS/Loreto map shown left of the map section. */
   regionMapImage?: string;
+  /** CMS alternative text for `regionMapImage`; the UI falls back to an i18n label. */
+  regionMapImageAlt?: string;
   finalCta: CtaData;
 }
 

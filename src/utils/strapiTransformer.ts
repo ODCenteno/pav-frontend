@@ -478,6 +478,8 @@ export interface HomepageAttributes {
   quickFactsImage2?: StrapiMedia;
   mapSection?: MapSectionAttributes;
   finalCta?: CtaSectionAttributes;
+  /** Contract §8. */
+  regionMapImage?: StrapiMedia;
 }
 
 // ---------- helpers ----------
@@ -1146,6 +1148,8 @@ export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: 
       })(),
       zoom: mapSection.zoom,
     },
+    regionMapImage: resolveMediaUrl(getUrlFromMedia(a.regionMapImage)) || undefined,
+    regionMapImageAlt: getAltFromMedia(a.regionMapImage) || undefined,
     finalCta: {
       title: localized(finalCta.title, locale)[l],
       description: localized(finalCta.description, locale)[l],
