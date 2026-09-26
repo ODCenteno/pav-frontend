@@ -27,7 +27,7 @@ const lang = locale.startsWith("en") ? "en" : "es-MX";
     <span class="install-prompt__icon" aria-hidden="true">
       <SvgIcon name="compass" class="install-prompt__icon-svg" />
     </span>
-    <h3 class="install-prompt__title">{t("installPrompt.title")}</h3>
+    <p class="install-prompt__title">{t("installPrompt.title")}</p>
     <p class="install-prompt__body">{t("installPrompt.body")}</p>
 
     <div class="install-prompt__actions">
@@ -188,7 +188,11 @@ const lang = locale.startsWith("en") ? "en" : "es-MX";
     height: 28px;
   }
 
+  /* A <p>, not a heading (page outlines start at the h1); keeps the heading look. */
   .install-prompt__title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
     font-size: var(--text-base, 1rem);
     margin: 0;
     color: var(--color-on-surface, #1a1a1a);
