@@ -19,7 +19,7 @@
 
 /* eslint-disable no-restricted-globals */
 
-const CACHE_SHELL = 'pav-shell-v3';
+const CACHE_SHELL = 'pav-shell-v4';
 const CACHE_FONTS = 'pav-fonts-v1';
 const CACHE_IMAGES = 'pav-images-v2';
 const CACHE_API = 'pav-api-v1';
@@ -30,14 +30,14 @@ const SHELL_URLS = [
   '/',
   '/offline',
   '/sitios',
-  '/experiencias',
+  '/buenas-practicas',
   '/acerca',
   '/guide',
   '/comunidad',
   '/legal/privacy-notice',
   '/en/',
   '/en/sitios',
-  '/en/experiencias',
+  '/en/buenas-practicas',
   '/en/acerca',
   '/en/guide',
   '/en/comunidad',

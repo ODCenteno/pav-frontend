@@ -27,17 +27,17 @@ const BASE_ICONS = [
 
 const SHORTCUTS = [
   {
-    name: 'Explorar',
-    short_name: 'Explorar',
-    description: 'Ver todos los sitios',
-    url: '/sitios',
+    name: 'Puerto Agua Verde',
+    short_name: 'Agua Verde',
+    description: 'Explorar Puerto Agua Verde',
+    url: '/comunidades/puerto-agua-verde',
     icons: [{ src: FAVICON_ICON, sizes: '192x192' }],
   },
   {
-    name: 'Experiencias',
-    short_name: 'Experiencias',
-    description: 'Ver experiencias',
-    url: '/experiencias',
+    name: 'Rancho San Cosme',
+    short_name: 'San Cosme',
+    description: 'Explorar Rancho San Cosme',
+    url: '/comunidades/rancho-san-cosme',
     icons: [{ src: FAVICON_ICON, sizes: '192x192' }],
   },
 ];

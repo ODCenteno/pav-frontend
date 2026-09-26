@@ -12,6 +12,12 @@ describe('PWA web manifest builder', () => {
     expect(result.shortcuts).toHaveLength(2);
   });
 
+  it('points the shortcuts at the community pages, never at removed routes', () => {
+    const urls = (manifest('es-MX').shortcuts ?? []).map((s) => s.url);
+    expect(urls).toEqual(['/comunidades/puerto-agua-verde', '/comunidades/rancho-san-cosme']);
+    for (const url of urls) expect(url).not.toMatch(/experiencias|\/sitios$/);
+  });
+
   it('returns an English manifest with "/en/" as the start_url', () => {
     const result = manifest('en');
     expect(result.lang).toBe('en');
