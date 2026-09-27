@@ -39,7 +39,7 @@ const { id, title, categoryLabel, image, logos, tags, shortDescription, labels }
   {logos && logos.length > 0 && (
     <div class="site-hero__logos container">
       {logos.map((src) => (
-        <img src={src} alt={`${title} logo`} class="site-hero__logo-img" loading="lazy" />
+        <img src={src} alt={`${title} logo`} class="site-hero__logo-img" width="120" height="120" loading="lazy" />
       ))}
     </div>
   )}

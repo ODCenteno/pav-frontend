@@ -31,3 +31,19 @@ export function communityActions<C extends CommunityRef & { order: number }>(
 export function ctaActionsOf(actions: CtaAction[]): CtaAction[] {
   return actions.filter((a) => a.label.trim() && a.href.trim()).slice(0, MAX_CTA_ACTIONS);
 }
+
+/**
+ * Site detail CTA: one action to the listing's own community (themed with
+ * the full community entry when available), or both communities, labelled
+ * by name, when the listing has none.
+ */
+export function listingCtaActions<C extends CommunityRef & { order: number }>(
+  listingCommunity: CommunityRef | undefined | null,
+  communities: C[],
+  hrefFor: (slug: string) => string,
+  labelFor: (community: CommunityRef) => string,
+): CtaAction[] {
+  if (!listingCommunity) return communityActions(communities, hrefFor);
+  const community = communities.find((c) => c.slug === listingCommunity.slug) ?? listingCommunity;
+  return [{ label: labelFor(community), href: hrefFor(community.slug), community }];
+}

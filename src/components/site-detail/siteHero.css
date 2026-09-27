@@ -75,10 +75,11 @@
     padding: var(--space-md) var(--space-sm);
 }
 
+/* A fixed 120x120 box (width/height attributes too): no layout shift,
+   any logo shape fits inside it. */
 .site-hero__logo-img {
-    height: 80px;
-    width: auto;
-    max-width: 100%;
+    width: 120px;
+    height: 120px;
     object-fit: contain;
 }
 
@@ -132,9 +133,5 @@
     .site-hero__image-container {
         height: 60dvh;
         max-height: 600px;
-    }
-
-    .site-hero__logo-img {
-        height: 120px;
     }
 }

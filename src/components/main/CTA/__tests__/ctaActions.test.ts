@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { communityActions, ctaActionsOf } from "../ctaActions";
+import { communityActions, ctaActionsOf, listingCtaActions } from "../ctaActions";
 import type { Community } from "@/types/community.type";
 
 function community(overrides: Partial<Community>): Community {
@@ -52,5 +52,30 @@ describe("ctaActionsOf", () => {
       { label: "D", href: "/d/" },
     ];
     expect(ctaActionsOf(actions).map((a) => a.label)).toEqual(["B", "C"]);
+  });
+});
+
+describe("listingCtaActions", () => {
+  const label = (c: { name: string }) => `Visitar ${c.name}`;
+
+  it("links the listing's own community, themed with the full community entry", () => {
+    const ref = { slug: "rancho-san-cosme" as const, name: "Rancho San Cosme", color: "#EC6E0B", textColor: "#B85206" };
+    expect(listingCtaActions(ref, [pav, rsc], href, label)).toEqual([
+      { label: "Visitar Rancho San Cosme", href: "/comunidades/rancho-san-cosme/", community: rsc },
+    ]);
+  });
+
+  it("keeps the listing's community ref when the community list does not have it", () => {
+    const ref = { slug: "puerto-agua-verde" as const, name: "Puerto Agua Verde", color: "#0CA58C", textColor: "#08806D" };
+    expect(listingCtaActions(ref, [], href, label)).toEqual([
+      { label: "Visitar Puerto Agua Verde", href: "/comunidades/puerto-agua-verde/", community: ref },
+    ]);
+  });
+
+  it("falls back to both communities, by name, when the listing has none", () => {
+    expect(listingCtaActions(undefined, [rsc, pav], href, label)).toEqual([
+      { label: "Puerto Agua Verde", href: "/comunidades/puerto-agua-verde/", community: pav },
+      { label: "Rancho San Cosme", href: "/comunidades/rancho-san-cosme/", community: rsc },
+    ]);
   });
 });

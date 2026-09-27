@@ -4,19 +4,24 @@ export const prerender = true;
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import HeroPage from "@/components/main/hero/HeroPage.astro";
 import CardMain from "@/components/cards/CardMain.astro";
-import ExpCTA from "@/components/main/experiences/ExpCTA.astro";
+import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import { communityActions } from "@/components/main/CTA/ctaActions";
 
 import SitesExplorer from "@/components/main/categories/SitesExplorer.tsx";
 import { carouselCategoryOf, carouselChips } from "@/components/main/categories/carousel";
 import { useTranslations } from "@/i18n/utils";
-import { getListingsWithFallback } from "@/lib/cms";
+import { getCommunities, getListingsWithFallback } from "@/lib/cms";
 import type { Listing } from "@/types/listing.type";
+import type { Community } from "@/types/community.type";
 import { navigation } from "@/utils/navigation";
 
 const locale = "en";
 const t = useTranslations(locale);
 
-const allSites: Listing[] = await getListingsWithFallback(locale);
+const [allSites, communities]: [Listing[], Community[]] = await Promise.all([
+  getListingsWithFallback(locale),
+  getCommunities(locale),
+]);
 
 // The 4 contract categories (contract §1); legacy slugs map to their
 // current category, so the page works before and after the migration.
@@ -75,7 +80,12 @@ const groupedSites = categories
     </div>
   </section>
 
-  <ExpCTA title={t("aboutPage.cta.title")} description={t("aboutPage.cta.desc")} btnText={t("aboutPage.cta.btn")} href={navigation.about(locale)} />
+  <CtaSection
+    title={t("siteDetailPage.cta.title")}
+    description={t("siteDetailPage.cta.desc")}
+    actions={communityActions(communities, (slug) => navigation.community(slug, locale))}
+    locale={locale}
+  />
 </BaseLayout>
 
 <style>
