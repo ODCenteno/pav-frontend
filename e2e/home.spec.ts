@@ -98,6 +98,25 @@ for (const locale of LOCALES) {
       await expect(page.locator('.map-section__map .leaflet-container')).toBeVisible();
     });
 
+    test('lays the map legend out in one centered row with the buttons in one row below', async ({ page }) => {
+      test.skip((page.viewportSize()?.width ?? 0) < 1024, 'desktop layout');
+      const center = (b: { x: number; width: number }) => b.x + b.width / 2;
+      const legend = page.locator('.map-section__legend li');
+      const buttons = page.locator('.map-section__community-btn');
+      const l = [(await legend.nth(0).boundingBox())!, (await legend.nth(1).boundingBox())!];
+      const b = [(await buttons.nth(0).boundingBox())!, (await buttons.nth(1).boundingBox())!];
+      // Same row each.
+      expect(Math.abs(l[0].y - l[1].y)).toBeLessThanOrEqual(2);
+      expect(Math.abs(b[0].y - b[1].y)).toBeLessThanOrEqual(2);
+      // Buttons below the legend.
+      expect(b[0].y).toBeGreaterThan(l[0].y + l[0].height - 1);
+      // Both rows centered on the section.
+      const section = (await page.locator('.map-section__footer').boundingBox())!;
+      const mid = center(section);
+      expect(Math.abs((l[0].x + l[1].x + l[1].width) / 2 - mid)).toBeLessThanOrEqual(4);
+      expect(Math.abs((b[0].x + b[1].x + b[1].width) / 2 - mid)).toBeLessThanOrEqual(4);
+    });
+
     test('ends with a favorites CTA', async ({ page }) => {
       const cta = page.locator('section:has([data-key="final_cta_title"])');
       const action = cta.getByRole('link');

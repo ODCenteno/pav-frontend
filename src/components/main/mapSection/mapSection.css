@@ -243,9 +243,16 @@
         min-height: 520px;
     }
 
+    /* Legend in one centered row, the two buttons in one row below it. */
     .map-section__footer {
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
-        justify-content: space-between;
+    }
+
+    .map-section__legend,
+    .map-section__actions {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
     }
 }

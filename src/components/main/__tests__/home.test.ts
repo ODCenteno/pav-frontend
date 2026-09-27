@@ -59,6 +59,10 @@ describe("F2 hero", () => {
     expect(desktop).not.toMatch(/\.hero-content\s*\{[^}]*background/);
   });
 
+  it("centers the label inside each mobile card", () => {
+    expect(css).toMatch(/\.hero-community-card\s*\{[^}]*align-items:\s*center/);
+  });
+
   it("turns each mobile option into a photo card with one visible label", () => {
     expect(hero).toMatch(/class="hero-community-card"/);
     expect(hero).toMatch(/class="hero-community-card__label">\{t\(heroCtaKey\(community\.slug\)\)\}/);
@@ -135,6 +139,12 @@ describe("F2 map section", () => {
     expect(section).toMatch(/class="map-section__community-btn"[^>]*href=\{link\.href\}[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
     expect(section).toMatch(/<span class="sr-only">\s*\{t\("map\.newTab"\)\}\s*<\/span>/);
     expect(css).toMatch(/\.map-section__community-btn\s*\{[^}]*background(-color)?:\s*var\(--community-color-text\)/);
+  });
+
+  it("centers the legend in one row with the two buttons in one row below it on desktop", () => {
+    const desktop = css.slice(css.indexOf("@media (min-width: 1024px)"));
+    expect(desktop).toMatch(/\.map-section__footer\s*\{[^}]*flex-direction:\s*column[^}]*align-items:\s*center/);
+    expect(desktop).toMatch(/\.map-section__legend,\s*\.map-section__actions\s*\{[^}]*flex-direction:\s*row[^}]*flex-wrap:\s*nowrap[^}]*justify-content:\s*center/);
   });
 
   it("splits into two columns on desktop and drops the invalid :global()", () => {
