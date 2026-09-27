@@ -12,7 +12,10 @@ test.describe('Community gallery feed (mobile)', () => {
     await page.goto(PATH);
   });
 
-  test('scrolls to the last photo, then the page continues to the final CTA', async ({ page }) => {
+  test('scrolls to the last photo, then the page continues to the final CTA', async ({ page, browserName }) => {
+    // The swipe is driven with the mouse wheel, which mobile WebKit does not
+    // support; Mobile Chrome covers the same scroll-chaining behavior.
+    test.skip(browserName === 'webkit', 'mouse.wheel is not supported in mobile WebKit');
     const gallery = page.locator('.community-gallery');
     test.skip((await gallery.count()) === 0, 'This community has no gallery in this build');
     // Start with the gallery at the top, so the CTA is below the fold.

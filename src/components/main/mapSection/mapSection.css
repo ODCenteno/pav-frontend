@@ -67,6 +67,9 @@
 
 .map-section__region {
     margin: 0;
+    /* Reserve the box: the lazy image would otherwise collapse to 0px (and
+       shift the layout) until it loads on stacked layouts. */
+    aspect-ratio: 4 / 3;
     border-radius: var(--radius-lg);
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -236,6 +239,10 @@
     .map-section__split {
         grid-template-columns: 1fr 1fr;
         align-items: stretch;
+    }
+
+    .map-section__region {
+        aspect-ratio: auto;
     }
 
     .map-section__map {

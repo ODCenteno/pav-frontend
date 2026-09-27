@@ -210,3 +210,15 @@ describe.each(["pages/index.astro", "pages/en/index.astro"])("F2 %s", (page) => 
     expect(source).toMatch(/<QuickFacts header=\{homepage\.quickFacts\.header\} items=\{homepageFacts\} \/>/);
   });
 });
+
+describe("map section region image", () => {
+  const css = readFileSync(resolve(SRC, "components/main/mapSection/mapSection.css"), "utf8");
+
+  it("reserves its box on stacked layouts so the lazy image never collapses to 0px", () => {
+    expect(css).toMatch(/\.map-section__region\s*\{[^}]*aspect-ratio:\s*4\s*\/\s*3/);
+  });
+
+  it("lets the image stretch to the map height in the two-column layout", () => {
+    expect(css).toMatch(/@media \(min-width: 1024px\)[\s\S]*\.map-section__region\s*\{[^}]*aspect-ratio:\s*auto/);
+  });
+});
