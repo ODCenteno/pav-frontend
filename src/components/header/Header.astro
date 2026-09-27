@@ -6,7 +6,7 @@ import { useTranslations } from "../../i18n/utils";
 import { navigation, communityPath, goodPracticesPath, favoritesPath } from "@/utils/navigation";
 import { getCommunities } from "@/lib/cms/community";
 import SvgIcon from "../icons/SvgIcon.astro";
-import { SITE_BRAND_NAME } from "@/config/brand";
+import { SITE_BRAND_NAME, brandLines } from "@/config/brand";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 
 interface Props {
@@ -41,13 +41,13 @@ if (alternateLocaleCode) {
         {logoImage
           ? <img src={logoImage} alt={logoAlt} width={32} height={32} class="logo-img" />
           : <Image src={favicon} alt={logoAlt} width={32} height={32} />}
-      </span><span class="logo-text">{brandName}</span>
+      </span><span class="logo-text">{brandLines(brandName).map((line) => <span class="logo-text__line">{line}</span>)}</span>
     </a>
     
     <!-- Desktop Navigation Only -->
     <nav class="main-nav desktop-only" id="main-navigation" aria-label={t("nav.mainLabel")}>
       <ul class="main-nav--ul">
-        <li><a class="main-nav--link" href={goodPracticesPath(locale)} data-key="nav_goodPractices">{t("nav.goodPractices")}</a></li>
+        <li><a class="main-nav--link main-nav--link--compact" href={goodPracticesPath(locale)} data-key="nav_goodPractices">{t("nav.goodPractices")}</a></li>
         <li class="main-nav--item" data-community-menu>
           <button type="button" class="main-nav--link main-nav--toggle" aria-expanded="false" aria-controls="community-submenu">
             {t("nav.communities")}

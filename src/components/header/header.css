@@ -32,10 +32,18 @@
   color: var(--color-on-surface);
 }
 
+/* Logo lockup: the brand always sits on two tight lines. */
 .logo-text {
-    display: inline;
-    font-size: var(--text-md);
-    letter-spacing: 0.5px;
+    display: inline-flex;
+    flex-direction: column;
+    font-size: var(--text-sm);
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+}
+
+.logo-text__line {
+    display: block;
+    white-space: nowrap;
 }
 
 .logo-img {
@@ -99,6 +107,16 @@
 
   .main-nav--link:hover {
     color: var(--accent-color);
+  }
+
+  /* Tablet widths: the long label wraps to two balanced lines no wider than
+     the "Nuestras Comunidades" toggle instead of keeping a wide box. */
+  .main-nav--link--compact {
+    display: inline-block;
+    max-width: 11.5rem;
+    text-wrap: balance;
+    line-height: 1.2;
+    text-align: center;
   }
 
   .main-nav--link:focus-visible,
@@ -172,3 +190,8 @@
   }
 }
 
+@media (min-width: 1280px) {
+  .main-nav--link--compact {
+    max-width: none;
+  }
+}
