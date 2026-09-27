@@ -6,7 +6,8 @@
  *   • `PRECACHE_COMPLETE`  → background cache finished, "Ready offline ✓"
  *   • `SW_UPDATED`         → new service worker installed, prompt to reload
  *
- * Auto-hides after a short delay. Dismissed by the user via close button.
+ * Compact, bottom-right. Transient toasts auto-hide after ~5 s
+ * (toastController.ts); the close button dismisses any of them.
  */
 ---
 
@@ -17,7 +18,9 @@
   aria-live="polite"
   hidden
 >
-  <span class="offline-toast__icon" aria-hidden="true">✓</span>
+  <span class="offline-toast__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  </span>
   <span class="offline-toast__message" id="offline-ready-toast__message"></span>
   <button
     type="button"
@@ -25,102 +28,77 @@
     id="offline-ready-toast__close"
     aria-label="Dismiss"
   >
-    ×
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   </button>
 </div>
 
-<script is:inline>
-  (() => {
-    // View-transition safe: re-bind on every page load (initial + after
-    // <ClientRouter /> swaps). Without this the close button loses its
-    // click handler after navigation and becomes unclosable.
-    const TEXTS = {
-      precacheComplete: {
-        es: '✓ Listo sin conexión, puedes explorar la guía incluso sin señal.',
-        en: '✓ Ready offline, you can explore the guide even without signal.',
-      },
-      swUpdated: {
-        es: 'Hay una nueva versión disponible. Recarga para actualizar.',
-        en: 'A new version is available. Reload to update.',
-      },
-    };
+<script>
+  import { createToastController } from "./toastController";
 
-    const dismissed = new Set();
-    let hideTimer = null;
-    let currentType = null;
+  // Texts live here (not i18n) because the service worker message can land
+  // on any page; the language comes from <html lang>.
+  const TEXTS = {
+    precacheComplete: {
+      es: "Guía lista para usar sin conexión",
+      en: "Guide ready to use offline",
+    },
+    swUpdated: {
+      es: "Hay una nueva versión disponible. Recarga para actualizar.",
+      en: "A new version is available. Reload to update.",
+    },
+  };
 
-    const getLang = () =>
-      (document.documentElement.lang || 'es').startsWith('en') ? 'en' : 'es';
+  const toast = createToastController(() => {
+    const el = document.getElementById("offline-ready-toast");
+    const message = document.getElementById("offline-ready-toast__message");
+    return el && message ? { toast: el, message } : null;
+  });
 
-    const showFor = (text, type, sticky) => {
-      const toast = document.getElementById('offline-ready-toast');
-      const message = document.getElementById('offline-ready-toast__message');
-      if (!toast || !message) return;
-      if (dismissed.has(type)) return;
-      currentType = type;
-      message.textContent = text;
-      toast.hidden = false;
-      if (hideTimer) clearTimeout(hideTimer);
-      if (!sticky) hideTimer = setTimeout(() => (toast.hidden = true), 6000);
-    };
+  const lang = () => ((document.documentElement.lang || "es").startsWith("en") ? "en" : "es");
 
-    const closeToast = () => {
-      const toast = document.getElementById('offline-ready-toast');
-      if (!toast) return;
-      if (currentType) dismissed.add(currentType);
-      toast.hidden = true;
-      if (hideTimer) clearTimeout(hideTimer);
-    };
+  // View-transition safe: re-bind the close button after every page swap.
+  const bindToast = () => {
+    const close = document.getElementById("offline-ready-toast__close");
+    if (!close) return;
+    close.setAttribute("aria-label", lang() === "en" ? "Dismiss" : "Cerrar");
+    if (close.dataset.bound === "1") return;
+    close.addEventListener("click", () => toast.close());
+    close.dataset.bound = "1";
+  };
+  bindToast();
+  document.addEventListener("astro:page-load", bindToast);
 
-    const bindToast = () => {
-      const close = document.getElementById('offline-ready-toast__close');
-      if (!close || close.dataset.bound === '1') return;
-      close.addEventListener('click', closeToast);
-      close.dataset.bound = '1';
-    };
-
-    // Bind on initial load and on every view-transition page swap.
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', bindToast, { once: true });
-    } else {
-      bindToast();
-    }
-    document.addEventListener('astro:page-load', bindToast);
-
-    // Single SW message listener — survives across page swaps because it's
-    // bound to the persistent serviceWorker container, not to page DOM.
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (!event.data || !event.data.type) return;
-        const lang = getLang();
-        if (event.data.type === 'PRECACHE_COMPLETE') {
-          showFor(TEXTS.precacheComplete[lang], 'PRECACHE_COMPLETE', false);
-        }
-        if (event.data.type === 'SW_UPDATED') {
-          showFor(TEXTS.swUpdated[lang], 'SW_UPDATED', true);
-        }
-      });
-    }
-  })();
+  // One listener on the persistent serviceWorker container.
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      const type = event.data?.type;
+      if (type === "PRECACHE_COMPLETE") toast.show(TEXTS.precacheComplete[lang()], type);
+      if (type === "SW_UPDATED") toast.show(TEXTS.swUpdated[lang()], type, { sticky: true });
+    });
+  }
 </script>
 
 <style is:global>
+  /* Compact, bottom-right inside the 16px gutter, narrow enough to leave
+     the hero cards' labels clear on phones. */
   .offline-toast {
     position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
     z-index: 10000;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.625rem 1rem;
+    width: max-content;
+    max-width: min(15rem, calc(100vw - 2rem));
+    padding: 0.5rem 0.25rem 0.5rem 0.75rem;
     background: var(--color-charcoal, #1a1a1a);
     color: var(--color-white, #fff);
-    border-radius: var(--radius-md, 0.75rem);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    font-size: var(--text-sm, 0.875rem);
-    max-width: 90vw;
+    border-radius: 0.875rem;
+    box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.35);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    animation: offline-toast-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .offline-toast[hidden] {
@@ -129,6 +107,7 @@
 
   .offline-toast__icon {
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     width: 1.25rem;
@@ -141,17 +120,42 @@
   }
 
   .offline-toast__close {
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -0.25rem 0;
     background: none;
     border: none;
+    border-radius: 50%;
     color: inherit;
     cursor: pointer;
     font-size: 1.125rem;
     line-height: 1;
-    padding: 0 0.25rem;
-    opacity: 0.7;
+    opacity: 0.75;
   }
 
   .offline-toast__close:hover {
     opacity: 1;
+  }
+
+  .offline-toast__close:focus-visible {
+    outline: 2px solid var(--color-white, #fff);
+    outline-offset: -4px;
+    opacity: 1;
+  }
+
+  @keyframes offline-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .offline-toast {
+      animation: none;
+    }
   }
 </style>
