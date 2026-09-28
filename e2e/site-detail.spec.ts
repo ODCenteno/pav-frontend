@@ -9,22 +9,39 @@ async function textColor(el: Locator) {
   return (await el.evaluate((node) => getComputedStyle(node).getPropertyValue('--community-color-text').trim())).toUpperCase();
 }
 
+const COMMUNITY_TEXT_COLOR: Record<string, string> = {
+  'puerto-agua-verde': '#08806D',
+  'rancho-san-cosme': '#B85206',
+};
+
 for (const locale of [
-  { path: '/sitios/restaurante-puerto-bello/', prefix: '/' },
-  { path: '/en/sitios/restaurante-puerto-bello/', prefix: '/en/' },
+  { index: '/sitios/', prefix: '/' },
+  { index: '/en/sitios/', prefix: '/en/' },
 ]) {
-  test.describe(`Site detail ${locale.path}`, () => {
+  test.describe(`Site detail (${locale.prefix})`, () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto(locale.path);
+      // Any listing: the first card on the listing index opens its detail page.
+      await page.goto(locale.index);
+      const onclick = (await page.locator('.listing-card').first().getAttribute('onclick')) ?? '';
+      const href = onclick.match(/assign\('([^']+)'\)/)?.[1];
+      expect(href).toMatch(new RegExp(`^${locale.prefix}sitios/[^/]+`));
+      await page.goto(href!);
     });
 
-    test("closes with one CTA action to the listing's community, in its color", async ({ page }) => {
+    test("closes with the listing's community action, then the favorites", async ({ page }) => {
       const actions = cta(page).locator('a');
-      await expect(actions).toHaveCount(1);
-      await expect(actions).toHaveAttribute('href', `${locale.prefix}comunidades/puerto-agua-verde/`);
-      await expect(actions).toContainText('Puerto Agua Verde');
-      expect(await textColor(actions)).toBe('#08806D');
-      await expect(actions.locator('.community-badge__icon')).toBeVisible();
+      const count = await actions.count();
+      // One community (or both when the listing has none) plus favorites.
+      expect([2, 3]).toContain(count);
+      for (let i = 0; i < count - 1; i++) {
+        const action = actions.nth(i);
+        const slug = (await action.getAttribute('href'))!.match(/comunidades\/([^/]+)\//)![1];
+        expect(await textColor(action)).toBe(COMMUNITY_TEXT_COLOR[slug]);
+        await expect(action.locator('.community-badge__icon')).toBeVisible();
+      }
+      const favorites = actions.nth(count - 1);
+      await expect(favorites).toHaveAttribute('href', `${locale.prefix}favoritos/`);
+      await expect(favorites).toHaveClass(/cta-panel__action--neutral/);
     });
 
     test('shows each logo in a 120x120 box', async ({ page }) => {

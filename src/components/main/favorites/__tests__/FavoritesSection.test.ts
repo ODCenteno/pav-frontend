@@ -28,16 +28,23 @@ describe("FavoritesSection", () => {
     expect(source).toMatch(/class="carousel-slide/);
   });
 
-  it("always shows one community action per community below the cards, in the CTA style", () => {
-    expect(source).toMatch(/import CtaActions from ["']@\/components\/main\/CTA\/CtaActions\.astro["']/);
-    expect(source).toMatch(/communityActions\(communities, \(slug\) => navigation\.community\(slug, locale\)\)/);
-    const cards = source.indexOf('id="favorites-carousel"');
-    const actions = source.indexOf("<CtaActions");
-    expect(actions).toBeGreaterThan(cards);
-    // Its own block after the empty state (e2e checks both states).
-    expect(source.indexOf('class="favorites-communities"')).toBeGreaterThan(source.indexOf('id="favorites-empty-state"'));
+  it("leaves the community actions to the page's CTA section", () => {
+    expect(source).not.toContain("<CtaActions");
+    expect(source).not.toContain("favorites-communities");
     expect(source).not.toContain("favorites-empty__link");
   });
+
+  for (const page of ["favoritos.astro", "en/favoritos.astro"]) {
+    it(`${page} closes with the CTA section and both community actions`, () => {
+      const pageSource = readFileSync(resolve(__dirname, "../../../../pages", page), "utf8");
+      const favorites = pageSource.indexOf("<FavoritesSection");
+      const cta = pageSource.indexOf("<CtaSection");
+      expect(cta).toBeGreaterThan(favorites);
+      expect(pageSource).toMatch(/title=\{t\("favoritesPage\.cta\.title"\)\}/);
+      expect(pageSource).toMatch(/description=\{t\("favoritesPage\.cta\.description"\)\}/);
+      expect(pageSource).toMatch(/communityActions\(communities, \(slug\) => navigation\.community\(slug, locale\)\)/);
+    });
+  }
 
   it("only treats carousel slides as cards (CardMain's .fav-btn also has data-fav-id)", () => {
     expect(source).toContain('querySelectorAll<HTMLElement>(".carousel-slide[data-fav-id]")');

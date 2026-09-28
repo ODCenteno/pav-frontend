@@ -10,21 +10,15 @@ import "@/components/main/categories/categories.css";
 import CardMain from "@/components/cards/CardMain.astro";
 import { carouselCategoryOf, carouselChips } from "@/components/main/categories/carousel";
 import { useTranslations } from "@/i18n/utils";
-import { navigation } from "@/utils/navigation";
-import CtaActions from "@/components/main/CTA/CtaActions.astro";
-import { communityActions } from "@/components/main/CTA/ctaActions";
-import type { Community } from "@/types/community.type";
 import type { Listing } from "@/types/listing.type";
 
 interface Props {
   listings: Listing[];
-  /** Linked from the empty state. */
-  communities: Community[];
   /** Strapi locale ("es-MX" | "en"). */
   locale?: string;
 }
 
-const { listings, communities, locale = Astro.currentLocale ?? "es-MX" } = Astro.props;
+const { listings, locale = Astro.currentLocale ?? "es-MX" } = Astro.props;
 const t = useTranslations(locale);
 
 const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(locale)];
@@ -66,11 +60,6 @@ const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(local
       hidden
     >
       <p id="favorites-empty-text" class="favorites-empty__text" role="status">{t("favoritesPage.empty")}</p>
-    </div>
-
-    <!-- Always shown, with or without saved favorites. -->
-    <div class="favorites-communities">
-      <CtaActions actions={communityActions(communities, (slug) => navigation.community(slug, locale))} locale={locale} />
     </div>
   </div>
 </section>
@@ -116,16 +105,6 @@ const chips = [{ id: "all", label: t("categories.all") }, ...carouselChips(local
     color: var(--color-on-surface);
   }
 
-  .favorites-communities {
-    max-width: 40rem;
-    margin: var(--space-lg) auto 0;
-  }
-
-  @media (min-width: 768px) {
-    .favorites-communities :global(.cta-panel__actions) {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
 </style>
 
 <script>

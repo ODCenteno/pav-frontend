@@ -31,6 +31,10 @@ describe.each(["pages/sitios/[slug].astro", "pages/en/sitios/[slug].astro"])("%s
     expect(source).toMatch(/<CtaSection[\s\S]*?actions=\{ctaActions\}/);
     expect(source).toMatch(/getCommunities\(/);
   });
+
+  it("adds the favorites action after the community action(s)", () => {
+    expect(source).toMatch(/favoritesAction\(t\("finalCta\.favoritesBtn"\), navigation\.favorites\(locale\)\)/);
+  });
 });
 
 describe.each(["pages/sitios.astro", "pages/en/sitios.astro"])("%s CTA", (page) => {

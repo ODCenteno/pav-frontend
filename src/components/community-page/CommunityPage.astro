@@ -6,7 +6,7 @@ import Highlights from "@/components/main/highlights/Highlights.astro";
 import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
 import { homeQuickFacts } from "@/components/main/quickFacts/homeQuickFacts";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
-import type { CtaAction } from "@/components/main/CTA/ctaActions";
+import { favoritesAction, type CtaAction } from "@/components/main/CTA/ctaActions";
 import CommunityGallery from "@/components/gallery/CommunityGallery";
 import CommunityHero from "./CommunityHero.astro";
 import CommunityIntro from "./CommunityIntro.astro";
@@ -57,7 +57,8 @@ const finalCta = finalCtaFor(
     : null
 );
 
-// The panel always sends visitors on to the other community, in its color.
+// The panel sends visitors on to the other community, in its color, and to
+// their favorites.
 const ctaActions: CtaAction[] =
   finalCta && other
     ? [
@@ -66,6 +67,7 @@ const ctaActions: CtaAction[] =
           href: navigation.community(other.slug, locale),
           community: other,
         },
+        favoritesAction(t("finalCta.favoritesBtn"), navigation.favorites(locale)),
       ]
     : [];
 

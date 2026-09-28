@@ -27,7 +27,7 @@ describe("favorites routes", () => {
       expect(source).toMatch(/export const prerender = true/);
       expect(source).toMatch(/getListingsWithFallback\(locale\)/);
       expect(source).toMatch(/getCommunities\(locale\)/);
-      expect(source).toMatch(/<FavoritesSection listings=\{listings\} communities=\{communities\}/);
+      expect(source).toMatch(/<FavoritesSection listings=\{listings\} locale=\{locale\}/);
     });
   }
 });

@@ -4,6 +4,9 @@ export const prerender = true;
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import HeroPage from "@/components/main/hero/HeroPage.astro";
 import FavoritesSection from "@/components/main/favorites/FavoritesSection.astro";
+import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import { communityActions } from "@/components/main/CTA/ctaActions";
+import { navigation } from "@/utils/navigation";
 import { useTranslations } from "@/i18n/utils";
 import { getCommunities, getListingsWithFallback, toStrapiLocale } from "@/lib/cms";
 
@@ -26,5 +29,12 @@ const [listings, communities] = await Promise.all([getListingsWithFallback(local
     backgroundImage="/images/pav-01.jpg"
   />
 
-  <FavoritesSection listings={listings} communities={communities} locale={locale} />
+  <FavoritesSection listings={listings} locale={locale} />
+
+  <CtaSection
+    title={t("favoritesPage.cta.title")}
+    description={t("favoritesPage.cta.description")}
+    actions={communityActions(communities, (slug) => navigation.community(slug, locale))}
+    locale={locale}
+  />
 </BaseLayout>

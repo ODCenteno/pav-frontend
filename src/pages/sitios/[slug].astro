@@ -14,7 +14,7 @@ import StickyActionBar from "../../components/site-detail/StickyActionBar.tsx";
 import { useTranslations } from "../../i18n/utils";
 import { getListingBySlugWithFallback, getListingSlugsWithFallback, toStrapiLocale } from "../../lib/cms";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
-import { listingCtaActions } from "@/components/main/CTA/ctaActions";
+import { favoritesAction, listingCtaActions } from "@/components/main/CTA/ctaActions";
 import { getCommunities } from "@/lib/cms/community";
 import { navigation } from "@/utils/navigation";
 import { listingContactChannels } from "@/utils/listingContact";
@@ -36,13 +36,16 @@ if (!item) {
 const locale = "es-MX";
 const t = useTranslations(locale);
 const communities = await getCommunities(locale);
-// The listing's own community, or both when it has none.
-const ctaActions = listingCtaActions(
-  item.community,
-  communities,
-  (communitySlug) => navigation.community(communitySlug, locale),
-  (community) => t("communityDetail.cta.button", { name: community.name }),
-);
+// The listing's own community (or both when it has none), then favorites.
+const ctaActions = [
+  ...listingCtaActions(
+    item.community,
+    communities,
+    (communitySlug) => navigation.community(communitySlug, locale),
+    (community) => t("communityDetail.cta.button", { name: community.name }),
+  ),
+  favoritesAction(t("finalCta.favoritesBtn"), navigation.favorites(locale)),
+];
 
 const title = item.name[locale];
 const description = item.description?.[locale];

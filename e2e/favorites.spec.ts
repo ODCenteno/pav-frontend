@@ -25,7 +25,8 @@ const COMMUNITIES = [
 ];
 
 async function expectCommunityActions(page: Page, prefix: string) {
-  const actions = page.locator('.favorites-communities a');
+  await expect(page.locator('[data-key="final_cta_title"]')).not.toBeEmpty();
+  const actions = page.locator('section:has([data-key="final_cta_title"]) a');
   await expect(actions).toHaveCount(2);
   for (const [i, community] of COMMUNITIES.entries()) {
     const action = actions.nth(i);
@@ -62,13 +63,13 @@ for (const locale of [
       }
     });
 
-    test('shows the empty state and always the two community buttons', async ({ page }) => {
+    test('shows the empty state and always the CTA with both community actions', async ({ page }) => {
       await expect(emptyState(page)).toBeVisible();
       await expect(slides(page).filter({ visible: true })).toHaveCount(0);
       await expectCommunityActions(page, locale.communityPrefix);
     });
 
-    test('keeps the community buttons below the cards when favorites are saved', async ({ page }) => {
+    test('keeps the CTA below the cards when favorites are saved', async ({ page }) => {
       const ids = await page
         .locator('#favorites-carousel .fav-btn')
         .evaluateAll((btns) => btns.slice(0, 2).map((b) => b.getAttribute('data-fav-id') ?? ''));
@@ -77,7 +78,7 @@ for (const locale of [
       await expect(emptyState(page)).toBeHidden();
       await expectCommunityActions(page, locale.communityPrefix);
       const cardsBottom = await page.locator('#favorites-carousel').evaluate((el) => el.getBoundingClientRect().bottom);
-      const actionsTop = await page.locator('.favorites-communities').evaluate((el) => el.getBoundingClientRect().top);
+      const actionsTop = await page.locator('section:has([data-key="final_cta_title"])').evaluate((el) => el.getBoundingClientRect().top);
       expect(actionsTop).toBeGreaterThanOrEqual(cardsBottom);
     });
 

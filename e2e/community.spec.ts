@@ -101,14 +101,37 @@ for (const community of PAGES) {
       expect(rel.split(/\s+/)).toContain('noopener');
     });
 
-    test('links the final CTA to the other community', async ({ page }) => {
-      const cta = page.locator('section:has([data-key="final_cta_title"]) a');
-      await expect(cta).toHaveCount(1);
-      await expect(cta).toHaveAttribute('href', community.otherPath);
+    test('links the final CTA to the other community, then to the favorites', async ({ page }) => {
+      const actions = page.locator('section:has([data-key="final_cta_title"]) a');
+      await expect(actions).toHaveCount(2);
+      const other = actions.nth(0);
+      await expect(other).toHaveAttribute('href', community.otherPath);
       // Themed as the other community.
-      const color = await cta.evaluate((el) => getComputedStyle(el).getPropertyValue('--community-color-text').trim());
+      const color = await other.evaluate((el) => getComputedStyle(el).getPropertyValue('--community-color-text').trim());
       expect(color.toUpperCase()).toBe(community.otherTextColor);
-      await expect(cta.locator('.community-badge__icon')).toBeVisible();
+      await expect(other.locator('.community-badge__icon')).toBeVisible();
+      const favorites = actions.nth(1);
+      await expect(favorites).toHaveAttribute('href', community.lang === 'en' ? '/en/favoritos/' : '/favoritos/');
+      await expect(favorites).toHaveClass(/cta-panel__action--neutral/);
+    });
+
+    test('aligns the intro with the page container and renders the description only when present', async ({ page }) => {
+      const intro = page.locator('.community-intro');
+      const left = async (selector: string) =>
+        Math.round((await page.locator(selector).first().boundingBox())!.x);
+      const badge = await left('.community-intro .community-badge');
+      expect(await left('.community-intro__tagline')).toBe(badge);
+      // Same left edge as the next section's heading.
+      const nextHeading = page.locator('.community-intro + section h2, .community-intro ~ section h2').first();
+      expect(Math.abs(Math.round((await nextHeading.boundingBox())!.x) - badge)).toBeLessThanOrEqual(1);
+
+      const description = intro.locator('.community-intro__description');
+      if ((await description.count()) > 0) {
+        const paragraphs = description.locator('p');
+        expect(await paragraphs.count()).toBeGreaterThan(0);
+        for (const text of await paragraphs.allTextContents()) expect(text.trim()).not.toBe('');
+        expect(Math.round((await description.boundingBox())!.x)).toBe(badge);
+      }
     });
 
     test('category chips filter the community listings', async ({ page }) => {

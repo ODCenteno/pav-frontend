@@ -55,6 +55,10 @@ describe("CommunityPage", () => {
     expect(source).toMatch(/href: navigation\.community\(other\.slug, locale\)/);
   });
 
+  it("adds the favorites action after the other community", () => {
+    expect(source).toMatch(/favoritesAction\(t\("finalCta\.favoritesBtn"\), navigation\.favorites\(locale\)\)/);
+  });
+
   it("hydrates the gallery island only when visible", () => {
     expect(source).toMatch(/<CommunityGallery[\s\S]*?client:visible/);
   });
@@ -71,9 +75,17 @@ describe("CommunityIntro", () => {
     expect(source).toMatch(/<CommunityBadge[^>]*size="lg"/);
   });
 
-  it("renders the tagline and the description when present", () => {
+  it("renders the tagline and the description, as paragraphs, only when present", () => {
     expect(source).toMatch(/community\.tagline\s*&&/);
-    expect(source).toMatch(/community\.description\s*&&/);
+    expect(source).toMatch(/textParagraphs\(community\.description\)/);
+    expect(source).toMatch(/paragraphs\.length > 0\s*&&/);
+  });
+
+  it("aligns with the page container: no narrower centered inner box", () => {
+    const css = read("communityIntro.css");
+    expect(css).not.toMatch(/\.community-intro__inner\s*\{[^}]*max-width/);
+    // Reading width lives on the text itself.
+    expect(css).toMatch(/\.community-intro__description\s*\{[^}]*max-width:\s*\d+ch/);
   });
 });
 
