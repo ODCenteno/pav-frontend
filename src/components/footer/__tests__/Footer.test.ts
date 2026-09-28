@@ -30,8 +30,6 @@ describe("F1 footer", () => {
       "goodPracticesPath(locale)",
       "communities.map",
       "favoritesPath(locale)",
-      "navigation.guide(locale)",
-      "navigation.about(locale)",
       "navigation.sites(locale)",
     ];
     const positions = order.map((needle) => footer.indexOf(needle));
@@ -43,9 +41,11 @@ describe("F1 footer", () => {
     expect(footer).toMatch(/communityPath\(community\.slug, locale\)/);
   });
 
-  it("drops the old home-anchor and experiences links", () => {
+  it("drops the old home-anchor, experiences, guide and about links", () => {
     expect(footer).not.toContain("navigation.experiences");
     expect(footer).not.toContain("navigation.homeAnchor");
+    expect(footer).not.toContain("navigation.guide");
+    expect(footer).not.toContain("navigation.about");
   });
 
   it("labels the quick links as a navigation landmark", () => {

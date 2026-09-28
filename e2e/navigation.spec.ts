@@ -114,8 +114,6 @@ test.describe('Footer', () => {
       'Puerto Agua Verde',
       'Rancho San Cosme',
       'Favoritos',
-      'Guía del destino',
-      'Sobre nosotros',
       'Sitios de Interés',
     ]);
     await expect(footer.getByText('Contáctanos')).toHaveCount(0);
@@ -131,6 +129,38 @@ test.describe('Redirects (F10)', () => {
 
   test('sends /en/experiencias to the English home', async ({ page }) => {
     await page.goto('/en/experiencias');
+    await expect(page).toHaveURL(/\/en\/$/);
+  });
+});
+
+test.describe('Redirects (contract phase)', () => {
+  test('sends /guide to the good practices page', async ({ page }) => {
+    await page.goto('/guide');
+    await expect(page).toHaveURL(/\/buenas-practicas\/$/);
+  });
+
+  test('sends /en/guide to the English good practices page', async ({ page }) => {
+    await page.goto('/en/guide');
+    await expect(page).toHaveURL(/\/en\/buenas-practicas\/$/);
+  });
+
+  test('sends /acerca home', async ({ page }) => {
+    await page.goto('/acerca');
+    await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/$/);
+  });
+
+  test('sends /en/acerca to the English home', async ({ page }) => {
+    await page.goto('/en/acerca');
+    await expect(page).toHaveURL(/\/en\/$/);
+  });
+
+  test('sends /comunidad home', async ({ page }) => {
+    await page.goto('/comunidad');
+    await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/$/);
+  });
+
+  test('sends /en/comunidad to the English home', async ({ page }) => {
+    await page.goto('/en/comunidad');
     await expect(page).toHaveURL(/\/en\/$/);
   });
 });

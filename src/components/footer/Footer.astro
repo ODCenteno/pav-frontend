@@ -48,9 +48,6 @@ const currentYear = new Date().getFullYear();
           <li><a class="footer-link" href={communityPath(community.slug, locale)}>{community.name}</a></li>
         ))}
         <li><a class="footer-link" href={favoritesPath(locale)} data-key="footer_link_favorites">{t("nav.favorites")}</a></li>
-        {/* Temporary: removed in the final cleanup. */}
-        <li><a class="footer-link" href={navigation.guide(locale)} data-key="footer_link_guide">{t("nav.guide")}</a></li>
-        <li><a class="footer-link" href={navigation.about(locale)} data-key="footer_link_about">{t("nav.about")}</a></li>
         <li><a class="footer-link" href={navigation.sites(locale)} data-key="footer_link_sites">{t("nav.sites")}</a></li>
       </ul>
     </nav>
