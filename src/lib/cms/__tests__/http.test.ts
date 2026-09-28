@@ -139,7 +139,7 @@ describe("strapiGet", () => {
 describe("strapiGetOne", () => {
   it("returns null on 404", async () => {
     fetchMock.mockResolvedValueOnce(strapiNotFound());
-    const item = await strapiGetOne("/guide-page", {});
+    const item = await strapiGetOne("/good-practices-page", {});
     expect(item).toBeNull();
   });
 
