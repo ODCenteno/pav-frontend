@@ -55,43 +55,13 @@ function strapiError(status: number = 500) {
   } as any;
 }
 
-function guideCmsItem() {
-  return {
-    id: 7,
-    documentId: "guide-7",
-    attributes: {
-      hero: { title: "Guide Hero", description: "Guide Hero Desc", images: [{ url: "/uploads/guide-hero.jpg" }] },
-      fishingHeader: { title: { "es-MX": "Guide Fishing", en: "Guide Fishing" } },
-      fishingText: { "es-MX": "Guide fishing text", en: "Guide fishing text" },
-      fishingRules: [{ text: { "es-MX": "guide rule", en: "guide rule" } }],
-      protectedArea: {
-        title: { "es-MX": "Guide ANP", en: "Guide ANP" },
-        text: { "es-MX": "Guide ANP text", en: "Guide ANP text" },
-        linkLabel: { "es-MX": "Guide CONANP", en: "Guide CONANP" },
-        linkHref: "https://guide.example.com/",
-      },
-      influenceHeader: { title: { "es-MX": "Guide Influence", en: "Guide Influence" } },
-      influenceText: { "es-MX": "Guide influence text", en: "Guide influence text" },
-      recommendationsHeader: { title: { "es-MX": "Guide Recs", en: "Guide Recs" } },
-      recommendations: [{ text: { "es-MX": "guide rec", en: "guide rec" } }],
-      drivingTipsHeader: { "es-MX": "Guide Tips Title", en: "Guide Tips Title" },
-      drivingTips: [{ text: { "es-MX": "guide tip", en: "guide tip" } }],
-      finalCta: {
-        title: { "es-MX": "Guide CTA", en: "Guide CTA" },
-        description: { "es-MX": "Guide CTA desc", en: "Guide CTA desc" },
-        buttonLabel: { "es-MX": "Guide CTA btn", en: "Guide CTA btn" },
-      },
-    },
-  };
-}
-
 beforeEach(() => {
   fetchMock.mockReset();
   clearCmsCache();
 });
 
 describe("getGoodPracticesPage", () => {
-  it("maps a complete CMS page without touching the guide endpoint", async () => {
+  it("maps a complete CMS page with a single request", async () => {
     fetchMock.mockResolvedValueOnce(
       strapiOk({
         id: 1,
@@ -135,7 +105,6 @@ describe("getGoodPracticesPage", () => {
 
   it("requests the contract §9 populate set with the mapped locale", async () => {
     fetchMock.mockResolvedValueOnce(strapiNotFound());
-    fetchMock.mockResolvedValueOnce(strapiNotFound()); // guide-page fallback also 404s
     await getGoodPracticesPage("es");
     const url = String(fetchMock.mock.calls[0][0]);
     const query = decodeURIComponent(url.split("?")[1] || "");
@@ -161,39 +130,15 @@ describe("getGoodPracticesPage", () => {
     }
   });
 
-  it("falls back to the guide CMS page when the single type is missing", async () => {
-    fetchMock.mockResolvedValueOnce(strapiNotFound()); // good-practices-page
-    fetchMock.mockResolvedValueOnce(strapiOk(guideCmsItem())); // guide-page
+  it("falls back to guideData.js values when the single type is missing", async () => {
+    fetchMock.mockResolvedValueOnce(strapiNotFound());
 
     const page = await getGoodPracticesPage("es-MX");
 
-    // Good-practices copy, not the guide hero; the guide image is reused.
-    expect(page.hero?.title).toBe("Buenas Prácticas y Turismo Sustentable");
-    expect(page.hero?.description).not.toBe("Guide Hero Desc");
-    expect(page.hero?.images[0].url).toContain("/uploads/guide-hero.jpg");
-    expect(page.protectedArea?.title).toBe("Guide ANP");
-    expect(page.protectedArea?.linkHref).toBe("https://guide.example.com/");
-    expect(page.fishingHeader?.title).toBe("Guide Fishing");
-    expect(page.fishingRules).toEqual(["guide rule"]);
-    expect(page.influenceHeader?.title).toBe("Guide Influence");
-    expect(page.recommendations).toEqual(["guide rec"]);
-    // Driving tips stay as items under a visitor-tips header.
-    expect(page.tips).toEqual(["guide tip"]);
-    expect(page.tipsHeader?.title).toBe("Consejos al visitante");
-    expect(page.finalCta?.title).toBe("Guide CTA");
-    expect(page.conanpUrl).toBe("https://guide.example.com/");
-  });
-
-  it("falls back to guideData.js values when the guide CMS page is also missing", async () => {
-    fetchMock.mockResolvedValueOnce(strapiNotFound()); // good-practices-page
-    fetchMock.mockResolvedValueOnce(strapiNotFound()); // guide-page
-
-    const page = await getGoodPracticesPage("es-MX");
-
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(page.hero?.title).toBe("Buenas Prácticas y Turismo Sustentable");
     expect(page.hero?.titleHighlight).toBe("");
     expect(page.hero?.description).toBeTruthy();
-    expect(page.hero?.description).not.toBe(heroData.desc["es-MX"]);
     expect(page.hero?.images).toEqual([
       { url: heroData.image, alt: "Buenas Prácticas y Turismo Sustentable" },
     ]);
@@ -217,17 +162,14 @@ describe("getGoodPracticesPage", () => {
 
   it("uses English guideData slots for the en locale", async () => {
     fetchMock.mockResolvedValueOnce(strapiNotFound());
-    fetchMock.mockResolvedValueOnce(strapiNotFound());
     const page = await getGoodPracticesPage("en");
     expect(page.hero?.title).toBe("Good Practices and Sustainable Tourism");
-    expect(page.hero?.description).not.toBe(heroData.desc.en);
     expect(page.fishingRules).toEqual(fishingData.rules.en);
     expect(page.tipsHeader?.title).toBe("Visitor tips");
     expect(page.tips).toEqual(directionsData.drivingTips.en);
   });
 
   it("always includes the Abracemos el Golfo campaign placeholder in the fallback", async () => {
-    fetchMock.mockResolvedValueOnce(strapiNotFound());
     fetchMock.mockResolvedValueOnce(strapiNotFound());
     const page = await getGoodPracticesPage("es-MX");
     expect(page.campaign?.title).toBe("Abracemos el Golfo");
@@ -236,7 +178,6 @@ describe("getGoodPracticesPage", () => {
 
   it("gives the campaign placeholder no link until RED provides one", async () => {
     fetchMock.mockResolvedValueOnce(strapiNotFound());
-    fetchMock.mockResolvedValueOnce(strapiNotFound());
     const page = await getGoodPracticesPage("es-MX");
     expect(page.campaign?.url).toBeUndefined();
     expect(page.campaign?.linkLabel).toBeUndefined();
@@ -244,9 +185,7 @@ describe("getGoodPracticesPage", () => {
 
   it("localizes the campaign placeholder description", async () => {
     fetchMock.mockResolvedValueOnce(strapiNotFound());
-    fetchMock.mockResolvedValueOnce(strapiNotFound());
     const es = await getGoodPracticesPage("es-MX");
-    fetchMock.mockResolvedValueOnce(strapiNotFound());
     fetchMock.mockResolvedValueOnce(strapiNotFound());
     const en = await getGoodPracticesPage("en");
     expect(en.campaign?.title).toBe("Abracemos el Golfo");
@@ -254,29 +193,28 @@ describe("getGoodPracticesPage", () => {
     expect(en.campaign?.description).not.toBe(es.campaign?.description);
   });
 
-  it("fills only the empty sections of a partial CMS page", async () => {
+  it("fills only the empty sections of a partial CMS page from the static fallback", async () => {
     fetchMock.mockResolvedValueOnce(
       strapiOk({
         id: 1,
         documentId: "gp-partial",
         hero: { title: "CMS Hero", images: [{ url: "/uploads/h.jpg" }] },
-        fishingRules: [], // empty → guide fallback
+        fishingRules: [], // empty → static fallback
         // no protectedArea, no campaign, no finalCta
       }),
     );
-    fetchMock.mockResolvedValueOnce(strapiOk(guideCmsItem())); // guide-page
 
     const page = await getGoodPracticesPage("es-MX");
 
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(page.hero?.title).toBe("CMS Hero"); // CMS wins
-    expect(page.fishingRules).toEqual(["guide rule"]); // per-section fallback
-    expect(page.protectedArea?.title).toBe("Guide ANP");
+    expect(page.fishingRules).toEqual(fishingData.rules["es-MX"]); // per-section fallback
+    expect(page.protectedArea?.title).toBe(protectedAreaData.title["es-MX"]);
     expect(page.campaign?.title).toBe("Abracemos el Golfo");
-    expect(page.finalCta?.title).toBe("Guide CTA");
+    expect(page.finalCta?.title).toBe(ctaData.title["es-MX"]);
   });
 
-  it("never throws when both endpoints fail with 500", async () => {
-    fetchMock.mockResolvedValueOnce(strapiError(500));
+  it("never throws when the endpoint fails with 500", async () => {
     fetchMock.mockResolvedValueOnce(strapiError(500));
     const page = await getGoodPracticesPage("es-MX");
     expect(page.hero?.title).toBe("Buenas Prácticas y Turismo Sustentable");
@@ -284,7 +222,6 @@ describe("getGoodPracticesPage", () => {
   });
 
   it("never throws on network exceptions", async () => {
-    fetchMock.mockRejectedValueOnce(new Error("ECONNREFUSED"));
     fetchMock.mockRejectedValueOnce(new Error("ECONNREFUSED"));
     const page = await getGoodPracticesPage("es-MX");
     expect(page.fishingRules.length).toBeGreaterThan(0);

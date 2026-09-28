@@ -2,13 +2,9 @@ import { describe, it, expect } from 'vitest';
 import {
   categories,
   CURRENT_CATEGORY_SLUGS,
-  LEGACY_CATEGORY_SLUGS,
-  LEGACY_CATEGORY_MAP,
-  LOCALITY_TO_COMMUNITY,
   HIDE_CONTACT_CATEGORY_SLUGS,
   toCurrentCategorySlug,
 } from '../categories';
-import { COMMUNITY_SLUGS } from '../communities';
 
 describe('current categories', () => {
   it('has exactly 4 categories with orders 1 to 4', () => {
@@ -39,39 +35,17 @@ describe('current categories', () => {
   });
 });
 
-describe('legacy category mapping', () => {
-  it('maps every legacy slug to a current slug', () => {
-    for (const legacy of LEGACY_CATEGORY_SLUGS) {
-      expect(CURRENT_CATEGORY_SLUGS).toContain(LEGACY_CATEGORY_MAP[legacy]);
-    }
-    expect(LEGACY_CATEGORY_MAP).toEqual({
-      sites: 'experiences',
-      accommodation: 'experiences',
-      restaurants: 'gastronomy',
-    });
-  });
-
-  it('does not overlap current and legacy slugs', () => {
-    for (const legacy of LEGACY_CATEGORY_SLUGS) {
-      expect(CURRENT_CATEGORY_SLUGS).not.toContain(legacy);
-    }
-  });
-
-  it('normalizes any known slug and rejects unknown ones', () => {
-    expect(toCurrentCategorySlug('restaurants')).toBe('gastronomy');
+describe('toCurrentCategorySlug (contract phase — no legacy slugs)', () => {
+  it('accepts any current slug', () => {
+    expect(toCurrentCategorySlug('experiences')).toBe('experiences');
+    expect(toCurrentCategorySlug('gastronomy')).toBe('gastronomy');
+    expect(toCurrentCategorySlug('services')).toBe('services');
     expect(toCurrentCategorySlug('crafts')).toBe('crafts');
-    expect(toCurrentCategorySlug('unknown')).toBeUndefined();
   });
-});
 
-describe('locality to community mapping', () => {
-  it('maps both legacy localities to a community', () => {
-    expect(LOCALITY_TO_COMMUNITY).toEqual({
-      'agua-verde': 'puerto-agua-verde',
-      'rancho-san-cosme': 'rancho-san-cosme',
-    });
-    for (const target of Object.values(LOCALITY_TO_COMMUNITY)) {
-      expect(COMMUNITY_SLUGS).toContain(target);
+  it('rejects the retired legacy slugs and any other unknown slug', () => {
+    for (const legacy of ['sites', 'accommodation', 'restaurants', 'unknown']) {
+      expect(toCurrentCategorySlug(legacy)).toBeUndefined();
     }
   });
 });

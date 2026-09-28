@@ -13,34 +13,22 @@
 import type { Category } from '../types/category.type';
 import { SITE_BRAND_NAME } from '../config/brand';
 import type { Listing } from '../types/listing.type';
-import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
 import type { HomepageData } from '../types/homepage.type';
 import type { CommunityMember } from '../types/community.type';
 import {
   transformCategory,
   transformListing,
-  transformTeamMember,
-  transformOrganization,
   transformSiteContent,
   transformHomepage,
-  transformAboutPage,
-  transformGuidePage,
-  transformExperiencesPage,
   transformCommunityMember,
   unwrap,
   type StrapiItem,
   type CategoryAttributes,
   type ListingAttributes,
-  type TeamMemberAttributes,
-  type OrganizationAttributes,
   type SiteContentAttributes,
   type HomepageAttributes,
-  type AboutPageAttributes,
-  type GuidePageAttributes,
-  type ExperiencesPageAttributes,
   type CommunityMemberAttributes,
-  type ExperienceBlockAttributes,
 } from '../utils/strapiTransformer';
 
 // Shared Strapi HTTP client (buildUrl, cached GET helpers, cache, CmsError,
@@ -279,40 +267,6 @@ export async function getFeaturedListings(locale: string = 'es-MX', limit: numbe
         locale,
       });
       return res.data.map((item) => transformListing(item, locale));
-    })) ?? []
-  );
-}
-
-// ---------- team members ----------
-
-export async function getTeamMembers(locale: string = 'es-MX'): Promise<TeamMember[]> {
-  return (
-    (await safe(async () => {
-      const res = await strapiGet<TeamMemberAttributes>('/team-members', {
-        'filters[publishedAt][$notNull]': 'true',
-        'populate[0]': 'photo',
-        sort: 'order:asc',
-        'pagination[pageSize]': '100',
-        locale,
-      });
-      return res.data.map(transformTeamMember);
-    })) ?? []
-  );
-}
-
-// ---------- organizations ----------
-
-export async function getOrganizations(locale: string = 'es-MX'): Promise<Organization[]> {
-  return (
-    (await safe(async () => {
-      const res = await strapiGet<OrganizationAttributes>('/organizations', {
-        'filters[publishedAt][$notNull]': 'true',
-        'populate[0]': 'logo',
-        sort: 'order:asc',
-        'pagination[pageSize]': '100',
-        locale,
-      });
-      return res.data.map(transformOrganization);
     })) ?? []
   );
 }
@@ -572,55 +526,16 @@ export async function getGlobalSettings(): Promise<{
  */
 const HOMEPAGE_POPULATE = {
   'populate[0]': 'hero.images',
-  'populate[1]': 'destinations.image',
-  'populate[2]': 'highlights.image',
-  'populate[3]': 'quickFactsImage1',
-  'populate[4]': 'quickFactsImage2',
-  'populate[5]': 'mapSection.image',
-  'populate[6]': 'destinationsHeader',
-  'populate[7]': 'highlightsHeader',
-  'populate[8]': 'quickFactsHeader',
-  'populate[9]': 'quickFacts',
-  'populate[10]': 'finalCta',
-  'populate[11]': 'mapSection.centerPoint',
-  'populate[12]': 'regionMapImage',
-} as const;
-
-const GUIDE_PAGE_POPULATE = {
-  'populate[0]': 'hero.images',
-  'populate[1]': 'intro',
-  'populate[2]': 'historyHeader',
-  'populate[3]': 'historyMilestones',
-  'populate[4]': 'fishingHeader',
-  'populate[5]': 'fishingRules',
-  'populate[6]': 'protectedArea',
-  'populate[7]': 'influenceHeader',
-  'populate[8]': 'recommendationsHeader',
-  'populate[9]': 'recommendations',
-  'populate[10]': 'directionsHeader',
-  'populate[11]': 'directions',
-  'populate[12]': 'directions.image',
-  'populate[13]': 'drivingTips',
-  'populate[14]': 'amenitiesHeader',
-  'populate[15]': 'amenities',
-  'populate[16]': 'touristMapHeader',
-  'populate[17]': 'touristMapImage',
-  'populate[18]': 'finalCta',
-} as const;
-
-const ABOUT_PAGE_POPULATE = {
-  'populate[0]': 'hero.images',
-  'populate[1]': 'values',
-  'populate[2]': 'collaboration',
-  'populate[3]': 'finalCta',
-} as const;
-
-const EXPERIENCES_PAGE_POPULATE = {
-  'populate[0]': 'hero.images',
-  'populate[1]': 'introHeader',
-  'populate[2]': 'sectionsHeader',
-  'populate[3]': 'sections.image',
-  'populate[4]': 'finalCta',
+  'populate[1]': 'highlights.image',
+  'populate[2]': 'quickFactsImage1',
+  'populate[3]': 'quickFactsImage2',
+  'populate[4]': 'mapSection.image',
+  'populate[5]': 'highlightsHeader',
+  'populate[6]': 'quickFactsHeader',
+  'populate[7]': 'quickFacts',
+  'populate[8]': 'finalCta',
+  'populate[9]': 'mapSection.centerPoint',
+  'populate[10]': 'regionMapImage',
 } as const;
 
 export async function getHomepage(locale: string = 'es-MX'): Promise<HomepageData | null> {
@@ -664,18 +579,6 @@ function mergeHomepage(cms: HomepageData, fb: HomepageData): HomepageData {
       images: arr(cms.hero.images, fb.hero.images).map((img, i) => ({
         url: str(img.url, fb.hero.images[i]?.url || ''),
         alt: str(img.alt, fb.hero.images[i]?.alt || ''),
-      })),
-    },
-    destinations: {
-      header: {
-        title: str(cms.destinations.header.title, fb.destinations.header.title),
-        subtitle: str(cms.destinations.header.subtitle, fb.destinations.header.subtitle),
-      },
-      items: arr(cms.destinations.items, fb.destinations.items).map((d, i) => ({
-        title: str(d.title, fb.destinations.items[i]?.title || ''),
-        text: str(d.text, fb.destinations.items[i]?.text || ''),
-        image: str(d.image, fb.destinations.items[i]?.image || ''),
-        alt: str(d.alt, fb.destinations.items[i]?.alt || ''),
       })),
     },
     highlights: {
@@ -737,26 +640,6 @@ const HOMEPAGE_FALLBACK_ES: HomepageData = {
       { url: '/images/PAV-Lanscape-Cueva.webp', alt: 'Coast' },
       { url: '/images/pav-02.jpg', alt: 'Nature' },
       { url: '/images/PAV-Lanscape-Fuga.webp', alt: 'Landscape' },
-    ],
-  },
-  destinations: {
-    header: {
-      title: 'Conoce el destino',
-      subtitle: 'Descubre la historia y cultura de estos lugares únicos',
-    },
-    items: [
-      {
-        title: 'Puerto Agua Verde',
-        text: 'Puerto Agua Verde es un pequeño rincón de Baja California Sur conocido por sus aguas color turquesa, su ambiente comunitario y su naturaleza intacta. Aquí se combinan la pesca tradicional, las playas tranquilas y las actividades al aire libre que atraen a viajeros en busca de autenticidad y paz.',
-        image: '/images/PAV-Letrero-.webp',
-        alt: 'Puerto Agua Verde',
-      },
-      {
-        title: 'Rancho San Cosme',
-        text: 'Rancho San Cosme es un espacio histórico y cultural donde la vida rural se mantiene viva. Rodeado de montañas y vegetación desértica, es un punto de encuentro para visitantes que buscan experiencias locales, senderos, actividades guiadas y conexión con la naturaleza.',
-        image: '/images/pav-landscape-12.webp',
-        alt: 'Rancho San Cosme',
-      },
     ],
   },
   highlights: {
@@ -836,26 +719,6 @@ const HOMEPAGE_FALLBACK_EN: HomepageData = {
       { url: '/images/PAV-Lanscape-Fuga.webp', alt: 'Landscape' },
     ],
   },
-  destinations: {
-    header: {
-      title: 'Discover the destination',
-      subtitle: 'Learn about the history and culture of these unique places',
-    },
-    items: [
-      {
-        title: 'Puerto Agua Verde',
-        text: 'Puerto Agua Verde is a small corner of Baja California Sur known for its turquoise waters, community atmosphere, and untouched nature. Here, traditional fishing, quiet beaches, and outdoor activities combine to attract travelers in search of authenticity and peace.',
-        image: '/images/PAV-Letrero-.webp',
-        alt: 'Puerto Agua Verde',
-      },
-      {
-        title: 'Rancho San Cosme',
-        text: 'Rancho San Cosme is a historical and cultural space where rural life remains alive. Surrounded by mountains and desert vegetation, it is a meeting point for visitors seeking local experiences, trails, guided activities, and connection with nature.',
-        image: '/images/pav-landscape-12.webp',
-        alt: 'Rancho San Cosme',
-      },
-    ],
-  },
   highlights: {
     header: {
       title: 'Highlights',
@@ -924,95 +787,15 @@ function getHomepageFallback(locale: string): HomepageData {
   return locale === 'en' || locale.startsWith('en') ? HOMEPAGE_FALLBACK_EN : HOMEPAGE_FALLBACK_ES;
 }
 
-// ---------- composite getters ----------
-
-export interface AboutPageData {
-  hero:
-    | {
-        title: string;
-        description: string;
-        image?: string;
-      }
-    | null;
-  intro: { title: string; text: string } | null;
-  values:
-    | {
-        mission: { title: string; text: string };
-        vision: { title: string; text: string };
-        values: { title: string; items: string[] };
-      }
-    | null;
-  community: { title: string; text: string } | null;
-  collaboration:
-    | {
-        title: string;
-        desc: string;
-        btnPrimary: string;
-        btnSecondary: string;
-        links: { primary: string; secondary: string };
-      }
-    | null;
-  finalCta:
-    | {
-        title: string;
-        description: string;
-        buttonLabel: string;
-        buttonLink: string;
-      }
-    | null;
-  team: TeamMember[];
-  organizations: Organization[];
-}
-
-export async function getAboutPage(locale: string = 'es-MX'): Promise<AboutPageData> {
-  const [aboutPage, team, organizations] = await Promise.all([
-    safe(() => strapiGetOne<AboutPageAttributes>('/about-page', {
-      ...ABOUT_PAGE_POPULATE,
-      locale,
-    })),
-    getTeamMembers(locale),
-    getOrganizations(locale),
-  ]);
-
-  if (!aboutPage) {
-    return { hero: null, intro: null, values: null, community: null, collaboration: null, finalCta: null, team, organizations };
-  }
-
-  const transformed = transformAboutPage(aboutPage, locale);
-  // Only surface hero/finalCta when the editor actually filled them in;
-  // otherwise pages fall back to their i18n defaults.
-  const heroTitle = transformed.hero.title;
-  const finalCta = transformed.finalCta;
-  return {
-    hero: heroTitle
-      ? {
-          title: heroTitle,
-          description: transformed.hero.description,
-          image: transformed.hero.images[0]?.url || undefined,
-        }
-      : null,
-    intro: transformed.intro,
-    values: transformed.values,
-    community: transformed.community,
-    collaboration: transformed.collaboration,
-    finalCta:
-      finalCta && (finalCta.title || finalCta.description)
-        ? finalCta
-        : null,
-    team,
-    organizations,
-  };
-}
-
 // Re-export the transformer types so callers can type their own data.
-export type { StrapiItem, CategoryAttributes, ListingAttributes, TeamMemberAttributes, OrganizationAttributes, SiteContentAttributes, HomepageAttributes, AboutPageAttributes, GuidePageAttributes, ExperiencesPageAttributes, CommunityMemberAttributes };
+export type { StrapiItem, CategoryAttributes, ListingAttributes, SiteContentAttributes, HomepageAttributes, CommunityMemberAttributes };
 
 // ---------- dev-fallback aware wrappers ----------
 //
 // In development, if the CMS is unreachable the page can still render by
 // falling back to local seed data. These wrappers centralize that policy.
 
-import { getListingsFallback, getTeamFallback, getOrganizationsFallback, getAboutFallback } from '../data/devFallback';
+import { getListingsFallback } from '../data/devFallback';
 
 // Dev fallback is enabled by default in dev mode, and disabled in production
 // builds. Override explicitly with STRAPI_USE_DEV_FALLBACK=true|false.
@@ -1127,129 +910,3 @@ export async function getFeaturedListingsWithFallback(locale: string = 'es-MX', 
   return getListingsFallback(locale).filter((l) => l.isFeatured).slice(0, limit);
 }
 
-export async function getTeamWithFallback(locale: string = 'es-MX'): Promise<TeamMember[]> {
-  const fromCms = await getTeamMembers(locale);
-  if (fromCms.length > 0) return fromCms;
-  if (!USE_DEV_FALLBACK) return [];
-  return getTeamFallback();
-}
-
-export async function getOrganizationsWithFallback(locale: string = 'es-MX'): Promise<Organization[]> {
-  const fromCms = await getOrganizations(locale);
-  if (fromCms.length > 0) return fromCms;
-  if (!USE_DEV_FALLBACK) return [];
-  return getOrganizationsFallback();
-}
-
-export async function getAboutPageWithFallback(locale: string = 'es-MX'): Promise<AboutPageData> {
-  const fromCms = await getAboutPage(locale);
-  if (fromCms.hero || fromCms.intro || fromCms.community) return fromCms;
-  if (!USE_DEV_FALLBACK) return fromCms;
-  const fallback = getAboutFallback();
-  return {
-    // No legacy hero/cta seed data: pages fall back to their i18n defaults.
-    hero: null,
-    intro: { title: fallback.introData.title, text: fallback.introData.text },
-    values: {
-      mission: { title: fallback.valuesData.mission.title, text: fallback.valuesData.mission.text },
-      vision: { title: fallback.valuesData.vision.title, text: fallback.valuesData.vision.text },
-      values: { title: fallback.valuesData.values.title, items: fallback.valuesData.values.items },
-    },
-    community: { title: fallback.communityMessageData.title, text: fallback.communityMessageData.text },
-    collaboration: {
-      title: fallback.collaborationData.title,
-      desc: fallback.collaborationData.desc,
-      btnPrimary: fallback.collaborationData.btnPrimary,
-      btnSecondary: fallback.collaborationData.btnSecondary,
-      links: fallback.collaborationData.links || { primary: '#', secondary: '#' },
-    },
-    finalCta: null,
-    team: getTeamFallback(),
-    organizations: getOrganizationsFallback(),
-  };
-}
-
-// ---------- guide page ----------
-
-export interface GuidePageData {
-  hero: { title: string; desc: string; image: string } | null;
-  intro: { ranchTitle: string; ranchText: string; portTitle: string; portText: string } | null;
-  history: { title: string; text: string; milestones: { year: string; 'es-MX': string; en: string }[] } | null;
-  fishing: { title: string; text: string; rules: string[] } | null;
-  protected: { title: string; text: string; linkLabel: string; linkHref: string } | null;
-  influence: { title: string; text: string } | null;
-  recommendations: { title: string; items: string[] } | null;
-  directions: {
-    title: string;
-    loreto: { label: string; desc: string; distance: string; time: string; image: string };
-    laPaz: { label: string; desc: string; distance: string; time: string; image: string };
-    drivingTipsTitle: string;
-    drivingTips: string[];
-  } | null;
-  amenities: { title: string; items: { icon: string; title: string; text: string }[] } | null;
-  touristMap: { title: string; image: string; caption: string } | null;
-  cta: { title: string; desc: string; btn: string } | null;
-}
-
-export interface ExperienceBlockData {
-  title: string;
-  text: string;
-  imageUrl: string;
-  imageAlt: string;
-  link: string;
-  linkLabel: string;
-  layout: 'image-left' | 'image-right' | 'image-top' | 'text-only';
-}
-
-export interface ExperiencesPageData {
-  hero: {
-    title: string;
-    titleHighlight: string;
-    description: string;
-    ctaLabel: string;
-    ctaLink: string;
-    images: { url: string; alt: string }[];
-  };
-  introHeader: { title: string; subtitle: string } | null;
-  sectionsHeader: { title: string; subtitle: string } | null;
-  sections: ExperienceBlockData[];
-  finalCta: { title: string; description: string; buttonLabel: string; buttonLink: string } | null;
-}
-
-export async function getExperiencesPage(locale: string = 'es-MX'): Promise<ExperiencesPageData | null> {
-  const page = await safe(() => strapiGetOne<ExperiencesPageAttributes>('/experiences-page', {
-    ...EXPERIENCES_PAGE_POPULATE,
-    locale,
-  }));
-  if (!page) return null;
-  return transformExperiencesPage(page, locale);
-}
-
-export async function getExperiencesPageWithFallback(locale: string = 'es-MX'): Promise<ExperiencesPageData | null> {
-  const fromCms = await getExperiencesPage(locale);
-  if (fromCms) return fromCms;
-  if (!USE_DEV_FALLBACK) return null;
-  return null;
-}
-
-export async function getGuidePage(locale: string = 'es-MX'): Promise<GuidePageData> {
-  const guidePage = await safe(() => strapiGetOne<GuidePageAttributes>('/guide-page', {
-    ...GUIDE_PAGE_POPULATE,
-    locale,
-  }));
-  if (!guidePage) {
-    return {
-      hero: null, intro: null, history: null, fishing: null,
-      protected: null, influence: null, recommendations: null,
-      directions: null, amenities: null, touristMap: null, cta: null,
-    };
-  }
-  return transformGuidePage(guidePage, locale);
-}
-
-export async function getGuidePageWithFallback(locale: string = 'es-MX'): Promise<GuidePageData> {
-  const fromCms = await getGuidePage(locale);
-  if (fromCms.hero || fromCms.intro) return fromCms;
-  if (!USE_DEV_FALLBACK) return fromCms;
-  return fromCms;
-}

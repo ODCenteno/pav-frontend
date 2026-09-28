@@ -8,7 +8,6 @@ const labels: MemberCardsLabels = {
   gallery: "Gallery",
   call: "Call",
   email: "Email",
-  locality: {},
   openProfile: "View profile",
   contact: "Contact",
   photos: "Photos of {{name}}",

@@ -30,10 +30,6 @@ const labels = {
   previousPhoto: t("memberCard.previousPhoto"),
   nextPhoto: t("memberCard.nextPhoto"),
   openPhoto: t("memberCard.openPhoto"),
-  locality: {
-    "agua-verde": t("siteDetailPage.memberModal.localityAguaVerde"),
-    "rancho-san-cosme": t("siteDetailPage.memberModal.localityRanchoSanCosme"),
-  } as Record<string, string>,
 };
 
 // Pre-render markdown to HTML on the server: the island receives plain
@@ -42,7 +38,7 @@ const membersVm = members.map((m) => ({
   id: m.id,
   name: m.name,
   role: m.role,
-  locality: m.locality,
+  communityName: m.community?.name,
   pullQuote: m.pullQuote,
   summary: memberSummary(m),
   bioHtml: m.bio ? renderMarkdown(m.bio) : undefined,

@@ -1,68 +1,13 @@
 /**
- * Dev-fallback data for the Guide page.
+ * Static fallback data for the good-practices page (contract §7 / §9).
  *
- * Mirrors the shape returned by `getGuidePage()` (when Strapi is connected).
- * The page prefers CMS data when available and falls back to these values
- * so the route can be developed end-to-end without the backend running.
+ * Formerly the dev-fallback data for the removed `/guide` page; the
+ * `good-practices-page` fetcher (`src/lib/cms/goodPractices.ts`) now uses
+ * these values directly as its per-section fallback, since the `guide-page`
+ * content type is gone (contract §10).
  */
 export const heroData = {
-  title: {
-    'es-MX': "Guía del Destino",
-    en: "Visitor Guide",
-  },
-  desc: {
-    'es-MX': "Conoce la bahía, la comunidad, el área natural protegida, cómo llegar y los servicios que encontrarás en Puerto Agua Verde y Rancho San Cosme.",
-    en: "Learn about the bay, the community, the protected natural area, how to get there, and the services you'll find in Puerto Agua Verde and Rancho San Cosme.",
-  },
   image: "/images/pav-landscape-12.webp",
-};
-
-export const introData = {
-  ranchTitle: { 'es-MX': "Rancho San Cosme", en: "Rancho San Cosme" },
-  ranchText: {
-    'es-MX': "Rancho San Cosme es un asentamiento histórico del ejido que conserva la vida rural del sur de Baja California Sur. Entre caminos de tierra, milpas y casas de adobe, sus habitantes mantienen viva una relación cotidiana con el desierto, la montaña y el mar.",
-    en: "Rancho San Cosme is a historic ejido settlement that preserves the rural life of southern Baja California Sur. Among dirt roads, milpas, and adobe houses, its inhabitants keep an everyday relationship with the desert, the mountains, and the sea alive.",
-  },
-  portTitle: { 'es-MX': "Puerto Agua Verde", en: "Puerto Agua Verde" },
-  portText: {
-    'es-MX': "Puerto Agua Verde es una comunidad costera que combina pesca artesanal, turismo de bajo impacto y una bahía de aguas tranquilas rodeada de cerros. Es un punto de partida para explorar la Reserva de la Biosfera del Vizcaíno y el Parque Nacional Bahía de Loreto.",
-    en: "Puerto Agua Verde is a coastal community that combines artisanal fishing, low-impact tourism, and a calm bay surrounded by hills. It is a starting point for exploring the Vizcaíno Biosphere Reserve and Loreto Bay National Park.",
-  },
-};
-
-export const historyData = {
-  title: { 'es-MX': "Historia de la comunidad", en: "Community history" },
-  text: {
-    'es-MX': "La comunidad de Agua Verde y Rancho San Cosme se ha formado a lo largo de generaciones a partir de la pesca, la agricultura de temporal y el trabajo cooperativo. Conoce algunos hitos que han marcado su desarrollo.",
-    en: "The community of Agua Verde and Rancho San Cosme has been shaped over generations by fishing, rain-fed agriculture, and cooperative work. Here are some milestones that have marked its development.",
-  },
-  milestones: [
-    {
-      year: "S. XIX",
-      'es-MX': "Primeros registros de campamentos pesqueros temporales en la bahía, usados por familias de la región del Vizcaíno.",
-      en: "First records of temporary fishing camps in the bay, used by families from the Vizcaíno region.",
-    },
-    {
-      year: "1937",
-      'es-MX': "Se constituye formalmente el ejido de Agua Verde, base de la tenencia comunal de la tierra.",
-      en: "The Agua Verde ejido is formally established, becoming the basis of communal land tenure.",
-    },
-    {
-      year: "1970s",
-      'es-MX': "Se consolidan las cooperativas pesqueras que articulan la economía local y la vida social del puerto.",
-      en: "Fishing cooperatives consolidate, structuring the local economy and social life of the port.",
-    },
-    {
-      year: "1996",
-      'es-MX': "La bahía es incorporada al Parque Nacional Bahía de Loreto, área natural protegida federal.",
-      en: "The bay is incorporated into Loreto Bay National Park, a federal protected natural area.",
-    },
-    {
-      year: "Hoy",
-      'es-MX': "La comunidad impulsa un modelo de turismo comunitario que protege su identidad y su entorno natural.",
-      en: "The community drives a community-based tourism model that protects its identity and natural environment.",
-    },
-  ],
 };
 
 export const fishingData = {
@@ -172,48 +117,6 @@ export const directionsData = {
       "Refuel in Loreto or Cd. Constitución before the last stretch.",
       "Drive carefully on the final kilometers: winding road and wildlife.",
     ],
-  },
-};
-
-export const amenitiesData = {
-  title: { 'es-MX': "Servicios para visitantes", en: "Visitor services" },
-  items: [
-    {
-      icon: "wifi",
-      title: { 'es-MX': "Wi-Fi", en: "Wi-Fi" },
-      text: {
-        'es-MX': "Zonas con conexión Wi-Fi comunitaria (Starlink) en el área del muelle y en algunos hospedajes del puerto.",
-        en: "Community Wi-Fi zones (Starlink) in the dock area and at some of the port's accommodations.",
-      },
-    },
-    {
-      icon: "signal",
-      title: { 'es-MX': "Internet y señal", en: "Internet & signal" },
-      text: {
-        'es-MX': "Cobertura de datos limitada; se recomienda descargar mapas y contenido antes del viaje.",
-        en: "Limited data coverage; download maps and content before your trip.",
-      },
-    },
-    {
-      icon: "toilet",
-      title: { 'es-MX': "Sanitarios", en: "Restrooms" },
-      text: {
-        'es-MX': "Baños públicos disponibles en zonas comunes del puerto y del rancho.",
-        en: "Public restrooms available in common areas of the port and the ranch.",
-      },
-    },
-  ],
-};
-
-export const touristMapData = {
-  title: {
-    'es-MX': "Mapa turístico del destino",
-    en: "Tourist map of the destination",
-  },
-  image: "/images/tourist-map.png",
-  caption: {
-    'es-MX': "Mapa de referencia: ubicación de Puerto Agua Verde y Rancho San Cosme, rutas desde Loreto y La Paz, zona de refugio pesquero y servicios para visitantes.",
-    en: "Reference map: location of Puerto Agua Verde and Rancho San Cosme, routes from Loreto and La Paz, fishing refuge zone, and visitor services.",
   },
 };
 

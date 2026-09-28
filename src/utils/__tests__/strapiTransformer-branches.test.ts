@@ -16,18 +16,9 @@ import {
   transformStory,
   transformProduct,
   transformListing,
-  transformGuidePage,
-  transformAboutPage,
   transformHomepage,
-  transformExperiencesPage,
   transformCategory,
-  transformTeamMember,
-  transformOrganization,
   transformSiteContent,
-  type GuidePageAttributes,
-  type AboutPageAttributes,
-  type HomepageAttributes,
-  type ExperiencesPageAttributes,
 } from "../strapiTransformer";
 
 // ─────────────────────────────────────────────────────────────────────
@@ -42,13 +33,12 @@ describe("transformCommunityMember", () => {
         name: "Paquita",
         slug: "paquita",
         role: { "es-MX": "Guía", en: "Guide" },
-        locality: "agua-verde",
         bio: { "es-MX": "Bio ES", en: "Bio EN" },
         pullQuote: { "es-MX": "Cita ES", en: "Quote EN" },
         legacyNote: { "es-MX": "Legado ES", en: "Legacy EN" },
         photo: { id: 1, url: "/uploads/paquita.jpg" },
         gallery: [{ id: 2, url: "/uploads/g1.jpg" }],
-        contact: { instagram: "@paquita", whatsapp: "52123" },
+        contact: { instagram: "@paquita" },
         isFeatured: true,
         order: 3,
         listings: {
@@ -79,7 +69,6 @@ describe("transformCommunityMember", () => {
     expect(out.slug).toBe("paquita");
     expect(out.name).toBe("Paquita");
     expect(out.role).toBe("Guía");
-    expect(out.locality).toBe("agua-verde");
     expect(out.bio).toBe("Bio ES");
     expect(out.pullQuote).toBe("Cita ES");
     expect(out.legacyNote).toBe("Legado ES");
@@ -368,138 +357,6 @@ describe("transformListing — description as LocalizedString object", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// transformGuidePage — object-shaped localized text branches
-// ─────────────────────────────────────────────────────────────────────
-describe("transformGuidePage — localized object text fields", () => {
-  const item: any = {
-    id: 1,
-    attributes: {
-      hero: { title: "Guide", ctaLabel: "Go", ctaLink: "/", images: [] },
-      historyHeader: { title: "Historia" },
-      historyText: "Hist",
-      historyMilestones: [
-        { year: "1950", text: { "es-MX": "Hit ES", en: "Milestone EN" } },
-        { year: "1960" }, // no text → empty strings
-      ],
-      fishingHeader: { title: "Pesca" },
-      fishingText: "Rules",
-      fishingRules: [{ text: { "es-MX": "Regla ES", en: "Rule EN" } }],
-      recommendationsHeader: { title: "Recomendaciones" },
-      recommendations: [{ text: { "es-MX": "Rec ES", en: "Rec EN" } }],
-      directionsHeader: { title: "Cómo llegar" },
-      directions: [
-        {
-          label: { "es-MX": "Desde Loreto", en: "From Loreto" },
-          description: { "es-MX": "98 km", en: "60 mi" },
-          distance: "98 km",
-          time: "2h",
-          image: { url: "/uploads/loreto.jpg" },
-        },
-        {
-          label: { "es-MX": "Desde La Paz", en: "From La Paz" },
-          description: { "es-MX": "360 km", en: "220 mi" },
-        },
-      ],
-      drivingTipsHeader: "Consejos",
-      drivingTips: [{ text: { "es-MX": "Tip ES", en: "Tip EN" } }],
-      amenitiesHeader: { title: "Servicios" },
-      amenities: [
-        { icon: "wifi", title: { "es-MX": "WiFi", en: "WiFi" }, text: { "es-MX": "Hay wifi", en: "Wifi available" } },
-        { icon: "parking" }, // no title/text → empty strings, icon kept
-      ],
-      touristMapHeader: { title: "Mapa" },
-      touristMapCaption: "Caption",
-    },
-  };
-
-  it("resolves ES object-shaped text fields", () => {
-    const out = transformGuidePage(item as any, "es");
-    expect(out.history?.milestones[0]["es-MX"]).toBe("Hit ES");
-    expect(out.history?.milestones[0].en).toBe("Milestone EN");
-    expect(out.history?.milestones[1]["es-MX"]).toBe("");
-    expect(out.fishing?.rules[0]).toBe("Regla ES");
-    expect(out.recommendations?.items[0]).toBe("Rec ES");
-    expect(out.directions?.loreto.label).toBe("Desde Loreto");
-    expect(out.directions?.loreto.desc).toBe("98 km");
-    expect(out.directions?.loreto.image).toContain("/uploads/loreto.jpg");
-    expect(out.directions?.laPaz.label).toBe("Desde La Paz");
-    expect(out.directions?.drivingTips[0]).toBe("Tip ES");
-    expect(out.amenities?.items[0].title).toBe("WiFi");
-    expect(out.amenities?.items[0].text).toBe("Hay wifi");
-    expect(out.amenities?.items[1].icon).toBe("parking");
-    expect(out.amenities?.items[1].title).toBe("");
-  });
-
-  it("resolves EN object-shaped text fields", () => {
-    const out = transformGuidePage(item as any, "en");
-    expect(out.history?.milestones[0].en).toBe("Milestone EN");
-    expect(out.fishing?.rules[0]).toBe("Rule EN");
-    expect(out.recommendations?.items[0]).toBe("Rec EN");
-    expect(out.directions?.loreto.label).toBe("From Loreto");
-    expect(out.directions?.laPaz.desc).toBe("220 mi");
-    expect(out.directions?.drivingTips[0]).toBe("Tip EN");
-    expect(out.amenities?.items[0].text).toBe("Wifi available");
-  });
-
-  it("returns empty direction placeholders when fewer than two directions", () => {
-    const single: any = {
-      id: 2,
-      attributes: {
-        hero: { title: "G", ctaLabel: "Go", ctaLink: "/", images: [] },
-        directionsHeader: { title: "D" },
-        directions: [{ label: "Only one", description: "desc" }],
-      },
-    };
-    const out = transformGuidePage(single as any, "es");
-    expect(out.directions?.loreto.label).toBe("Only one");
-    expect(out.directions?.laPaz.label).toBe("");
-    expect(out.directions?.laPaz.image).toBe("");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
-// transformAboutPage — valuesItems objects + collaboration/finalCta links
-// ─────────────────────────────────────────────────────────────────────
-describe("transformAboutPage — object valuesItems + links", () => {
-  it("maps object-shaped valuesItems and collaboration/finalCta links", () => {
-    const item: any = {
-      id: 1,
-      attributes: {
-        hero: { title: "About", ctaLabel: "Go", ctaLink: "/", images: [] },
-        values: {
-          valuesTitle: "Valores",
-          valuesItems: [
-            { "es-MX": "Respeto", en: "Respect" },
-            "Plain value",
-          ],
-        },
-        collaboration: {
-          title: "Colab",
-          description: "Desc",
-          primaryButtonLabel: "Primary",
-          secondaryButtonLabel: "Secondary",
-          // no links → default '#'
-        },
-        finalCta: {
-          title: "CTA",
-          description: "D",
-          buttonLabel: "Go",
-          // no buttonLink → default '#'
-        },
-      },
-    };
-    const es = transformAboutPage(item as any, "es");
-    expect(es.values?.values?.items).toEqual(["Respeto", "Plain value"]);
-    expect(es.collaboration?.links.primary).toBe("#");
-    expect(es.collaboration?.links.secondary).toBe("#");
-    expect(es.finalCta?.buttonLink).toBe("#");
-
-    const en = transformAboutPage(item as any, "en");
-    expect(en.values?.values?.items[0]).toBe("Respect");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
 // transformHomepage — centerPoint + non-array hero images + id fallbacks
 // ─────────────────────────────────────────────────────────────────────
 describe("transformHomepage — centerPoint + hero images data shape", () => {
@@ -538,39 +395,6 @@ describe("transformHomepage — centerPoint + hero images data shape", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// transformExperiencesPage — section layout default + image/link fields
-// ─────────────────────────────────────────────────────────────────────
-describe("transformExperiencesPage — section fields", () => {
-  it("defaults layout and maps image/link/linkLabel", () => {
-    const item: any = {
-      id: 1,
-      attributes: {
-        hero: { title: "E", ctaLabel: "Go", ctaLink: "/", images: [] },
-        sections: [
-          {
-            title: "Sec",
-            text: "Text",
-            image: { url: "/uploads/sec.jpg", alternativeText: "Sec alt" },
-            link: "/sitios",
-            linkLabel: { "es-MX": "Ver", en: "See" },
-            // no layout → default 'image-left'
-          },
-        ],
-      },
-    };
-    const es = transformExperiencesPage(item as any, "es");
-    expect(es.sections[0].layout).toBe("image-left");
-    expect(es.sections[0].imageUrl).toContain("/uploads/sec.jpg");
-    expect(es.sections[0].imageAlt).toBe("Sec alt");
-    expect(es.sections[0].link).toBe("/sitios");
-    expect(es.sections[0].linkLabel).toBe("Ver");
-
-    const en = transformExperiencesPage(item as any, "en");
-    expect(en.sections[0].linkLabel).toBe("See");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
 // id fallbacks — documentId / slug / name when numeric id is absent
 // ─────────────────────────────────────────────────────────────────────
 describe("id fallback chains", () => {
@@ -581,16 +405,6 @@ describe("id fallback chains", () => {
     expect(bySlug.id).toBe("c-slug");
   });
 
-  it("team member falls back to name when no id/documentId", () => {
-    const out = transformTeamMember({ attributes: { name: "Juan" } } as any);
-    expect(out.id).toBe("Juan");
-  });
-
-  it("organization falls back to name when no id/documentId", () => {
-    const out = transformOrganization({ attributes: { name: "Coop" } } as any);
-    expect(out.id).toBe("Coop");
-  });
-
   it("site content falls back to key when no id/documentId", () => {
     const out = transformSiteContent({ attributes: { key: "my-key", title: "T", text: "X" } } as any);
     expect(out.id).toBe("my-key");
@@ -598,115 +412,10 @@ describe("id fallback chains", () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// Null safety (edge-case 2). Strapi returns null for empty optional fields;
-// `typeof null === 'object'` used to crash the `typeof x === 'object' ? x[l]`
-// ternaries. These tests lock in the locText fix: null → '' without throwing.
-// ─────────────────────────────────────────────────────────────────────
-describe("null safety — guide page fields", () => {
-  const base: any = {
-    id: 1,
-    attributes: {
-      hero: { title: "G", ctaLabel: "Go", ctaLink: "/", images: [] },
-      historyHeader: { title: "H" },
-      historyText: "text",
-    },
-  };
-
-  it("does not throw when historyMilestones[].text is null", () => {
-    const item = {
-      ...base,
-      attributes: {
-        ...base.attributes,
-        historyMilestones: [{ year: "1950", text: null }, { year: "1960" }],
-      },
-    };
-    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
-    const out = transformGuidePage(item as any, "es");
-    expect(out.history?.milestones[0]["es-MX"]).toBe("");
-    expect(out.history?.milestones[0].en).toBe("");
-  });
-
-  it("does not throw when fishingRules/recommendations/drivingTips text is null", () => {
-    const item = {
-      ...base,
-      attributes: {
-        ...base.attributes,
-        fishingHeader: { title: "F" },
-        fishingRules: [{ text: null }],
-        recommendationsHeader: { title: "R" },
-        recommendations: [{ text: null }],
-        drivingTipsHeader: "Tips",
-        drivingTips: [{ text: null }],
-      },
-    };
-    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
-    const out = transformGuidePage(item as any, "es");
-    expect(out.fishing?.rules[0]).toBe("");
-    expect(out.recommendations?.items[0]).toBe("");
-    expect(out.directions?.drivingTips[0]).toBe("");
-  });
-
-  it("does not throw when directions label/description are null", () => {
-    const item = {
-      ...base,
-      attributes: {
-        ...base.attributes,
-        directionsHeader: { title: "D" },
-        directions: [
-          { label: null, description: null, distance: "98 km", time: "2h" },
-          { label: null, description: null },
-        ],
-      },
-    };
-    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
-    const out = transformGuidePage(item as any, "es");
-    expect(out.directions?.loreto.label).toBe("");
-    expect(out.directions?.loreto.desc).toBe("");
-    expect(out.directions?.laPaz.label).toBe("");
-  });
-
-  it("does not throw when amenities title/text are null", () => {
-    const item = {
-      ...base,
-      attributes: {
-        ...base.attributes,
-        amenitiesHeader: { title: "A" },
-        amenities: [{ icon: "wifi", title: null, text: null }],
-      },
-    };
-    expect(() => transformGuidePage(item as any, "es")).not.toThrow();
-    const out = transformGuidePage(item as any, "es");
-    expect(out.amenities?.items[0].title).toBe("");
-    expect(out.amenities?.items[0].text).toBe("");
-    expect(out.amenities?.items[0].icon).toBe("wifi");
-  });
-});
-
-describe("null safety — about page valuesItems", () => {
-  it("does not throw when valuesItems contains null entries", () => {
-    const item: any = {
-      id: 1,
-      attributes: {
-        hero: { title: "About", ctaLabel: "Go", ctaLink: "/", images: [] },
-        values: {
-          valuesTitle: "Valores",
-          valuesItems: [null, { "es-MX": "Respeto", en: "Respect" }, "Plain", null],
-        },
-      },
-    };
-    expect(() => transformAboutPage(item as any, "es")).not.toThrow();
-    const es = transformAboutPage(item as any, "es");
-    expect(es.values?.values?.items).toEqual(["", "Respeto", "Plain", ""]);
-    const en = transformAboutPage(item as any, "en");
-    expect(en.values?.values?.items[1]).toBe("Respect");
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
-// transformListing — full member view-model (gallery, social, locality)
+// transformListing — full member view-model (gallery, social)
 // ─────────────────────────────────────────────────────────────────────
 describe("transformListing — full member mapping", () => {
-  it("maps members with gallery, contact-derived social, and locality", () => {
+  it("maps members with gallery and contact-derived social", () => {
     const item = {
       id: 1,
       attributes: {
@@ -718,13 +427,12 @@ describe("transformListing — full member mapping", () => {
             name: "Ana",
             slug: "ana",
             role: "Guía",
-            locality: "agua-verde",
             bio: "Bio de Ana",
             pullQuote: "Cita",
             legacyNote: "Legado",
             photo: { url: "/uploads/ana.jpg" },
             gallery: [{ url: "/uploads/g1.jpg" }, { url: "/uploads/g2.jpg" }],
-            contact: { instagram: "@ana", whatsapp: "521234567890" },
+            contact: { instagram: "@ana", whatsappCountryCode: "+52", whatsappNumber: "1234567890" },
             isFeatured: true,
             order: 2,
           },
@@ -734,7 +442,6 @@ describe("transformListing — full member mapping", () => {
     const out = transformListing(item as any, "es");
     const member = out.members?.[0];
     expect(member?.name).toBe("Ana");
-    expect(member?.locality).toBe("agua-verde");
     expect(member?.galleryUrls).toHaveLength(2);
     expect(member?.galleryUrls[0]).toContain("/uploads/g1.jpg");
     // contact { instagram, whatsapp } → 2 social links

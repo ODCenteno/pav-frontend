@@ -11,7 +11,6 @@
 
 import type { Category } from '../types/category.type';
 import type { Listing } from '../types/listing.type';
-import type { TeamMember, Organization } from '../types/about.type';
 import type { SiteContent } from '../types/site-content.type';
 import type { HomepageData } from '../types/homepage.type';
 import type { GoodPracticesPage } from '../types/good-practices.type';
@@ -32,7 +31,6 @@ import type { ContactInfo, SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
 import { composePhone, formatPhone, normalizePhone, telHref, whatsappHref } from './phone';
 import { getCommunityBySlug } from '../data/communities';
-import { LOCALITY_TO_COMMUNITY } from '../data/categories';
 
 export interface StrapiItem<T = any> {
   id: number;
@@ -188,10 +186,6 @@ export interface TagItemAttributes {
 }
 
 export interface ContactInfoAttributes {
-  /** Deprecated free text (contract §5b); fallback for the fields below. */
-  whatsapp?: string;
-  /** Deprecated free text (contract §5b); fallback for the fields below. */
-  phone?: string;
   phoneCountryCode?: string;
   phoneNumber?: string;
   whatsappCountryCode?: string;
@@ -276,25 +270,6 @@ function normalizeRecommendations(
   return legacyVisitInfoToItems(raw, locale);
 }
 
-/**
- * Raw shape of the `common.localized-text` component after the localization
- * migration: a single `text` field whose value is already resolved to the
- * requested Strapi locale.
- */
-export interface LocalizedTextAttributes {
-  text?: string;
-  /** Temporary expand/contract bridge (see TagItemAttributes.label_es). */
-  text_es?: string;
-}
-
-export interface LinksAttributes {
-  email?: string;
-  website?: string;
-  instagram?: string;
-  facebook?: string;
-  linkedin?: string;
-}
-
 export interface ListingAttributes {
   title: string;
   slug: string;
@@ -364,7 +339,6 @@ export interface CommunityMemberAttributes {
   name: string;
   slug: string;
   role?: string | { 'es-MX': string; en: string };
-  locality?: string;
   /**
    * Strapi `richtext` field. At runtime it arrives as an array of rich-text
    * blocks (flattened via `asString`), a plain string, or — defensively — a
@@ -388,26 +362,6 @@ export interface CommunityMemberAttributes {
   shortDescription?: string | { 'es-MX': string; en: string };
 }
 
-export interface TeamMemberAttributes {
-  name: string;
-  role?: LocalizedTextAttributes;
-  shortBio?: LocalizedTextAttributes;
-  photo?: StrapiMedia;
-  links?: LinksAttributes;
-  order?: number;
-  isFeatured?: boolean;
-}
-
-export interface OrganizationAttributes {
-  name: string;
-  type?: 'community' | 'institution' | 'partner' | 'collective' | 'business';
-  shortDescription?: LocalizedTextAttributes;
-  logo?: StrapiMedia;
-  links?: LinksAttributes;
-  order?: number;
-  isFeatured?: boolean;
-}
-
 export interface SiteContentAttributes {
   key: string;
   title?: string;
@@ -428,12 +382,6 @@ export interface HeroSectionAttributes {
 export interface SectionHeaderAttributes {
   title?: string;
   subtitle?: string;
-}
-
-export interface DestinationStoryAttributes {
-  title?: string;
-  text?: string;
-  image?: StrapiMedia;
 }
 
 export interface HighlightCardAttributes {
@@ -468,8 +416,6 @@ export interface CtaSectionAttributes {
 
 export interface HomepageAttributes {
   hero?: HeroSectionAttributes;
-  destinationsHeader?: SectionHeaderAttributes;
-  destinations?: DestinationStoryAttributes[];
   highlightsHeader?: SectionHeaderAttributes;
   highlights?: HighlightCardAttributes[];
   quickFactsHeader?: SectionHeaderAttributes;
@@ -505,25 +451,6 @@ function localized(value: string | { 'es-MX': string; en: string } | null | unde
   }
   const v = (value as string) || '';
   return { 'es-MX': v, en: v };
-}
-
-/**
- * Convert a `common.localized-text` component ({ text }) to a LocalizedString.
- * After the localization migration the component carries a single `text`
- * field already resolved to the fetched Strapi locale, so both slots get the
- * same value (the fetch itself is locale-scoped).
- */
-function fromLocalizedText(comp: any): LocalizedString | undefined {
-  if (!comp) return undefined;
-  const text = typeof comp.text === 'string' ? comp.text : '';
-  if (text) return { 'es-MX': text, en: text };
-  // Temporary expand/contract bridge: the pre-migration API returns dual
-  // `text_es`/`text_en` fields. Remove once the backend contract deploy is
-  // stable in production.
-  const es = typeof comp.text_es === 'string' ? comp.text_es : '';
-  const en = typeof comp.text_en === 'string' ? comp.text_en : '';
-  if (!es && !en) return undefined;
-  return { 'es-MX': es, en: en || es };
 }
 
 function normalizeLocation(raw: any): any {
@@ -773,19 +700,19 @@ function locText(value: any, l: string): string {
 }
 
 /**
- * Contract §5b: resolve `phone` / `whatsapp` to E.164. The new
- * `*CountryCode` + `*Number` fields win; the legacy free-text field is the
- * fallback, normalized with the shared rules. Values that cannot be
- * normalized are dropped, and the raw contract fields stay out of the view
- * model.
+ * Contract §5b: resolve `phone` / `whatsapp` to E.164 from the
+ * `*CountryCode` + `*Number` fields only. The legacy free-text `phone` /
+ * `whatsapp` fields are gone from the backend (contract §10), so there is no
+ * fallback left; values that cannot be composed are dropped, and the raw
+ * contract fields stay out of the view model.
  */
 function normalizeContact(contact?: ContactInfoAttributes): ContactInfo | undefined {
   if (!contact) return undefined;
   const { phoneCountryCode, phoneNumber, whatsappCountryCode, whatsappNumber, ...rest } = contact;
   return {
     ...rest,
-    phone: composePhone(phoneCountryCode, phoneNumber) ?? normalizePhone(contact.phone),
-    whatsapp: composePhone(whatsappCountryCode, whatsappNumber) ?? normalizePhone(contact.whatsapp),
+    phone: composePhone(phoneCountryCode, phoneNumber),
+    whatsapp: composePhone(whatsappCountryCode, whatsappNumber),
   };
 }
 
@@ -964,13 +891,9 @@ export function transformCommunityMember(
     };
   });
 
-  // Contract §6: community relation wins; the deprecated `locality` derives
-  // the community from the fixture when the relation is absent.
-  const community =
-    communityRefFromRelation(a.community, locale) ??
-    (a.locality
-      ? communityRefFromSlug(LOCALITY_TO_COMMUNITY[a.locality as keyof typeof LOCALITY_TO_COMMUNITY] ?? '', locale)
-      : undefined);
+  // Contract §6: members get their community only from the relation
+  // (the deprecated `locality` fallback was removed in the contract phase).
+  const community = communityRefFromRelation(a.community, locale);
 
   // Phone/whatsapp (contract §5b): E.164 from the contact component; when
   // it has none, fall back to the social links with the matching platform,
@@ -990,7 +913,6 @@ export function transformCommunityMember(
     slug: a.slug,
     name: a.name || '',
     role: pickLocalized(a.role, locale, es?.role) || undefined,
-    locality: (a.locality as CommunityMember['locality']) || undefined,
     community,
     shortDescription: pickLocalized(a.shortDescription, locale) || undefined,
     phone,
@@ -1012,35 +934,6 @@ export function transformCommunityMember(
   };
 }
 
-export function transformTeamMember(item: StrapiItem<TeamMemberAttributes>): TeamMember {
-  const a = unwrap(item);
-  const id = String(item.id ?? item.documentId ?? a.name);
-  return {
-    id,
-    name: a.name,
-    role: fromLocalizedText(a.role) || { 'es-MX': '', en: '' },
-    shortBio: fromLocalizedText(a.shortBio),
-    photo: mediaUrl(a.photo) || undefined,
-    links: a.links,
-    order: a.order,
-    isFeatured: a.isFeatured,
-  };
-}
-
-export function transformOrganization(item: StrapiItem<OrganizationAttributes>): Organization {
-  const a = unwrap(item);
-  const id = String(item.id ?? item.documentId ?? a.name);
-  return {
-    id,
-    name: a.name,
-    type: a.type,
-    shortDescription: fromLocalizedText(a.shortDescription),
-    logo: mediaUrl(a.logo) || undefined,
-    links: a.links,
-    order: a.order,
-    isFeatured: a.isFeatured,
-  };
-}
 
 export function transformSiteContent(item: StrapiItem<SiteContentAttributes>, locale: string = 'es-MX'): SiteContent {
   const a = unwrap(item);
@@ -1066,14 +959,6 @@ export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: 
       ? hero.images
       : hero.images?.data || []
   ) as any[];
-
-  const destinationsHeader = a.destinationsHeader || {};
-  const destinationsItems = (a.destinations || []).map((d: any) => ({
-    title: localized(d.title, locale)[l],
-    text: localized(d.text, locale)[l],
-    image: resolveMediaUrl(getUrlFromMedia(d.image)),
-    alt: getAltFromMedia(d.image),
-  }));
 
   const highlightsHeader = a.highlightsHeader || {};
   const highlightsItems = (a.highlights || []).map((h: any) => ({
@@ -1111,13 +996,6 @@ export function transformHomepage(item: StrapiItem<HomepageAttributes>, locale: 
         url: resolveMediaUrl(getUrlFromMedia(img)),
         alt: getAltFromMedia(img),
       })),
-    },
-    destinations: {
-      header: {
-        title: localized(destinationsHeader.title, locale)[l],
-        subtitle: localized(destinationsHeader.subtitle, locale)[l],
-      },
-      items: destinationsItems,
     },
     highlights: {
       header: {
@@ -1401,379 +1279,3 @@ export function transformGoodPracticesPage(
   };
 }
 
-// ---------- about page ----------
-
-export interface AboutPageAttributes {
-  internalLabel?: string;
-  hero?: {
-    title?: string | { 'es-MX': string; en: string };
-    titleHighlight?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    ctaLabel?: string | { 'es-MX': string; en: string };
-    ctaLink?: string;
-    images?: any;
-  };
-  introTitle?: string | { 'es-MX': string; en: string };
-  introText?: string | { 'es-MX': string; en: string };
-  values?: {
-    missionTitle?: string | { 'es-MX': string; en: string };
-    missionText?: string | { 'es-MX': string; en: string };
-    visionTitle?: string | { 'es-MX': string; en: string };
-    visionText?: string | { 'es-MX': string; en: string };
-    valuesTitle?: string | { 'es-MX': string; en: string };
-    valuesItems?: Array<string | { 'es-MX': string; en: string }>;
-  };
-  communityTitle?: string | { 'es-MX': string; en: string };
-  communityText?: string | { 'es-MX': string; en: string };
-  collaboration?: {
-    title?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    primaryButtonLabel?: string | { 'es-MX': string; en: string };
-    primaryButtonLink?: string;
-    secondaryButtonLabel?: string | { 'es-MX': string; en: string };
-    secondaryButtonLink?: string;
-  };
-  finalCta?: {
-    title?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    buttonLabel?: string | { 'es-MX': string; en: string };
-    buttonLink?: string;
-  };
-}
-
-export function transformAboutPage(item: StrapiItem<AboutPageAttributes>, locale: string = 'es-MX') {
-  const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es-MX';
-
-  const hero = a.hero || {};
-  const heroImagesRaw: any[] = (
-    Array.isArray(hero.images)
-      ? hero.images
-      : hero.images?.data || []
-  ) as any[];
-
-  const values = a.values || {};
-
-  return {
-    hero: {
-      title: localized(hero.title, locale)[l],
-      titleHighlight: localized(hero.titleHighlight, locale)[l],
-      description: localized(hero.description, locale)[l],
-      ctaLabel: localized(hero.ctaLabel, locale)[l],
-      ctaLink: hero.ctaLink || '/sitios',
-      images: heroImagesRaw.map((img: any) => ({
-        url: resolveMediaUrl(getUrlFromMedia(img)),
-        alt: getAltFromMedia(img),
-      })),
-    },
-    intro: {
-      title: localized(a.introTitle, locale)[l],
-      text: localized(a.introText, locale)[l],
-    },
-    values: {
-      mission: {
-        title: localized(values.missionTitle, locale)[l],
-        text: localized(values.missionText, locale)[l],
-      },
-      vision: {
-        title: localized(values.visionTitle, locale)[l],
-        text: localized(values.visionText, locale)[l],
-      },
-      values: {
-        title: localized(values.valuesTitle, locale)[l],
-        items: (values.valuesItems || []).map((item) => locText(item, l)),
-      },
-    },
-    community: {
-      title: localized(a.communityTitle, locale)[l],
-      text: localized(a.communityText, locale)[l],
-    },
-    collaboration: a.collaboration
-      ? {
-          title: localized(a.collaboration.title, locale)[l],
-          desc: localized(a.collaboration.description, locale)[l],
-          btnPrimary: localized(a.collaboration.primaryButtonLabel, locale)[l],
-          btnSecondary: localized(a.collaboration.secondaryButtonLabel, locale)[l],
-          links: {
-            primary: a.collaboration.primaryButtonLink || '#',
-            secondary: a.collaboration.secondaryButtonLink || '#',
-          },
-        }
-      : null,
-    finalCta: a.finalCta
-      ? {
-          title: localized(a.finalCta.title, locale)[l],
-          description: localized(a.finalCta.description, locale)[l],
-          buttonLabel: localized(a.finalCta.buttonLabel, locale)[l],
-          buttonLink: a.finalCta.buttonLink || '#',
-        }
-      : null,
-  };
-}
-
-// ---------- guide page ----------
-
-export interface GuidePageAttributes {
-  internalLabel?: string;
-  hero?: {
-    title?: string | { 'es-MX': string; en: string };
-    titleHighlight?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    ctaLabel?: string | { 'es-MX': string; en: string };
-    ctaLink?: string;
-    images?: any;
-  };
-  intro?: {
-    ranchTitle?: string | { 'es-MX': string; en: string };
-    ranchText?: string | { 'es-MX': string; en: string };
-    portTitle?: string | { 'es-MX': string; en: string };
-    portText?: string | { 'es-MX': string; en: string };
-  };
-  historyHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  historyMilestones?: Array<{ year?: string; text?: string | { 'es-MX': string; en: string } }>;
-  historyText?: string | { 'es-MX': string; en: string };
-  fishingHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  fishingText?: string | { 'es-MX': string; en: string };
-  fishingRules?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
-  protectedArea?: {
-    title?: string | { 'es-MX': string; en: string };
-    text?: string | { 'es-MX': string; en: string };
-    linkLabel?: string | { 'es-MX': string; en: string };
-    linkHref?: string;
-  };
-  influenceHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  influenceText?: string | { 'es-MX': string; en: string };
-  recommendationsHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  recommendations?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
-  directionsHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  directions?: Array<{
-    label?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    distance?: string;
-    time?: string;
-    image?: any;
-  }>;
-  drivingTipsHeader?: string | { 'es-MX': string; en: string };
-  drivingTips?: Array<{ text?: string | { 'es-MX': string; en: string } }>;
-  amenitiesHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  amenities?: Array<{
-    icon?: 'wifi' | 'signal' | 'toilet' | 'parking' | 'water';
-    title?: string | { 'es-MX': string; en: string };
-    text?: string | { 'es-MX': string; en: string };
-  }>;
-  touristMapHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  touristMapImage?: any;
-  touristMapCaption?: string | { 'es-MX': string; en: string };
-  finalCta?: {
-    title?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    buttonLabel?: string | { 'es-MX': string; en: string };
-    buttonLink?: string;
-  };
-}
-
-export function transformGuidePage(item: StrapiItem<GuidePageAttributes>, locale: string = 'es-MX') {
-  const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es-MX';
-
-  const hero = a.hero || {};
-  const heroImagesRaw: any[] = (
-    Array.isArray(hero.images)
-      ? hero.images
-      : hero.images?.data || []
-  ) as any[];
-
-  return {
-    hero: {
-      title: localized(hero.title, locale)[l],
-      desc: localized(hero.description, locale)[l],
-      image: heroImagesRaw[0]
-        ? resolveMediaUrl(getUrlFromMedia(heroImagesRaw[0]))
-        : '',
-    },
-    intro: a.intro
-      ? {
-          ranchTitle: localized(a.intro.ranchTitle, locale)[l],
-          ranchText: localized(a.intro.ranchText, locale)[l],
-          portTitle: localized(a.intro.portTitle, locale)[l],
-          portText: localized(a.intro.portText, locale)[l],
-        }
-      : null,
-    history: {
-      title: localized(a.historyHeader?.title, locale)[l],
-      text: localized(a.historyText, locale)[l],
-      milestones: (a.historyMilestones || []).map((m) => ({
-        year: m.year || '',
-        'es-MX': locText(m.text, 'es-MX'),
-        en: locText(m.text, 'en'),
-      })),
-    },
-    fishing: {
-      title: localized(a.fishingHeader?.title, locale)[l],
-      text: localized(a.fishingText, locale)[l],
-      rules: (a.fishingRules || []).map((r) => locText(r.text, l)),
-    },
-    protected: a.protectedArea
-      ? {
-          title: localized(a.protectedArea.title, locale)[l],
-          text: localized(a.protectedArea.text, locale)[l],
-          linkLabel: localized(a.protectedArea.linkLabel, locale)[l],
-          linkHref: a.protectedArea.linkHref || '#',
-        }
-      : null,
-    influence: {
-      title: localized(a.influenceHeader?.title, locale)[l],
-      text: localized(a.influenceText, locale)[l],
-    },
-    recommendations: {
-      title: localized(a.recommendationsHeader?.title, locale)[l],
-      items: (a.recommendations || []).map((r) => locText(r.text, l)),
-    },
-    directions: {
-      title: localized(a.directionsHeader?.title, locale)[l],
-      loreto: (() => {
-        const r = (a.directions || [])[0];
-        return r
-          ? {
-              label: locText(r.label, l),
-              desc: locText(r.description, l),
-              distance: r.distance || '',
-              time: r.time || '',
-              image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
-            }
-          : { label: '', desc: '', distance: '', time: '', image: '' };
-      })(),
-      laPaz: (() => {
-        const r = (a.directions || [])[1];
-        return r
-          ? {
-              label: locText(r.label, l),
-              desc: locText(r.description, l),
-              distance: r.distance || '',
-              time: r.time || '',
-              image: r.image ? resolveMediaUrl(getUrlFromMedia(r.image)) : '',
-            }
-          : { label: '', desc: '', distance: '', time: '', image: '' };
-      })(),
-      drivingTipsTitle: localized(a.drivingTipsHeader, locale)[l],
-      drivingTips: (a.drivingTips || []).map((t) => locText(t.text, l)),
-    },
-    amenities: {
-      title: localized(a.amenitiesHeader?.title, locale)[l],
-      items: (a.amenities || []).map((am) => ({
-          icon: am.icon || 'wifi',
-          title: locText(am.title, l),
-          text: locText(am.text, l),
-        })),
-    },
-    touristMap: {
-      title: localized(a.touristMapHeader?.title, locale)[l],
-      image: a.touristMapImage ? resolveMediaUrl(getUrlFromMedia(a.touristMapImage)) : '',
-      caption: localized(a.touristMapCaption, locale)[l],
-    },
-    cta: a.finalCta
-      ? {
-          title: localized(a.finalCta.title, locale)[l],
-          desc: localized(a.finalCta.description, locale)[l],
-          btn: localized(a.finalCta.buttonLabel, locale)[l],
-        }
-      : null,
-  };
-}
-
-// ---------- experiences page ----------
-
-export interface ExperiencesPageAttributes {
-  internalLabel?: string;
-  hero?: {
-    title?: string | { 'es-MX': string; en: string };
-    titleHighlight?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    ctaLabel?: string | { 'es-MX': string; en: string };
-    ctaLink?: string;
-    images?: any;
-  };
-  introHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  sectionsHeader?: { title?: string | { 'es-MX': string; en: string }; subtitle?: string | { 'es-MX': string; en: string } };
-  sections?: ExperienceBlockAttributes[];
-  finalCta?: {
-    title?: string | { 'es-MX': string; en: string };
-    description?: string | { 'es-MX': string; en: string };
-    buttonLabel?: string | { 'es-MX': string; en: string };
-    buttonLink?: string;
-  };
-}
-
-export interface ExperienceBlockAttributes {
-  title?: string | { 'es-MX': string; en: string };
-  text?: string | any[];
-  image?: StrapiMedia;
-  link?: string;
-  linkLabel?: string | { 'es-MX': string; en: string };
-  layout?: 'image-left' | 'image-right' | 'image-top' | 'text-only';
-}
-
-export interface ExperienceBlock {
-  title: string;
-  text: string;
-  imageUrl: string;
-  imageAlt: string;
-  link: string;
-  linkLabel: string;
-  layout: 'image-left' | 'image-right' | 'image-top' | 'text-only';
-}
-
-export function transformExperiencesPage(item: StrapiItem<ExperiencesPageAttributes>, locale: string = 'es-MX') {
-  const a = unwrap(item);
-  const l = locale.startsWith('en') ? 'en' : 'es-MX';
-
-  const hero = a.hero || {};
-  const heroImagesRaw: any[] = (
-    Array.isArray(hero.images)
-      ? hero.images
-      : hero.images?.data || []
-  ) as any[];
-
-  return {
-    hero: {
-      title: localized(hero.title, locale)[l],
-      titleHighlight: localized(hero.titleHighlight, locale)[l],
-      description: localized(hero.description, locale)[l],
-      ctaLabel: localized(hero.ctaLabel, locale)[l],
-      ctaLink: hero.ctaLink || '/sitios',
-      images: heroImagesRaw.map((img: any) => ({
-        url: resolveMediaUrl(getUrlFromMedia(img)),
-        alt: getAltFromMedia(img),
-      })),
-    },
-    introHeader: a.introHeader
-      ? {
-          title: localized(a.introHeader.title, locale)[l],
-          subtitle: localized(a.introHeader.subtitle, locale)[l],
-        }
-      : null,
-    sectionsHeader: a.sectionsHeader
-      ? {
-          title: localized(a.sectionsHeader.title, locale)[l],
-          subtitle: localized(a.sectionsHeader.subtitle, locale)[l],
-        }
-      : null,
-    sections: (a.sections || []).map((s) => ({
-      title: localized(s.title, locale)[l],
-      text: asString(s.text),
-      imageUrl: mediaUrl(s.image),
-      imageAlt: getAltFromMedia(s.image),
-      link: s.link || '',
-      linkLabel: localized(s.linkLabel, locale)[l],
-      layout: (s.layout as ExperienceBlock['layout']) || 'image-left',
-    })),
-    finalCta: a.finalCta
-      ? {
-          title: localized(a.finalCta.title, locale)[l],
-          description: localized(a.finalCta.description, locale)[l],
-          buttonLabel: localized(a.finalCta.buttonLabel, locale)[l],
-          buttonLink: a.finalCta.buttonLink || '#',
-        }
-      : null,
-  };
-}

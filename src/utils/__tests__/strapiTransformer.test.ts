@@ -10,23 +10,13 @@ vi.mock("astro:i18n", () => ({
 import {
   transformCategory,
   transformListing,
-  transformTeamMember,
-  transformOrganization,
   transformSiteContent,
   transformHomepage,
-  transformGuidePage,
-  transformAboutPage,
-  transformExperiencesPage,
   type StrapiItem,
   type CategoryAttributes,
   type ListingAttributes,
-  type TeamMemberAttributes,
-  type OrganizationAttributes,
   type SiteContentAttributes,
   type HomepageAttributes,
-  type GuidePageAttributes,
-  type AboutPageAttributes,
-  type ExperiencesPageAttributes,
 } from "../strapiTransformer";
 
 describe("strapiTransformer", () => {
@@ -205,74 +195,6 @@ expect(out.name.en).toBe("Experiencias");
     });
   });
 
-  describe("transformTeamMember", () => {
-    it("transforms a team member with photo URL", () => {
-      const item: StrapiItem<TeamMemberAttributes> = {
-        id: 1,
-        attributes: {
-          name: "Juan Pérez",
-          role: { text: "Coordinador" },
-          shortBio: { text: "Bio ES" },
-          photo: { id: 1, url: "/uploads/juan.jpg" },
-          links: { email: "juan@example.com" },
-          order: 1,
-          isFeatured: true,
-        },
-      };
-      const out = transformTeamMember(item);
-      expect(out.id).toBe("1");
-      expect(out.name).toBe("Juan Pérez");
-      expect(out.role?.['es-MX']).toBe("Coordinador");
-      expect(out.photo).toContain("/uploads/juan.jpg");
-      expect(out.links?.email).toBe("juan@example.com");
-    });
-
-    it("returns empty photo when none provided", () => {
-      const item: StrapiItem<TeamMemberAttributes> = {
-        id: 2,
-        attributes: { name: "Ana" },
-      };
-      const out = transformTeamMember(item);
-      expect(out.photo).toBeUndefined();
-    });
-
-    it("bridges legacy dual text_es/text_en localized-text during expand/contract", () => {
-      const item: StrapiItem<TeamMemberAttributes> = {
-        id: 3,
-        attributes: {
-          name: "Legacy Member",
-          role: { text_es: "Coordinador", text_en: "Coordinator" } as any,
-          shortBio: { text_es: "Bio ES", text_en: "" } as any,
-        },
-      };
-      const out = transformTeamMember(item);
-      expect(out.role?.['es-MX']).toBe("Coordinador");
-      expect(out.role?.en).toBe("Coordinator");
-      expect(out.shortBio?.['es-MX']).toBe("Bio ES");
-      expect(out.shortBio?.en).toBe("Bio ES");
-    });
-  });
-
-  describe("transformOrganization", () => {
-    it("transforms an organization with logo", () => {
-      const item: StrapiItem<OrganizationAttributes> = {
-        id: 1,
-        attributes: {
-          name: "Cooperativa Agua Verde",
-          type: "community",
-          shortDescription: { text: "Cooperativa local" },
-          logo: { id: 1, url: "/uploads/coop.png" },
-          order: 1,
-          isFeatured: true,
-        },
-      };
-      const out = transformOrganization(item);
-      expect(out.name).toBe("Cooperativa Agua Verde");
-      expect(out.type).toBe("community");
-      expect(out.logo).toContain("/uploads/coop.png");
-    });
-  });
-
   describe("transformSiteContent", () => {
     it("transforms a site-content entry with extraData JSON", () => {
       const item: StrapiItem<SiteContentAttributes> = {
@@ -311,22 +233,6 @@ expect(out.name.en).toBe("Experiencias");
               { id: 2, url: "/uploads/hero2.jpg", alternativeText: "Nature" },
             ],
           },
-          destinationsHeader: {
-            title: "Conoce el destino",
-            subtitle: "Descubre la historia y cultura",
-          },
-          destinations: [
-            {
-              title: "Puerto Agua Verde",
-              text: "Un pequeño rincón de BCS...",
-              image: { id: 3, url: "/uploads/pav.jpg", alternativeText: "Puerto" },
-            },
-            {
-              title: "Rancho San Cosme",
-              text: "Un espacio histórico...",
-              image: { id: 4, url: "/uploads/rancho.jpg", alternativeText: "Rancho" },
-            },
-          ],
           highlightsHeader: {
             title: "Lo más destacado",
             subtitle: "Descubre las mejores opciones",
@@ -376,12 +282,6 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.hero.images[0].url).toContain("/uploads/hero1.jpg");
       expect(out.hero.images[0].alt).toBe("Coast");
 
-      // Destinations header
-      expect(out.destinations.header.title).toBe("Conoce el destino");
-      expect(out.destinations.items).toHaveLength(2);
-      expect(out.destinations.items[0].title).toBe("Puerto Agua Verde");
-      expect(out.destinations.items[0].image).toContain("/uploads/pav.jpg");
-
       // Highlights
       expect(out.highlights.header.title).toBe("Lo más destacado");
       expect(out.highlights.items[0].link).toBe("/experiencias");
@@ -412,7 +312,6 @@ expect(out.name.en).toBe("Experiencias");
 
       expect(out.hero.title).toBe("");
       expect(out.hero.images).toHaveLength(0);
-      expect(out.destinations.items).toHaveLength(0);
       expect(out.highlights.items).toHaveLength(0);
       expect(out.quickFacts.items).toHaveLength(0);
       expect(out.quickFacts.images).toHaveLength(2);
@@ -430,8 +329,6 @@ expect(out.name.en).toBe("Experiencias");
           ctaLabel: "CTA",
           ctaLink: "/link",
         },
-        destinationsHeader: { title: "Header", subtitle: "Sub" },
-        destinations: [],
         highlightsHeader: { title: "H", subtitle: "S" },
         highlights: [],
         quickFactsHeader: { title: "Q", subtitle: "S" },
@@ -444,456 +341,6 @@ expect(out.name.en).toBe("Experiencias");
 
       expect(out.hero.title).toBe("Test");
       expect(out.hero.titleHighlight).toBe("Highlight");
-      expect(out.destinations.header.title).toBe("Header");
-    });
-  });
-
-  describe("transformGuidePage", () => {
-    it("transforms a full guide page with all sections (ES locale)", () => {
-      const item: StrapiItem<GuidePageAttributes> = {
-        id: 1,
-        attributes: {
-          hero: {
-            title: "Guía del Visitante",
-            titleHighlight: "Planifica tu Viaje",
-            description: "Todo lo que necesitas saber...",
-            ctaLabel: "Explorar",
-            ctaLink: "/experiencias",
-            images: [{ id: 1, url: "/uploads/guide-hero.jpg" }],
-          },
-          intro: {
-            ranchTitle: "Rancho San Cosme",
-            ranchText: "Un espacio histórico...",
-            portTitle: "Puerto Agua Verde",
-            portText: "Un rincón costero...",
-          },
-          historyHeader: { title: "Historia", subtitle: "Cronología" },
-          historyText: "Historia de la región...",
-          historyMilestones: [
-            { year: "1950", text: "Fundación del rancho" },
-            { year: "1980", text: { 'es-MX': "Primer turismo", en: "First tourism" } },
-          ],
-          fishingHeader: { title: "Pesca Deportiva", subtitle: "Reglamento" },
-          fishingText: "Normas de pesca...",
-          fishingRules: [
-            { text: "Solo captura" },
-            { text: "Talla mínima" },
-          ],
-          protectedArea: {
-            title: "Área Protegida",
-            text: "Parque Nacional Bahía de Loreto...",
-            linkLabel: "Más información",
-            linkHref: "https://example.com",
-          },
-          influenceHeader: { title: "Área de Influencia" },
-          influenceText: "Comunidad local...",
-          recommendationsHeader: { title: "Recomendaciones" },
-          recommendations: [
-            { text: "Llevar bloqueador" },
-            { text: "Agua potable" },
-          ],
-          directionsHeader: { title: "Cómo Llegar" },
-          directions: [
-            { label: "Desde Loreto", description: "98 km al sur", distance: "98 km", time: "2 horas", image: { id: 1, url: "/uploads/loreto.jpg" } },
-            { label: "Desde La Paz", description: "360 km al norte", distance: "360 km", time: "5 horas", image: { id: 2, url: "/uploads/lapaz.jpg" } },
-          ],
-          drivingTipsHeader: "Consejos de manejo",
-          drivingTips: [{ text: "Carretera sin iluminación" }, { text: "Combustible antes de salir" }],
-          amenitiesHeader: { title: "Servicios" },
-          amenities: [
-            { icon: "wifi", title: "WiFi", text: "Disponible en el pueblo" },
-          ],
-          touristMapHeader: { title: "Mapa Turístico" },
-          touristMapImage: { id: 1, url: "/uploads/tourist-map.jpg" },
-          touristMapCaption: "Mapa de la región",
-          finalCta: {
-            title: "Tu viaje comienza aquí",
-            description: "Planea tu estancia...",
-            buttonLabel: "Comenzar",
-            buttonLink: "/sitios",
-          },
-        },
-      };
-
-      const out = transformGuidePage(item, "es");
-
-      expect(out.hero?.title).toBe("Guía del Visitante");
-      expect(out.hero?.desc).toContain("Todo lo que necesitas saber");
-      expect(out.intro?.ranchTitle).toBe("Rancho San Cosme");
-      expect(out.intro?.ranchText).toBe("Un espacio histórico...");
-      expect(out.history?.title).toBe("Historia");
-      expect(out.history?.text).toBe("Historia de la región...");
-      expect(out.history?.milestones).toHaveLength(2);
-      expect(out.history?.milestones[0].year).toBe("1950");
-      expect(out.fishing?.rules).toHaveLength(2);
-      expect(out.fishing?.rules[0]).toBe("Solo captura");
-      expect(out.protected?.title).toBe("Área Protegida");
-      expect(out.protected?.linkLabel).toBe("Más información");
-      expect(out.directions?.loreto.label).toBe("Desde Loreto");
-      expect(out.directions?.laPaz.distance).toBe("360 km");
-      expect(out.directions?.drivingTips).toHaveLength(2);
-      expect(out.amenities?.items[0].title).toBe("WiFi");
-      expect(out.cta?.title).toBe("Tu viaje comienza aquí");
-    });
-
-    it("transforms guide page with EN locale", () => {
-      const item: StrapiItem<GuidePageAttributes> = {
-        id: 2,
-        attributes: {
-          hero: {
-            title: "Visitor Guide",
-            titleHighlight: "Plan Your Trip",
-            description: "Everything you need to know...",
-            ctaLabel: "Explore",
-            ctaLink: "/en/experiences",
-            images: [{ id: 1, url: "/uploads/guide-hero-en.jpg" }],
-          },
-          intro: {
-            ranchTitle: "Rancho San Cosme",
-            ranchText: "A historic ranch...",
-            portTitle: "Puerto Agua Verde",
-            portText: "A coastal corner...",
-          },
-          historyHeader: { title: "History" },
-          historyText: "History of the region...",
-          fishingHeader: { title: "Sport Fishing" },
-          fishingText: "Fishing rules...",
-          recommendationsHeader: { title: "Recommendations" },
-          recommendations: [{ text: "Bring sunscreen" }],
-        },
-      };
-
-      const out = transformGuidePage(item, "en");
-
-      expect(out.hero?.title).toBe("Visitor Guide");
-      expect(out.hero?.desc).toContain("Everything you need to know");
-      expect(out.intro?.ranchTitle).toBe("Rancho San Cosme");
-      expect(out.history?.title).toBe("History");
-      expect(out.history?.text).toBe("History of the region...");
-      expect(out.fishing?.title).toBe("Sport Fishing");
-      expect(out.recommendations?.items[0]).toBe("Bring sunscreen");
-    });
-
-    it("handles richtext blocks arrays in guide page text fields", () => {
-      const blocks = [
-        { type: "paragraph", children: [{ type: "text", text: "Historia de la region." }] },
-        { type: "paragraph", children: [{ type: "text", text: "Mas detalles aqui." }] },
-      ];
-      const item: StrapiItem<GuidePageAttributes> = {
-        id: 3,
-        attributes: {
-          hero: { title: "Guide", ctaLabel: "Go", ctaLink: "/", images: [] },
-          historyHeader: { title: "History" },
-          historyText: blocks as any,
-          fishingHeader: { title: "Fishing" },
-          fishingText: blocks as any,
-        },
-      };
-
-      const out = transformGuidePage(item, "es");
-
-      expect(out.history?.text).toContain("Historia de la region");
-      expect(out.history?.text).toContain("Mas detalles aqui");
-      expect(out.fishing?.text).toContain("Historia de la region");
-    });
-
-    it("handles missing optional fields gracefully", () => {
-      const item: StrapiItem<GuidePageAttributes> = {
-        id: 4,
-        attributes: {},
-      };
-
-      const out = transformGuidePage(item, "es");
-
-      expect(out.hero?.title).toBe("");
-      expect(out.intro).toBe(null);
-      expect(out.history?.title).toBe("");
-      expect(out.fishing?.title).toBe("");
-      expect(out.protected).toBe(null);
-      expect(out.amenities?.items).toEqual([]);
-    });
-
-    it("handles flat (non-wrapped) guide page format", () => {
-      const item = {
-        id: 5,
-        hero: { title: "Flat Guide", ctaLabel: "Go", ctaLink: "/", images: [] },
-        intro: { ranchTitle: "Ranch", ranchText: "Text", portTitle: "Port", portText: "Text" },
-        historyHeader: { title: "Hist" },
-        historyText: "Hist text",
-      } as any;
-
-      const out = transformGuidePage(item, "es");
-
-      expect(out.hero?.title).toBe("Flat Guide");
-      expect(out.intro?.ranchTitle).toBe("Ranch");
-      expect(out.history?.title).toBe("Hist");
-    });
-  });
-
-  describe("transformAboutPage", () => {
-    it("transforms a full about page with all sections (ES locale)", () => {
-      const item: StrapiItem<AboutPageAttributes> = {
-        id: 1,
-        attributes: {
-          hero: {
-            title: "Acerca de Nosotros",
-            titleHighlight: "Comunidad",
-            description: "Conoce nuestra historia...",
-            ctaLabel: "Únete",
-            ctaLink: "/comunidad",
-            images: [{ id: 1, url: "/uploads/about-hero.jpg" }],
-          },
-          introTitle: "Nuestra Historia",
-          introText: "Somos una comunidad...",
-          values: {
-            missionTitle: "Misión",
-            missionText: "Proteger el entorno...",
-            visionTitle: "Visión",
-            visionText: "Un futuro sostenible...",
-            valuesTitle: "Valores",
-            valuesItems: ["Respeto", "Comunidad", "Naturaleza"],
-          },
-          communityTitle: "Mensaje de la Comunidad",
-          communityText: " Juntos hacemos la diferencia...",
-          collaboration: {
-            title: "Colaboración",
-            description: "Trabaja con nosotros...",
-            primaryButtonLabel: "Contáctanos",
-            primaryButtonLink: "/contacto",
-            secondaryButtonLabel: "Ver más",
-            secondaryButtonLink: "/acerca",
-          },
-          finalCta: {
-            title: "Únete a Nosotros",
-            description: "Sé parte de la comunidad...",
-            buttonLabel: "Comenzar",
-            buttonLink: "/comunidad",
-          },
-        },
-      };
-
-      const out = transformAboutPage(item, "es");
-
-      expect(out.hero?.title).toBe("Acerca de Nosotros");
-      expect(out.hero?.titleHighlight).toBe("Comunidad");
-      expect(out.intro?.title).toBe("Nuestra Historia");
-      expect(out.intro?.text).toBe("Somos una comunidad...");
-      expect(out.values?.mission?.title).toBe("Misión");
-      expect(out.values?.vision?.text).toBe("Un futuro sostenible...");
-      expect(out.values?.values?.items).toEqual(["Respeto", "Comunidad", "Naturaleza"]);
-      expect(out.community?.title).toBe("Mensaje de la Comunidad");
-      expect(out.collaboration?.title).toBe("Colaboración");
-      expect(out.collaboration?.btnPrimary).toBe("Contáctanos");
-      expect(out.finalCta?.title).toBe("Únete a Nosotros");
-    });
-
-    it("transforms about page with EN locale", () => {
-      const item: StrapiItem<AboutPageAttributes> = {
-        id: 2,
-        attributes: {
-          hero: {
-            title: "About Us",
-            titleHighlight: "Community",
-            description: "Learn our story...",
-            ctaLabel: "Join",
-            ctaLink: "/en/community",
-            images: [],
-          },
-          introTitle: "Our History",
-          introText: "We are a community...",
-          values: {
-            missionTitle: "Mission",
-            missionText: "To protect the environment...",
-            visionTitle: "Vision",
-            visionText: "A sustainable future...",
-            valuesTitle: "Values",
-            valuesItems: ["Respect", "Community", "Nature"],
-          },
-          communityTitle: "Community Message",
-          communityText: "Together we make a difference...",
-        },
-      };
-
-      const out = transformAboutPage(item, "en");
-
-      expect(out.hero?.title).toBe("About Us");
-      expect(out.intro?.title).toBe("Our History");
-      expect(out.values?.mission?.title).toBe("Mission");
-      expect(out.values?.values?.items).toEqual(["Respect", "Community", "Nature"]);
-    });
-
-    it("handles richtext blocks in about page text fields", () => {
-      const blocks = [
-        { type: "paragraph", children: [{ type: "text", text: "Historia de la comunidad." }] },
-      ];
-      const item: StrapiItem<AboutPageAttributes> = {
-        id: 3,
-        attributes: {
-          hero: { title: "About", ctaLabel: "Go", ctaLink: "/", images: [] },
-          introTitle: "Intro",
-          introText: blocks as any,
-          values: {
-            missionTitle: "Mission",
-            missionText: blocks as any,
-            visionTitle: "Vision",
-            visionText: "Vision text",
-            valuesTitle: "Values",
-            valuesItems: ["One"],
-          },
-        },
-      };
-
-      const out = transformAboutPage(item, "es");
-
-      expect(out.intro?.text).toContain("Historia de la comunidad");
-      expect(out.values?.mission?.text).toContain("Historia de la comunidad");
-    });
-
-    it("handles missing optional fields gracefully", () => {
-      const item: StrapiItem<AboutPageAttributes> = {
-        id: 4,
-        attributes: {},
-      };
-
-      const out = transformAboutPage(item, "es");
-
-      expect(out.hero?.title).toBe("");
-      expect(out.intro?.title).toBe("");
-      expect(out.values?.mission?.title).toBe("");
-      expect(out.community?.title).toBe("");
-      expect(out.collaboration).toBe(null);
-    });
-  });
-
-  describe("transformExperiencesPage", () => {
-    it("transforms a full experiences page (ES locale)", () => {
-      const item: StrapiItem<ExperiencesPageAttributes> = {
-        id: 1,
-        attributes: {
-          hero: {
-            title: "Experiencias",
-            titleHighlight: "Aventuras",
-            description: "Descubre actividades únicas...",
-            ctaLabel: "Ver más",
-            ctaLink: "/sitios",
-            images: [
-              { id: 1, url: "/uploads/exp-hero1.jpg" },
-              { id: 2, url: "/uploads/exp-hero2.jpg" },
-            ],
-          },
-          introHeader: { title: "Bienvenido", subtitle: "Elige tu aventura" },
-          sectionsHeader: { title: "Destacados", subtitle: "Los más populares" },
-          sections: [
-            { title: "Aventura 1", text: "Descripción", layout: "image-left" },
-            { title: "Aventura 2", text: "Descripción 2", layout: "image-right" },
-          ],
-          finalCta: {
-            title: "Planifica tu Viaje",
-            description: "Todo lo que necesitas...",
-            buttonLabel: "Comenzar",
-            buttonLink: "/sitios",
-          },
-        },
-      };
-
-      const out = transformExperiencesPage(item, "es");
-
-      expect(out.hero?.title).toBe("Experiencias");
-      expect(out.hero?.titleHighlight).toBe("Aventuras");
-      expect(out.hero?.description).toContain("Descubre actividades");
-      expect(out.hero?.images).toHaveLength(2);
-      expect(out.hero?.images[0].url).toContain("/uploads/exp-hero1.jpg");
-      expect(out.introHeader?.title).toBe("Bienvenido");
-      expect(out.introHeader?.subtitle).toBe("Elige tu aventura");
-      expect(out.sectionsHeader?.title).toBe("Destacados");
-      expect(out.sections).toHaveLength(2);
-      expect(out.sections[0].title).toBe("Aventura 1");
-      expect(out.finalCta?.title).toBe("Planifica tu Viaje");
-      expect(out.finalCta?.buttonLink).toBe("/sitios");
-    });
-
-    it("transforms experiences page with EN locale", () => {
-      const item: StrapiItem<ExperiencesPageAttributes> = {
-        id: 2,
-        attributes: {
-          hero: {
-            title: "Experiences",
-            titleHighlight: "Adventures",
-            description: "Discover unique activities...",
-            ctaLabel: "See more",
-            ctaLink: "/en/sitios",
-            images: [{ id: 1, url: "/uploads/exp-en.jpg" }],
-          },
-          introHeader: { title: "Welcome", subtitle: "Choose your adventure" },
-          sectionsHeader: { title: "Featured", subtitle: "Most popular" },
-        },
-      };
-
-      const out = transformExperiencesPage(item, "en");
-
-      expect(out.hero?.title).toBe("Experiences");
-      expect(out.hero?.titleHighlight).toBe("Adventures");
-      expect(out.introHeader?.title).toBe("Welcome");
-      expect(out.sectionsHeader?.subtitle).toBe("Most popular");
-    });
-
-    it("handles richtext blocks in hero description", () => {
-      const blocks = [
-        { type: "paragraph", children: [{ type: "text", text: "Rich text description." }] },
-      ];
-      const item: StrapiItem<ExperiencesPageAttributes> = {
-        id: 3,
-        attributes: {
-          hero: {
-            title: "Exp",
-            titleHighlight: "Highlight",
-            description: blocks as any,
-            ctaLabel: "Go",
-            ctaLink: "/",
-            images: [],
-          },
-        },
-      };
-
-      const out = transformExperiencesPage(item, "es");
-
-      expect(out.hero?.description).toContain("Rich text description");
-    });
-
-    it("handles missing optional fields gracefully", () => {
-      const item: StrapiItem<ExperiencesPageAttributes> = {
-        id: 4,
-        attributes: {},
-      };
-
-      const out = transformExperiencesPage(item, "es");
-
-      expect(out.hero?.title).toBe("");
-      expect(out.hero?.images).toHaveLength(0);
-      expect(out.introHeader).toBe(null);
-      expect(out.sectionsHeader).toBe(null);
-      expect(out.sections).toHaveLength(0);
-      expect(out.finalCta).toBe(null);
-    });
-
-    it("handles flat (non-wrapped) experiences page format", () => {
-      const item = {
-        id: 5,
-        hero: {
-          title: "Flat Exp",
-          titleHighlight: "Highlight",
-          description: "Desc",
-          ctaLabel: "Go",
-          ctaLink: "/",
-          images: [],
-        },
-        introHeader: { title: "Intro", subtitle: "Sub" },
-      } as any;
-
-      const out = transformExperiencesPage(item, "es");
-
-      expect(out.hero?.title).toBe("Flat Exp");
-      expect(out.introHeader?.title).toBe("Intro");
     });
   });
 
@@ -963,13 +410,13 @@ expect(out.name.en).toBe("Experiencias");
       expect(out.social).toBeUndefined();
     });
 
-    it("synthesizes a whatsapp SocialLink from contact.whatsapp", () => {
+    it("synthesizes a whatsapp SocialLink from contact.whatsappCountryCode/Number", () => {
       const item = {
         id: 1,
         attributes: {
           title: "Test",
           slug: "test",
-          contact: { id: 9, whatsapp: "+52 161 312 26237" },
+          contact: { id: 9, whatsappCountryCode: "+52", whatsappNumber: "6131226237" },
         },
       };
       const out = transformListing(item as any, "es");
@@ -987,7 +434,7 @@ expect(out.name.en).toBe("Experiencias");
           slug: "test",
           contact: {
             id: 9,
-            phone: "613 122 6237",
+            phoneNumber: "6131226237",
             email: "info@example.com",
           },
         },
@@ -1053,7 +500,7 @@ expect(out.name.en).toBe("Experiencias");
           title: "Test",
           slug: "test",
           members: [
-            { id: 10, name: "Ana", slug: "ana", role: "Guía", locality: "agua-verde" },
+            { id: 10, name: "Ana", slug: "ana", role: "Guía" },
           ],
         },
       };
@@ -1087,7 +534,7 @@ expect(out.name.en).toBe("Experiencias");
           slug: "test",
           members: {
             data: [
-              { id: 10, name: "Ana", slug: "ana", role: "Guía", locality: "agua-verde" },
+              { id: 10, name: "Ana", slug: "ana", role: "Guía" },
             ],
           },
           relatedListings: {
@@ -1131,7 +578,6 @@ expect(out.name.en).toBe("Experiencias");
               name: "Ana",
               slug: "ana",
               role: null,
-              locality: "agua-verde",
               bio: null,
               pullQuote: null,
               legacyNote: null,

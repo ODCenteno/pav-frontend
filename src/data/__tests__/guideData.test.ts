@@ -1,15 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
   heroData,
-  introData,
-  historyData,
   fishingData,
   protectedAreaData,
   influenceData,
   recommendationsData,
   directionsData,
-  amenitiesData,
-  touristMapData,
   ctaData,
 } from "../guideData";
 
@@ -27,36 +23,8 @@ function expectLocalized(value: unknown, key: string) {
 
 describe("data/guideData", () => {
   describe("heroData", () => {
-    it("has localized title and description plus an image path", () => {
-      expectLocalized(heroData.title, "heroData.title");
-      expectLocalized(heroData.desc, "heroData.desc");
+    it("has an image path", () => {
       expect(heroData.image).toMatch(/^\/images\//);
-    });
-  });
-
-  describe("introData", () => {
-    it("has localized ranch and port titles and texts", () => {
-      expectLocalized(introData.ranchTitle, "introData.ranchTitle");
-      expectLocalized(introData.ranchText, "introData.ranchText");
-      expectLocalized(introData.portTitle, "introData.portTitle");
-      expectLocalized(introData.portText, "introData.portText");
-    });
-  });
-
-  describe("historyData", () => {
-    it("has title, text, and at least 3 milestones", () => {
-      expectLocalized(historyData.title, "historyData.title");
-      expectLocalized(historyData.text, "historyData.text");
-      expect(Array.isArray(historyData.milestones)).toBe(true);
-      expect(historyData.milestones.length).toBeGreaterThanOrEqual(3);
-    });
-
-    it("each milestone has a year and localized text", () => {
-      for (const m of historyData.milestones) {
-        expect(typeof m.year).toBe("string");
-        expect(m.year.length).toBeGreaterThan(0);
-        expectLocalized(m, "milestone");
-      }
     });
   });
 
@@ -79,42 +47,10 @@ describe("data/guideData", () => {
   });
 
   describe("directionsData", () => {
-    it("has routes for both Loreto and La Paz with image, distance, and time", () => {
-      for (const route of [directionsData.loreto, directionsData.laPaz]) {
-        expectLocalized(route.label, "route.label");
-        expectLocalized(route.desc, "route.desc");
-        expect(route.distance).toMatch(/\d+\s*km/);
-        expect(route.time).toMatch(/~/);
-        expect(route.image).toMatch(/^\/images\//);
-      }
-    });
-
     it("has at least 2 driving tips per locale", () => {
       for (const loc of LOCALES) {
         expect(directionsData.drivingTips[loc].length).toBeGreaterThanOrEqual(2);
       }
-    });
-  });
-
-  describe("amenitiesData", () => {
-    it("contains at least wifi, signal, and toilet", () => {
-      const icons = amenitiesData.items.map((i) => i.icon);
-      expect(icons).toContain("wifi");
-      expect(icons).toContain("signal");
-      expect(icons).toContain("toilet");
-    });
-
-    it.each(amenitiesData.items)("amenity $icon has localized title and text", (item) => {
-      expectLocalized(item.title, `amenity[${item.icon}].title`);
-      expectLocalized(item.text, `amenity[${item.icon}].text`);
-    });
-  });
-
-  describe("touristMapData", () => {
-    it("references a valid image path", () => {
-      expect(touristMapData.image).toMatch(/^\/images\//);
-      expectLocalized(touristMapData.title, "touristMapData.title");
-      expectLocalized(touristMapData.caption, "touristMapData.caption");
     });
   });
 

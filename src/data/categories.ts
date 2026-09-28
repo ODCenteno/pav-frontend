@@ -1,13 +1,15 @@
 /**
- * Category and community mappings for the redesign data contract.
+ * Category definitions for the redesign data contract.
  * Canonical spec: docs/contracts/redesign-data-contract.md
  *
- * LEGACY_CATEGORY_MAP and LOCALITY_TO_COMMUNITY are the data the backend
- * migration script uses; keep them in sync with the contract doc.
+ * Contract phase (§10/§11): the legacy category slugs (`sites`,
+ * `accommodation`, `restaurants`) and the `community-member.locality` →
+ * `community.slug` mapping are gone. Categories are now exactly
+ * `experiences`, `gastronomy`, `services`, `crafts`, and members get their
+ * community only from the `community` relation.
  */
 import type { LocalizedString } from '../types/i18n.type';
-import type { CurrentCategorySlug, LegacyCategorySlug } from '../types/category.type';
-import type { CommunitySlug, Locality } from '../types/community.type';
+import type { CurrentCategorySlug } from '../types/category.type';
 
 export interface CategoryDefinition {
   slug: CurrentCategorySlug;
@@ -50,23 +52,8 @@ export const HIDE_CONTACT_CATEGORY_SLUGS: readonly CurrentCategorySlug[] = categ
   .filter((c) => c.hideContact)
   .map((c) => c.slug);
 
-/** Legacy slugs stay valid until the contract (cleanup) phase. */
-export const LEGACY_CATEGORY_MAP: Readonly<Record<LegacyCategorySlug, CurrentCategorySlug>> = {
-  sites: 'experiences',
-  accommodation: 'experiences',
-  restaurants: 'gastronomy',
-};
-
-export const LEGACY_CATEGORY_SLUGS = Object.keys(LEGACY_CATEGORY_MAP) as LegacyCategorySlug[];
-
-/** `community-member.locality` (deprecated enum) → `community.slug`. */
-export const LOCALITY_TO_COMMUNITY: Readonly<Record<Locality, CommunitySlug>> = {
-  'agua-verde': 'puerto-agua-verde',
-  'rancho-san-cosme': 'rancho-san-cosme',
-};
-
-/** Normalizes a current or legacy slug to a current one; undefined if unknown. */
+/** Normalizes a current category slug; undefined if unknown. */
 export function toCurrentCategorySlug(slug: string): CurrentCategorySlug | undefined {
   if ((CURRENT_CATEGORY_SLUGS as readonly string[]).includes(slug)) return slug as CurrentCategorySlug;
-  return LEGACY_CATEGORY_MAP[slug as LegacyCategorySlug];
+  return undefined;
 }

@@ -329,24 +329,7 @@ describe("transformCommunityMember — community, shortDescription, phone, whats
     });
   });
 
-  it("derives the community from the deprecated locality when the relation is absent", () => {
-    const out = transformCommunityMember(memberItem({ locality: "rancho-san-cosme" }), "es-MX");
-    expect(out.community?.slug).toBe("rancho-san-cosme");
-    expect(out.community?.color).toBe(communities[1].color);
-  });
-
-  it("prefers the relation over the locality", () => {
-    const out = transformCommunityMember(
-      memberItem({
-        locality: "rancho-san-cosme",
-        community: { data: { id: 1, attributes: { slug: "puerto-agua-verde" } } } as any,
-      }),
-      "es-MX",
-    );
-    expect(out.community?.slug).toBe("puerto-agua-verde");
-  });
-
-  it("leaves community undefined with neither relation nor locality", () => {
+  it("leaves community undefined without a relation (the deprecated locality fallback is gone)", () => {
     const out = transformCommunityMember(memberItem({}), "es-MX");
     expect(out.community).toBeUndefined();
   });
@@ -364,10 +347,15 @@ describe("transformCommunityMember — community, shortDescription, phone, whats
     expect(out.shortDescription).toBeUndefined();
   });
 
-  it("takes phone and whatsapp from the contact component", () => {
+  it("takes phone and whatsapp from the contact component's countryCode + number fields", () => {
     const out = transformCommunityMember(
       memberItem({
-        contact: { phone: "+52 614 123 4567", whatsapp: "526141234567" },
+        contact: {
+          phoneCountryCode: "+52",
+          phoneNumber: "6141234567",
+          whatsappCountryCode: "+52",
+          whatsappNumber: "6141234567",
+        },
       }),
       "es-MX",
     );

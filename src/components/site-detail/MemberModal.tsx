@@ -11,7 +11,8 @@ export interface MemberVm {
   id: string;
   name: string;
   role?: string;
-  locality?: string;
+  /** Localized `community.name` from the member's `community` relation. */
+  communityName?: string;
   pullQuote?: string;
   /** Card text: `shortDescription` or a truncated plain-text bio. */
   summary?: string;
@@ -27,7 +28,6 @@ export interface MemberModalLabels {
   gallery: string;
   call: string;
   email: string;
-  locality: Record<string, string>;
 }
 
 /** Max cells shown in the modal gallery grid; extras surface as a "+N" cell. */
@@ -136,7 +136,6 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
   const hiddenCount = Math.max(0, member.galleryUrls.length - gallery.length);
   const overflowIndex = gallery.length - 1;
   const isOverflow = hiddenCount > 0;
-  const localityLabel = member.locality ? labels.locality[member.locality] : undefined;
   const titleId = `member-modal-title-${member.id}`;
 
   return (
@@ -175,8 +174,8 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
                 {member.name}
               </h3>
               {member.role && <p className="member-strip__role">{member.role}</p>}
-              {localityLabel && (
-                <span className="member-modal__locality">{localityLabel}</span>
+              {member.communityName && (
+                <span className="member-modal__locality">{member.communityName}</span>
               )}
             </div>
           </header>

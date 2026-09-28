@@ -1,11 +1,11 @@
 /**
- * Good-practices page CMS fetcher with guide fallback (contract §7 / §9).
+ * Good-practices page CMS fetcher with static fallback (contract §7 / §9).
  *
  * `getGoodPracticesPage` never throws. When the single type is missing or a
- * section comes back empty, the current guide content serves as fallback —
- * first the guide-page CMS fetch (`getGuidePage`), then the static
- * `src/data/guideData.js` values per section — plus a placeholder campaign
- * block for "Abracemos el Golfo".
+ * section comes back empty, the static `src/data/guideData.js` values serve
+ * as fallback per section — plus a placeholder campaign block for
+ * "Abracemos el Golfo". The `guide-page` content type itself is gone
+ * (contract §10), so there is no CMS-backed fallback layer anymore.
  */
 
 import type { GoodPracticesPage, CampaignBlock } from '../../types/good-practices.type';
@@ -24,10 +24,6 @@ import {
 } from '../../data/guideData';
 import { navigation } from '../../utils/navigation';
 import { safe, strapiGetOne, toStrapiLocale } from './http';
-// Circular on purpose: cms.ts re-exports this module, and this module needs
-// `getGuidePage` from cms.ts for the fallback. The cycle is safe because the
-// import is only referenced inside function bodies (ES module live bindings).
-import { getGuidePage } from '../cms';
 
 /** Contract §9 populate set for `GET /api/good-practices-page`. */
 const GOOD_PRACTICES_POPULATE: Record<string, string> = {
@@ -90,91 +86,56 @@ const CAMPAIGN_PLACEHOLDER: Record<FallbackLocale, CampaignBlock> = {
 };
 
 /**
- * Build the guide-derived fallback page for one locale. Guide CMS sections
- * win over the static guideData values; sections absent from both end up
- * empty. The guide's CTA buttons link home — the guide page itself links to
- * /experiencias, a route scheduled for removal in the redesign.
+ * Build the static-data fallback page for one locale from
+ * `src/data/guideData.js` (contract §7 / §9). Used whenever the
+ * `good-practices-page` single type is missing or a section comes back
+ * empty. The CTA buttons link home.
  */
-async function buildGuideFallback(locale: string): Promise<GoodPracticesPage> {
+function buildStaticFallback(locale: string): GoodPracticesPage {
   const l: FallbackLocale = locale.startsWith('en') ? 'en' : 'es-MX';
-  const guide = await getGuidePage(toStrapiLocale(locale));
 
   const heroCopy = HERO_FALLBACK[l];
   const hero = {
     title: heroCopy.title,
     titleHighlight: '',
     description: heroCopy.description,
-    ctaLabel: guide.cta?.btn || ctaData.btn[l],
+    ctaLabel: ctaData.btn[l],
     ctaLink: navigation.home(locale),
-    images: [{ url: guide.hero?.image || heroData.image, alt: heroCopy.title }],
+    images: [{ url: heroData.image, alt: heroCopy.title }],
   };
 
-  const protectedArea =
-    guide.protected && guide.protected.title
-      ? { ...guide.protected }
-      : {
-          title: protectedAreaData.title[l],
-          text: protectedAreaData.text[l],
-          linkLabel: protectedAreaData.link.label[l],
-          linkHref: protectedAreaData.link.href,
-        };
+  const protectedArea = {
+    title: protectedAreaData.title[l],
+    text: protectedAreaData.text[l],
+    linkLabel: protectedAreaData.link.label[l],
+    linkHref: protectedAreaData.link.href,
+  };
 
-  const influence =
-    guide.influence && guide.influence.title
-      ? guide.influence
-      : { title: influenceData.title[l], text: influenceData.text[l] };
-
-  const fishing =
-    guide.fishing && guide.fishing.title
-      ? guide.fishing
-      : {
-          title: fishingData.title[l],
-          text: fishingData.text[l],
-          rules: fishingData.rules[l],
-        };
-
-  const recommendations =
-    guide.recommendations && guide.recommendations.title
-      ? guide.recommendations
-      : { title: recommendationsData.title[l], items: recommendationsData.items[l] };
-
-  const tips = guide.directions?.drivingTips.length
-    ? guide.directions.drivingTips
-    : directionsData.drivingTips[l];
-
-  const finalCta =
-    guide.cta && guide.cta.title
-      ? {
-          title: guide.cta.title,
-          description: guide.cta.desc,
-          buttonLabel: guide.cta.btn,
-          buttonLink: navigation.home(locale),
-        }
-      : {
-          title: ctaData.title[l],
-          description: ctaData.desc[l],
-          buttonLabel: ctaData.btn[l],
-          buttonLink: navigation.home(locale),
-        };
+  const finalCta = {
+    title: ctaData.title[l],
+    description: ctaData.desc[l],
+    buttonLabel: ctaData.btn[l],
+    buttonLink: navigation.home(locale),
+  };
 
   return {
     hero,
-    // The guide's intro is a ranch/port block, not a section header; there is
-    // no honest SectionHeader equivalent, so intro stays null in fallback.
+    // The guide's intro was a ranch/port block, not a section header; there
+    // is no honest SectionHeader equivalent, so intro stays null in fallback.
     intro: null,
     protectedArea,
     anpMapImage: undefined,
-    conanpUrl: guide.protected?.linkHref ?? protectedAreaData.link.href,
-    influenceHeader: { title: influence.title, subtitle: '' },
-    influenceText: influence.text,
-    fishingHeader: { title: fishing.title, subtitle: '' },
-    fishingText: fishing.text,
-    fishingRules: fishing.rules,
+    conanpUrl: protectedAreaData.link.href,
+    influenceHeader: { title: influenceData.title[l], subtitle: '' },
+    influenceText: influenceData.text[l],
+    fishingHeader: { title: fishingData.title[l], subtitle: '' },
+    fishingText: fishingData.text[l],
+    fishingRules: fishingData.rules[l],
     fishingRefugeMapImage: undefined,
-    recommendationsHeader: { title: recommendations.title, subtitle: '' },
-    recommendations: recommendations.items,
+    recommendationsHeader: { title: recommendationsData.title[l], subtitle: '' },
+    recommendations: recommendationsData.items[l],
     tipsHeader: { title: TIPS_TITLE_FALLBACK[l], subtitle: '' },
-    tips,
+    tips: directionsData.drivingTips[l],
     campaign: CAMPAIGN_PLACEHOLDER[l],
     finalCta,
   };
@@ -193,7 +154,7 @@ export async function getGoodPracticesPage(locale: string = 'es-MX'): Promise<Go
     }),
   );
 
-  if (!fromCms) return buildGuideFallback(locale);
+  if (!fromCms) return buildStaticFallback(locale);
 
   const cms = transformGoodPracticesPage(fromCms, locale);
 
@@ -211,7 +172,7 @@ export async function getGoodPracticesPage(locale: string = 'es-MX'): Promise<Go
     !cms.finalCta?.title;
   if (!needsFallback) return cms;
 
-  const fb = await buildGuideFallback(locale);
+  const fb = buildStaticFallback(locale);
 
   return {
     hero: cms.hero?.title ? cms.hero : fb.hero,

@@ -14,10 +14,10 @@ import {
 } from "../strapiTransformer";
 
 /**
- * Contract §5b: listings and members expose `phone` / `whatsapp` as E.164,
- * composed from `*CountryCode` + `*Number`, falling back to the legacy
- * free-text fields normalized with the shared rules. Values that cannot be
- * normalized are dropped.
+ * Contract §5b / §10: listings and members expose `phone` / `whatsapp` as
+ * E.164, composed from `*CountryCode` + `*Number` only. The legacy free-text
+ * `phone` / `whatsapp` fields are gone from the backend, so there is no
+ * fallback left; values that cannot be composed are dropped.
  */
 
 function listingItem(contact: Record<string, unknown>): StrapiItem<ListingAttributes> {
@@ -29,7 +29,7 @@ function memberItem(attributes: Partial<CommunityMemberAttributes>): StrapiItem<
 }
 
 describe("transformListing — phone numbers (§5b)", () => {
-  it("composes E.164 from the new country code and national number fields", () => {
+  it("composes E.164 from the country code and national number fields", () => {
     const out = transformListing(
       listingItem({
         phoneCountryCode: "+52",
@@ -47,25 +47,9 @@ describe("transformListing — phone numbers (§5b)", () => {
     expect(out.contact?.phone).toBe("+526131234567");
   });
 
-  it("prefers the new fields over the legacy ones", () => {
-    const out = transformListing(
-      listingItem({ phoneNumber: "6131234567", phone: "612 000 0000" }),
-    );
-    expect(out.contact?.phone).toBe("+526131234567");
-  });
-
-  it("falls back to the legacy fields normalized with the §5b rules", () => {
-    const out = transformListing(
-      listingItem({ phone: "613-123-4567", whatsapp: "5216131234567" }),
-    );
-    expect(out.contact?.phone).toBe("+526131234567");
-    expect(out.contact?.whatsapp).toBe("+526131234567");
-  });
-
-  it("drops legacy values that cannot be normalized", () => {
-    const out = transformListing(listingItem({ phone: "12345", whatsapp: "n/a", email: "a@b.mx" }));
+  it("drops a national number that is not exactly 10 digits", () => {
+    const out = transformListing(listingItem({ phoneNumber: "12345", email: "a@b.mx" }));
     expect(out.contact?.phone).toBeUndefined();
-    expect(out.contact?.whatsapp).toBeUndefined();
     expect(out.contact?.email).toBe("a@b.mx");
     expect(out.social?.map((s) => s.platform)).toEqual(["email"]);
   });
@@ -76,9 +60,13 @@ describe("transformListing — phone numbers (§5b)", () => {
     expect(out.contact).not.toHaveProperty("phoneCountryCode");
   });
 
-  it("builds tel: and wa.me social links from the normalized numbers", () => {
+  it("builds tel: and wa.me social links from the composed numbers", () => {
     const out = transformListing(
-      listingItem({ phoneNumber: "6131234567", whatsapp: "+52 1 613 987 6543" }),
+      listingItem({
+        phoneNumber: "6131234567",
+        whatsappCountryCode: "+52",
+        whatsappNumber: "6139876543",
+      }),
     );
     const phone = out.social!.find((s) => s.platform === "phone");
     const wa = out.social!.find((s) => s.platform === "whatsapp");
@@ -88,22 +76,14 @@ describe("transformListing — phone numbers (§5b)", () => {
 });
 
 describe("transformCommunityMember — phone numbers (§5b)", () => {
-  it("composes E.164 from the new contact fields", () => {
+  it("composes E.164 from the contact fields", () => {
     const out = transformCommunityMember(
       memberItem({ contact: { whatsappCountryCode: "+52", whatsappNumber: "6131234567" } }),
     );
     expect(out.whatsapp).toBe("+526131234567");
   });
 
-  it("normalizes legacy contact values", () => {
-    const out = transformCommunityMember(
-      memberItem({ contact: { phone: "+52 614 123 4567", whatsapp: "5216141234567" } }),
-    );
-    expect(out.phone).toBe("+526141234567");
-    expect(out.whatsapp).toBe("+526141234567");
-  });
-
-  it("normalizes the social-link fallback", () => {
+  it("normalizes the social-link fallback when contact has no numbers", () => {
     const out = transformCommunityMember(
       memberItem({
         social: [
@@ -116,8 +96,8 @@ describe("transformCommunityMember — phone numbers (§5b)", () => {
     expect(out.phone).toBe("+526141234567");
   });
 
-  it("drops values that cannot be normalized", () => {
-    const out = transformCommunityMember(memberItem({ contact: { phone: "12345", whatsapp: "52123" } }));
+  it("drops values that cannot be composed or normalized", () => {
+    const out = transformCommunityMember(memberItem({ contact: { phoneNumber: "12345" } }));
     expect(out.phone).toBeUndefined();
     expect(out.whatsapp).toBeUndefined();
     expect(out.social.filter((s) => s.platform === "phone" || s.platform === "whatsapp")).toEqual([]);

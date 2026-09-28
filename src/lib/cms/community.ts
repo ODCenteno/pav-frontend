@@ -3,9 +3,9 @@
  *
  * `getCommunities` / `getCommunityBySlug` never throw: when the CMS is
  * unreachable, errors, or returns an empty list, the fixture-derived
- * Communities from `src/data/communities.ts` are served instead (mirroring
- * the "never null" style of `getGuidePage`). Per-field completion — CMS
- * value wins, fixtures fill the gaps — lives in `transformCommunity`.
+ * Communities from `src/data/communities.ts` are served instead. Per-field
+ * completion — CMS value wins, fixtures fill the gaps — lives in
+ * `transformCommunity`.
  */
 
 import type { Community } from '../../types/community.type';

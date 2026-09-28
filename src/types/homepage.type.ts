@@ -12,13 +12,6 @@ export interface SectionHeader {
   subtitle: string;
 }
 
-export interface DestinationStory {
-  title: string;
-  text: string;
-  image: string;
-  alt: string;
-}
-
 export interface HighlightCard {
   title: string;
   description: string;
@@ -53,10 +46,6 @@ export interface CtaData {
 
 export interface HomepageData {
   hero: HeroData;
-  destinations: {
-    header: SectionHeader;
-    items: DestinationStory[];
-  };
   highlights: {
     header: SectionHeader;
     items: HighlightCard[];

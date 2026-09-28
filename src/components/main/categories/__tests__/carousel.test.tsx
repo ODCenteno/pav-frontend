@@ -32,16 +32,16 @@ describe("carouselChips", () => {
 });
 
 describe("carouselCategoryOf", () => {
-  it("maps legacy slugs with the contract mapping", () => {
-    expect(carouselCategoryOf(listing({ categoryId: "sites" }))).toBe("experiences");
-    expect(carouselCategoryOf(listing({ categoryId: "accommodation" }))).toBe("experiences");
-    expect(carouselCategoryOf(listing({ categoryId: "restaurants" }))).toBe("gastronomy");
+  it("rejects the retired legacy slugs (categories are now exactly the 4 contract slugs)", () => {
+    expect(carouselCategoryOf(listing({ categoryId: "sites" }))).toBe("");
+    expect(carouselCategoryOf(listing({ categoryId: "accommodation" }))).toBe("");
+    expect(carouselCategoryOf(listing({ categoryId: "restaurants" }))).toBe("");
   });
 
   it("keeps current slugs, preferring the populated category", () => {
     expect(
       carouselCategoryOf(
-        listing({ categoryId: "sites", category: { id: "1", slug: "crafts", name: { "es-MX": "", en: "" } } as any }),
+        listing({ categoryId: "services", category: { id: "1", slug: "crafts", name: { "es-MX": "", en: "" } } as any }),
       ),
     ).toBe("crafts");
     expect(carouselCategoryOf(listing({ categoryId: "services" }))).toBe("services");

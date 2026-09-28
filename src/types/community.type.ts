@@ -3,13 +3,6 @@ import type { CtaData, HighlightCard, QuickFact, SectionHeader } from './homepag
 
 export type StoryTheme = 'origin' | 'craft' | 'legacy' | 'sustainability' | 'community';
 
-/**
- * @deprecated Legacy `community-member.locality` enum. Kept until the
- * contract (cleanup) phase; use `CommunitySlug` / `community` instead.
- * Mapping: see LOCALITY_TO_COMMUNITY in src/data/categories.ts.
- */
-export type Locality = 'agua-verde' | 'rancho-san-cosme';
-
 /** Slugs of the `api::community.community` collection type. */
 export type CommunitySlug = 'puerto-agua-verde' | 'rancho-san-cosme';
 
@@ -108,8 +101,6 @@ export interface CommunityMemberSummary {
 }
 
 export interface CommunityMember extends CommunityMemberSummary {
-  /** @deprecated Use `community`. Kept until the contract (cleanup) phase. */
-  locality?: Locality;
   community?: CommunityRef;
   /** Plain text, max 200 characters. */
   shortDescription?: string;
