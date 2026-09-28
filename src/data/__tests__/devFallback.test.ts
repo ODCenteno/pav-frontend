@@ -7,12 +7,7 @@ vi.mock("astro:i18n", () => ({
     return locale === "en" ? `/en/${normalized}` : `/${normalized}`;
   },
 }));
-import {
-  getListingsFallback,
-  getTeamFallback,
-  getOrganizationsFallback,
-  getAboutFallback,
-} from "../devFallback";
+import { getListingsFallback } from "../devFallback";
 
 describe("data/devFallback", () => {
   describe("getListingsFallback", () => {
@@ -80,34 +75,6 @@ describe("data/devFallback", () => {
     });
   });
 
-  describe("getTeamFallback", () => {
-    it("returns TeamMember array", () => {
-      const team = getTeamFallback();
-      expect(team.length).toBeGreaterThan(0);
-      expect(team[0].name).toBeTruthy();
-      expect(team[0].role).toBeDefined();
-    });
-  });
-
-  describe("getOrganizationsFallback", () => {
-    it("returns Organization array", () => {
-      const orgs = getOrganizationsFallback();
-      expect(orgs.length).toBeGreaterThan(0);
-      expect(orgs[0].name).toBeTruthy();
-    });
-  });
-
-  describe("getAboutFallback", () => {
-    it("returns the about page sections", () => {
-      const fb = getAboutFallback();
-      expect(fb.introData).toBeDefined();
-      expect(fb.valuesData).toBeDefined();
-      expect(fb.teamData).toBeDefined();
-      expect(fb.organizationsData).toBeDefined();
-      expect(fb.communityMessageData).toBeDefined();
-      expect(fb.collaborationData).toBeDefined();
-    });
-  });
 });
 
 import { communities as communityFixtures } from "../communities";

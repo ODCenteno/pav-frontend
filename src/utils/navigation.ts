@@ -20,13 +20,10 @@ function toUrlLocale(locale: string): string {
  */
 export const navigation = {
   home: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), ""),
-  experiences: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "experiencias"),
   sites: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "sitios"),
   siteDetail: (slug: string, locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), `sitios/${slug}`),
-  about: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "acerca"),
-  guide: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "guide"),
   // Redesign routes (contract §3). Path segments stay in Spanish for both
-  // locales, like the existing /en/sitios and /en/acerca convention.
+  // locales, like the existing /en/sitios convention.
   community: (slug: string, locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), `comunidades/${slug}`),
   goodPractices: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "buenas-practicas"),
   favorites: (locale: string = "es-MX") => getRelativeLocaleUrl(toUrlLocale(locale), "favoritos"),

@@ -9,18 +9,9 @@
  */
 
 import { categoryData as legacyCategoryData } from './categoryData';
-import {
-  introData as legacyIntroData,
-  valuesData as legacyValuesData,
-  teamData as legacyTeamData,
-  organizationsData as legacyOrgsData,
-  communityMessageData as legacyCommunityData,
-  collaborationData as legacyCollabData,
-} from './aboutData';
 import type { Listing } from '../types/listing.type';
 import type { CommunityRef, CommunitySlug } from '../types/community.type';
 import { getCommunityBySlug } from './communities';
-import type { TeamMember, Organization } from '../types/about.type';
 import { navigation } from '../utils/navigation';
 
 /**
@@ -115,41 +106,4 @@ export function getListingsFallback(locale: string = 'es-MX'): Listing[] {
     };
     return list;
   });
-}
-
-export function getTeamFallback(): TeamMember[] {
-  return (legacyTeamData as any[]).map((m) => ({
-    id: m.id,
-    name: m.name,
-    role: m.role,
-    shortBio: m.shortBio,
-    photo: m.photo,
-    links: m.links,
-    order: m.order,
-    isFeatured: m.isFeatured,
-  }));
-}
-
-export function getOrganizationsFallback(): Organization[] {
-  return (legacyOrgsData as any[]).map((o) => ({
-    id: o.id,
-    name: o.name,
-    type: o.type,
-    shortDescription: o.shortDescription,
-    logo: o.logo,
-    links: o.links,
-    order: o.order,
-    isFeatured: o.isFeatured,
-  }));
-}
-
-export function getAboutFallback() {
-  return {
-    introData: legacyIntroData,
-    valuesData: legacyValuesData,
-    teamData: legacyTeamData,
-    organizationsData: legacyOrgsData,
-    communityMessageData: legacyCommunityData,
-    collaborationData: legacyCollabData,
-  };
 }

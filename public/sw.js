@@ -19,7 +19,7 @@
 
 /* eslint-disable no-restricted-globals */
 
-const CACHE_SHELL = 'pav-shell-v5';
+const CACHE_SHELL = 'pav-shell-v6';
 const CACHE_FONTS = 'pav-fonts-v1';
 const CACHE_IMAGES = 'pav-images-v2';
 const CACHE_API = 'pav-api-v1';
@@ -34,9 +34,6 @@ const SHELL_URLS = [
   '/favoritos',
   '/comunidades/puerto-agua-verde',
   '/comunidades/rancho-san-cosme',
-  '/acerca',
-  '/guide',
-  '/comunidad',
   '/legal/privacy-notice',
   '/en/',
   '/en/sitios',
@@ -44,9 +41,6 @@ const SHELL_URLS = [
   '/en/favoritos',
   '/en/comunidades/puerto-agua-verde',
   '/en/comunidades/rancho-san-cosme',
-  '/en/acerca',
-  '/en/guide',
-  '/en/comunidad',
 ];
 
 self.addEventListener('message', (event) => {
