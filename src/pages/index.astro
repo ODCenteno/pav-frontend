@@ -7,6 +7,7 @@ import PopupManager from "@/components/popup/PopupManager.astro";
 import QuickFacts from "@/components/main/quickFacts/QuickFacts.astro";
 import MapSection from "@/components/main/mapSection/MapSection.astro";
 import CtaSection from "@/components/main/CTA/CtaSection.astro";
+import { communityActions, communityVisitKey, favoritesAction } from "@/components/main/CTA/ctaActions";
 import { useTranslations } from "@/i18n/utils";
 import { navigation } from "@/utils/navigation";
 import { getHomepageWithFallback, getFeaturedListingsWithFallback, toStrapiLocale } from "@/lib/cms";
@@ -35,6 +36,13 @@ const homepageFacts = homeQuickFacts(homepage.quickFacts.items);
   <CtaSection
     title={homepage.finalCta.title}
     description={homepage.finalCta.description}
-    actions={[{ label: t("finalCta.favoritesBtn"), href: navigation.favorites(locale), icon: "bookmark" }]}
+    actions={[
+      ...communityActions(
+        communities,
+        (slug) => navigation.community(slug, locale),
+        (c) => t(communityVisitKey(c.slug) ?? "communityDetail.cta.button", { name: c.name }),
+      ),
+      favoritesAction(t("finalCta.favoritesBtn"), navigation.favorites(locale)),
+    ]}
   />
 </BaseLayout>

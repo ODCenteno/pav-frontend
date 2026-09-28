@@ -13,8 +13,23 @@ export interface CtaAction {
   icon?: "bookmark";
 }
 
-/** The panel lays out at most two actions. */
-export const MAX_CTA_ACTIONS = 2;
+/** The panel lays out at most three actions. */
+export const MAX_CTA_ACTIONS = 3;
+
+/** The neutral (non-community) action to the favorites page. */
+export function favoritesAction(label: string, href: string): CtaAction {
+  return { label, href, icon: "bookmark" };
+}
+
+const VISIT_KEYS: Record<string, string> = {
+  "puerto-agua-verde": "finalCta.visitPort",
+  "rancho-san-cosme": "finalCta.visitRanch",
+};
+
+/** i18n key of the home "Visit the Port / Ranch" label, if the community has one. */
+export function communityVisitKey(slug: string): string | undefined {
+  return VISIT_KEYS[slug];
+}
 
 /** One themed action per community, ordered by `order`. */
 export function communityActions<C extends CommunityRef & { order: number }>(
@@ -27,7 +42,7 @@ export function communityActions<C extends CommunityRef & { order: number }>(
     .map((community) => ({ label: labelFor(community), href: hrefFor(community.slug), community }));
 }
 
-/** Actions the panel can render: labelled, linked, and at most two. */
+/** Actions the panel can render: labelled, linked, and at most three. */
 export function ctaActionsOf(actions: CtaAction[]): CtaAction[] {
   return actions.filter((a) => a.label.trim() && a.href.trim()).slice(0, MAX_CTA_ACTIONS);
 }

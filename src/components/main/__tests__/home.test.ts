@@ -162,6 +162,13 @@ describe("CTA panel", () => {
     css = read("components/main/CTA/ctaSection.css");
   });
 
+  it("lays out one, two or three actions with a count modifier", () => {
+    expect(cta).toMatch(/cta-panel--count-\$\{items\.length\}/);
+    const actions = read("components/main/CTA/CtaActions.astro");
+    expect(actions).toMatch(/"cta-panel__action--neutral": !action\.community/);
+    expect(css).toMatch(/\.cta-panel__action--neutral\s*\{[^}]*background(-color)?:\s*var\(--white\)/);
+  });
+
   it("takes a title, a description and one or two actions", () => {
     expect(cta).toMatch(/actions:\s*CtaAction\[\]/);
     expect(cta).toMatch(/ctaActionsOf\(actions\)/);
@@ -199,10 +206,11 @@ describe.each(["pages/index.astro", "pages/en/index.astro"])("F2 %s", (page) => 
     expect(source).toMatch(/regionMapImage=\{homepage\.regionMapImage\}/);
   });
 
-  it("ends with the favorites CTA set in code, not from the CMS button", () => {
+  it("ends with visit actions for both communities plus favorites, set in code", () => {
     expect(source).toMatch(/<CtaSection[\s\S]*?title=\{homepage\.finalCta\.title\}/);
-    expect(source).toMatch(/label: t\("finalCta\.favoritesBtn"\)/);
-    expect(source).toMatch(/href: navigation\.favorites\(locale\)/);
+    expect(source).toMatch(/communityActions\(\s*communities,/);
+    expect(source).toMatch(/communityVisitKey\(c\.slug\)/);
+    expect(source).toMatch(/favoritesAction\(t\("finalCta\.favoritesBtn"\), navigation\.favorites\(locale\)\)/);
     expect(source).not.toMatch(/finalCta\.buttonLabel|finalCta\.buttonLink/);
   });
 

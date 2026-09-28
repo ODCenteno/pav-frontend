@@ -3,9 +3,9 @@
  * Closing CTA panel, shared by the home, the community pages and the good
  * practices page.
  *
- * One or two actions. A community action takes that community's color and
- * badge; an unthemed action uses the site primary pair. The two-color bar on
- * top echoes the home hero split.
+ * One to three actions. A community action takes that community's color and
+ * badge; any other action (favorites) is neutral: white with a charcoal
+ * arrow. The two-color bar on top echoes the home hero split.
  */
 import "./ctaSection.css";
 import CtaActions from "./CtaActions.astro";
@@ -21,14 +21,13 @@ interface Props {
 
 const { title, description, actions, locale = Astro.currentLocale ?? "es-MX" } = Astro.props;
 const items = ctaActionsOf(actions);
-const layout = items.length > 1 ? "pair" : "single";
 const [first, second] = communityFixtures;
 const splitStyle = `--split-a: ${first.color}; --split-b: ${second.color};`;
 ---
 
 <section class="cta-panel-section section-padding">
   <div class="container">
-    <div class={`cta-panel cta-panel--${layout}`} style={splitStyle}>
+    <div class={`cta-panel cta-panel--count-${items.length}`} style={splitStyle}>
       <div class="cta-panel__copy">
         <h2 class="cta-panel__title" data-key="final_cta_title">{title}</h2>
         {description && <p class="cta-panel__description" data-key="final_cta_desc">{description}</p>}

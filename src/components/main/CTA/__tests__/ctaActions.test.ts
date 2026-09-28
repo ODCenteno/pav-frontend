@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { communityActions, ctaActionsOf, listingCtaActions } from "../ctaActions";
+import {
+  MAX_CTA_ACTIONS,
+  communityActions,
+  communityVisitKey,
+  ctaActionsOf,
+  favoritesAction,
+  listingCtaActions,
+} from "../ctaActions";
 import type { Community } from "@/types/community.type";
 
 function community(overrides: Partial<Community>): Community {
@@ -43,7 +50,13 @@ describe("ctaActionsOf", () => {
     expect(ctaActionsOf(communityActions([pav, rsc], href))).toHaveLength(2);
   });
 
-  it("drops actions without a label or a link and caps the list at two", () => {
+  it("keeps up to three actions", () => {
+    const fav = favoritesAction("Ver mis favoritos", "/favoritos/");
+    expect(ctaActionsOf([...communityActions([pav, rsc], href), fav])).toHaveLength(3);
+    expect(MAX_CTA_ACTIONS).toBe(3);
+  });
+
+  it("drops actions without a label or a link and caps the list at three", () => {
     const actions = [
       { label: " ", href: "/a/" },
       { label: "A", href: "" },
@@ -51,7 +64,28 @@ describe("ctaActionsOf", () => {
       { label: "C", href: "/c/" },
       { label: "D", href: "/d/" },
     ];
-    expect(ctaActionsOf(actions).map((a) => a.label)).toEqual(["B", "C"]);
+    expect(ctaActionsOf(actions).map((a) => a.label)).toEqual(["B", "C", "D"]);
+  });
+});
+
+describe("favoritesAction", () => {
+  it("is a neutral action (no community) with the bookmark icon", () => {
+    expect(favoritesAction("Ver mis favoritos", "/favoritos/")).toEqual({
+      label: "Ver mis favoritos",
+      href: "/favoritos/",
+      icon: "bookmark",
+    });
+  });
+});
+
+describe("communityVisitKey", () => {
+  it("maps each community to its own visit label", () => {
+    expect(communityVisitKey("puerto-agua-verde")).toBe("finalCta.visitPort");
+    expect(communityVisitKey("rancho-san-cosme")).toBe("finalCta.visitRanch");
+  });
+
+  it("returns undefined for an unknown community so callers can fall back", () => {
+    expect(communityVisitKey("elsewhere")).toBeUndefined();
   });
 });
 

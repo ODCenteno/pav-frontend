@@ -14,6 +14,7 @@ const LOCALES = [
     ranch: 'Explorar el Rancho',
     viewAll: 'Ver todo',
     favorites: 'Ver mis favoritos',
+    visit: ['Visitar el Puerto', 'Visitar el Rancho'],
     newTab: '(se abre en una pestaña nueva)',
   },
   {
@@ -24,6 +25,7 @@ const LOCALES = [
     ranch: 'Explore the Ranch',
     viewAll: 'View all',
     favorites: 'See my favorites',
+    visit: ['Visit the Port', 'Visit the Ranch'],
     newTab: '(opens in a new tab)',
   },
 ];
@@ -117,12 +119,21 @@ for (const locale of LOCALES) {
       expect(Math.abs((b[0].x + b[1].x + b[1].width) / 2 - mid)).toBeLessThanOrEqual(4);
     });
 
-    test('ends with a favorites CTA', async ({ page }) => {
+    test('ends with a CTA to both communities and the favorites', async ({ page }) => {
       const cta = page.locator('section:has([data-key="final_cta_title"])');
-      const action = cta.getByRole('link');
-      await expect(action).toHaveCount(1);
-      await expect(action).toHaveText(locale.favorites);
-      await expect(action).toHaveAttribute('href', `${locale.prefix}favoritos/`);
+      const actions = cta.getByRole('link');
+      await expect(actions).toHaveCount(3);
+      for (const [i, community] of COMMUNITIES.entries()) {
+        const action = actions.nth(i);
+        await expect(action).toHaveText(locale.visit[i]);
+        await expect(action).toHaveAttribute('href', `${locale.prefix}comunidades/${community.slug}/`);
+        expect(await communityTextColor(action)).toBe(community.color);
+        await expect(action.locator('.community-badge__icon')).toBeVisible();
+      }
+      const favorites = actions.nth(2);
+      await expect(favorites).toHaveText(locale.favorites);
+      await expect(favorites).toHaveAttribute('href', `${locale.prefix}favoritos/`);
+      await expect(favorites).toHaveClass(/cta-panel__action--neutral/);
     });
   });
 }

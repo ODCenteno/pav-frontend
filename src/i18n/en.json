@@ -109,7 +109,9 @@
     "title": "Your journey begins here",
     "desc": "Puerto Agua Verde and Rancho San Cosme are more than places on the map, they are living landscapes of sea, desert, and tradition. Plan your stay, explore local experiences, and discover the rhythm of authentic Baja life.",
     "btn": "Start planning your visit",
-    "favoritesBtn": "See my favorites"
+    "favoritesBtn": "See my favorites",
+    "visitPort": "Visit the Port",
+    "visitRanch": "Visit the Ranch"
   },
   "footer": {
     "title": "Quick Links",
@@ -270,6 +272,10 @@
   },
   "favoritesPage": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "cta": {
+      "title": "Keep discovering",
+      "description": "Explore the Port and the Ranch and save what you like most."
+    },
     "seo": {
       "siteTitle": "My favorites | Puerto Agua Verde",
       "ogTitle": "Your favorite places in Puerto Agua Verde and Rancho San Cosme",

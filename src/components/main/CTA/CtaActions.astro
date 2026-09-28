@@ -1,7 +1,7 @@
 ---
 /**
- * The CTA action list: one or two large links, each optionally themed with
- * a community's color and badge. Used by CtaSection and /favoritos.
+ * The CTA action list: one to three large links. A community action is
+ * themed with its color and badge; the rest use the neutral style.
  */
 import "./ctaSection.css";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
@@ -22,7 +22,9 @@ const items = ctaActionsOf(actions);
 <ul class:list={["cta-panel__actions", className]}>
   {items.map((action) => (
     <li>
-      <a class="cta-panel__action" href={action.href} style={communityStyle(action.community)} data-key="final_cta_btn">
+      <a
+        class:list={["cta-panel__action", { "cta-panel__action--neutral": !action.community }]}
+        href={action.href} style={communityStyle(action.community)} data-key="final_cta_btn">
         {action.community ? (
           <span class="cta-panel__mark">
             <CommunityBadge community={action.community} size="sm" locale={locale} decorative />

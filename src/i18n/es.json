@@ -109,7 +109,9 @@
     "title": "Tu viaje comienza aquí",
     "desc": "Puerto Agua Verde y Rancho San Cosme no son solo puntos en el mapa, son paisajes vivos de mar, desierto y tradición. Planea tu estancia, explora experiencias locales y descubre el ritmo auténtico de la vida en Baja.",
     "btn": "Comenzar a planear mi visita",
-    "favoritesBtn": "Ver mis favoritos"
+    "favoritesBtn": "Ver mis favoritos",
+    "visitPort": "Visitar el Puerto",
+    "visitRanch": "Visitar el Rancho"
   },
   "footer": {
     "title": "Enlaces Rápidos",
@@ -270,6 +272,10 @@
   },
   "favoritesPage": {
     "_note": "Owned by agent C. Add keys below this line; keep es/en in sync.",
+    "cta": {
+      "title": "Sigue descubriendo",
+      "description": "Explora el Puerto y el Rancho y guarda lo que más te guste."
+    },
     "seo": {
       "siteTitle": "Mis favoritos | Puerto Agua Verde",
       "ogTitle": "Tus lugares favoritos en Puerto Agua Verde y Rancho San Cosme",

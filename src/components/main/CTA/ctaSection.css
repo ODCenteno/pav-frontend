@@ -137,12 +137,44 @@
     outline-offset: 3px;
 }
 
+/* Neutral action (favorites and other non-community links): a quiet white
+   row next to the colored community ones, charcoal text and arrow tile. */
+.cta-panel__action--neutral {
+    background-color: var(--white);
+    color: var(--color-on-surface);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-charcoal) 16%, transparent);
+}
+
+.cta-panel__action--neutral .cta-panel__mark--icon {
+    background: var(--color-bone);
+    color: var(--color-on-surface);
+}
+
+.cta-panel__action--neutral .cta-panel__arrow {
+    background: var(--color-charcoal);
+    color: var(--white);
+}
+
+.cta-panel__action--neutral:hover {
+    box-shadow: inset 0 0 0 1.5px var(--color-charcoal), 0 14px 24px -18px rgba(26, 26, 26, 0.45);
+}
+
+.cta-panel__action--neutral:focus-visible {
+    outline-color: var(--color-charcoal);
+}
+
 @media (min-width: 768px) {
     .cta-panel {
         grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 1fr);
         align-items: center;
         gap: var(--space-xl);
         padding: calc(var(--space-2xl) + 6px) var(--space-2xl) var(--space-2xl);
+    }
+
+    /* Three stacked actions: give the list a little more room so the copy
+       and the actions stay balanced. */
+    .cta-panel--count-3 {
+        grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 1fr);
     }
 }
 
