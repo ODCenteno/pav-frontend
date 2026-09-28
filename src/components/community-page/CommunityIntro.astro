@@ -2,6 +2,7 @@
 import "./communityIntro.css";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 import type { Community } from "@/types/community.type";
+import { textParagraphs } from "./textParagraphs";
 
 interface Props {
   community: Community;
@@ -9,6 +10,8 @@ interface Props {
 }
 
 const { community, locale } = Astro.props;
+// CMS plain text; nothing renders when it is empty.
+const paragraphs = textParagraphs(community.description);
 ---
 
 <section class="community-intro section-padding">
@@ -18,6 +21,10 @@ const { community, locale } = Astro.props;
       <h1 class="community-intro__title">{community.name}</h1>
     </div>
     {community.tagline && <p class="community-intro__tagline">{community.tagline}</p>}
-    {community.description && <p class="community-intro__description">{community.description}</p>}
+    {paragraphs.length > 0 && (
+      <div class="community-intro__description">
+        {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    )}
   </div>
 </section>

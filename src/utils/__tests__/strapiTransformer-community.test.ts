@@ -20,6 +20,28 @@ function communityItem(attributes: Partial<CommunityAttributes>): StrapiItem<Com
   return { id: 42, attributes: { slug: "puerto-agua-verde", ...attributes } as CommunityAttributes };
 }
 
+describe("transformCommunity: tagline and description", () => {
+  it("passes the localized description and tagline through for each locale", () => {
+    const item = communityItem({
+      tagline: { "es-MX": "Pueblo pesquero", en: "Fishing village" },
+      description: { "es-MX": "Primer párrafo.\n\nSegundo.", en: "First paragraph.\n\nSecond." },
+    });
+    expect(transformCommunity(item, "es-MX")).toMatchObject({ tagline: "Pueblo pesquero", description: "Primer párrafo.\n\nSegundo." });
+    expect(transformCommunity(item, "en")).toMatchObject({ tagline: "Fishing village", description: "First paragraph.\n\nSecond." });
+  });
+
+  it("leaves an empty description undefined (nothing to render)", () => {
+    expect(transformCommunity(communityItem({ description: "" })).description).toBeUndefined();
+    expect(transformCommunity(communityItem({ description: { "es-MX": "", en: "" } }), "en").description).toBeUndefined();
+    expect(transformCommunity(communityItem({})).description).toBeUndefined();
+  });
+
+  it("completes an empty tagline from the community fixture", () => {
+    const fixture = communities.find((c) => c.slug === "puerto-agua-verde")!;
+    expect(transformCommunity(communityItem({ tagline: "" }), "en").tagline).toBe(fixture.tagline.en);
+  });
+});
+
 describe("transformCommunity", () => {
   it("maps a full CMS item: identity, media, location and sections", () => {
     const out = transformCommunity(

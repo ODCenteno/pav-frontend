@@ -1,31 +1,43 @@
-.community-intro__inner {
-  max-width: 860px;
-}
-
+/*
+ * Community intro: badge + h1, tagline and description as one block on the
+ * page container's left edge, the same edge as the sections below.
+ */
 .community-intro__heading {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
 }
 
 .community-intro__title {
   font-size: var(--text-3xl, var(--text-2xl));
+  line-height: 1.1;
   margin: 0;
 }
 
 /* Small-ish text in the brand color: textColor (>= 4.5:1), not color. */
 .community-intro__tagline {
+  max-width: 60ch;
   font-size: var(--text-lg);
   font-weight: 600;
+  line-height: 1.4;
   color: var(--community-color-text, var(--color-on-surface));
-  margin: 0 0 var(--space-sm);
+  margin: 0;
 }
 
 .community-intro__description {
+  max-width: 68ch;
+  margin-top: var(--space-sm);
   font-size: var(--text-base);
   line-height: 1.7;
   color: var(--color-on-surface);
+}
+
+.community-intro__description p {
   margin: 0;
   white-space: pre-line;
+}
+
+.community-intro__description p + p {
+  margin-top: var(--space-sm);
 }
