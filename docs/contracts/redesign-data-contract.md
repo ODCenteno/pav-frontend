@@ -232,17 +232,23 @@ populate[community][populate][0]=badgeIcon
 Queries with only indexed entries (e.g. `populate[0]=badgeIcon&populate[1]=highlights.image`)
 are fine. Always send `locale` explicitly: on a fresh database the default locale can be `en`.
 
-## 10. Deprecated (kept until the contract phase)
+## 10. Deprecated (removed from the frontend in the contract phase)
 
-| Item | Replacement |
-|---|---|
-| `guide-page` single type | `community` + `good-practices-page` |
-| `experiences-page` single type | category `experiences` + community pages |
-| `community-member.locality` | `community-member.community` |
-| Category slugs `sites`, `accommodation`, `restaurants` | See §1 |
-| `homepage.destinations` / `destinationsHeader` | Community pages |
+| Item | Replacement | FE status |
+|---|---|---|
+| `guide-page` single type | `community` + `good-practices-page` | Removed. `getGuidePage`/`GuidePageData` are gone; `good-practices-page`'s fallback now uses only static `src/data/guideData.js` values |
+| `experiences-page` single type | category `experiences` + community pages | Removed. `getExperiencesPage`/`ExperiencesPageData` are gone |
+| `about-page` single type | — (no FE replacement; the about content is gone) | Removed. `getAboutPage`/`AboutPageData` are gone |
+| `team-member` collection type | — | Removed. `getTeamMembers`/`TeamMember` are gone |
+| `organization` collection type | — | Removed. `getOrganizations`/`Organization` are gone |
+| `community-member.locality` | `community-member.community` | Removed. Members get their community only from the relation |
+| Category slugs `sites`, `accommodation`, `restaurants` | See §1 | Removed. `toCurrentCategorySlug` no longer maps legacy slugs |
+| `homepage.destinations` / `destinationsHeader` | Community pages | Removed. `HomepageData` no longer has a `destinations` field |
+| `contact.contact-info` legacy `phone` / `whatsapp` free text | `phoneCountryCode`/`phoneNumber`/`whatsappCountryCode`/`whatsappNumber` | Removed. `normalizeContact` composes only from the new fields |
 
-The final phase removes the routes `/guide`, `/acerca`, `/sitios` (listing index), `/comunidad` and `/experiencias`, plus their `/en/` variants. The detail pages `/sitios/[slug]` **stay**. Until then, the footer links Guía, Sobre nosotros and `/sitios`.
+The frontend removed the routes `/guide`, `/acerca` and `/comunidad` (plus their `/en/` variants) with permanent redirects (`/guide` → `/buenas-practicas/`, `/acerca` and `/comunidad` → home). `/experiencias` was already redirected home in phase 3. **`/sitios` (listing index) stays permanently** — it became the favorites/listing index page built in phase 3, not the deprecated pre-redesign one this section originally described removing. The detail pages `/sitios/[slug]` also stay. The footer no longer links Guía or Sobre nosotros, only Sitios de Interés.
+
+This frontend change lands **before** the backend deletes the items above: the CMS client no longer requests any of these endpoints or populate keys, so the site keeps working (via static fallbacks) once the backend removes them.
 
 ## 11. Phases
 
@@ -251,4 +257,5 @@ The final phase removes the routes `/guide`, `/acerca`, `/sitios` (listing index
 | 1 | **Expand** | BE | Additive schema changes (§4 to §8), new component, public permissions. No data changes | Existing FE builds and behaves the same against the new schema |
 | 2 | **Migrate** | BE | Script: create/relabel categories (§1), reassign listings from legacy slugs, set `hideContact` on `services`, create the 2 communities, link listings and members (`locality` → `community`). **Dry-run first on a Neon branch copy** of production, then run for real | Dry-run report reviewed. Counts match. Nothing points at a legacy category |
 | 3 | **FE release** | FE | Populate and map the new fields in `cms.ts`, then build the community, good-practices and favorites pages and the redesigned home | Site works on the migrated data. Fallbacks are covered |
-| 4 | **Contract (cleanup)** | BE + FE | Remove the items in §10, the legacy category entries and the deprecated routes | No references to deprecated fields remain in either repo |
+| 4 | **Contract (cleanup) — FE** | FE | Remove the items in §10, the legacy category entries, and the deprecated routes/components/i18n keys | **Done.** No FE references to deprecated fields, routes, or content types remain (see §10) |
+| 4 | **Contract (cleanup) — BE** | BE | Delete the content types, fields, and legacy category/locality data in §10 | Pending. Safe to run now that the FE no longer requests them |

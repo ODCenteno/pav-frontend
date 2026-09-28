@@ -42,11 +42,11 @@ your milestone report; do not edit it.
 | Routing and theme | `src/utils/navigation.ts`, new `src/utils/communityTheme.ts`, `astro.config.*` (redirects), `public/_redirects` | — |
 | Maps | `src/components/maps/*` (C imports `MapView` read-only) | — |
 | Site detail (hideContact only) | `src/pages/sitios/[slug].astro` (+ `en/`), `site-detail/SiteInfoPanel.astro`, `StickyActionBar.tsx`, `SocialLinks.astro` | — |
-| i18n | namespaces `nav`, `hero`, `categories`, `highlights`, `quickFacts`, `map`, `footer`, `featured`, `experiencesPage`, `communityBadge` | namespaces `communityDetail`, `goodPractices`, `favoritesPage`, `communityGallery`, `memberCard`, `sitesPage` |
+| i18n | namespaces `nav`, `hero`, `categories`, `highlights`, `quickFacts`, `map`, `footer`, `featured`, `communityBadge` | namespaces `communityDetail`, `goodPractices`, `favoritesPage`, `communityGallery`, `memberCard`, `sitesPage` |
 | Layout | `src/components/header/*`, `src/components/menuOverlay/*`, `src/components/footer/*` | — |
 | Home | `src/pages/index.astro`, `src/pages/en/index.astro`, `src/components/main/*` except `main/favorites/*`, `src/components/popup/*` | `src/components/main/favorites/*` |
 | Cards and badge | `src/components/cards/*`, new `src/components/community-badge/*` | — |
-| Pages removed now | `src/pages/experiencias.astro`, `src/pages/en/experiencias.astro` | — |
+| Pages removed now | `src/pages/experiencias.astro`, `src/pages/en/experiencias.astro`, `src/pages/guide.astro`, `src/pages/en/guide.astro`, `src/pages/acerca.astro`, `src/pages/en/acerca.astro`, `src/pages/comunidad.astro`, `src/pages/en/comunidad.astro` | — |
 | Community page | — | new `src/pages/comunidades/*`, `src/pages/en/comunidades/*`, new `src/components/community-page/*` |
 | Good practices | — | new `src/pages/buenas-practicas.astro` (+ `en/`), new `src/components/good-practices/*` |
 | Favorites | — | new `src/pages/favoritos.astro` (+ `en/`), `src/pages/sitios.astro` (+ `en/`) |
@@ -54,10 +54,14 @@ your milestone report; do not edit it.
 | Members (artisans) | — | `src/components/site-detail/MemberCards.tsx`, `MemberStrip.astro`, `MemberModal.tsx` |
 | e2e specs | `e2e/navigation.spec.ts` | `e2e/favorites.spec.ts`, `e2e/filtering.spec.ts` |
 
-Read-only for everyone until the final cleanup: `src/pages/guide.astro`,
-`src/pages/acerca.astro`, `src/pages/comunidad.astro`, `src/components/guide/*`,
-`src/components/about/*`, `src/components/community/*` and their `en/` copies.
-Reuse guide components by importing them; do not modify them.
+Final cleanup done (contract phase, `chore/fe-cleanup`): `src/pages/guide.astro`,
+`src/pages/acerca.astro`, `src/pages/comunidad.astro` (and their `en/` copies),
+`src/components/about/*`, `src/components/community/*`, and the guide
+sub-components not reused elsewhere (`GuideAmenities`, `GuideDirections`,
+`GuideIntro`, `GuideTouristMap`) are removed. `src/components/guide/GuideHistory.astro`,
+`GuideProtectedArea.astro`, `GuideInfluenceArea.astro`, `GuideFishingRefuge.astro`,
+`GuideRecommendations.astro` and `ExpandableImage.tsx` stay — they are reused by
+`good-practices` and `community-page`.
 
 i18n rule: the JSON files are shared, so edit only inside your namespaces.
 The new namespaces already exist at the end of both files with a `_note`
