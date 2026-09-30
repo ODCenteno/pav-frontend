@@ -105,13 +105,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       # `astro preview` (the Playwright webServer) serves the production build,
-      # so build first. STRAPI_URL is baked into dist/server/.dev.vars and used
-      # at preview runtime to fetch real content.
+      # so build first. E2E runs against the local seed data (src/data/devFallback.ts),
+      # not the live CMS: the Strapi secrets live only in the `production`
+      # environment, and seed data keeps the suite deterministic.
       - name: Build for E2E
         run: pnpm build
         env:
-          STRAPI_URL: ${{ secrets.STRAPI_URL }}
-          STRAPI_TOKEN: ${{ secrets.STRAPI_TOKEN }}
+          STRAPI_USE_DEV_FALLBACK: 'true'
 
       # Only the chromium browser is installed above, so run that project alone
       # (the config also declares firefox/webkit/mobile for local full runs).
