@@ -195,7 +195,6 @@ dist
 ### Wrangler / Cloudflare ###
 .wrangler/*
 .wrangler/
-wrangler.jsonc
 dist/server/.wrangler/
 
 # Optional stylelint cache

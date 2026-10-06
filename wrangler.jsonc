@@ -1,3 +1,7 @@
+// The Astro Cloudflare adapter merges this file into dist/server/wrangler.json,
+// the config that deploy.yml passes to `wrangler deploy`. It pins the Worker
+// name and the runtime compatibility date: without it the adapter falls back to
+// its own DEFAULT_COMPATIBILITY_DATE, which changes silently on adapter upgrades.
 {
   "name": "pav-frontend",
   "compatibility_date": "2026-04-15"
