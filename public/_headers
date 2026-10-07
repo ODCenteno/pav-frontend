@@ -39,5 +39,12 @@
   Cache-Control: public, max-age=31536000, immutable
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
+# Unhashed images in /public: 30 days, then revalidated in the background.
+# Not immutable: a file can be replaced under the same name.
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+# /sw.js also matches /*.js: detach that immutable value first, otherwise
+# Cloudflare merges both rules into one contradictory Cache-Control.
 /sw.js
+  ! Cache-Control
   Cache-Control: no-cache, no-store, must-revalidate
