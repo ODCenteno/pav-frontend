@@ -1,7 +1,10 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+
+// strapiTransformer → navigation imports the Astro i18n virtual module.
+vi.mock("astro:i18n", () => ({ getRelativeLocaleUrl: (_locale: string, path: string) => `/${path}` }));
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (rel: string) => readFileSync(resolve(SRC, rel), "utf8");
@@ -228,5 +231,60 @@ describe("map section region image", () => {
 
   it("lets the image stretch to the map height in the two-column layout", () => {
     expect(css).toMatch(/@media \(min-width: 1024px\)[\s\S]*\.map-section__region\s*\{[^}]*aspect-ratio:\s*auto/);
+  });
+});
+
+describe("hero LCP images", () => {
+  let hero: string;
+  let heroImage: string;
+  let localImages: string;
+  beforeAll(() => {
+    hero = read("components/main/hero/Hero.astro");
+    heroImage = read("components/main/hero/HeroImage.astro");
+    localImages = read("components/main/hero/heroImages.ts");
+  });
+
+  it("gives each variant a sizes that resolves to 1px outside its breakpoint", async () => {
+    const { HERO_SIZES } = await import("../hero/heroImageSizes");
+    expect(HERO_SIZES.card).toBe("(max-width: 967px) calc(100vw - 2rem), 1px");
+    expect(HERO_SIZES.half).toBe("(min-width: 968px) 50vw, 1px");
+  });
+
+  it("offers ascending widths from small phones to large desktops", async () => {
+    const { HERO_WIDTHS } = await import("../hero/heroImageSizes");
+    expect([...HERO_WIDTHS].sort((a, b) => a - b)).toEqual([...HERO_WIDTHS]);
+    expect(HERO_WIDTHS[0]).toBeLessThanOrEqual(320);
+    expect(HERO_WIDTHS.at(-1)).toBeGreaterThanOrEqual(1920);
+  });
+
+  it("has a build-time optimized source for every community hero fallback", async () => {
+    const { COMMUNITY_HERO_FALLBACK } = await import("../../../utils/strapiTransformer");
+    for (const url of Object.values(COMMUNITY_HERO_FALLBACK)) {
+      expect(localImages).toContain(`"${url}"`);
+    }
+  });
+
+  it("renders both variants through HeroImage with their own sizes", () => {
+    expect(hero).toMatch(/<HeroImage[^>]*class="hero-community-card__image"[^>]*sizes=\{HERO_SIZES\.card\}/);
+    expect(hero).toMatch(/<HeroImage[^>]*class="hero-half__image"[^>]*sizes=\{HERO_SIZES\.half\}/);
+    expect(hero).not.toMatch(/<img[^>]*src=\{community\.heroImage\}/);
+  });
+
+  it("loads the hero eagerly with high priority as AVIF with a WebP fallback", () => {
+    expect(heroImage).toMatch(/loading="eager"/);
+    expect(heroImage).toMatch(/priority = "high"/);
+    expect(heroImage.match(/fetchpriority=\{priority\}/g)).toHaveLength(2);
+    expect(heroImage).toMatch(/formats=\{\["avif"\]\}/);
+    expect(heroImage).toMatch(/fallbackFormat="webp"/);
+    expect(heroImage).toMatch(/alt=""/);
+  });
+
+  it("keeps high priority for the first mobile card only (the others sit below the fold)", () => {
+    expect(hero).toMatch(/communities\.map\(\(community, index\)/);
+    expect(hero).toMatch(/class="hero-community-card__image"[^>]*priority=\{index === 0 \? "high" : "auto"\}/);
+  });
+
+  it("builds the srcset of a CMS hero from its Strapi formats", () => {
+    expect(heroImage).toMatch(/imageAttrs\(src, sources, sizes\)/);
   });
 });

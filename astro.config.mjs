@@ -33,7 +33,11 @@ const processPolyfillPlugin = {
 export default defineConfig({
   output: "server",
   adapter: cloudflare({
-    imageService: 'cloudflare',
+    // Build-time optimization (sharp): every public page is prerendered and
+    // Cloudflare Image Transformations are not enabled on the zone, so
+    // astro:assets images are resized at build; runtime falls back to
+    // passthrough.
+    imageService: 'compile',
     runtime: { mode: 'local' },
   }),
   site: "https://guiacomunidadesloretanas.com/",

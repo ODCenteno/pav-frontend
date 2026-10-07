@@ -2,13 +2,19 @@
 import "./storyTimeline.css";
 import type { StoryBlock, StoryTheme } from "@/types/community.type";
 import { renderMarkdown } from "@/utils/markdown";
+import { imageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 
 interface Props {
   title: string;
   stories: StoryBlock[];
+  /** Strapi formats of the listing images (stories included), keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 }
 
-const { title, stories } = Astro.props;
+const { title, stories, imageSources } = Astro.props;
+
+/** Story column: full width up to the 1200px container, minus the rail. */
+const STORY_IMAGE_SIZES = "(min-width: 1200px) 1100px, 100vw";
 
 const themeLabels: Record<StoryTheme, string> = {
   origin: "Origen",
@@ -39,9 +45,10 @@ const themeLabels: Record<StoryTheme, string> = {
           {story.imageUrl && (
             <img
               class="story-timeline__image"
-              src={story.imageUrl}
+              {...imageAttrs(story.imageUrl, imageSources, STORY_IMAGE_SIZES)}
               alt={story.title}
               loading="lazy"
+              decoding="async"
             />
           )}
 

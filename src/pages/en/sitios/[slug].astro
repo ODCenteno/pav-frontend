@@ -102,6 +102,7 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
     title={title}
     categoryLabel={categoryLabel}
     image={item.media?.mainImageUrl || ""}
+    imageSources={item.imageSources}
     logos={item.media?.logoUrls}
     tags={tags}
     shortDescription={item.shortDescription?.[locale]}
@@ -118,6 +119,7 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
     <SiteGallery
       title={labels.gallery}
       images={item.media?.galleryUrls || []}
+      imageSources={item.imageSources}
       noContainer={true}
     />
   </SiteSummary>
@@ -151,7 +153,7 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
   )}
 
   {item.stories && item.stories.length > 0 && (
-    <StoryTimeline title={labels.stories} stories={item.stories} />
+    <StoryTimeline title={labels.stories} stories={item.stories} imageSources={item.imageSources} />
   )}
 
   <RelatedSites

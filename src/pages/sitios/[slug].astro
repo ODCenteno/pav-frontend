@@ -94,10 +94,10 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
 ---
 
 <BaseLayout siteTitle={`${title} | Puerto Agua Verde`} siteDescription={description}>
-  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} logos={item.media?.logoUrls} tags={tags} shortDescription={item.shortDescription?.[locale]} labels={labels} />
+  <SiteHero slot="Hero" id={item.id} title={title} categoryLabel={categoryLabel} image={item.media?.mainImageUrl || ""} imageSources={item.imageSources} logos={item.media?.logoUrls} tags={tags} shortDescription={item.shortDescription?.[locale]} labels={labels} />
 
   <SiteSummary description={description} labels={labels} contactActions={contactActions} location={location} categoryColor={categoryColor}>
-    <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} noContainer={true} />
+    <SiteGallery title={labels.gallery} images={item.media?.galleryUrls || []} imageSources={item.imageSources} noContainer={true} />
   </SiteSummary>
 
   {item.products && item.products.length > 0 && (
@@ -119,7 +119,7 @@ const tips = (item.recommendations || []).filter(r => (r.description || "").trim
   {tips.length > 0 && <SiteTips labels={labels} recommendations={tips} />}
 
   {item.stories && item.stories.length > 0 && (
-    <StoryTimeline title={labels.stories} stories={item.stories} />
+    <StoryTimeline title={labels.stories} stories={item.stories} imageSources={item.imageSources} />
   )}
 
   <RelatedSites title={labels.related} relatedIds={item.relatedSites} currentLang={locale} />

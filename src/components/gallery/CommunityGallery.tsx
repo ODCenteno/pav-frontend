@@ -3,7 +3,11 @@ import GalleryLightbox from "../site-detail/GalleryLightbox";
 import { fillTemplate } from "./fillTemplate";
 import { scrollBehavior } from "./motion";
 import { feedIndex } from "./feedPosition";
+import { reactImageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 import "./communityGallery.css";
+
+/** Full-width feed on mobile; up to 380px wide cells in the desktop row. */
+export const COMMUNITY_GALLERY_SIZES = "(max-width: 768px) 100vw, 380px";
 
 export interface CommunityGalleryLabels {
   title: string;
@@ -22,6 +26,8 @@ export interface CommunityGalleryLabels {
 interface CommunityGalleryProps {
   /** Absolute photo URLs (`Community.gallery`). */
   photos: string[];
+  /** Strapi formats of the photos, keyed by URL (`Community.imageSources`). */
+  imageSources?: ResponsiveImageMap;
   communityName: string;
   labels: CommunityGalleryLabels;
 }
@@ -38,7 +44,7 @@ interface CommunityGalleryProps {
  * Each photo is a button that opens the shared `GalleryLightbox` at that
  * index; focus returns to the photo when the lightbox closes.
  */
-export default function CommunityGallery({ photos, communityName, labels }: CommunityGalleryProps) {
+export default function CommunityGallery({ photos, imageSources, communityName, labels }: CommunityGalleryProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(photos.length <= 1);
@@ -137,7 +143,12 @@ export default function CommunityGallery({ photos, communityName, labels }: Comm
                   }}
                   onClick={() => setOpenIndex(index)}
                 >
-                  <img src={src} alt={fillTemplate(labels.photoAlt, values)} loading="lazy" decoding="async" />
+                  <img
+                    {...reactImageAttrs(src, imageSources, COMMUNITY_GALLERY_SIZES)}
+                    alt={fillTemplate(labels.photoAlt, values)}
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </button>
               </li>
             );
@@ -147,7 +158,7 @@ export default function CommunityGallery({ photos, communityName, labels }: Comm
 
       <div id="community-gallery-end" className="community-gallery__end" tabIndex={-1} />
 
-      {openIndex !== null && <GalleryLightbox images={photos} initialIndex={openIndex} isOpen onClose={closeLightbox} />}
+      {openIndex !== null && <GalleryLightbox images={photos} imageSources={imageSources} initialIndex={openIndex} isOpen onClose={closeLightbox} />}
     </section>
   );
 }

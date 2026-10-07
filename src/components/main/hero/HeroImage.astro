@@ -1,0 +1,46 @@
+---
+/**
+ * One decorative hero photo, loaded eagerly; high fetch priority by default
+ * (LCP candidate).
+ *
+ * - Bundled fallback: build-time AVIF sources with a WebP fallback.
+ * - CMS media: `srcset` from its Strapi formats.
+ * - Anything else: the plain URL.
+ */
+import { Picture } from "astro:assets";
+import { imageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
+import { HERO_WIDTHS } from "./heroImageSizes";
+import { LOCAL_HERO_IMAGES } from "./heroImages";
+
+interface Props {
+  src: string;
+  sources?: ResponsiveImageMap;
+  sizes: string;
+  class: string;
+  priority?: "high" | "auto";
+}
+
+const { src, sources, sizes, class: className, priority = "high" } = Astro.props;
+const local = LOCAL_HERO_IMAGES[src];
+const attrs = imageAttrs(src, sources, sizes);
+---
+
+{
+  local ? (
+    <Picture
+      src={local}
+      widths={[...HERO_WIDTHS]}
+      sizes={sizes}
+      formats={["avif"]}
+      fallbackFormat="webp"
+      class={className}
+      pictureAttributes={{ class: "hero-picture" }}
+      alt=""
+      loading="eager"
+      decoding="async"
+      fetchpriority={priority}
+    />
+  ) : (
+    <img {...attrs} class={className} alt="" loading="eager" decoding="async" fetchpriority={priority} />
+  )
+}

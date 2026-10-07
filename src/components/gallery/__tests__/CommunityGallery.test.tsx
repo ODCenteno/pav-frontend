@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderToStaticMarkup } from "react-dom/server";
-import CommunityGallery, { type CommunityGalleryLabels } from "../CommunityGallery";
+import CommunityGallery, { COMMUNITY_GALLERY_SIZES, type CommunityGalleryLabels } from "../CommunityGallery";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SOURCE = readFileSync(resolve(__dirname, "../CommunityGallery.tsx"), "utf8");
@@ -108,5 +108,22 @@ describe("communityGallery.css", () => {
 
   it("styles a visible keyboard focus state for the photo buttons", () => {
     expect(CSS).toMatch(/\.community-gallery__photo:focus-visible/);
+  });
+});
+
+describe("CommunityGallery responsive sources", () => {
+  const imageSources = {
+    "/a.jpg": { src: "/medium_a.jpg", srcset: "/small_a.jpg 500w, /medium_a.jpg 750w, /a.jpg 2000w", width: 2000, height: 1500 },
+  };
+
+  it("renders srcset and sizes from the Strapi formats, the plain URL otherwise", () => {
+    const html = renderToStaticMarkup(
+      <CommunityGallery photos={photos} imageSources={imageSources} communityName="Puerto Agua Verde" labels={labels} />
+    );
+    expect(html).toContain('src="/medium_a.jpg"');
+    expect(html).toContain('srcSet="/small_a.jpg 500w, /medium_a.jpg 750w, /a.jpg 2000w"');
+    expect(html).toContain(`sizes="${COMMUNITY_GALLERY_SIZES}"`);
+    expect(html).toContain('width="2000" height="1500"');
+    expect(html).toContain('src="/b.jpg"');
   });
 });

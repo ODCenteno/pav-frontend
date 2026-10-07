@@ -13,6 +13,8 @@ import "./hero.css";
 import { useTranslations } from "../../../i18n/utils";
 import { communityPath } from "@/utils/navigation";
 import { communityStyle } from "@/utils/communityTheme";
+import HeroImage from "./HeroImage.astro";
+import { HERO_SIZES } from "./heroImageSizes";
 import CommunityBadge from "@/components/community-badge/CommunityBadge.astro";
 import SvgIcon from "@/components/icons/SvgIcon.astro";
 import { heroCtaKey } from "./heroLabels";
@@ -38,10 +40,10 @@ const t = useTranslations(locale);
     <p class="hero-desc" data-key="hero_desc">{data.description}</p>
 
     <ul class="hero-community-buttons">
-      {communities.map((community) => (
+      {communities.map((community, index) => (
         <li>
           <a class="hero-community-card" style={communityStyle(community)} href={communityPath(community.slug, locale)}>
-            {community.heroImage && <img class="hero-community-card__image" src={community.heroImage} alt="" loading="eager" decoding="async" />}
+            {community.heroImage && <HeroImage src={community.heroImage} sources={community.imageSources} class="hero-community-card__image" sizes={HERO_SIZES.card} priority={index === 0 ? "high" : "auto"} />}
             <span class="hero-community-card__badge">
               <CommunityBadge community={community} size="lg" locale={locale} decorative />
             </span>
@@ -55,7 +57,7 @@ const t = useTranslations(locale);
   <div class="hero-split">
     {communities.map((community) => (
       <article class="hero-half" style={communityStyle(community)}>
-        {community.heroImage && <img class="hero-half__image" src={community.heroImage} alt="" loading="eager" decoding="async" fetchpriority="high" />}
+        {community.heroImage && <HeroImage src={community.heroImage} sources={community.imageSources} class="hero-half__image" sizes={HERO_SIZES.half} />}
         <div class="hero-half__content">
           <span class="hero-half__badge">
             <CommunityBadge community={community} size="lg" locale={locale} decorative />

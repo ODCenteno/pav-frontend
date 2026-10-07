@@ -88,7 +88,7 @@ const galleryLabels = {
   siteDescription={community.tagline || t("communityDetail.seo.siteDescription", { name })}
   ogDescription={t("communityDetail.seo.siteDescription", { name })}
 >
-  <CommunityHero slot="Hero" name={name} image={community.heroImage} locale={locale} />
+  <CommunityHero slot="Hero" name={name} image={community.heroImage} imageSources={community.imageSources} locale={locale} />
 
   <div class="community-page" style={communityStyle(community)}>
     <CommunityIntro community={community} locale={locale} />
@@ -113,13 +113,13 @@ const galleryLabels = {
       locale={locale}
     />
 
-    {community.highlights.length > 0 && <Highlights header={highlightsHeader} items={community.highlights} />}
+    {community.highlights.length > 0 && <Highlights header={highlightsHeader} items={community.highlights} imageSources={community.imageSources} />}
 
     {community.quickFacts.length > 0 && (
       <QuickFacts header={quickFactsHeader} items={homeQuickFacts(community.quickFacts)} theme={community} />
     )}
 
-    <CommunityGallery client:visible photos={community.gallery} communityName={name} labels={galleryLabels} />
+    <CommunityGallery client:visible photos={community.gallery} imageSources={community.imageSources} communityName={name} labels={galleryLabels} />
 
     {finalCta && ctaActions.length > 0 && (
       <CtaSection title={finalCta.title} description={finalCta.description} actions={ctaActions} locale={locale} />

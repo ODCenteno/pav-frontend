@@ -1,4 +1,5 @@
 import type { Location, SocialLink } from './common.type';
+import type { ResponsiveImageMap } from '../utils/responsiveImage';
 import type { CtaData, HighlightCard, QuickFact, SectionHeader } from './homepage.type';
 
 export type StoryTheme = 'origin' | 'craft' | 'legacy' | 'sustainability' | 'community';
@@ -54,6 +55,8 @@ export interface Community extends CommunityRef {
   gallery: string[];
   /** Links to the other community. */
   finalCta?: CtaData;
+  /** Strapi `formats` of hero, gallery and highlight images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 }
 
 export interface StoryBlock {
@@ -113,4 +116,6 @@ export interface CommunityMember extends CommunityMemberSummary {
   relatedMembers: RelatedMemberRef[];
   isFeatured?: boolean;
   order?: number;
+  /** Strapi `formats` of the photo and gallery, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 }

@@ -2,12 +2,15 @@
 import SvgIcon from "../icons/SvgIcon.astro";
 import FavoriteButton from "./FavoriteButton.tsx";
 import "./siteHero.css";
+import { imageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 
 interface Props {
   id: string;
   title: string;
   categoryLabel: string;
   image: string;
+  /** Strapi formats of the listing images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
   logos?: string[];
   tags: string[];
   shortDescription?: string;
@@ -18,12 +21,14 @@ interface Props {
   };
 }
 
-const { id, title, categoryLabel, image, logos, tags, shortDescription, labels } = Astro.props;
+const { id, title, categoryLabel, image, imageSources, logos, tags, shortDescription, labels } = Astro.props;
+// Full-bleed LCP image of the detail page.
+const heroImage = imageAttrs(image, imageSources, "100vw");
 ---
 
 <div class="site-hero">
   <div class="site-hero__image-container">
-    <img src={image} alt={title} class="site-hero__image" />
+    <img {...heroImage} alt={title} class="site-hero__image" fetchpriority="high" decoding="async" />
     <div class="site-hero__overlay">
       <div class="container site-hero__actions-container">
         <div class="site-hero__actions">

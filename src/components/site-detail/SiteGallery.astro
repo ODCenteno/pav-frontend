@@ -9,14 +9,17 @@
  */
 import GalleryManager from "./GalleryManager.tsx";
 import "./siteGallery.css";
+import type { ResponsiveImageMap } from "@/utils/responsiveImage";
 
 interface Props {
   title: string;
   images: string[];
+  /** Strapi formats of the gallery images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
   noContainer?: boolean;
 }
 
-const { title, images, noContainer = false } = Astro.props;
+const { title, images, imageSources, noContainer = false } = Astro.props;
 const allImages = images ?? [];
 ---
 
@@ -27,6 +30,7 @@ const allImages = images ?? [];
     <GalleryManager
       client:load
       images={allImages.map((src, i) => ({ src, alt: `${title} gallery ${i + 1}` }))}
+      imageSources={imageSources}
     />
   </section>
 )}

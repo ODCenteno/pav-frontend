@@ -6,7 +6,11 @@ import { socialUrl } from "@/utils/social";
 import { contactLinkLabel, contactLinkTarget } from "../community-page/memberCard";
 import { fillTemplate } from "../gallery/fillTemplate";
 import { scrollBehavior } from "../gallery/motion";
+import { reactImageAttrs } from "@/utils/responsiveImage";
 import "./memberCards.css";
+
+/** Carousel photo: 72% of a member card (1 column, 2 from 768px). */
+const MEMBER_PHOTO_SIZES = "(min-width: 1200px) 420px, (min-width: 768px) 36vw, 72vw";
 
 export interface MemberCardsLabels extends MemberModalLabels {
   openProfile: string;
@@ -85,7 +89,7 @@ export default function MemberCards({ members, labels }: MemberCardsProps) {
               {member.photo ? (
                 <img
                   className="member-strip__photo"
-                  src={member.photo}
+                  {...reactImageAttrs(member.photo, member.imageSources, "64px")}
                   alt={member.name}
                   loading="lazy"
                 />
@@ -169,6 +173,7 @@ export default function MemberCards({ members, labels }: MemberCardsProps) {
       {openPhoto && (
         <GalleryLightbox
           images={members[openPhoto.member].galleryUrls}
+          imageSources={members[openPhoto.member].imageSources}
           initialIndex={openPhoto.photo}
           isOpen
           onClose={closePhoto}
@@ -214,7 +219,7 @@ function PhotoCarousel({ member, labels, registerPhoto, onOpen }: PhotoCarouselP
               onClick={() => onOpen(photo)}
             >
               <img
-                src={src}
+                {...reactImageAttrs(src, member.imageSources, MEMBER_PHOTO_SIZES)}
                 alt={`${member.name} — ${labels.gallery} ${photo + 1}`}
                 loading="lazy"
                 decoding="async"

@@ -31,6 +31,7 @@ import type { ContactInfo, SocialLink } from '../types/common.type';
 import { navigation } from './navigation';
 import { composePhone, formatPhone, normalizePhone, telHref, whatsappHref } from './phone';
 import { getCommunityBySlug } from '../data/communities';
+import { responsiveImageFromMedia, type ResponsiveImageMap } from './responsiveImage';
 
 export interface StrapiItem<T = any> {
   id: number;
@@ -160,6 +161,35 @@ function mediaUrls(media: StrapiMediaArray | StrapiMediaFlat[] | undefined): str
     return url ? [url] : [];
   }
   return [];
+}
+
+/** Single media objects of a media field (v5 flat, v5 array or v4 wrapped). */
+function mediaList(media: unknown): unknown[] {
+  if (!media) return [];
+  if (Array.isArray(media)) return media;
+  if (typeof media === 'object' && 'data' in media) {
+    const d = (media as { data: unknown }).data;
+    if (Array.isArray(d)) return d;
+    return d ? [d] : [];
+  }
+  return [media];
+}
+
+/**
+ * Responsive sources (Strapi `formats`) of every image in the given media
+ * fields, keyed by the same resolved URL the view model carries. Undefined
+ * when no image has formats.
+ */
+function collectImageSources(...fields: unknown[]): ResponsiveImageMap | undefined {
+  const map: ResponsiveImageMap = {};
+  for (const field of fields) {
+    for (const m of mediaList(field)) {
+      const url = resolveMediaUrl(getUrlFromMedia(m));
+      const sources = responsiveImageFromMedia(m, resolveMediaUrl);
+      if (url && sources) map[url] = sources;
+    }
+  }
+  return Object.keys(map).length > 0 ? map : undefined;
 }
 
 export interface StrapiRelation<T> {
@@ -602,6 +632,7 @@ export function transformListing(
       ? { mainImageUrl, galleryUrls, logoUrls }
       : undefined,
     image: mainImageUrl,
+    imageSources: collectImageSources(a.mainImage, a.gallery, ...storiesRaw.map((s) => s.image)),
     isFeatured: a.isFeatured,
     schedule: a.schedule || esAttrs?.schedule
       ? {
@@ -926,6 +957,7 @@ export function transformCommunityMember(
     legacyNote: pickLocalized(a.legacyNote, locale, es?.legacyNote) || undefined,
     photo: mediaUrl(a.photo) || undefined,
     galleryUrls: mediaUrls(a.gallery),
+    imageSources: collectImageSources(a.photo, a.gallery),
     social: derivedSocial,
     listingSlugs,
     relatedMembers,
@@ -1075,7 +1107,7 @@ export interface CommunityAttributes {
  * desert landscape for Rancho San Cosme — the same photos the current home
  * fallback uses for each community.
  */
-const COMMUNITY_HERO_FALLBACK: Record<string, string> = {
+export const COMMUNITY_HERO_FALLBACK: Record<string, string> = {
   'puerto-agua-verde': '/images/PAV-Letrero-.webp',
   'rancho-san-cosme': '/images/pav-landscape-12.webp',
 };
@@ -1159,6 +1191,7 @@ export function transformCommunity(
           buttonLink: a.finalCta.buttonLink || '#',
         }
       : undefined,
+    imageSources: collectImageSources(a.heroImage, a.gallery, ...(a.highlights || []).map((h) => h.image)),
   };
 }
 

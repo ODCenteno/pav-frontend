@@ -11,9 +11,14 @@ import { useTranslations } from "@/i18n/utils";
 import SvgIcon from "../icons/SvgIcon.astro";
 import { navigation } from "@/utils/navigation";
 import { renderMarkdown, stripMarkdown } from "@/utils/markdown";
+import { imageAttrs } from "@/utils/responsiveImage";
 
-// Props
-const { item, currentLang } = Astro.props as { item: Listing; currentLang: string };
+// Props. `sizes` defaults to the carousel slot (300px, 340px from 768px).
+const {
+  item,
+  currentLang,
+  sizes = "(min-width: 768px) 340px, 300px",
+} = Astro.props as { item: Listing; currentLang: string; sizes?: string };
 
 // Locale -> key interno ("en" | "es-MX") para LocalizedString
 const langKey = String(currentLang).toLowerCase().startsWith("en") ? "en" : "es-MX";
@@ -54,6 +59,9 @@ const mainImageUrl =
   (item as any).mainImageUrl ||
   "";
 
+// Responsive sources (Strapi formats) when the CMS provides them.
+const mainImage = imageAttrs(mainImageUrl, item.imageSources, sizes);
+
 // Pricing: intenta modelo nuevo y legacy
 const price = (item.pricing as any)?.price ?? (item.pricing as any)?.amount ?? (item as any).price ?? null;
 
@@ -80,7 +88,7 @@ const cardData = {
   name: item.name,
   description: item.description,
   shortDescription: item.shortDescription,
-  mainImageUrl: mainImageUrl,
+  mainImageUrl: mainImage.src,
   pricing: { price: price },
   categoryId: item.category?.slug || '',
   category: item.category,
@@ -100,7 +108,7 @@ const cardDataJson = JSON.stringify(cardData).replace(/"/g, '&quot;').replace(/'
     onclick={`window.location.assign('${detailLink}')`}
   >
     <div class="listing-image-container">
-      {mainImageUrl ? <img src={mainImageUrl} alt={altText} loading="lazy" /> : <div class="listing-image--placeholder" aria-label={altText} />}
+      {mainImageUrl ? <img {...mainImage} alt={altText} loading="lazy" decoding="async" /> : <div class="listing-image--placeholder" aria-label={altText} />}
 
       <CommunityBadge community={item.community} size="sm" locale={langKey} class="listing-community-badge" />
 

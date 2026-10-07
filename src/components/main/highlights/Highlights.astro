@@ -1,13 +1,19 @@
 ---
 import "./highlights.css";
 import type { SectionHeader, HighlightCard } from "@/types/homepage.type";
+import { imageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 
 interface Props {
   header: SectionHeader;
   items: HighlightCard[];
+  /** Strapi formats of the card images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 }
 
-const { header, items } = Astro.props;
+const { header, items, imageSources } = Astro.props;
+
+/** One card of the up-to-3 column row (container max 1200px). */
+const HIGHLIGHT_IMAGE_SIZES = "(min-width: 768px) 400px, 100vw";
 ---
 
 <section class="highlights section-padding">
@@ -20,7 +26,7 @@ const { header, items } = Astro.props;
       {items.slice(0, 3).map((card) => (
         <div class="review-card">
           <div class="card-img-container">
-            <img src={card.image} alt={card.alt} />
+            <img {...imageAttrs(card.image, imageSources, HIGHLIGHT_IMAGE_SIZES)} alt={card.alt} loading="lazy" decoding="async" />
           </div>
           <h3>{card.title}</h3>
           <p>{card.description}</p>

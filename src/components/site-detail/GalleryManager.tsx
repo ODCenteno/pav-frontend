@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import GalleryLightbox from "./GalleryLightbox";
+import { reactImageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 
 export interface GalleryImage {
   src: string;
@@ -8,8 +9,13 @@ export interface GalleryImage {
 
 const GRID_MAX = 8;
 
+/** One cell of the 2-column (4 from 640px) square grid. */
+const SITE_GALLERY_SIZES = "(min-width: 1200px) 300px, (min-width: 640px) 25vw, 50vw";
+
 interface GalleryManagerProps {
   images: GalleryImage[];
+  /** Strapi formats of the images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 }
 
 /**
@@ -31,7 +37,7 @@ interface GalleryManagerProps {
  * The Astro wrapper (`SiteGallery.astro`) is now reduced to building the
  * `images` prop and rendering the `<section>` shell.
  */
-export default function GalleryManager({ images }: GalleryManagerProps) {
+export default function GalleryManager({ images, imageSources }: GalleryManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -71,7 +77,7 @@ export default function GalleryManager({ images }: GalleryManagerProps) {
               }}
               style={{ cursor: "pointer" }}
             >
-              <img src={img.src} alt={img.alt} loading="lazy" />
+              <img {...reactImageAttrs(img.src, imageSources, SITE_GALLERY_SIZES)} alt={img.alt} loading="lazy" decoding="async" />
               {showOverlay && (
                 <div className="site-gallery__overlay" aria-hidden="true">
                   +{hiddenCount}
@@ -84,6 +90,7 @@ export default function GalleryManager({ images }: GalleryManagerProps) {
 
       <GalleryLightbox
         images={images.map((i) => i.src)}
+        imageSources={imageSources}
         initialIndex={activeIndex}
         isOpen={isOpen}
         onClose={close}

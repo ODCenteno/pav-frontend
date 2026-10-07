@@ -1,6 +1,7 @@
 import type { LocalizedString } from './i18n.type';
 import type { Category } from './category.type';
 import type { Location, ContactInfo, Pricing, Media, Schedule, SocialLink } from './common.type';
+import type { ResponsiveImageMap } from '../utils/responsiveImage';
 import type { CommunityMember, CommunityRef, StoryBlock, ProductItem, AmenityItem, RecommendationItem } from './community.type';
 
 export interface Listing {
@@ -30,6 +31,8 @@ export interface Listing {
   type?: string;
 
   image?: string;
+  /** Strapi `formats` of main, gallery and story images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 
   schedule?: Schedule;
   amenities?: AmenityItem[];

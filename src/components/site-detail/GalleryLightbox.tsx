@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { reactImageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 import "./galleryLightbox.css";
 
 interface GalleryLightboxProps {
   images: string[];
+  /** Strapi formats of the images, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
   initialIndex: number;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function GalleryLightbox({ images, initialIndex, isOpen, onClose }: GalleryLightboxProps) {
+export default function GalleryLightbox({ images, imageSources, initialIndex, isOpen, onClose }: GalleryLightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -140,7 +143,7 @@ export default function GalleryLightbox({ images, initialIndex, isOpen, onClose 
         </button>
 
         <div className="lightbox__image-wrapper" role="document" aria-label="Gallery image viewer">
-          <img src={images[currentIndex]} alt={`Gallery image ${currentIndex + 1} of ${images.length}`} className="lightbox__image" />
+          <img {...reactImageAttrs(images[currentIndex], imageSources, "100vw", { dimensions: false })} alt={`Gallery image ${currentIndex + 1} of ${images.length}`} className="lightbox__image" />
           <div className="lightbox__counter" aria-live="polite" aria-atomic="true">
             {currentIndex + 1} of {images.length}
           </div>

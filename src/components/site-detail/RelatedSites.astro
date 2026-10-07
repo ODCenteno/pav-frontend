@@ -12,6 +12,9 @@ interface Props {
 
 const { title, relatedIds, currentLang } = Astro.props;
 
+/** Card image width in the 1 / 2 / 3 column grid (container max 1200px). */
+const RELATED_CARD_SIZES = "(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw";
+
 const allListings: Listing[] = await getListingsWithFallback(currentLang);
 const relatedItems = relatedIds
   ? allListings.filter((item) => relatedIds.includes(item.id))
@@ -24,7 +27,7 @@ const relatedItems = relatedIds
       <h2 class="related-sites__title">{title}</h2>
       <div class="related-sites__grid">
         {relatedItems.map((item) => (
-          <CardMain item={item} currentLang={currentLang} />
+          <CardMain item={item} currentLang={currentLang} sizes={RELATED_CARD_SIZES} />
         ))}
       </div>
     </section>

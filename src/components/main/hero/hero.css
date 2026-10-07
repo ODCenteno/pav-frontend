@@ -80,6 +80,12 @@
     isolation: isolate;
 }
 
+/* The <picture> wrapper of a bundled hero photo stays out of the card's
+   flex layout; its absolutely positioned <img> fills the card as before. */
+.hero-picture {
+    display: contents;
+}
+
 .hero-community-card__image {
     position: absolute;
     inset: 0;

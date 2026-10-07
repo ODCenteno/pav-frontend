@@ -4,7 +4,11 @@ import { SOCIAL_CONFIG } from "@/utils/socialConfig";
 import { socialUrl } from "@/utils/social";
 import type { SocialLink } from "@/types/common.type";
 import { contactLinkLabel, contactLinkTarget } from "../community-page/memberCard";
+import { reactImageAttrs, type ResponsiveImageMap } from "@/utils/responsiveImage";
 import "./memberModal.css";
+
+/** One cell of the 3-column gallery grid in the 720px modal. */
+const MODAL_GALLERY_SIZES = "(min-width: 768px) 240px, 33vw";
 
 /** View-model member: bio pre-rendered to HTML at build time by the shell. */
 export interface MemberVm {
@@ -21,6 +25,8 @@ export interface MemberVm {
   photo?: string;
   galleryUrls: string[];
   social: SocialLink[];
+  /** Strapi formats of the photo and gallery, keyed by URL. */
+  imageSources?: ResponsiveImageMap;
 }
 
 export interface MemberModalLabels {
@@ -161,7 +167,7 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
             {member.photo ? (
               <img
                 className="member-strip__photo"
-                src={member.photo}
+                {...reactImageAttrs(member.photo, member.imageSources, "88px")}
                 alt={member.name}
               />
             ) : (
@@ -253,9 +259,10 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
                       }}
                     >
                       <img
-                        src={src}
+                        {...reactImageAttrs(src, member.imageSources, MODAL_GALLERY_SIZES)}
                         alt={`${member.name} — ${labels.gallery} ${index + 1}`}
                         loading="lazy"
+                        decoding="async"
                       />
                       {showOverlay && (
                         <div className="member-modal__gallery-overlay" aria-hidden="true">
@@ -277,6 +284,7 @@ export default function MemberModal({ member, labels, onClose }: MemberModalProp
       {lightboxIndex !== null && (
         <GalleryLightbox
           images={member.galleryUrls}
+          imageSources={member.imageSources}
           initialIndex={lightboxIndex}
           isOpen
           onClose={closeLightbox}
