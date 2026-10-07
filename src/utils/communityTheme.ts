@@ -51,7 +51,7 @@ export function communityStyle(community?: CommunityRef | null): CommunityStyle 
 
 /**
  * Resolve the badge icon URL for a community: the CMS `badgeIcon` media wins;
- * when empty, the bundled PNG from `src/data/communities.ts` serves as
+ * when empty, the bundled WebP from `src/data/communities.ts` serves as
  * fallback. Returns '' when there is nothing to render (no community, or an
  * unknown slug without a CMS icon) — callers hide the image in that case.
  */

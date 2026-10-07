@@ -28,6 +28,13 @@ export interface CommunityFixture {
   location: Location;
 }
 
+/**
+ * Intrinsic size of the bundled badge icons (`iconPath`): 2x the largest
+ * rendered badge (3.25rem = 52px in the desktop hero), resized from the
+ * 223x226 PNG originals.
+ */
+export const BADGE_ICON_SIZE = { width: 104, height: 105 } as const;
+
 export const COMMUNITY_SLUGS = ['puerto-agua-verde', 'rancho-san-cosme'] as const satisfies readonly CommunitySlug[];
 
 export const communities: readonly CommunityFixture[] = [
@@ -39,7 +46,7 @@ export const communities: readonly CommunityFixture[] = [
     color: '#0CA58C',
     textColor: '#08806D',
     icon: 'fish',
-    iconPath: '/images/communities/fish.png',
+    iconPath: '/images/communities/fish.webp',
     order: 1,
     // Source: pav-backend/scripts/import-csv-listings.js (PAV_COORDS).
     location: { lat: 25.51204, lng: -111.07577 },
@@ -52,7 +59,7 @@ export const communities: readonly CommunityFixture[] = [
     color: '#EC6E0B',
     textColor: '#B85206',
     icon: 'donkey',
-    iconPath: '/images/communities/donkey.png',
+    iconPath: '/images/communities/donkey.webp',
     order: 2,
     // Source: OpenStreetMap hamlet "Rancho San Cosme" (Nominatim). The value in
     // pav-backend/scripts/import-csv-listings.js (24.16315, -110.3384) points to La Paz.

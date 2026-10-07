@@ -149,7 +149,7 @@ describe("getCommunities", () => {
     const result = await getCommunities("es-MX");
     expect(result[0].name).toBe(communities[0].name["es-MX"]);
     expect(result[0].color).toBe(communities[0].color);
-    expect(result[0].badgeIcon).toBe("/images/communities/fish.png");
+    expect(result[0].badgeIcon).toBe("/images/communities/fish.webp");
     expect(result[0].heroImage).toBe("/images/PAV-Letrero-.webp");
   });
 

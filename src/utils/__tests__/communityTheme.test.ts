@@ -78,8 +78,8 @@ describe("communityBadgeIcon", () => {
   });
 
   it("falls back to the bundled icon per slug", () => {
-    expect(communityBadgeIcon(refOf("puerto-agua-verde"))).toBe("/images/communities/fish.png");
-    expect(communityBadgeIcon(refOf("rancho-san-cosme"))).toBe("/images/communities/donkey.png");
+    expect(communityBadgeIcon(refOf("puerto-agua-verde"))).toBe("/images/communities/fish.webp");
+    expect(communityBadgeIcon(refOf("rancho-san-cosme"))).toBe("/images/communities/donkey.webp");
   });
 
   it("bundled fallback icons exist on disk", () => {

@@ -64,6 +64,8 @@ describe("CommunityBadge (component smoke test)", () => {
   it("sets explicit width/height on the icon to avoid layout shift", () => {
     expect(source).toMatch(/<img[^>]*width=/);
     expect(source).toMatch(/<img[^>]*height=/);
+    expect(source).toMatch(/width=\{BADGE_ICON_SIZE\.width\}/);
+    expect(source).toMatch(/height=\{BADGE_ICON_SIZE\.height\}/);
   });
 
   it("uses communityStyle for the theme custom properties", () => {

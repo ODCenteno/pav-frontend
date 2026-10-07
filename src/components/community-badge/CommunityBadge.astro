@@ -2,6 +2,7 @@
 import "./communityBadge.css";
 import { useTranslations } from "@/i18n/utils";
 import { communityStyle, communityBadgeIcon } from "@/utils/communityTheme";
+import { BADGE_ICON_SIZE } from "@/data/communities";
 import type { CommunityRef } from "@/types/community.type";
 
 interface Props {
@@ -32,7 +33,7 @@ const {
 const t = useTranslations(locale);
 
 // Icon resolution lives in communityTheme: CMS badgeIcon first, bundled
-// per-slug PNG second, '' when there is nothing to render.
+// per-slug WebP second, '' when there is nothing to render.
 const icon = communityBadgeIcon(community);
 const style = communityStyle(community);
 const ariaLabel = community
@@ -55,8 +56,8 @@ const ariaLabel = community
           src={icon}
           alt=""
           aria-hidden="true"
-          width="223"
-          height="226"
+          width={BADGE_ICON_SIZE.width}
+          height={BADGE_ICON_SIZE.height}
           loading="lazy"
           decoding="async"
         />

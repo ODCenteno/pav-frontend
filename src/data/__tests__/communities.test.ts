@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { URL, fileURLToPath } from 'node:url';
-import { communities, COMMUNITY_SLUGS, getCommunityBySlug } from '../communities';
+import { BADGE_ICON_SIZE, communities, COMMUNITY_SLUGS, getCommunityBySlug } from '../communities';
 import { contrastRatio } from '../../utils/contrast';
 
 const PUBLIC_DIR = fileURLToPath(new URL('../../../public', import.meta.url));
@@ -58,7 +58,7 @@ describe('community fixtures', () => {
     }
     expect(c.color).toMatch(HEX);
     expect(c.textColor).toMatch(HEX);
-    expect(c.iconPath).toMatch(/^\/images\/communities\/.+\.png$/);
+    expect(c.iconPath).toMatch(/^\/images\/communities\/.+\.webp$/);
     expect(Number.isInteger(c.order)).toBe(true);
     expect(typeof c.location.lat).toBe('number');
     expect(typeof c.location.lng).toBe('number');
@@ -86,5 +86,22 @@ describe('community color accessibility (WCAG 2.x on white)', () => {
 describe('bundled community icons', () => {
   it.each(communities.map((c) => [c.slug, c.iconPath] as const))('%s icon file exists in public/', (_slug, iconPath) => {
     expect(existsSync(path.join(PUBLIC_DIR, iconPath))).toBe(true);
+  });
+});
+
+describe("bundled badge icons", () => {
+  // Largest rendered badge: the desktop hero half, 3.25rem = 52px.
+  const LARGEST_DISPLAYED_PX = 52;
+
+  it("are WebP files at 2x the largest displayed size", async () => {
+    const { default: sharp } = await import("sharp");
+    for (const c of communities) {
+      expect(c.iconPath).toMatch(/^\/images\/communities\/[a-z-]+\.webp$/);
+      const meta = await sharp(`${PUBLIC_DIR}${c.iconPath}`).metadata();
+      expect(meta.format).toBe("webp");
+      expect(meta.width).toBe(BADGE_ICON_SIZE.width);
+      expect(meta.height).toBe(BADGE_ICON_SIZE.height);
+    }
+    expect(BADGE_ICON_SIZE.width).toBe(2 * LARGEST_DISPLAYED_PX);
   });
 });

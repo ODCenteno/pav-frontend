@@ -137,7 +137,7 @@ describe("transformCommunity", () => {
 
     it("falls back to the fixture iconPath when badgeIcon media is empty", () => {
       const out = transformCommunity(communityItem({}), "es-MX");
-      expect(out.badgeIcon).toBe("/images/communities/fish.png");
+      expect(out.badgeIcon).toBe("/images/communities/fish.webp");
     });
 
     it("falls back to a per-community landscape hero when heroImage is empty", () => {

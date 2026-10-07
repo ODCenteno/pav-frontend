@@ -12,7 +12,7 @@ FE code that encodes this contract:
 | Category slugs and labels, legacy→new map, locality→community map | `src/data/categories.ts` |
 | Community fixtures (slug, colors, bundled icon, order, location) | `src/data/communities.ts` |
 | Types | `src/types/category.type.ts`, `src/types/community.type.ts`, `src/types/listing.type.ts`, `src/types/homepage.type.ts`, `src/types/good-practices.type.ts` |
-| Bundled badge icons | `public/images/communities/fish.png`, `donkey.png` (223×226 PNG, to be replaced by SVG) |
+| Bundled badge icons | `public/images/communities/fish.webp`, `donkey.webp` (104×105 WebP, 2x the largest rendered badge; resized from the 223×226 PNG originals kept beside them) |
 | WCAG contrast helper | `src/utils/contrast.ts` |
 
 ## 1. Categories
@@ -42,8 +42,8 @@ Legacy slugs stay valid (their category entries and routes keep working) until t
 
 | Order | Slug | Name | `color` | `textColor` | Bundled icon | Legacy `locality` |
 |---|---|---|---|---|---|---|
-| 1 | `puerto-agua-verde` | Puerto Agua Verde | `#0CA58C` | `#08806D` | fish, `/images/communities/fish.png` | `agua-verde` |
-| 2 | `rancho-san-cosme` | Rancho San Cosme | `#EC6E0B` | `#B85206` | donkey, `/images/communities/donkey.png` | `rancho-san-cosme` |
+| 1 | `puerto-agua-verde` | Puerto Agua Verde | `#0CA58C` | `#08806D` | fish, `/images/communities/fish.webp` | `agua-verde` |
+| 2 | `rancho-san-cosme` | Rancho San Cosme | `#EC6E0B` | `#B85206` | donkey, `/images/communities/donkey.webp` | `rancho-san-cosme` |
 
 - `color` is for large surfaces, icons and borders. It must reach ≥ 3:1 on `#FFFFFF`.
 - `textColor` is for small text and tags. It must reach ≥ 4.5:1 on `#FFFFFF` (WCAG AA).
